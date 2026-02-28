@@ -151,6 +151,33 @@ textarea.import-area:focus{border-color:var(--o)}
 
 .today-empty{text-align:center;padding:30px;color:var(--lt);font-size:12px}
 
+/* Triage */
+.triage-group{background:var(--card);border:1px solid var(--bdr);border-radius:12px;margin-bottom:12px;overflow:hidden}
+.triage-group-hdr{padding:14px 20px 10px;display:flex;justify-content:space-between;align-items:center;cursor:pointer}
+.triage-group-hdr:hover{background:#fafafa}
+.triage-group-hdr h2{font-size:14px;font-weight:700;display:flex;align-items:center;gap:8px}
+.triage-group-hdr .tg-count{font-size:11px;color:var(--md);font-weight:600}
+.triage-group-actions{display:flex;gap:6px}
+.triage-group-body{padding:0 20px 16px}
+.triage-group-body.collapsed{display:none}
+
+/* Connected badge */
+.conn-badge{font-size:9px;font-weight:700;padding:2px 8px;border-radius:20px;display:inline-block}
+.conn-yes{background:var(--gb);color:var(--g)}
+.conn-no{background:#f3f4f6;color:var(--md)}
+.conn-unknown{background:var(--yb);color:var(--y)}
+
+/* Connected toggle (triage) */
+.conn-toggle{display:flex;gap:2px;margin-top:4px}
+.conn-toggle button{padding:3px 8px;border-radius:6px;border:1px solid var(--bdr);background:var(--card);font-size:9px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .12s}
+.conn-toggle button:hover{border-color:var(--o)}
+.conn-toggle button.active-yes{background:var(--gb);color:var(--g);border-color:var(--g)}
+.conn-toggle button.active-no{background:#f3f4f6;color:var(--md);border-color:var(--md)}
+.conn-toggle button.active-unknown{background:var(--yb);color:var(--y);border-color:var(--y)}
+
+/* Needs URL flag */
+.needs-url-flag{font-size:9px;font-weight:700;padding:2px 8px;border-radius:20px;background:var(--rb);color:var(--r)}
+
 </style>
 </head>
 <body>
@@ -167,6 +194,7 @@ textarea.import-area:focus{border-color:var(--o)}
 
 <div class="tabs">
   <div class="tab on" data-tab="today">Today</div>
+  <div class="tab" data-tab="triage">Triage <span class="badge" id="triage-badge" style="display:none">0</span></div>
   <div class="tab" data-tab="pipeline">Pipeline</div>
   <div class="tab" data-tab="all">All Prospects</div>
   <div class="tab" data-tab="import">Import</div>
@@ -240,6 +268,15 @@ textarea.import-area:focus{border-color:var(--o)}
     </div>
   </div>
 
+</div>
+
+<!-- TRIAGE VIEW -->
+<div class="view" id="view-triage">
+  <div class="daily-progress" id="triage-summary">
+    <div class="dp-title">Triage Queue</div>
+    <div id="triage-summary-text" style="font-size:13px;color:var(--dk);margin-top:4px"></div>
+  </div>
+  <div id="triage-groups"></div>
 </div>
 
 <!-- PIPELINE VIEW -->
@@ -342,7 +379,7 @@ https://www.linkedin.com/in/username3"></textarea>
       <div><label>Status</label><select id="ed-status"><option value="new">New</option><option value="warming">Warming</option><option value="warm">Warm</option><option value="outreach_sent">Outreach Sent</option><option value="replied">Replied</option><option value="call_booked">Call Booked</option><option value="won">Won</option><option value="lost">Lost</option><option value="skip">Skip</option></select></div>
       <div><label>Check-in (days)</label><input id="ed-checkin" type="number"></div>
       <div><label>ICP Score</label><input id="ed-score" type="number" step="0.5"></div>
-      <div><label>Connected</label><select id="ed-connected"><option value="false">No</option><option value="true">Yes</option></select></div>
+      <div><label>Connected</label><select id="ed-connected"><option value="false">No</option><option value="true">Yes</option><option value="unknown">Unknown</option></select></div>
     </div>
     <label>Notes</label><textarea id="ed-notes"></textarea>
     <label>Engagement History</label>
@@ -402,6 +439,7 @@ document.querySelectorAll('.tab').forEach(t => {
     t.classList.add('on');
     document.getElementById('view-' + t.dataset.tab).classList.add('on');
     if (t.dataset.tab === 'today') loadToday();
+    if (t.dataset.tab === 'triage') loadTriage();
     if (t.dataset.tab === 'pipeline') loadPipeline();
     if (t.dataset.tab === 'all') loadAll();
   });
@@ -666,12 +704,207 @@ function extractUsername(url) {
   return m ? m[1] : '';
 }
 
+// ===== TRIAGE =====
+async function loadTriage() {
+  const prospects = await fetch('/api/prospects').then(r => r.json());
+  const newProspects = prospects.filter(p => p.status === 'new');
+
+  // Update badge
+  const badge = document.getElementById('triage-badge');
+  if (newProspects.length > 0) {
+    badge.textContent = newProspects.length;
+    badge.style.display = 'inline';
+  } else {
+    badge.style.display = 'none';
+  }
+
+  // Summary
+  document.getElementById('triage-summary-text').textContent =
+    newProspects.length > 0
+      ? `${newProspects.length} new prospects to review. Activate them in batches to control your daily queue.`
+      : 'All caught up — no new prospects to triage.';
+
+  // Group by segment
+  const segmentLabels = {
+    cyber: 'Cyber', ai_ml: 'AI/ML', referral_partner: 'Referral Partner',
+    warm_priority: 'Warm Priority', warm_network: 'Warm Network'
+  };
+  const segmentBadgeClass = {
+    cyber: 'cyber', ai_ml: 'ai', referral_partner: 'ref',
+    warm_priority: 'warm', warm_network: 'warm'
+  };
+  const groups = {};
+  newProspects.forEach(p => {
+    if (!groups[p.segment]) groups[p.segment] = [];
+    groups[p.segment].push(p);
+  });
+
+  const container = document.getElementById('triage-groups');
+  if (newProspects.length === 0) {
+    container.innerHTML = '<div class="today-empty">No new prospects to triage</div>';
+    return;
+  }
+
+  container.innerHTML = Object.entries(groups).map(([seg, prospects]) => {
+    const tier1 = prospects.filter(p => p.tier === 1 || p.tier === '1');
+    const tier1Ids = JSON.stringify(tier1.map(p => p.id));
+    const allIds = JSON.stringify(prospects.map(p => p.id));
+    return `
+      <div class="triage-group" id="tg-${seg}">
+        <div class="triage-group-hdr" onclick="document.getElementById('tgb-${seg}').classList.toggle('collapsed')">
+          <h2><span class="sh-badge ${segmentBadgeClass[seg] || 'cyber'}">${segmentLabels[seg] || seg}</span> <span class="tg-count">${prospects.length} prospects (${tier1.length} Tier 1)</span></h2>
+          <div class="triage-group-actions" onclick="event.stopPropagation()">
+            ${tier1.length > 0 ? `<button class="p-btn primary" onclick="batchActivate(${escAttr(tier1Ids)}, '${seg}', 'tier1')">Activate All Tier 1 (${tier1.length})</button>` : ''}
+            <button class="p-btn" onclick="batchActivate(${escAttr(allIds)}, '${seg}', 'all')">Activate All (${prospects.length})</button>
+          </div>
+        </div>
+        <div class="triage-group-body" id="tgb-${seg}">
+          ${prospects.map(p => renderTriageCard(p)).join('')}
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function escAttr(jsonStr) {
+  return typeof jsonStr === 'string'
+    ? jsonStr.replace(/'/g, '&#39;').replace(/"/g, '&quot;')
+    : JSON.stringify(jsonStr).replace(/'/g, '&#39;').replace(/"/g, '&quot;');
+}
+
+function renderTriageCard(p) {
+  const username = p.linkedin_username || extractUsername(p.linkedin_url);
+  const profileUrl = p.linkedin_url || (username ? `https://www.linkedin.com/in/${username}` : '');
+  const hasUrl = !!profileUrl && profileUrl.includes('linkedin.com/in/');
+  const connVal = p.connected === true ? 'yes' : (p.connected === false ? 'no' : 'unknown');
+
+  return `
+    <div class="p-card" id="tc-${p.id}">
+      <div class="p-top">
+        <div class="p-info">
+          <h3>${escHtml(p.name || username || '(no name)')}
+            ${hasUrl ? `<a href="#" onclick="openSafeLink('${escHtml(profileUrl)}');return false" style="font-size:10px;font-weight:600">Profile</a>` : ''}
+          </h3>
+          <div class="p-company">${escHtml(p.company || '')}</div>
+          <div class="p-title">${escHtml(p.title || '')}</div>
+        </div>
+        <div class="p-meta">
+          <span class="tier-badge tier-${p.tier}">T${p.tier}</span>
+          ${p.icp_score ? `<span style="font-size:9px;color:var(--md)">ICP:${p.icp_score}</span>` : ''}
+          ${!hasUrl ? '<span class="needs-url-flag">Needs URL</span>' : ''}
+        </div>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-top:6px;flex-wrap:wrap;gap:6px">
+        <div class="conn-toggle">
+          <span style="font-size:9px;color:var(--md);font-weight:600;margin-right:2px">Connected:</span>
+          <button class="${connVal === 'yes' ? 'active-yes' : ''}" onclick="setTriageConnected('${p.id}', true, this)">Yes</button>
+          <button class="${connVal === 'no' ? 'active-no' : ''}" onclick="setTriageConnected('${p.id}', false, this)">No</button>
+          <button class="${connVal === 'unknown' ? 'active-unknown' : ''}" onclick="setTriageConnected('${p.id}', 'unknown', this)">?</button>
+        </div>
+        <div class="p-actions" style="margin-top:0">
+          <button class="p-btn green" onclick="triageAction('${p.id}', 'warming')">Start Warming</button>
+          <button class="p-btn" onclick="triageAction('${p.id}', 'skip')">Skip</button>
+          ${hasUrl ? '' : `<button class="p-btn" onclick="triageTagNeedsUrl('${p.id}', this)">Flag Needs URL</button>`}
+          <button class="p-btn ghost" onclick="openEdit('${p.id}')">Edit</button>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+async function setTriageConnected(id, value, btn) {
+  await fetch(`/api/prospects/${id}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ connected: value })
+  });
+  // Update toggle visuals
+  const toggle = btn.closest('.conn-toggle');
+  toggle.querySelectorAll('button').forEach(b => b.className = '');
+  if (value === true) btn.className = 'active-yes';
+  else if (value === false) btn.className = 'active-no';
+  else btn.className = 'active-unknown';
+}
+
+async function triageAction(id, newStatus) {
+  await fetch(`/api/prospects/${id}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ status: newStatus, next_check_in: new Date().toISOString().split('T')[0] })
+  });
+  // Animate card removal
+  const card = document.getElementById('tc-' + id);
+  if (card) {
+    card.style.transition = 'opacity 0.2s, transform 0.2s';
+    card.style.opacity = '0';
+    card.style.transform = 'translateX(20px)';
+    setTimeout(() => {
+      card.remove();
+      updateTriageCounts();
+    }, 200);
+  }
+}
+
+async function triageTagNeedsUrl(id, btn) {
+  const prospects = await fetch('/api/prospects').then(r => r.json());
+  const p = prospects.find(x => x.id === id);
+  if (!p) return;
+  const tags = p.tags || [];
+  if (!tags.includes('needs_url')) tags.push('needs_url');
+  await fetch(`/api/prospects/${id}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ tags })
+  });
+  btn.textContent = 'Flagged';
+  btn.disabled = true;
+}
+
+async function batchActivate(idsJson, segment, scope) {
+  const ids = typeof idsJson === 'string' ? JSON.parse(idsJson) : idsJson;
+  const label = scope === 'tier1' ? `all Tier 1 ${segment}` : `all ${segment}`;
+  if (!confirm(`Activate ${ids.length} prospects (${label}) to warming queue?`)) return;
+
+  await fetch('/api/prospects/batch', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ ids, updates: { status: 'warming' } })
+  });
+
+  // Remove activated cards
+  ids.forEach(id => {
+    const card = document.getElementById('tc-' + id);
+    if (card) card.remove();
+  });
+  updateTriageCounts();
+}
+
+function updateTriageCounts() {
+  // Recount remaining cards per group and update badge
+  const groups = document.querySelectorAll('.triage-group');
+  let total = 0;
+  groups.forEach(g => {
+    const remaining = g.querySelectorAll('.p-card').length;
+    total += remaining;
+    if (remaining === 0) g.remove();
+  });
+  const badge = document.getElementById('triage-badge');
+  if (total > 0) {
+    badge.textContent = total;
+    badge.style.display = 'inline';
+  } else {
+    badge.style.display = 'none';
+    document.getElementById('triage-summary-text').textContent = 'All caught up — no new prospects to triage.';
+    document.getElementById('triage-groups').innerHTML = '<div class="today-empty">No new prospects to triage</div>';
+  }
+}
+
 // ===== PIPELINE =====
 async function loadPipeline() {
   const prospects = await fetch('/api/prospects').then(r => r.json());
-  const stages = ['warming','warm','outreach_sent','replied','call_booked','won','lost'];
-  const labels = {warming:'Warming',warm:'Warm',outreach_sent:'Outreach Sent',replied:'Replied',call_booked:'Call Booked',won:'Won',lost:'Lost'};
-  const colors = {warming:'var(--b)',warm:'var(--y)',outreach_sent:'var(--o)',replied:'var(--p)',call_booked:'var(--g)',won:'var(--g)',lost:'var(--r)'};
+  const stages = ['new','warming','warm','outreach_sent','replied','call_booked','won','lost'];
+  const labels = {new:'New',warming:'Warming',warm:'Warm',outreach_sent:'Outreach Sent',replied:'Replied',call_booked:'Call Booked',won:'Won',lost:'Lost'};
+  const colors = {new:'var(--md)',warming:'var(--b)',warm:'var(--y)',outreach_sent:'var(--o)',replied:'var(--p)',call_booked:'var(--g)',won:'var(--g)',lost:'var(--r)'};
 
   document.getElementById('pipeline-grid').innerHTML = stages.map(s => {
     const items = prospects.filter(p => p.status === s && p.name);
@@ -715,6 +948,8 @@ function renderAll() {
       const ws = p.warmth_score || 0;
       const warmLabel = ws === 0 ? 'Cold' : ws < 3 ? `W:${ws}` : ws < 5 ? `Warm:${ws}` : `Hot:${ws}`;
       const warmBadgeClass = `warmth-${Math.min(ws, 5)}`;
+      const connClass = p.connected === true ? 'conn-yes' : (p.connected === false ? 'conn-no' : 'conn-unknown');
+      const connLabel = p.connected === true ? 'Connected' : (p.connected === false ? 'Not Connected' : 'Unknown');
       return `
         <div class="p-card">
           <div class="p-top">
@@ -724,6 +959,7 @@ function renderAll() {
               <div class="p-title">${escHtml(p.title || '')}</div>
             </div>
             <div class="p-meta">
+              <span class="conn-badge ${connClass}">${connLabel}</span>
               <span class="warmth-badge ${warmBadgeClass}">${warmLabel}</span>
               <span class="tier-badge tier-${p.tier}">T${p.tier}</span>
               <span style="font-size:9px;color:var(--md)">${escHtml(p.segment)}</span>
@@ -825,7 +1061,7 @@ async function openEdit(id) {
   document.getElementById('ed-status').value = p.status || 'warming';
   document.getElementById('ed-checkin').value = p.check_in_days || 3;
   document.getElementById('ed-score').value = p.icp_score || 0;
-  document.getElementById('ed-connected').value = String(p.connected || false);
+  document.getElementById('ed-connected').value = p.connected === true ? 'true' : (p.connected === 'unknown' ? 'unknown' : 'false');
   document.getElementById('ed-notes').value = p.notes || '';
   document.getElementById('ed-engagements').innerHTML = (p.engagements || []).reverse().map(e =>
     `<div style="padding:3px 0;border-bottom:1px solid var(--bdr)">${e.date} | <b>${e.type}</b> | ${e.note || '-'}</div>`
@@ -845,7 +1081,7 @@ async function saveModal() {
       segment: document.getElementById('ed-segment').value, tier: parseInt(document.getElementById('ed-tier').value),
       status: document.getElementById('ed-status').value, check_in_days: parseInt(document.getElementById('ed-checkin').value),
       icp_score: parseFloat(document.getElementById('ed-score').value),
-      connected: document.getElementById('ed-connected').value === 'true', notes: document.getElementById('ed-notes').value
+      connected: document.getElementById('ed-connected').value === 'true' ? true : (document.getElementById('ed-connected').value === 'unknown' ? 'unknown' : false), notes: document.getElementById('ed-notes').value
     })
   });
   closeModal(); loadToday();
@@ -860,6 +1096,12 @@ document.getElementById('edit-modal').addEventListener('click', e => { if (e.tar
 
 // Init
 loadToday();
+// Update triage badge on load
+fetch('/api/prospects').then(r => r.json()).then(prospects => {
+  const newCount = prospects.filter(p => p.status === 'new').length;
+  const badge = document.getElementById('triage-badge');
+  if (newCount > 0) { badge.textContent = newCount; badge.style.display = 'inline'; }
+});
 </script>
 </body>
 </html>

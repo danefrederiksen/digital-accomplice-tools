@@ -133,12 +133,18 @@ function calcNextCheckIn(lastDate, intervalDays) {
 // ============================================================
 const VALID_SEGMENTS = ['cyber', 'ai_ml', 'referral_partner', 'warm_priority', 'warm_network'];
 const VALID_STATUSES = ['new', 'warming', 'warm', 'outreach_sent', 'replied', 'call_booked', 'won', 'lost', 'skip'];
+const VALID_CONNECTED = [true, false, 'unknown'];
 const VALID_TIERS = [1, 2, 3];
 const VALID_ENGAGEMENT_TYPES = ['comment', 'dm'];
 
 function validateSegment(seg) { return VALID_SEGMENTS.includes(seg) ? seg : 'cyber'; }
 function validateStatus(status) { return VALID_STATUSES.includes(status) ? status : 'warming'; }
 function validateTier(tier) { const t = parseInt(tier); return VALID_TIERS.includes(t) ? t : 2; }
+function validateConnected(val) {
+  if (val === 'true' || val === true) return true;
+  if (val === 'false' || val === false) return false;
+  return 'unknown';
+}
 
 // GET all prospects
 app.get('/api/prospects', (req, res) => {
@@ -353,6 +359,7 @@ app.put('/api/prospects/:id', (req, res) => {
     if (key === 'tier') { updates[key] = validateTier(val); continue; }
     if (key === 'icp_score') { updates[key] = Math.min(Math.max(parseFloat(val) || 0, 0), 10); continue; }
     if (key === 'check_in_days') { updates[key] = Math.min(Math.max(parseInt(val) || 3, 1), 30); continue; }
+    if (key === 'connected') { updates[key] = validateConnected(val); continue; }
     if (typeof val === 'string') { updates[key] = sanitize(val); continue; }
     updates[key] = val;
   }
@@ -360,6 +367,36 @@ app.put('/api/prospects/:id', (req, res) => {
   data.prospects[idx] = { ...data.prospects[idx], ...updates };
   saveData(data);
   res.json(data.prospects[idx]);
+});
+
+// POST batch update prospects
+app.post('/api/prospects/batch', (req, res) => {
+  const data = loadData();
+  const { ids, updates } = req.body;
+
+  if (!Array.isArray(ids)) return res.status(400).json({ error: 'ids must be an array' });
+  if (ids.length > 500) return res.status(400).json({ error: 'Maximum 500 prospects per batch' });
+  if (!updates || typeof updates !== 'object') return res.status(400).json({ error: 'updates must be an object' });
+
+  const cleanUpdates = {};
+  if (updates.status) cleanUpdates.status = validateStatus(updates.status);
+  if (updates.connected !== undefined) cleanUpdates.connected = validateConnected(updates.connected);
+  if (updates.tags) cleanUpdates.tags = Array.isArray(updates.tags) ? updates.tags.map(t => sanitize(String(t))) : [];
+
+  let updated = 0;
+  data.prospects.forEach(p => {
+    if (ids.includes(p.id)) {
+      Object.assign(p, cleanUpdates);
+      // When activating to warming, set next_check_in to today
+      if (cleanUpdates.status === 'warming') {
+        p.next_check_in = new Date().toISOString().split('T')[0];
+      }
+      updated++;
+    }
+  });
+
+  saveData(data);
+  res.json({ updated });
 });
 
 // POST log engagement
