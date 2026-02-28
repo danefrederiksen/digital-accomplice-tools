@@ -286,6 +286,20 @@ textarea.import-area:focus{border-color:var(--o)}
 .rpt-chart-labels{display:flex;gap:3px}
 .rpt-chart-labels span{flex:1;text-align:center;font-size:8px;color:var(--lt);overflow:hidden}
 
+/* Report badges */
+.report-badge{font-size:8px;font-weight:700;padding:2px 7px;border-radius:20px}
+.report-ready{background:var(--gb);color:var(--g)}
+.report-needed{background:#f3f4f6;color:var(--md)}
+
+/* Report generation card */
+.rg-card{background:var(--bg);border:1px solid var(--bdr);border-radius:10px;padding:14px 16px;margin-bottom:6px}
+.rg-card .rg-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+.rg-card h3{font-size:13px;font-weight:700}
+.rg-card .rg-co{font-size:11px;color:var(--md)}
+.rg-card .rg-status{font-size:10px;color:var(--md)}
+.rg-card .rg-instructions{font-size:11px;color:var(--md);line-height:1.5;margin-top:6px;padding:8px;background:var(--card);border-radius:6px;border-left:3px solid var(--o);display:none}
+.rg-card .rg-instructions.show{display:block}
+
 /* Row layout for side-by-side sections */
 .rpt-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
 .rpt-half{min-width:0}
@@ -450,6 +464,18 @@ textarea.import-area:focus{border-color:var(--o)}
     </div>
   </div>
 
+  <!-- SECTION 5: Reports to Generate -->
+  <div class="section" id="sec-reports-gen-wrap" style="display:none">
+    <div class="section-hdr" onclick="toggleSection('reports-gen')">
+      <h2><span class="sh-badge" style="background:var(--p);color:#fff">&#9889;</span> Reports to Generate</h2>
+      <div class="sh-right"><span id="reports-gen-count">0</span> prospects need reports</div>
+    </div>
+    <div class="section-body" id="sec-reports-gen">
+      <div class="section-desc">These prospects are warm, in outreach, or have replied &mdash; but don't have a Video Opportunity Report yet. Generate one in a separate Claude session, then mark it done here.</div>
+      <div id="reports-gen-cards"></div>
+    </div>
+  </div>
+
 </div>
 
 <!-- TRIAGE VIEW -->
@@ -495,6 +521,12 @@ textarea.import-area:focus{border-color:var(--o)}
       <option value="1">Tier 1</option>
       <option value="2">Tier 2</option>
       <option value="3">Tier 3</option>
+    </select>
+    <select id="filter-report">
+      <option value="">Report Status</option>
+      <option value="ready">Report Ready</option>
+      <option value="needed">Needs Report</option>
+      <option value="none">No Report</option>
     </select>
   </div>
   <div id="all-list"></div>
@@ -613,6 +645,14 @@ https://www.linkedin.com/in/username3"></textarea>
     <label>Notes</label><textarea id="ed-notes"></textarea>
     <label>Sequence Info</label>
     <div id="ed-sequence" style="font-size:11px;color:var(--md);margin-top:4px;padding:8px;background:var(--bg);border-radius:6px"></div>
+    <label>Report Status</label>
+    <div id="ed-report" style="display:flex;align-items:center;gap:8px;margin-top:4px">
+      <select id="ed-report-status" style="padding:6px 10px;border:1px solid var(--bdr);border-radius:6px;font-size:11px">
+        <option value="false">No Report</option>
+        <option value="true">Report Generated</option>
+      </select>
+      <span id="ed-report-date" style="font-size:10px;color:var(--lt)"></span>
+    </div>
     <label>Engagement History</label>
     <div id="ed-engagements" style="max-height:120px;overflow-y:auto;font-size:11px;color:var(--md);margin-top:4px"></div>
     <div class="modal-actions">
@@ -803,9 +843,10 @@ async function loadToday() {
     ? podcastCandidates.map(p => renderOutreachCard(p, 'podcast')).join('')
     : '<div class="today-empty">No podcast candidates remaining</div>';
 
-  // Load alerts and follow-ups
+  // Load alerts, follow-ups, and report queue
   loadAlerts();
   loadFollowups();
+  loadReportQueue(prospects);
 }
 
 // ===== FOLLOW-UPS (Sequence Engine) =====
@@ -1671,7 +1712,7 @@ async function loadPipeline() {
         <h3 style="color:${colors[s]}">${labels[s]} <span>${items.length}</span></h3>
         ${items.slice(0, 20).map(p => `
           <div class="pipeline-item" onclick="openEdit('${escHtml(p.id)}')">
-            <div class="pi-name">${escHtml(p.name || p.linkedin_username || '?')}</div>
+            <div class="pi-name">${escHtml(p.name || p.linkedin_username || '?')}${p.report_generated ? ' <span class="report-badge report-ready">Report</span>' : ''}</div>
             <div class="pi-co">${escHtml(p.company || '')} ${p.warmth_score ? '| W:'+p.warmth_score : ''}</div>
           </div>
         `).join('')}
@@ -1691,11 +1732,15 @@ function renderAll() {
   const seg = document.getElementById('filter-segment').value;
   const status = document.getElementById('filter-status').value;
   const tier = document.getElementById('filter-tier').value;
+  const report = document.getElementById('filter-report').value;
   let filtered = allProspects.filter(p => {
     if (search && !(p.name||'').toLowerCase().includes(search) && !(p.company||'').toLowerCase().includes(search) && !(p.title||'').toLowerCase().includes(search)) return false;
     if (seg && p.segment !== seg) return false;
     if (status && p.status !== status) return false;
     if (tier && String(p.tier) !== tier) return false;
+    if (report === 'ready' && !p.report_generated) return false;
+    if (report === 'needed' && (p.report_generated || !['warm','outreach_sent','replied','call_booked'].includes(p.status))) return false;
+    if (report === 'none' && p.report_generated) return false;
     return true;
   });
   document.getElementById('all-list').innerHTML =
@@ -1717,6 +1762,7 @@ function renderAll() {
               <div class="p-title">${escHtml(p.title || '')}</div>
             </div>
             <div class="p-meta">
+              ${p.report_generated ? '<span class="report-badge report-ready">Report Ready</span>' : ''}
               <span class="conn-badge ${connClass}">${connLabel}</span>
               <span class="warmth-badge ${warmBadgeClass}">${warmLabel}</span>
               <span class="tier-badge tier-${p.tier}">T${p.tier}</span>
@@ -1734,6 +1780,7 @@ document.getElementById('search-input').addEventListener('input', renderAll);
 document.getElementById('filter-segment').addEventListener('change', renderAll);
 document.getElementById('filter-status').addEventListener('change', renderAll);
 document.getElementById('filter-tier').addEventListener('change', renderAll);
+document.getElementById('filter-report').addEventListener('change', renderAll);
 
 // ===== IMPORT =====
 async function importURLs() {
@@ -1825,6 +1872,10 @@ async function openEdit(id) {
     `<div style="padding:3px 0;border-bottom:1px solid var(--bdr)">${e.date} | <b>${e.type}</b> | ${e.note || '-'}</div>`
   ).join('') || '<div style="color:var(--lt)">No engagements yet</div>';
 
+  // Report info
+  document.getElementById('ed-report-status').value = p.report_generated ? 'true' : 'false';
+  document.getElementById('ed-report-date').textContent = p.report_date ? `Generated ${p.report_date}` : '';
+
   // Sequence info
   const seqDiv = document.getElementById('ed-sequence');
   if (p.sequence_status && p.sequence_status !== 'none') {
@@ -1854,7 +1905,10 @@ async function saveModal() {
       segment: document.getElementById('ed-segment').value, tier: parseInt(document.getElementById('ed-tier').value),
       status: document.getElementById('ed-status').value, check_in_days: parseInt(document.getElementById('ed-checkin').value),
       icp_score: parseFloat(document.getElementById('ed-score').value),
-      connected: document.getElementById('ed-connected').value === 'true' ? true : (document.getElementById('ed-connected').value === 'unknown' ? 'unknown' : false), notes: document.getElementById('ed-notes').value
+      connected: document.getElementById('ed-connected').value === 'true' ? true : (document.getElementById('ed-connected').value === 'unknown' ? 'unknown' : false),
+      notes: document.getElementById('ed-notes').value,
+      report_generated: document.getElementById('ed-report-status').value === 'true',
+      report_date: document.getElementById('ed-report-status').value === 'true' ? (document.getElementById('ed-report-date').textContent.replace('Generated ', '') || new Date().toISOString().split('T')[0]) : ''
     })
   });
   closeModal(); loadToday();
@@ -2073,6 +2127,90 @@ async function loadReports() {
       </div>
     `;
   }).join('');
+}
+
+// ===== REPORT QUEUE (Video Opportunity Reports) =====
+function loadReportQueue(prospects) {
+  // Show prospects in warm/outreach_sent/replied/call_booked who don't have a report yet
+  const reportStatuses = ['warm', 'outreach_sent', 'replied', 'call_booked'];
+  const needsReport = prospects.filter(p =>
+    reportStatuses.includes(p.status) && !p.report_generated && p.name && p.company
+  ).sort((a, b) => (a.tier || 3) - (b.tier || 3) || (b.warmth_score || 0) - (a.warmth_score || 0));
+
+  const wrap = document.getElementById('sec-reports-gen-wrap');
+  const cards = document.getElementById('reports-gen-cards');
+  const count = document.getElementById('reports-gen-count');
+
+  if (needsReport.length > 0) {
+    wrap.style.display = 'block';
+    count.textContent = needsReport.length;
+    cards.innerHTML = needsReport.map(p => renderReportCard(p)).join('');
+  } else {
+    wrap.style.display = 'none';
+  }
+}
+
+function renderReportCard(p) {
+  const username = p.linkedin_username || extractUsername(p.linkedin_url);
+  const profileUrl = p.linkedin_url || `https://www.linkedin.com/in/${username}`;
+  const statusLabels = {warm:'Warm',outreach_sent:'Outreach Sent',replied:'Replied',call_booked:'Call Booked'};
+  const statusColors = {warm:'var(--y)',outreach_sent:'var(--o)',replied:'var(--p)',call_booked:'var(--g)'};
+
+  return `
+    <div class="rg-card" id="rg-${escHtml(p.id)}">
+      <div class="rg-top">
+        <div>
+          <h3>${escHtml(p.name || username)} <a href="#" onclick="openSafeLink('${escHtml(profileUrl)}');return false" style="font-size:10px;font-weight:600">Profile</a></h3>
+          <div class="rg-co">${escHtml(p.company || '')} ${p.title ? '&bull; ' + escHtml(p.title) : ''}</div>
+        </div>
+        <div class="p-meta">
+          <span style="font-size:9px;font-weight:700;color:${statusColors[p.status] || 'var(--md)'}">${statusLabels[p.status] || p.status}</span>
+          <span class="tier-badge tier-${p.tier}">T${p.tier}</span>
+        </div>
+      </div>
+      <div class="rg-instructions" id="rg-instr-${escHtml(p.id)}">
+        <div style="font-size:10px;font-weight:700;color:var(--o);margin-bottom:4px">HOW TO GENERATE:</div>
+        <div>1. Open a new Claude Code session</div>
+        <div>2. Say: <strong>"Run the video opportunity report for ${escHtml(p.company)}"</strong></div>
+        <div>3. Claude will follow the V2 agent workflow and generate the PDF + infographics</div>
+        <div>4. Come back here and click "Report Done" when it's ready</div>
+      </div>
+      <div class="p-actions">
+        <button class="p-btn" onclick="copyCompanyName('${escHtml(p.company)}', this)">Copy Company Name</button>
+        <button class="p-btn" onclick="toggleReportInstr('${escHtml(p.id)}')">How to Generate</button>
+        <button class="p-btn green" onclick="markReportDone('${escHtml(p.id)}', this)">Report Done</button>
+      </div>
+    </div>
+  `;
+}
+
+async function copyCompanyName(company, btn) {
+  try {
+    await navigator.clipboard.writeText(company);
+    btn.textContent = 'Copied!';
+    setTimeout(() => { btn.textContent = 'Copy Company Name'; }, 2000);
+  } catch {
+    btn.textContent = 'Copy failed';
+    setTimeout(() => { btn.textContent = 'Copy Company Name'; }, 2000);
+  }
+}
+
+function toggleReportInstr(id) {
+  const el = document.getElementById('rg-instr-' + id);
+  if (el) el.classList.toggle('show');
+}
+
+async function markReportDone(id, btn) {
+  btn.disabled = true;
+  btn.textContent = 'Saved!';
+  const today = new Date().toISOString().split('T')[0];
+  await fetch(`/api/prospects/${id}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ report_generated: true, report_date: today })
+  });
+  const card = document.getElementById('rg-' + id);
+  if (card) { card.style.opacity = '0.3'; card.style.pointerEvents = 'none'; }
 }
 
 // Init — load templates first, then render today view

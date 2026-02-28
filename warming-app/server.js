@@ -240,7 +240,9 @@ app.get('/api/stats', (req, res) => {
     readyForSnapshot: 0,
     followUpsDue: 0,
     sequencesExhausted: 0,
-    warmthDistribution: { cold: 0, warming: 0, warm: 0, hot: 0 }
+    warmthDistribution: { cold: 0, warming: 0, warm: 0, hot: 0 },
+    reportsGenerated: 0,
+    reportsNeeded: 0
   };
 
   prospects.forEach(p => {
@@ -257,6 +259,10 @@ app.get('/api/stats', (req, res) => {
     else if (ws < 3) stats.warmthDistribution.warming++;
     else if (ws < 5) stats.warmthDistribution.warm++;
     else stats.warmthDistribution.hot++;
+
+    // Report tracking
+    if (p.report_generated) stats.reportsGenerated++;
+    if (['warm', 'outreach_sent', 'replied', 'call_booked'].includes(p.status) && !p.report_generated) stats.reportsNeeded++;
 
     (p.engagements || []).forEach(e => {
       if (e.date === today && e.type === 'comment') stats.commentsToday++;
@@ -407,7 +413,8 @@ app.put('/api/prospects/:id', (req, res) => {
     'warmth_score', 'notes', 'next_check_in', 'batch', 'source',
     'last_action', 'last_action_date', 'last_engagement_date',
     'sequence_type', 'sequence_step', 'sequence_started', 'follow_up_due',
-    'follow_up_count', 'sequence_status'];
+    'follow_up_count', 'sequence_status',
+    'report_generated', 'report_date'];
 
   const updates = {};
   for (const [key, val] of Object.entries(req.body)) {
@@ -423,6 +430,8 @@ app.put('/api/prospects/:id', (req, res) => {
     if (key === 'icp_score') { updates[key] = Math.min(Math.max(parseFloat(val) || 0, 0), 10); continue; }
     if (key === 'check_in_days') { updates[key] = Math.min(Math.max(parseInt(val) || 3, 1), 30); continue; }
     if (key === 'connected') { updates[key] = validateConnected(val); continue; }
+    if (key === 'report_generated') { updates[key] = val === true || val === 'true'; continue; }
+    if (key === 'report_date') { updates[key] = typeof val === 'string' ? val.substring(0, 10) : ''; continue; }
     if (typeof val === 'string') { updates[key] = sanitize(val); continue; }
     updates[key] = val;
   }
@@ -759,12 +768,13 @@ app.get('/api/reports', (req, res) => {
 // GET export as CSV
 app.get('/api/export/csv', (req, res) => {
   const data = loadData();
-  const headers = ['name','linkedin_url','company','title','segment','tier','icp_score','status','connected','warmth_score','check_in_days','next_check_in','last_engagement_date','engagements_count','notes','source','tags','batch','created_at','sequence_type','sequence_step','sequence_status','follow_up_due','follow_up_count'];
+  const headers = ['name','linkedin_url','company','title','segment','tier','icp_score','status','connected','warmth_score','check_in_days','next_check_in','last_engagement_date','engagements_count','notes','source','tags','batch','created_at','sequence_type','sequence_step','sequence_status','follow_up_due','follow_up_count','report_generated','report_date'];
   const csvRows = [headers.join(',')];
   data.prospects.forEach(p => {
     csvRows.push(headers.map(h => {
       let val = '';
       if (h === 'connected') val = p.connected ? 'yes' : 'no';
+      else if (h === 'report_generated') val = p.report_generated ? 'yes' : 'no';
       else if (h === 'engagements_count') val = (p.engagements || []).length;
       else if (h === 'tags') val = (p.tags || []).join(';');
       else val = p[h] || '';
