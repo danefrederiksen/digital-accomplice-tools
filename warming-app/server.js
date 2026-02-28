@@ -6,11 +6,102 @@ const { v4: uuidv4 } = require('uuid');
 const app = express();
 const PORT = 3847;
 const DATA_FILE = path.join(__dirname, 'data', 'prospects.json');
+const BACKUP_DIR = path.join(__dirname, 'data', 'backups');
+
+// ============================================================
+// SECURITY: Only allow requests from localhost
+// Without this, any website you visit could secretly read
+// your prospect data by making requests to localhost:3847
+// ============================================================
+app.use((req, res, next) => {
+  // Block requests from other websites (CORS protection)
+  const origin = req.headers.origin || req.headers.referer || '';
+  if (origin && !origin.includes('localhost') && !origin.includes('127.0.0.1')) {
+    console.warn(`[SECURITY] Blocked request from external origin: ${origin}`);
+    return res.status(403).json({ error: 'Access denied — requests only allowed from localhost' });
+  }
+  // Set strict CORS headers
+  res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3847');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  next();
+});
 
 app.use(express.json({ limit: '10mb' }));
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Initialize data file if missing
+// ============================================================
+// SECURITY: Sanitize strings to prevent code injection (XSS)
+// If a CSV contains a name like <script>steal(data)</script>,
+// this strips it down to plain text before storing it
+// ============================================================
+function sanitize(str) {
+  if (typeof str !== 'string') return str;
+  return str
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#x27;');
+}
+
+// Sanitize all string fields in an object
+function sanitizeProspect(obj) {
+  const clean = {};
+  for (const [key, val] of Object.entries(obj)) {
+    if (typeof val === 'string') {
+      clean[key] = sanitize(val);
+    } else if (Array.isArray(val)) {
+      clean[key] = val.map(item => typeof item === 'string' ? sanitize(item) : item);
+    } else {
+      clean[key] = val;
+    }
+  }
+  return clean;
+}
+
+// ============================================================
+// SECURITY: Validate LinkedIn URLs
+// Only allows linkedin.com URLs — blocks anything else from
+// being stored as a "profile link" you might click on
+// ============================================================
+function isValidLinkedInUrl(url) {
+  if (!url || url.trim() === '') return true; // Empty is OK (some prospects don't have URLs yet)
+  try {
+    const parsed = new URL(url.startsWith('http') ? url : `https://${url}`);
+    return parsed.hostname.endsWith('linkedin.com');
+  } catch {
+    return false;
+  }
+}
+
+// ============================================================
+// DATA: Auto-backup before every write
+// Keeps the last 10 backups in data/backups/
+// If something goes wrong, your data can be recovered
+// ============================================================
+function ensureBackupDir() {
+  if (!fs.existsSync(BACKUP_DIR)) {
+    fs.mkdirSync(BACKUP_DIR, { recursive: true });
+  }
+}
+
+function backupData() {
+  if (!fs.existsSync(DATA_FILE)) return;
+  ensureBackupDir();
+  const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+  const backupFile = path.join(BACKUP_DIR, `prospects_${timestamp}.json`);
+  fs.copyFileSync(DATA_FILE, backupFile);
+
+  // Keep only last 10 backups
+  const backups = fs.readdirSync(BACKUP_DIR)
+    .filter(f => f.startsWith('prospects_') && f.endsWith('.json'))
+    .sort();
+  while (backups.length > 10) {
+    fs.unlinkSync(path.join(BACKUP_DIR, backups.shift()));
+  }
+}
+
 function loadData() {
   if (!fs.existsSync(DATA_FILE)) {
     fs.writeFileSync(DATA_FILE, JSON.stringify({ prospects: [], engagementLog: [] }, null, 2));
@@ -19,6 +110,7 @@ function loadData() {
 }
 
 function saveData(data) {
+  backupData(); // Always backup before writing
   fs.writeFileSync(DATA_FILE, JSON.stringify(data, null, 2));
 }
 
@@ -33,6 +125,20 @@ function calcNextCheckIn(lastDate, intervalDays) {
   d.setDate(d.getDate() + intervalDays);
   return d.toISOString().split('T')[0];
 }
+
+// ============================================================
+// SECURITY: Validate allowed field values
+// Prevents someone from injecting unexpected statuses,
+// segments, or other values through the API
+// ============================================================
+const VALID_SEGMENTS = ['cyber', 'ai_ml', 'referral_partner', 'warm_priority', 'warm_network'];
+const VALID_STATUSES = ['new', 'warming', 'warm', 'outreach_sent', 'replied', 'call_booked', 'won', 'lost', 'skip'];
+const VALID_TIERS = [1, 2, 3];
+const VALID_ENGAGEMENT_TYPES = ['comment', 'dm'];
+
+function validateSegment(seg) { return VALID_SEGMENTS.includes(seg) ? seg : 'cyber'; }
+function validateStatus(status) { return VALID_STATUSES.includes(status) ? status : 'warming'; }
+function validateTier(tier) { const t = parseInt(tier); return VALID_TIERS.includes(t) ? t : 2; }
 
 // GET all prospects
 app.get('/api/prospects', (req, res) => {
@@ -99,18 +205,38 @@ app.get('/api/stats', (req, res) => {
 app.post('/api/import/urls', (req, res) => {
   const data = loadData();
   const { urls, segment, tier, tags, check_in_days } = req.body;
+
+  // Validate inputs
+  if (!Array.isArray(urls)) return res.status(400).json({ error: 'urls must be an array' });
+  if (urls.length > 500) return res.status(400).json({ error: 'Maximum 500 URLs per import' });
+
   const added = [];
   const skipped = [];
 
   urls.forEach(url => {
-    url = url.trim();
+    url = (url || '').trim();
     if (!url) return;
-    if (!url.includes('linkedin.com/in/')) {
-      skipped.push(url);
+
+    // SECURITY: Only allow LinkedIn URLs
+    if (!isValidLinkedInUrl(url)) {
+      skipped.push(url + ' (not a LinkedIn URL — blocked)');
       return;
     }
-    // Normalize URL
+
+    if (!url.includes('linkedin.com/in/')) {
+      skipped.push(url + ' (not a profile URL)');
+      return;
+    }
+
     const username = extractUsername(url);
+    if (!username) { skipped.push(url + ' (could not extract username)'); return; }
+
+    // Sanitize username — only allow alphanumeric, hyphens, underscores
+    if (!/^[a-zA-Z0-9\-_]+$/.test(username)) {
+      skipped.push(url + ' (invalid username characters)');
+      return;
+    }
+
     const normalizedUrl = `https://www.linkedin.com/in/${username}`;
 
     // Skip duplicates
@@ -126,13 +252,13 @@ app.post('/api/import/urls', (req, res) => {
       linkedin_username: username,
       company: '',
       title: '',
-      segment: segment || 'cyber',
-      tier: tier || 1,
+      segment: validateSegment(segment),
+      tier: validateTier(tier),
       icp_score: 0,
-      tags: tags || [],
+      tags: Array.isArray(tags) ? tags.map(t => sanitize(String(t))) : [],
       status: 'warming',
       connected: false,
-      check_in_days: check_in_days || 3,
+      check_in_days: Math.min(Math.max(parseInt(check_in_days) || 3, 1), 30),
       warmth_score: 0,
       engagements: [],
       next_check_in: new Date().toISOString().split('T')[0],
@@ -153,40 +279,53 @@ app.post('/api/import/urls', (req, res) => {
 app.post('/api/import/csv', (req, res) => {
   const data = loadData();
   const { rows } = req.body;
-  let added = 0, skipped = 0;
 
-  rows.forEach(row => {
+  if (!Array.isArray(rows)) return res.status(400).json({ error: 'rows must be an array' });
+  if (rows.length > 1000) return res.status(400).json({ error: 'Maximum 1000 rows per CSV import' });
+
+  let added = 0, skipped = 0;
+  const warnings = [];
+
+  rows.forEach((row, i) => {
+    // SECURITY: Validate LinkedIn URL if provided
+    if (row.linkedin_url && !isValidLinkedInUrl(row.linkedin_url)) {
+      warnings.push(`Row ${i + 1}: Non-LinkedIn URL blocked (${row.linkedin_url})`);
+      skipped++;
+      return;
+    }
+
     const username = extractUsername(row.linkedin_url);
     if (!username) { skipped++; return; }
     if (data.prospects.find(p => p.linkedin_username === username)) { skipped++; return; }
 
+    // Sanitize all imported text fields
     data.prospects.push({
       id: uuidv4(),
-      name: row.name || '',
-      linkedin_url: row.linkedin_url || '',
+      name: sanitize(row.name || ''),
+      linkedin_url: `https://www.linkedin.com/in/${username}`,
       linkedin_username: username,
-      company: row.company || '',
-      title: row.title || '',
-      segment: row.segment || 'cyber',
-      tier: parseInt(row.tier) || 2,
-      icp_score: parseFloat(row.icp_score) || 0,
-      tags: row.tags ? row.tags.split(',').map(t => t.trim()) : [],
-      status: row.status || 'warming',
+      company: sanitize(row.company || ''),
+      title: sanitize(row.title || ''),
+      segment: validateSegment(row.segment),
+      tier: validateTier(row.tier),
+      icp_score: Math.min(Math.max(parseFloat(row.icp_score) || 0, 0), 10),
+      tags: row.tags ? row.tags.split(',').map(t => sanitize(t.trim())) : [],
+      status: validateStatus(row.status),
       connected: row.connected === 'yes' || row.connected === 'true',
-      check_in_days: parseInt(row.check_in_days) || 3,
-      warmth_score: parseInt(row.warmth_score) || 0,
+      check_in_days: Math.min(Math.max(parseInt(row.check_in_days) || 3, 1), 30),
+      warmth_score: Math.max(parseInt(row.warmth_score) || 0, 0),
       engagements: [],
       next_check_in: new Date().toISOString().split('T')[0],
-      notes: row.notes || '',
-      source: row.source || 'csv_import',
-      batch: row.batch || '',
+      notes: sanitize(row.notes || ''),
+      source: sanitize(row.source || 'csv_import'),
+      batch: sanitize(row.batch || ''),
       created_at: new Date().toISOString().split('T')[0]
     });
     added++;
   });
 
   saveData(data);
-  res.json({ added, skipped });
+  res.json({ added, skipped, warnings });
 });
 
 // PUT update prospect
@@ -194,7 +333,31 @@ app.put('/api/prospects/:id', (req, res) => {
   const data = loadData();
   const idx = data.prospects.findIndex(p => p.id === req.params.id);
   if (idx === -1) return res.status(404).json({ error: 'Not found' });
-  data.prospects[idx] = { ...data.prospects[idx], ...req.body };
+
+  // SECURITY: Only allow updating known fields (prevent arbitrary field injection)
+  const allowedFields = ['name', 'company', 'title', 'linkedin_url', 'linkedin_username',
+    'segment', 'tier', 'icp_score', 'tags', 'status', 'connected', 'check_in_days',
+    'warmth_score', 'notes', 'next_check_in', 'batch', 'source',
+    'last_action', 'last_action_date'];
+
+  const updates = {};
+  for (const [key, val] of Object.entries(req.body)) {
+    if (!allowedFields.includes(key)) continue;
+
+    // Validate specific fields
+    if (key === 'linkedin_url' && val && !isValidLinkedInUrl(val)) {
+      return res.status(400).json({ error: 'Invalid LinkedIn URL — only linkedin.com URLs are allowed' });
+    }
+    if (key === 'segment') { updates[key] = validateSegment(val); continue; }
+    if (key === 'status') { updates[key] = validateStatus(val); continue; }
+    if (key === 'tier') { updates[key] = validateTier(val); continue; }
+    if (key === 'icp_score') { updates[key] = Math.min(Math.max(parseFloat(val) || 0, 0), 10); continue; }
+    if (key === 'check_in_days') { updates[key] = Math.min(Math.max(parseInt(val) || 3, 1), 30); continue; }
+    if (typeof val === 'string') { updates[key] = sanitize(val); continue; }
+    updates[key] = val;
+  }
+
+  data.prospects[idx] = { ...data.prospects[idx], ...updates };
   saveData(data);
   res.json(data.prospects[idx]);
 });
@@ -207,10 +370,16 @@ app.post('/api/prospects/:id/engage', (req, res) => {
 
   const p = data.prospects[idx];
   const { type, note } = req.body;
+
+  // SECURITY: Validate engagement type
+  if (!VALID_ENGAGEMENT_TYPES.includes(type)) {
+    return res.status(400).json({ error: `Invalid engagement type. Allowed: ${VALID_ENGAGEMENT_TYPES.join(', ')}` });
+  }
+
   const today = new Date().toISOString().split('T')[0];
 
   p.engagements = p.engagements || [];
-  p.engagements.push({ type, date: today, note: note || '' });
+  p.engagements.push({ type, date: today, note: sanitize(note || '') });
 
   // Update warmth score
   if (type === 'comment') {
@@ -218,7 +387,7 @@ app.post('/api/prospects/:id/engage', (req, res) => {
   } else if (type === 'dm') {
     p.warmth_score = (p.warmth_score || 0) + 2;
     p.status = 'outreach_sent';
-    p.last_action = note || 'Sent DM';
+    p.last_action = sanitize(note || 'Sent DM');
     p.last_action_date = today;
   }
 
@@ -251,8 +420,10 @@ app.post('/api/prospects/:id/skip', (req, res) => {
 // DELETE prospect
 app.delete('/api/prospects/:id', (req, res) => {
   const data = loadData();
+  const before = data.prospects.length;
   data.prospects = data.prospects.filter(p => p.id !== req.params.id);
-  saveData(data);
+  if (data.prospects.length === before) return res.status(404).json({ error: 'Not found' });
+  saveData(data); // backupData() runs inside saveData, so deleted data is recoverable
   res.json({ ok: true });
 });
 
@@ -276,6 +447,11 @@ app.get('/api/export/csv', (req, res) => {
   res.send(csvRows.join('\n'));
 });
 
-app.listen(PORT, () => {
-  console.log(`\n  DA Warming Dashboard running at http://localhost:${PORT}\n`);
+// ============================================================
+// SECURITY: Log startup info
+// ============================================================
+app.listen(PORT, '127.0.0.1', () => {
+  console.log(`\n  DA Warming Dashboard running at http://localhost:${PORT}`);
+  console.log(`  Security: CORS locked to localhost, input sanitization active`);
+  console.log(`  Backups: Auto-saving to ${BACKUP_DIR} (last 10 kept)\n`);
 });

@@ -360,6 +360,40 @@ let allProspects = [];
 let cachedProspects = [];
 let editingId = null;
 
+// ============================================================
+// SECURITY: Safe link handling
+// Every external link goes through this check before opening.
+// Only LinkedIn URLs are allowed. Anything else gets blocked
+// with a warning so you don't accidentally visit a bad site.
+// ============================================================
+function safeLinkedInUrl(url) {
+  if (!url) return null;
+  try {
+    const parsed = new URL(url.startsWith('http') ? url : `https://${url}`);
+    if (!parsed.hostname.endsWith('linkedin.com')) {
+      alert('BLOCKED: This link goes to ' + parsed.hostname + ', not LinkedIn.\n\nThis could be a security risk. The URL has been blocked.');
+      console.warn('[SECURITY] Blocked non-LinkedIn URL:', url);
+      return null;
+    }
+    return parsed.href;
+  } catch {
+    alert('BLOCKED: Invalid URL detected.\n\n' + url);
+    return null;
+  }
+}
+
+function openSafeLink(url) {
+  const safe = safeLinkedInUrl(url);
+  if (safe) window.open(safe, '_blank');
+  return false; // prevent default link behavior
+}
+
+// SECURITY: Escape HTML entities to prevent XSS when rendering prospect data
+function escHtml(str) {
+  if (!str) return '';
+  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
 // Tab switching
 document.querySelectorAll('.tab').forEach(t => {
   t.addEventListener('click', () => {
@@ -483,13 +517,13 @@ postedSearch.addEventListener('input', () => {
         const username = p.linkedin_username || extractUsername(p.linkedin_url);
         const activityUrl = `https://www.linkedin.com/in/${username}/recent-activity/all/`;
         return `
-          <div class="qs-item" onclick="addToPosted('${p.id}')">
+          <div class="qs-item" onclick="addToPosted('${escHtml(p.id)}')">
             <div class="qs-item-info">
-              <div class="qs-item-name">${p.name || username}</div>
-              <div class="qs-item-co">${p.company || ''} &mdash; ${p.title || ''}</div>
+              <div class="qs-item-name">${escHtml(p.name || username)}</div>
+              <div class="qs-item-co">${escHtml(p.company || '')} &mdash; ${escHtml(p.title || '')}</div>
             </div>
             <div class="qs-item-actions">
-              <a href="${activityUrl}" target="_blank" class="p-btn primary" onclick="event.stopPropagation()" style="font-size:9px;padding:4px 8px">Activity &nearr;</a>
+              <a href="#" onclick="event.stopPropagation();openSafeLink('${escHtml(activityUrl)}');return false" class="p-btn primary" style="font-size:9px;padding:4px 8px">Activity &nearr;</a>
             </div>
           </div>
         `;
@@ -524,9 +558,9 @@ function addToPosted(id) {
   card.innerHTML = `
     <div class="p-top">
       <div class="p-info">
-        <h3>${p.name || username}</h3>
-        <div class="p-company">${p.company || ''}</div>
-        <div class="p-title">${p.title || ''}</div>
+        <h3>${escHtml(p.name || username)}</h3>
+        <div class="p-company">${escHtml(p.company || '')}</div>
+        <div class="p-title">${escHtml(p.title || '')}</div>
       </div>
       <div class="p-meta">
         <span class="warmth-badge ${warmBadgeClass}">${warmLabel}</span>
@@ -534,8 +568,8 @@ function addToPosted(id) {
       </div>
     </div>
     <div class="p-actions">
-      <a href="${activityUrl}" target="_blank" class="p-btn primary">Open LinkedIn Activity &nearr;</a>
-      <button class="p-btn green" onclick="quickComment('${p.id}', this)">Commented &#10003;</button>
+      <a href="#" onclick="openSafeLink('${escHtml(activityUrl)}');return false" class="p-btn primary">Open LinkedIn Activity &nearr;</a>
+      <button class="p-btn green" onclick="quickComment('${escHtml(p.id)}', this)">Commented &#10003;</button>
       <button class="p-btn ghost" onclick="this.closest('.p-card').remove()">Dismiss</button>
     </div>
   `;
@@ -574,12 +608,12 @@ function renderOutreachCard(p, type) {
   const actionLabel = type === 'snapshot' ? 'Sent Snapshot DM' : type === 'referral' ? 'Sent Outreach' : 'Sent Podcast Invite';
 
   return `
-    <div class="p-card" id="oc-${p.id}">
+    <div class="p-card" id="oc-${escHtml(p.id)}">
       <div class="p-top">
         <div class="p-info">
-          <h3>${p.name || username} <a href="${profileUrl}" target="_blank" style="font-size:10px;font-weight:600">Profile</a></h3>
-          <div class="p-company">${p.company || ''}</div>
-          <div class="p-title">${p.title || ''}</div>
+          <h3>${escHtml(p.name || username)} <a href="#" onclick="openSafeLink('${escHtml(profileUrl)}');return false" style="font-size:10px;font-weight:600">Profile</a></h3>
+          <div class="p-company">${escHtml(p.company || '')}</div>
+          <div class="p-title">${escHtml(p.title || '')}</div>
         </div>
         <div class="p-meta">
           <span class="warmth-badge ${warmBadgeClass}">${warmLabel}</span>
@@ -587,9 +621,9 @@ function renderOutreachCard(p, type) {
         </div>
       </div>
       <div class="p-actions">
-        <a href="${profileUrl}" target="_blank" class="p-btn primary">Open Profile &nearr;</a>
-        <button class="p-btn dm" onclick="logOutreach('${p.id}','${type}',this)">${actionLabel}</button>
-        <button class="p-btn ghost" onclick="openEdit('${p.id}')">Edit</button>
+        <a href="#" onclick="openSafeLink('${escHtml(profileUrl)}');return false" class="p-btn primary">Open Profile &nearr;</a>
+        <button class="p-btn dm" onclick="logOutreach('${escHtml(p.id)}','${type}',this)">${actionLabel}</button>
+        <button class="p-btn ghost" onclick="openEdit('${escHtml(p.id)}')">Edit</button>
       </div>
     </div>
   `;
@@ -645,9 +679,9 @@ async function loadPipeline() {
       <div class="pipeline-col">
         <h3 style="color:${colors[s]}">${labels[s]} <span>${items.length}</span></h3>
         ${items.slice(0, 20).map(p => `
-          <div class="pipeline-item" onclick="openEdit('${p.id}')">
-            <div class="pi-name">${p.name || p.linkedin_username || '?'}</div>
-            <div class="pi-co">${p.company || ''} ${p.warmth_score ? '| W:'+p.warmth_score : ''}</div>
+          <div class="pipeline-item" onclick="openEdit('${escHtml(p.id)}')">
+            <div class="pi-name">${escHtml(p.name || p.linkedin_username || '?')}</div>
+            <div class="pi-co">${escHtml(p.company || '')} ${p.warmth_score ? '| W:'+p.warmth_score : ''}</div>
           </div>
         `).join('')}
         ${items.length > 20 ? `<div style="font-size:10px;color:var(--lt);padding:4px">+${items.length-20} more</div>` : ''}
@@ -685,18 +719,18 @@ function renderAll() {
         <div class="p-card">
           <div class="p-top">
             <div class="p-info">
-              <h3>${p.name || username} <a href="${profileUrl}" target="_blank" style="font-size:10px">Profile</a></h3>
-              <div class="p-company">${p.company || ''}</div>
-              <div class="p-title">${p.title || ''}</div>
+              <h3>${escHtml(p.name || username)} <a href="#" onclick="openSafeLink('${escHtml(profileUrl)}');return false" style="font-size:10px">Profile</a></h3>
+              <div class="p-company">${escHtml(p.company || '')}</div>
+              <div class="p-title">${escHtml(p.title || '')}</div>
             </div>
             <div class="p-meta">
               <span class="warmth-badge ${warmBadgeClass}">${warmLabel}</span>
               <span class="tier-badge tier-${p.tier}">T${p.tier}</span>
-              <span style="font-size:9px;color:var(--md)">${p.segment}</span>
+              <span style="font-size:9px;color:var(--md)">${escHtml(p.segment)}</span>
             </div>
           </div>
           <div class="p-actions">
-            <button class="p-btn ghost" onclick="openEdit('${p.id}')">Edit</button>
+            <button class="p-btn ghost" onclick="openEdit('${escHtml(p.id)}')">Edit</button>
           </div>
         </div>
       `;
