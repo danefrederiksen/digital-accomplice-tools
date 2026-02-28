@@ -602,6 +602,140 @@ app.get('/api/alerts', (req, res) => {
   });
 });
 
+// GET reports data
+app.get('/api/reports', (req, res) => {
+  const data = loadData();
+  const prospects = data.prospects;
+  const today = new Date();
+  const todayStr = today.toISOString().split('T')[0];
+
+  // --- Date helpers ---
+  function daysAgo(n) {
+    const d = new Date(today);
+    d.setDate(d.getDate() - n);
+    return d.toISOString().split('T')[0];
+  }
+  const weekAgo = daysAgo(7);
+  const twoWeeksAgo = daysAgo(14);
+  const monthAgo = daysAgo(30);
+
+  // --- WEEKLY SUMMARY ---
+  // Count engagements from last 7 days and previous 7 days (for trend)
+  const thisWeek = { comments: 0, dms: 0, follow_ups: 0, replies: 0 };
+  const lastWeek = { comments: 0, dms: 0, follow_ups: 0, replies: 0 };
+
+  prospects.forEach(p => {
+    (p.engagements || []).forEach(e => {
+      if (e.date >= weekAgo) {
+        if (e.type === 'comment') thisWeek.comments++;
+        else if (e.type === 'dm') thisWeek.dms++;
+        else if (e.type === 'follow_up') thisWeek.follow_ups++;
+        else if (e.type === 'reply_received') thisWeek.replies++;
+      } else if (e.date >= twoWeeksAgo) {
+        if (e.type === 'comment') lastWeek.comments++;
+        else if (e.type === 'dm') lastWeek.dms++;
+        else if (e.type === 'follow_up') lastWeek.follow_ups++;
+        else if (e.type === 'reply_received') lastWeek.replies++;
+      }
+    });
+  });
+
+  // Status-based counts (current snapshot)
+  const statusCounts = {};
+  prospects.forEach(p => {
+    statusCounts[p.status] = (statusCounts[p.status] || 0) + 1;
+  });
+
+  // --- CONVERSION FUNNEL ---
+  // A prospect "reached" a stage if they are currently at that stage or any later stage
+  const stageOrder = ['new', 'warming', 'warm', 'outreach_sent', 'replied', 'call_booked', 'won'];
+  const stageIndex = {};
+  stageOrder.forEach((s, i) => { stageIndex[s] = i; });
+
+  const funnel = {};
+  stageOrder.forEach(s => { funnel[s] = 0; });
+
+  prospects.forEach(p => {
+    // Skip dead/lost/skip — they dropped out
+    const idx = stageIndex[p.status];
+    if (idx !== undefined) {
+      // This prospect reached every stage up to and including their current one
+      for (let i = 0; i <= idx; i++) {
+        funnel[stageOrder[i]]++;
+      }
+    }
+  });
+
+  // --- PIPELINE VELOCITY ---
+  // Average days prospects have spent in their current stage
+  // Uses created_at as proxy start date (best we have without status change history)
+  const velocity = {};
+  const velocityCounts = {};
+  const activeStatuses = ['warming', 'warm', 'outreach_sent', 'replied', 'call_booked'];
+  activeStatuses.forEach(s => { velocity[s] = 0; velocityCounts[s] = 0; });
+
+  prospects.forEach(p => {
+    if (!activeStatuses.includes(p.status)) return;
+    // Use sequence_started for outreach stages, created_at for warming stages
+    let entryDate = p.created_at;
+    if (['outreach_sent', 'replied'].includes(p.status) && p.sequence_started) {
+      entryDate = p.sequence_started;
+    }
+    if (entryDate) {
+      const days = Math.floor((today.getTime() - new Date(entryDate).getTime()) / 86400000);
+      velocity[p.status] += days;
+      velocityCounts[p.status]++;
+    }
+  });
+
+  const avgVelocity = {};
+  activeStatuses.forEach(s => {
+    avgVelocity[s] = velocityCounts[s] > 0 ? Math.round(velocity[s] / velocityCounts[s]) : 0;
+  });
+
+  // --- SEQUENCE PERFORMANCE ---
+  const sequences = {
+    active: prospects.filter(p => p.sequence_status === 'active').length,
+    exhausted: prospects.filter(p => p.sequence_status === 'exhausted').length,
+    replied: prospects.filter(p => p.sequence_status === 'replied').length,
+    total_started: prospects.filter(p => p.sequence_started).length
+  };
+  // Reply rate: replies / total sequences started
+  sequences.reply_rate = sequences.total_started > 0
+    ? Math.round((sequences.replied / sequences.total_started) * 100)
+    : 0;
+
+  // --- ACTIVITY BY DAY (last 14 days) ---
+  const dailyActivity = [];
+  for (let i = 13; i >= 0; i--) {
+    const dateStr = daysAgo(i);
+    const day = { date: dateStr, comments: 0, dms: 0, follow_ups: 0, replies: 0 };
+    prospects.forEach(p => {
+      (p.engagements || []).forEach(e => {
+        if (e.date === dateStr) {
+          if (e.type === 'comment') day.comments++;
+          else if (e.type === 'dm') day.dms++;
+          else if (e.type === 'follow_up') day.follow_ups++;
+          else if (e.type === 'reply_received') day.replies++;
+        }
+      });
+    });
+    day.total = day.comments + day.dms + day.follow_ups + day.replies;
+    dailyActivity.push(day);
+  }
+
+  res.json({
+    generated: todayStr,
+    total_prospects: prospects.length,
+    weekly: { thisWeek, lastWeek },
+    statusCounts,
+    funnel,
+    avgVelocity,
+    sequences,
+    dailyActivity
+  });
+});
+
 // GET export as CSV
 app.get('/api/export/csv', (req, res) => {
   const data = loadData();

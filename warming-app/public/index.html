@@ -240,6 +240,56 @@ textarea.import-area:focus{border-color:var(--o)}
 .ac-reason.dead{background:var(--rb);color:var(--r)}
 .alert-card .ac-actions{display:flex;gap:6px;flex-shrink:0}
 
+/* Reports */
+.rpt-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
+.rpt-header h2{font-size:18px;font-weight:800}
+.rpt-date{font-size:11px;color:var(--md)}
+.rpt-section{background:var(--card);border:1px solid var(--bdr);border-radius:12px;padding:20px;margin-bottom:12px}
+.rpt-section h3{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--md);margin-bottom:14px}
+.rpt-grid-4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.rpt-card{text-align:center;padding:16px 8px;background:var(--bg);border-radius:10px}
+.rpt-card .rpt-val{font-size:28px;font-weight:800;line-height:1}
+.rpt-card .rpt-label{font-size:10px;color:var(--md);font-weight:600;margin-top:6px}
+.rpt-card .rpt-trend{font-size:10px;font-weight:700;margin-top:4px}
+.rpt-trend.up{color:var(--g)}
+.rpt-trend.down{color:var(--r)}
+.rpt-trend.flat{color:var(--lt)}
+
+/* Funnel */
+.rpt-funnel-row{display:flex;align-items:center;gap:12px;margin-bottom:6px}
+.rpt-funnel-label{width:110px;font-size:11px;font-weight:600;color:var(--dk);text-align:right;flex-shrink:0}
+.rpt-funnel-bar-wrap{flex:1;position:relative;height:28px;background:var(--bg);border-radius:6px;overflow:hidden}
+.rpt-funnel-bar{height:100%;border-radius:6px;display:flex;align-items:center;justify-content:flex-end;padding-right:8px;transition:width .4s ease}
+.rpt-funnel-count{font-size:11px;font-weight:700;color:#fff;text-shadow:0 1px 2px rgba(0,0,0,.3)}
+.rpt-funnel-pct{width:50px;font-size:11px;font-weight:700;color:var(--md);text-align:left;flex-shrink:0}
+.rpt-funnel-drop{font-size:9px;color:var(--r);text-align:center;margin:-2px 0 4px 122px;font-weight:600}
+
+/* Pipeline status table */
+.rpt-table{width:100%;border-collapse:collapse}
+.rpt-table th{text-align:left;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--md);padding:6px 10px;border-bottom:2px solid var(--bdr)}
+.rpt-table td{padding:8px 10px;font-size:12px;border-bottom:1px solid var(--bdr)}
+.rpt-table tr:last-child td{border-bottom:none}
+.rpt-table .rpt-num{font-weight:700;font-size:14px;text-align:right;width:60px}
+
+/* Velocity bars */
+.rpt-vel-row{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.rpt-vel-label{width:110px;font-size:11px;font-weight:600;text-align:right;flex-shrink:0}
+.rpt-vel-bar{height:22px;border-radius:4px;display:flex;align-items:center;padding-left:8px;font-size:11px;font-weight:700;color:#fff;min-width:30px;transition:width .4s ease}
+.rpt-vel-val{font-size:11px;color:var(--md);font-weight:600;margin-left:8px}
+
+/* Activity chart */
+.rpt-chart-row{display:flex;align-items:flex-end;gap:3px;height:80px;margin-bottom:6px}
+.rpt-chart-bar{flex:1;background:var(--o);border-radius:3px 3px 0 0;min-width:0;transition:height .3s ease;position:relative}
+.rpt-chart-bar:hover{opacity:.85}
+.rpt-chart-bar .bar-tip{display:none;position:absolute;bottom:100%;left:50%;transform:translateX(-50%);background:var(--dk);color:#fff;font-size:9px;font-weight:700;padding:2px 6px;border-radius:4px;white-space:nowrap;margin-bottom:2px}
+.rpt-chart-bar:hover .bar-tip{display:block}
+.rpt-chart-labels{display:flex;gap:3px}
+.rpt-chart-labels span{flex:1;text-align:center;font-size:8px;color:var(--lt);overflow:hidden}
+
+/* Row layout for side-by-side sections */
+.rpt-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.rpt-half{min-width:0}
+
 </style>
 </head>
 <body>
@@ -260,6 +310,7 @@ textarea.import-area:focus{border-color:var(--o)}
   <div class="tab" data-tab="triage">Triage <span class="badge" id="triage-badge" style="display:none">0</span></div>
   <div class="tab" data-tab="pipeline">Pipeline</div>
   <div class="tab" data-tab="all">All Prospects</div>
+  <div class="tab" data-tab="reports">Reports</div>
   <div class="tab" data-tab="import">Import</div>
 </div>
 
@@ -435,6 +486,52 @@ textarea.import-area:focus{border-color:var(--o)}
     </select>
   </div>
   <div id="all-list"></div>
+</div>
+
+<!-- REPORTS VIEW -->
+<div class="view" id="view-reports">
+  <div class="rpt-header">
+    <h2>Pipeline Report</h2>
+    <div class="rpt-date" id="rpt-date"></div>
+  </div>
+
+  <!-- Weekly Summary -->
+  <div class="rpt-section">
+    <h3>This Week vs Last Week</h3>
+    <div class="rpt-grid-4" id="rpt-weekly"></div>
+  </div>
+
+  <!-- Activity Chart (text-based bar chart) -->
+  <div class="rpt-section">
+    <h3>Daily Activity (Last 14 Days)</h3>
+    <div class="rpt-chart" id="rpt-chart"></div>
+  </div>
+
+  <!-- Conversion Funnel -->
+  <div class="rpt-section">
+    <h3>Conversion Funnel</h3>
+    <div class="rpt-funnel" id="rpt-funnel"></div>
+  </div>
+
+  <!-- Pipeline Status -->
+  <div class="rpt-section">
+    <div class="rpt-row">
+      <div class="rpt-half">
+        <h3>Pipeline Snapshot</h3>
+        <div id="rpt-status"></div>
+      </div>
+      <div class="rpt-half">
+        <h3>Sequence Performance</h3>
+        <div id="rpt-sequences"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Pipeline Velocity -->
+  <div class="rpt-section">
+    <h3>Avg. Days in Stage</h3>
+    <div id="rpt-velocity"></div>
+  </div>
 </div>
 
 <!-- IMPORT VIEW -->
@@ -633,6 +730,7 @@ document.querySelectorAll('.tab').forEach(t => {
     if (t.dataset.tab === 'triage') loadTriage();
     if (t.dataset.tab === 'pipeline') loadPipeline();
     if (t.dataset.tab === 'all') loadAll();
+    if (t.dataset.tab === 'reports') loadReports();
   });
 });
 
@@ -1680,6 +1778,159 @@ async function saveTemplates() {
   // Re-render current view to pick up template changes
   const activeTab = document.querySelector('.tab.on');
   if (activeTab && activeTab.dataset.tab === 'today') loadToday();
+}
+
+// ===== REPORTS =====
+async function loadReports() {
+  const rpt = await fetch('/api/reports').then(r => r.json());
+
+  // Date header
+  document.getElementById('rpt-date').textContent = 'Generated ' + rpt.generated;
+
+  // --- WEEKLY SUMMARY ---
+  const tw = rpt.weekly.thisWeek;
+  const lw = rpt.weekly.lastWeek;
+
+  function trendArrow(curr, prev) {
+    if (curr > prev) return { text: `+${curr - prev} vs last week`, cls: 'up' };
+    if (curr < prev) return { text: `${curr - prev} vs last week`, cls: 'down' };
+    return { text: 'same as last week', cls: 'flat' };
+  }
+
+  const weeklyItems = [
+    { label: 'Comments', val: tw.comments, prev: lw.comments, color: 'var(--b)' },
+    { label: 'DMs Sent', val: tw.dms, prev: lw.dms, color: 'var(--o)' },
+    { label: 'Follow-ups', val: tw.follow_ups, prev: lw.follow_ups, color: 'var(--p)' },
+    { label: 'Replies', val: tw.replies, prev: lw.replies, color: 'var(--g)' }
+  ];
+
+  document.getElementById('rpt-weekly').innerHTML = weeklyItems.map(item => {
+    const trend = trendArrow(item.val, item.prev);
+    return `
+      <div class="rpt-card">
+        <div class="rpt-val" style="color:${item.color}">${item.val}</div>
+        <div class="rpt-label">${item.label}</div>
+        <div class="rpt-trend ${trend.cls}">${trend.text}</div>
+      </div>
+    `;
+  }).join('');
+
+  // --- DAILY ACTIVITY CHART ---
+  const maxTotal = Math.max(...rpt.dailyActivity.map(d => d.total), 1);
+  document.getElementById('rpt-chart').innerHTML = `
+    <div class="rpt-chart-row">
+      ${rpt.dailyActivity.map(d => {
+        const h = Math.max((d.total / maxTotal) * 100, 2);
+        const dayLabel = new Date(d.date + 'T12:00:00').toLocaleDateString('en-US', { weekday: 'short' });
+        return `<div class="rpt-chart-bar" style="height:${h}%">
+          <span class="bar-tip">${dayLabel}: ${d.comments}c ${d.dms}d ${d.follow_ups}f ${d.replies}r</span>
+        </div>`;
+      }).join('')}
+    </div>
+    <div class="rpt-chart-labels">
+      ${rpt.dailyActivity.map(d => {
+        const dt = new Date(d.date + 'T12:00:00');
+        return `<span>${dt.getMonth()+1}/${dt.getDate()}</span>`;
+      }).join('')}
+    </div>
+  `;
+
+  // --- CONVERSION FUNNEL ---
+  const funnelStages = [
+    { key: 'new', label: 'New', color: 'var(--md)' },
+    { key: 'warming', label: 'Warming', color: 'var(--b)' },
+    { key: 'warm', label: 'Warm', color: 'var(--y)' },
+    { key: 'outreach_sent', label: 'Outreach Sent', color: 'var(--o)' },
+    { key: 'replied', label: 'Replied', color: 'var(--p)' },
+    { key: 'call_booked', label: 'Call Booked', color: 'var(--g)' },
+    { key: 'won', label: 'Won', color: 'var(--g)' }
+  ];
+  const maxFunnel = Math.max(rpt.funnel.new || 1, 1);
+
+  let funnelHtml = '';
+  funnelStages.forEach((stage, i) => {
+    const count = rpt.funnel[stage.key] || 0;
+    const pct = maxFunnel > 0 ? Math.round((count / maxFunnel) * 100) : 0;
+    const barWidth = Math.max(pct, 3);
+
+    funnelHtml += `
+      <div class="rpt-funnel-row">
+        <div class="rpt-funnel-label">${stage.label}</div>
+        <div class="rpt-funnel-bar-wrap">
+          <div class="rpt-funnel-bar" style="width:${barWidth}%;background:${stage.color}">
+            ${count > 0 ? `<span class="rpt-funnel-count">${count}</span>` : ''}
+          </div>
+        </div>
+        <div class="rpt-funnel-pct">${pct}%</div>
+      </div>
+    `;
+
+    // Drop-off rate between stages
+    if (i < funnelStages.length - 1) {
+      const nextCount = rpt.funnel[funnelStages[i+1].key] || 0;
+      if (count > 0) {
+        const dropPct = Math.round(((count - nextCount) / count) * 100);
+        if (dropPct > 0) {
+          funnelHtml += `<div class="rpt-funnel-drop">${dropPct}% drop-off</div>`;
+        }
+      }
+    }
+  });
+  document.getElementById('rpt-funnel').innerHTML = funnelHtml;
+
+  // --- PIPELINE STATUS ---
+  const statusLabels = {new:'New',warming:'Warming',warm:'Warm',outreach_sent:'Outreach Sent',replied:'Replied',call_booked:'Call Booked',won:'Won',lost:'Lost',dead:'Dead',skip:'Skip'};
+  const statusColors = {new:'var(--md)',warming:'var(--b)',warm:'var(--y)',outreach_sent:'var(--o)',replied:'var(--p)',call_booked:'var(--g)',won:'var(--g)',lost:'var(--r)',dead:'var(--lt)',skip:'var(--lt)'};
+
+  let statusHtml = '<table class="rpt-table"><thead><tr><th>Status</th><th style="text-align:right">Count</th></tr></thead><tbody>';
+  for (const [status, label] of Object.entries(statusLabels)) {
+    const count = rpt.statusCounts[status] || 0;
+    if (count > 0) {
+      statusHtml += `<tr>
+        <td><span style="color:${statusColors[status]};font-weight:600">${label}</span></td>
+        <td class="rpt-num" style="color:${statusColors[status]}">${count}</td>
+      </tr>`;
+    }
+  }
+  statusHtml += `<tr><td><strong>Total</strong></td><td class="rpt-num"><strong>${rpt.total_prospects}</strong></td></tr>`;
+  statusHtml += '</tbody></table>';
+  document.getElementById('rpt-status').innerHTML = statusHtml;
+
+  // --- SEQUENCE PERFORMANCE ---
+  const seq = rpt.sequences;
+  document.getElementById('rpt-sequences').innerHTML = `
+    <table class="rpt-table">
+      <thead><tr><th>Metric</th><th style="text-align:right">Value</th></tr></thead>
+      <tbody>
+        <tr><td>Sequences Started</td><td class="rpt-num">${seq.total_started}</td></tr>
+        <tr><td><span style="color:var(--b)">Active</span></td><td class="rpt-num" style="color:var(--b)">${seq.active}</td></tr>
+        <tr><td><span style="color:var(--g)">Replied</span></td><td class="rpt-num" style="color:var(--g)">${seq.replied}</td></tr>
+        <tr><td><span style="color:var(--r)">Exhausted (no reply)</span></td><td class="rpt-num" style="color:var(--r)">${seq.exhausted}</td></tr>
+        <tr><td><strong>Reply Rate</strong></td><td class="rpt-num"><strong>${seq.reply_rate}%</strong></td></tr>
+      </tbody>
+    </table>
+  `;
+
+  // --- PIPELINE VELOCITY ---
+  const velStages = [
+    { key: 'warming', label: 'Warming', color: 'var(--b)' },
+    { key: 'warm', label: 'Warm', color: 'var(--y)' },
+    { key: 'outreach_sent', label: 'Outreach Sent', color: 'var(--o)' },
+    { key: 'replied', label: 'Replied', color: 'var(--p)' },
+    { key: 'call_booked', label: 'Call Booked', color: 'var(--g)' }
+  ];
+  const maxVel = Math.max(...Object.values(rpt.avgVelocity), 1);
+
+  document.getElementById('rpt-velocity').innerHTML = velStages.map(s => {
+    const days = rpt.avgVelocity[s.key] || 0;
+    const barW = Math.max((days / maxVel) * 100, 5);
+    return `
+      <div class="rpt-vel-row">
+        <div class="rpt-vel-label">${s.label}</div>
+        <div class="rpt-vel-bar" style="width:${barW}%;background:${s.color}">${days}d</div>
+      </div>
+    `;
+  }).join('');
 }
 
 // Init — load templates first, then render today view
