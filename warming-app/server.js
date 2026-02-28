@@ -132,10 +132,10 @@ function calcNextCheckIn(lastDate, intervalDays) {
 // segments, or other values through the API
 // ============================================================
 const VALID_SEGMENTS = ['cyber', 'ai_ml', 'referral_partner', 'warm_priority', 'warm_network'];
-const VALID_STATUSES = ['new', 'warming', 'warm', 'outreach_sent', 'replied', 'call_booked', 'won', 'lost', 'skip'];
+const VALID_STATUSES = ['new', 'warming', 'warm', 'outreach_sent', 'replied', 'call_booked', 'won', 'lost', 'skip', 'dead'];
 const VALID_CONNECTED = [true, false, 'unknown'];
 const VALID_TIERS = [1, 2, 3];
-const VALID_ENGAGEMENT_TYPES = ['comment', 'dm'];
+const VALID_ENGAGEMENT_TYPES = ['comment', 'dm', 'follow_up', 'reply_received'];
 
 function validateSegment(seg) { return VALID_SEGMENTS.includes(seg) ? seg : 'cyber'; }
 function validateStatus(status) { return VALID_STATUSES.includes(status) ? status : 'warming'; }
@@ -162,6 +162,23 @@ app.get('/api/queue', (req, res) => {
   res.json(queue);
 });
 
+// GET follow-ups due
+app.get('/api/followups', (req, res) => {
+  const data = loadData();
+  const today = new Date().toISOString().split('T')[0];
+  const followups = data.prospects.filter(p =>
+    p.sequence_status === 'active' &&
+    p.follow_up_due &&
+    p.follow_up_due <= today
+  ).sort((a, b) => (a.follow_up_due || '').localeCompare(b.follow_up_due || ''));
+
+  const exhausted = data.prospects.filter(p =>
+    p.sequence_status === 'exhausted'
+  );
+
+  res.json({ due: followups, exhausted });
+});
+
 // GET stats
 app.get('/api/stats', (req, res) => {
   const data = loadData();
@@ -181,6 +198,8 @@ app.get('/api/stats', (req, res) => {
     dmsToday: 0,
     dueToday: 0,
     readyForSnapshot: 0,
+    followUpsDue: 0,
+    sequencesExhausted: 0,
     warmthDistribution: { cold: 0, warming: 0, warm: 0, hot: 0 }
   };
 
@@ -190,6 +209,8 @@ app.get('/api/stats', (req, res) => {
     stats.byTier[p.tier] = (stats.byTier[p.tier] || 0) + 1;
     if (p.status === 'warming' && p.next_check_in <= today) stats.dueToday++;
     if ((p.warmth_score || 0) >= 5) stats.readyForSnapshot++;
+    if (p.sequence_status === 'active' && p.follow_up_due && p.follow_up_due <= today) stats.followUpsDue++;
+    if (p.sequence_status === 'exhausted') stats.sequencesExhausted++;
 
     const ws = p.warmth_score || 0;
     if (ws === 0) stats.warmthDistribution.cold++;
@@ -344,7 +365,9 @@ app.put('/api/prospects/:id', (req, res) => {
   const allowedFields = ['name', 'company', 'title', 'linkedin_url', 'linkedin_username',
     'segment', 'tier', 'icp_score', 'tags', 'status', 'connected', 'check_in_days',
     'warmth_score', 'notes', 'next_check_in', 'batch', 'source',
-    'last_action', 'last_action_date'];
+    'last_action', 'last_action_date',
+    'sequence_type', 'sequence_step', 'sequence_started', 'follow_up_due',
+    'follow_up_count', 'sequence_status'];
 
   const updates = {};
   for (const [key, val] of Object.entries(req.body)) {
@@ -426,6 +449,36 @@ app.post('/api/prospects/:id/engage', (req, res) => {
     p.status = 'outreach_sent';
     p.last_action = sanitize(note || 'Sent DM');
     p.last_action_date = today;
+
+    // Auto-start sequence if not already in one
+    if (!p.sequence_status || p.sequence_status === 'none') {
+      p.sequence_type = p.connected ? 'connected_icp' : 'not_connected';
+      p.sequence_step = 1;
+      p.sequence_started = today;
+      p.follow_up_count = 0;
+      p.follow_up_due = calcNextCheckIn(today, 2); // First follow-up in 2 days
+      p.sequence_status = 'active';
+    }
+  } else if (type === 'follow_up') {
+    p.follow_up_count = (p.follow_up_count || 0) + 1;
+    p.sequence_step = (p.sequence_step || 1) + 1;
+    p.last_action = sanitize(note || `Follow-up #${p.follow_up_count}`);
+    p.last_action_date = today;
+
+    if (p.follow_up_count >= 3) {
+      // 3 follow-ups sent, no reply — mark sequence complete, suggest dead
+      p.follow_up_due = null;
+      p.sequence_status = 'exhausted';
+    } else {
+      // Schedule next follow-up in 2 days
+      p.follow_up_due = calcNextCheckIn(today, 2);
+    }
+  } else if (type === 'reply_received') {
+    p.status = 'replied';
+    p.sequence_status = 'replied';
+    p.follow_up_due = null;
+    p.last_action = sanitize(note || 'Got a reply!');
+    p.last_action_date = today;
   }
 
   // Set next check-in
@@ -467,7 +520,7 @@ app.delete('/api/prospects/:id', (req, res) => {
 // GET export as CSV
 app.get('/api/export/csv', (req, res) => {
   const data = loadData();
-  const headers = ['name','linkedin_url','company','title','segment','tier','icp_score','status','connected','warmth_score','check_in_days','next_check_in','last_engagement_date','engagements_count','notes','source','tags','batch','created_at'];
+  const headers = ['name','linkedin_url','company','title','segment','tier','icp_score','status','connected','warmth_score','check_in_days','next_check_in','last_engagement_date','engagements_count','notes','source','tags','batch','created_at','sequence_type','sequence_step','sequence_status','follow_up_due','follow_up_count'];
   const csvRows = [headers.join(',')];
   data.prospects.forEach(p => {
     csvRows.push(headers.map(h => {

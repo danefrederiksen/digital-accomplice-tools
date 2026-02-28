@@ -110,6 +110,20 @@ a{color:var(--b);text-decoration:none}a:hover{text-decoration:underline}
 .outreach-card .oc-co{font-size:11px;color:var(--md)}
 .outreach-card .oc-hook{font-size:11px;color:var(--md);line-height:1.5;margin-bottom:8px;padding:8px;background:var(--card);border-radius:6px;border-left:3px solid var(--o)}
 
+/* Follow-up cards */
+.fu-step{display:inline-block;font-size:9px;font-weight:700;padding:2px 8px;border-radius:10px;margin-right:6px}
+.fu-step-1{background:var(--bb);color:var(--b)}
+.fu-step-2{background:var(--yb);color:var(--y)}
+.fu-step-3{background:var(--rb);color:var(--r)}
+.fu-due{font-size:9px;color:var(--lt)}
+.fu-due.overdue{color:var(--r);font-weight:600}
+.p-btn.reply{background:var(--pb);color:var(--p);border-color:var(--p)}
+.p-btn.reply:hover{background:var(--p);color:#fff}
+.p-btn.dead{background:var(--rb);color:var(--r);border-color:var(--r)}
+.p-btn.dead:hover{background:var(--r);color:#fff}
+.seq-info{font-size:10px;color:var(--md);margin-top:4px;display:flex;gap:8px;align-items:center}
+.seq-info .seq-label{font-weight:600}
+
 /* Pipeline */
 .pipeline-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px}
 .pipeline-col{background:var(--card);border:1px solid var(--bdr);border-radius:10px;padding:10px}
@@ -216,6 +230,30 @@ textarea.import-area:focus{border-color:var(--o)}
     </div>
   </div>
 
+  <!-- SECTION 0: Follow-ups Due (Sequence Engine) -->
+  <div class="section" id="sec-followups-wrap" style="display:none">
+    <div class="section-hdr" onclick="toggleSection('followups')">
+      <h2><span class="sh-badge" style="background:var(--o);color:#fff">!</span> Follow-ups Due</h2>
+      <div class="sh-right"><span id="followup-count-badge">0</span> due</div>
+    </div>
+    <div class="section-body" id="sec-followups">
+      <div class="section-desc">These prospects were DM'd and are waiting for a follow-up. Send the follow-up, mark a reply, or skip.</div>
+      <div id="followup-cards"></div>
+    </div>
+  </div>
+
+  <!-- SECTION 0b: Exhausted Sequences (needs decision) -->
+  <div class="section" id="sec-exhausted-wrap" style="display:none">
+    <div class="section-hdr" onclick="toggleSection('exhausted')">
+      <h2><span class="sh-badge" style="background:var(--r);color:#fff">&#10007;</span> No Reply &mdash; Kill or Keep?</h2>
+      <div class="sh-right"><span id="exhausted-count-badge">0</span> stale</div>
+    </div>
+    <div class="section-body" id="sec-exhausted">
+      <div class="section-desc">3 follow-ups sent, no reply. Mark dead to clear them, or keep if you want to try something different.</div>
+      <div id="exhausted-cards"></div>
+    </div>
+  </div>
+
   <!-- SECTION 1: Who Posted — Comment to Warm -->
   <div class="section">
     <div class="section-hdr" onclick="toggleSection('posted')">
@@ -306,6 +344,7 @@ textarea.import-area:focus{border-color:var(--o)}
       <option value="call_booked">Call Booked</option>
       <option value="won">Won</option>
       <option value="lost">Lost</option>
+      <option value="dead">Dead</option>
     </select>
     <select id="filter-tier">
       <option value="">All Tiers</option>
@@ -376,12 +415,14 @@ https://www.linkedin.com/in/username3"></textarea>
       <div><label>LinkedIn URL</label><input id="ed-url"></div>
       <div><label>Segment</label><select id="ed-segment"><option value="cyber">Cyber</option><option value="ai_ml">AI/ML</option><option value="referral_partner">Referral Partner</option><option value="warm_priority">Warm Priority</option><option value="warm_network">Warm Network</option></select></div>
       <div><label>Tier</label><select id="ed-tier"><option value="1">1</option><option value="2">2</option><option value="3">3</option></select></div>
-      <div><label>Status</label><select id="ed-status"><option value="new">New</option><option value="warming">Warming</option><option value="warm">Warm</option><option value="outreach_sent">Outreach Sent</option><option value="replied">Replied</option><option value="call_booked">Call Booked</option><option value="won">Won</option><option value="lost">Lost</option><option value="skip">Skip</option></select></div>
+      <div><label>Status</label><select id="ed-status"><option value="new">New</option><option value="warming">Warming</option><option value="warm">Warm</option><option value="outreach_sent">Outreach Sent</option><option value="replied">Replied</option><option value="call_booked">Call Booked</option><option value="won">Won</option><option value="lost">Lost</option><option value="skip">Skip</option><option value="dead">Dead</option></select></div>
       <div><label>Check-in (days)</label><input id="ed-checkin" type="number"></div>
       <div><label>ICP Score</label><input id="ed-score" type="number" step="0.5"></div>
       <div><label>Connected</label><select id="ed-connected"><option value="false">No</option><option value="true">Yes</option><option value="unknown">Unknown</option></select></div>
     </div>
     <label>Notes</label><textarea id="ed-notes"></textarea>
+    <label>Sequence Info</label>
+    <div id="ed-sequence" style="font-size:11px;color:var(--md);margin-top:4px;padding:8px;background:var(--bg);border-radius:6px"></div>
     <label>Engagement History</label>
     <div id="ed-engagements" style="max-height:120px;overflow-y:auto;font-size:11px;color:var(--md);margin-top:4px"></div>
     <div class="modal-actions">
@@ -499,6 +540,168 @@ async function loadToday() {
   podcastDiv.innerHTML = podcastCandidates.length
     ? podcastCandidates.map(p => renderOutreachCard(p, 'podcast')).join('')
     : '<div class="today-empty">No podcast candidates remaining</div>';
+
+  // Load follow-ups due
+  loadFollowups();
+}
+
+// ===== FOLLOW-UPS (Sequence Engine) =====
+async function loadFollowups() {
+  const data = await fetch('/api/followups').then(r => r.json());
+  const today = new Date().toISOString().split('T')[0];
+
+  // Follow-ups due section
+  const wrapDue = document.getElementById('sec-followups-wrap');
+  const cardsDue = document.getElementById('followup-cards');
+  const countBadge = document.getElementById('followup-count-badge');
+
+  if (data.due.length > 0) {
+    wrapDue.style.display = 'block';
+    countBadge.textContent = data.due.length;
+    cardsDue.innerHTML = data.due.map(p => renderFollowupCard(p, today)).join('');
+  } else {
+    wrapDue.style.display = 'none';
+  }
+
+  // Exhausted sequences section
+  const wrapExhausted = document.getElementById('sec-exhausted-wrap');
+  const cardsExhausted = document.getElementById('exhausted-cards');
+  const exhaustedBadge = document.getElementById('exhausted-count-badge');
+
+  if (data.exhausted.length > 0) {
+    wrapExhausted.style.display = 'block';
+    exhaustedBadge.textContent = data.exhausted.length;
+    cardsExhausted.innerHTML = data.exhausted.map(p => renderExhaustedCard(p)).join('');
+  } else {
+    wrapExhausted.style.display = 'none';
+  }
+}
+
+function renderFollowupCard(p, today) {
+  const username = p.linkedin_username || extractUsername(p.linkedin_url);
+  const profileUrl = p.linkedin_url || `https://www.linkedin.com/in/${username}`;
+  const fuNum = (p.follow_up_count || 0) + 1;
+  const stepClass = fuNum === 1 ? 'fu-step-1' : fuNum === 2 ? 'fu-step-2' : 'fu-step-3';
+  const isOverdue = p.follow_up_due < today;
+  const dueLabel = isOverdue ? `Overdue (was ${p.follow_up_due})` : `Due today`;
+  const dueClass = isOverdue ? 'fu-due overdue' : 'fu-due';
+  const daysSinceStart = Math.floor((new Date(today) - new Date(p.sequence_started)) / 86400000);
+
+  return `
+    <div class="p-card" id="fu-${escHtml(p.id)}">
+      <div class="p-top">
+        <div class="p-info">
+          <h3>${escHtml(p.name || username)} <a href="#" onclick="openSafeLink('${escHtml(profileUrl)}');return false" style="font-size:10px;font-weight:600">Profile</a></h3>
+          <div class="p-company">${escHtml(p.company || '')}</div>
+          <div class="p-title">${escHtml(p.title || '')}</div>
+        </div>
+        <div class="p-meta">
+          <span class="fu-step ${stepClass}">Follow-up #${fuNum}</span>
+          <span class="${dueClass}">${dueLabel}</span>
+        </div>
+      </div>
+      <div class="seq-info">
+        <span class="seq-label">Sequence:</span> Day ${daysSinceStart} &bull; ${p.follow_up_count || 0} follow-ups sent &bull; Started ${p.sequence_started || '?'}
+      </div>
+      <div class="p-actions">
+        <a href="#" onclick="openSafeLink('${escHtml(profileUrl)}');return false" class="p-btn primary">Open Profile &nearr;</a>
+        <button class="p-btn dm" onclick="sendFollowup('${escHtml(p.id)}', ${fuNum}, this)">Sent Follow-up #${fuNum}</button>
+        <button class="p-btn reply" onclick="gotReply('${escHtml(p.id)}', this)">Got a Reply!</button>
+        <button class="p-btn ghost" onclick="skipFollowup('${escHtml(p.id)}', this)">Skip</button>
+      </div>
+    </div>
+  `;
+}
+
+function renderExhaustedCard(p) {
+  const username = p.linkedin_username || extractUsername(p.linkedin_url);
+  const profileUrl = p.linkedin_url || `https://www.linkedin.com/in/${username}`;
+
+  return `
+    <div class="p-card" id="ex-${escHtml(p.id)}">
+      <div class="p-top">
+        <div class="p-info">
+          <h3>${escHtml(p.name || username)} <a href="#" onclick="openSafeLink('${escHtml(profileUrl)}');return false" style="font-size:10px;font-weight:600">Profile</a></h3>
+          <div class="p-company">${escHtml(p.company || '')}</div>
+          <div class="p-title">${escHtml(p.title || '')}</div>
+        </div>
+        <div class="p-meta">
+          <span class="fu-step fu-step-3">3 follow-ups, no reply</span>
+        </div>
+      </div>
+      <div class="seq-info">
+        <span class="seq-label">Started:</span> ${p.sequence_started || '?'} &bull; Last action: ${p.last_action_date || '?'}
+      </div>
+      <div class="p-actions">
+        <button class="p-btn dead" onclick="markDead('${escHtml(p.id)}', this)">Mark Dead</button>
+        <button class="p-btn reply" onclick="gotReply('${escHtml(p.id)}', this)">Actually Got a Reply!</button>
+        <button class="p-btn ghost" onclick="openEdit('${escHtml(p.id)}')">Edit</button>
+      </div>
+    </div>
+  `;
+}
+
+async function sendFollowup(id, fuNum, btn) {
+  btn.disabled = true;
+  btn.textContent = 'Sent!';
+  await fetch(`/api/prospects/${id}/engage`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ type: 'follow_up', note: `Follow-up #${fuNum} sent` })
+  });
+  const card = document.getElementById('fu-' + id);
+  if (card) { card.style.opacity = '0.3'; card.style.pointerEvents = 'none'; }
+}
+
+async function gotReply(id, btn) {
+  btn.disabled = true;
+  btn.textContent = 'Nice!';
+  await fetch(`/api/prospects/${id}/engage`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ type: 'reply_received', note: 'Got a reply' })
+  });
+  // Remove from both follow-up and exhausted sections
+  const fuCard = document.getElementById('fu-' + id);
+  const exCard = document.getElementById('ex-' + id);
+  if (fuCard) { fuCard.style.opacity = '0.3'; fuCard.style.pointerEvents = 'none'; }
+  if (exCard) { exCard.style.opacity = '0.3'; exCard.style.pointerEvents = 'none'; }
+}
+
+async function skipFollowup(id, btn) {
+  // Push follow-up due date out by 1 day
+  const tomorrow = new Date();
+  tomorrow.setDate(tomorrow.getDate() + 1);
+  const newDue = tomorrow.toISOString().split('T')[0];
+  await fetch(`/api/prospects/${id}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ follow_up_due: newDue })
+  });
+  const card = document.getElementById('fu-' + id);
+  if (card) {
+    card.style.transition = 'opacity 0.2s, transform 0.2s';
+    card.style.opacity = '0';
+    card.style.transform = 'translateX(20px)';
+    setTimeout(() => card.remove(), 200);
+  }
+}
+
+async function markDead(id, btn) {
+  btn.disabled = true;
+  btn.textContent = 'Done';
+  await fetch(`/api/prospects/${id}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ status: 'dead', sequence_status: 'dead' })
+  });
+  const card = document.getElementById('ex-' + id);
+  if (card) {
+    card.style.transition = 'opacity 0.2s, transform 0.2s';
+    card.style.opacity = '0';
+    card.style.transform = 'translateX(20px)';
+    setTimeout(() => card.remove(), 200);
+  }
 }
 
 function updateProgress(stats) {
@@ -902,9 +1105,9 @@ function updateTriageCounts() {
 // ===== PIPELINE =====
 async function loadPipeline() {
   const prospects = await fetch('/api/prospects').then(r => r.json());
-  const stages = ['new','warming','warm','outreach_sent','replied','call_booked','won','lost'];
-  const labels = {new:'New',warming:'Warming',warm:'Warm',outreach_sent:'Outreach Sent',replied:'Replied',call_booked:'Call Booked',won:'Won',lost:'Lost'};
-  const colors = {new:'var(--md)',warming:'var(--b)',warm:'var(--y)',outreach_sent:'var(--o)',replied:'var(--p)',call_booked:'var(--g)',won:'var(--g)',lost:'var(--r)'};
+  const stages = ['new','warming','warm','outreach_sent','replied','call_booked','won','lost','dead'];
+  const labels = {new:'New',warming:'Warming',warm:'Warm',outreach_sent:'Outreach Sent',replied:'Replied',call_booked:'Call Booked',won:'Won',lost:'Lost',dead:'Dead'};
+  const colors = {new:'var(--md)',warming:'var(--b)',warm:'var(--y)',outreach_sent:'var(--o)',replied:'var(--p)',call_booked:'var(--g)',won:'var(--g)',lost:'var(--r)',dead:'var(--lt)'};
 
   document.getElementById('pipeline-grid').innerHTML = stages.map(s => {
     const items = prospects.filter(p => p.status === s && p.name);
@@ -1066,6 +1269,21 @@ async function openEdit(id) {
   document.getElementById('ed-engagements').innerHTML = (p.engagements || []).reverse().map(e =>
     `<div style="padding:3px 0;border-bottom:1px solid var(--bdr)">${e.date} | <b>${e.type}</b> | ${e.note || '-'}</div>`
   ).join('') || '<div style="color:var(--lt)">No engagements yet</div>';
+
+  // Sequence info
+  const seqDiv = document.getElementById('ed-sequence');
+  if (p.sequence_status && p.sequence_status !== 'none') {
+    const seqLabels = { active: 'Active', exhausted: 'Exhausted (3 follow-ups, no reply)', replied: 'Replied', dead: 'Dead', none: 'None' };
+    seqDiv.innerHTML = `
+      <div><b>Type:</b> ${escHtml(p.sequence_type || '-')}</div>
+      <div><b>Status:</b> ${seqLabels[p.sequence_status] || p.sequence_status}</div>
+      <div><b>Step:</b> ${p.sequence_step || '-'} &bull; Follow-ups sent: ${p.follow_up_count || 0}</div>
+      <div><b>Started:</b> ${p.sequence_started || '-'} &bull; Next follow-up: ${p.follow_up_due || 'none'}</div>
+    `;
+  } else {
+    seqDiv.innerHTML = '<span style="color:var(--lt)">No active sequence</span>';
+  }
+
   document.getElementById('edit-modal').classList.add('on');
 }
 function closeModal() { document.getElementById('edit-modal').classList.remove('on'); editingId = null; }
