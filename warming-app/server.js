@@ -397,7 +397,7 @@ app.put('/api/prospects/:id', (req, res) => {
   const allowedFields = ['name', 'company', 'title', 'linkedin_url', 'linkedin_username',
     'segment', 'tier', 'icp_score', 'tags', 'status', 'connected', 'check_in_days',
     'warmth_score', 'notes', 'next_check_in', 'batch', 'source',
-    'last_action', 'last_action_date',
+    'last_action', 'last_action_date', 'last_engagement_date',
     'sequence_type', 'sequence_step', 'sequence_started', 'follow_up_due',
     'follow_up_count', 'sequence_status'];
 
@@ -547,6 +547,59 @@ app.delete('/api/prospects/:id', (req, res) => {
   if (data.prospects.length === before) return res.status(404).json({ error: 'Not found' });
   saveData(data); // backupData() runs inside saveData, so deleted data is recoverable
   res.json({ ok: true });
+});
+
+// GET alerts (cooling leads, stale sequences, dead-lead suggestions)
+app.get('/api/alerts', (req, res) => {
+  const data = loadData();
+  const today = new Date().toISOString().split('T')[0];
+  const todayMs = new Date(today).getTime();
+
+  const cooling = [];    // Warming prospects with no engagement in 14+ days
+  const stale = [];      // Active sequence, follow-up 3+ days overdue
+  const deadSuggestions = []; // Exhausted 7+ days ago, still not marked dead
+
+  data.prospects.forEach(p => {
+    // --- COOLING LEADS ---
+    // Prospect is in "warming" status but hasn't been engaged in 14+ days
+    if (p.status === 'warming') {
+      const lastEngDate = p.last_engagement_date || p.created_at || '';
+      if (lastEngDate) {
+        const daysSince = Math.floor((todayMs - new Date(lastEngDate).getTime()) / 86400000);
+        if (daysSince >= 14) {
+          cooling.push({ ...p, alert_days_cold: daysSince });
+        }
+      }
+    }
+
+    // --- STALE SEQUENCES ---
+    // Active sequence where follow-up is 3+ days overdue
+    if (p.sequence_status === 'active' && p.follow_up_due) {
+      const daysOverdue = Math.floor((todayMs - new Date(p.follow_up_due).getTime()) / 86400000);
+      if (daysOverdue >= 3) {
+        stale.push({ ...p, alert_days_overdue: daysOverdue });
+      }
+    }
+
+    // --- DEAD LEAD SUGGESTIONS ---
+    // Exhausted sequence (3 follow-ups, no reply) sitting 7+ days
+    if (p.sequence_status === 'exhausted') {
+      const lastActionDate = p.last_action_date || p.sequence_started || '';
+      if (lastActionDate) {
+        const daysSinceLast = Math.floor((todayMs - new Date(lastActionDate).getTime()) / 86400000);
+        if (daysSinceLast >= 7) {
+          deadSuggestions.push({ ...p, alert_days_stale: daysSinceLast });
+        }
+      }
+    }
+  });
+
+  res.json({
+    cooling: cooling.sort((a, b) => b.alert_days_cold - a.alert_days_cold),
+    stale: stale.sort((a, b) => b.alert_days_overdue - a.alert_days_overdue),
+    deadSuggestions: deadSuggestions.sort((a, b) => b.alert_days_stale - a.alert_days_stale),
+    totalAlerts: cooling.length + stale.length + deadSuggestions.length
+  });
 });
 
 // GET export as CSV

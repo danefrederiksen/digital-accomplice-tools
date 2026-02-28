@@ -218,6 +218,28 @@ textarea.import-area:focus{border-color:var(--o)}
 /* Needs URL flag */
 .needs-url-flag{font-size:9px;font-weight:700;padding:2px 8px;border-radius:20px;background:var(--rb);color:var(--r)}
 
+/* Alert section (Needs Attention) */
+.alert-hdr h2{color:var(--r)}
+.alert-sub-hdr{font-size:12px;font-weight:700;color:var(--dk);margin:16px 0 4px;display:flex;align-items:center;gap:8px}
+.alert-sub-hdr:first-child{margin-top:8px}
+.alert-sub-count{background:var(--rb);color:var(--r);font-size:9px;font-weight:700;padding:1px 7px;border-radius:10px}
+.alert-sub-desc{font-size:11px;color:var(--md);margin-bottom:8px}
+.alert-dot{width:8px;height:8px;border-radius:50%;display:inline-block}
+.alert-dot.cooling{background:var(--b)}
+.alert-dot.stale{background:var(--y)}
+.alert-dot.dead{background:var(--r)}
+.alert-card{background:var(--card);border:1px solid var(--bdr);border-radius:10px;padding:12px 16px;margin-bottom:6px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.alert-card:hover{border-color:var(--o)}
+.alert-card .ac-info{flex:1;min-width:0}
+.alert-card .ac-name{font-size:13px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.alert-card .ac-name a{font-size:10px;font-weight:600;margin-left:6px}
+.alert-card .ac-detail{font-size:11px;color:var(--md);margin-top:2px}
+.alert-card .ac-reason{font-size:10px;font-weight:600;margin-top:4px;display:inline-block;padding:2px 8px;border-radius:10px}
+.ac-reason.cooling{background:var(--bb);color:var(--b)}
+.ac-reason.stale{background:var(--yb);color:var(--y)}
+.ac-reason.dead{background:var(--rb);color:var(--r)}
+.alert-card .ac-actions{display:flex;gap:6px;flex-shrink:0}
+
 </style>
 </head>
 <body>
@@ -254,6 +276,38 @@ textarea.import-area:focus{border-color:var(--o)}
       <div class="dp-item"><div class="dp-count none" id="dp-dms">0</div><div class="dp-target">/ 1 target</div><div class="dp-label">Snapshot DMs</div></div>
       <div class="dp-item"><div class="dp-count none" id="dp-referral">0</div><div class="dp-target">/ 1 target</div><div class="dp-label">Referral Outreach</div></div>
       <div class="dp-item"><div class="dp-count none" id="dp-podcast">0</div><div class="dp-target">/ 1 target</div><div class="dp-label">Podcast Invites</div></div>
+    </div>
+  </div>
+
+  <!-- SECTION: Needs Attention (Cooling, Stale, Dead Suggestions) -->
+  <div class="section" id="sec-alerts-wrap" style="display:none">
+    <div class="section-hdr alert-hdr" onclick="toggleSection('alerts')">
+      <h2><span class="sh-badge" style="background:var(--r);color:#fff">&#9888;</span> Needs Attention</h2>
+      <div class="sh-right"><span id="alert-count-badge">0</span> alerts</div>
+    </div>
+    <div class="section-body" id="sec-alerts">
+      <div class="section-desc">These prospects need action — going cold, overdue follow-ups, or sequences that should be killed.</div>
+
+      <!-- Cooling leads -->
+      <div id="alert-cooling-wrap" style="display:none">
+        <div class="alert-sub-hdr"><span class="alert-dot cooling"></span> Going Cold <span class="alert-sub-count" id="alert-cooling-count">0</span></div>
+        <div class="alert-sub-desc">In warming status but no engagement logged in 14+ days. Comment on their posts or snooze them.</div>
+        <div id="alert-cooling-cards"></div>
+      </div>
+
+      <!-- Stale sequences -->
+      <div id="alert-stale-wrap" style="display:none">
+        <div class="alert-sub-hdr"><span class="alert-dot stale"></span> Overdue Follow-ups <span class="alert-sub-count" id="alert-stale-count">0</span></div>
+        <div class="alert-sub-desc">Active sequences where the follow-up is 3+ days late. Send the follow-up or skip to reschedule.</div>
+        <div id="alert-stale-cards"></div>
+      </div>
+
+      <!-- Dead lead suggestions -->
+      <div id="alert-dead-wrap" style="display:none">
+        <div class="alert-sub-hdr"><span class="alert-dot dead"></span> Dead Lead Candidates <span class="alert-sub-count" id="alert-dead-count">0</span></div>
+        <div class="alert-sub-desc">3 follow-ups sent, no reply, 7+ days stale. Mark dead to clean your pipeline or keep if you want to try something else.</div>
+        <div id="alert-dead-cards"></div>
+      </div>
     </div>
   </div>
 
@@ -637,7 +691,8 @@ async function loadToday() {
     ? podcastCandidates.map(p => renderOutreachCard(p, 'podcast')).join('')
     : '<div class="today-empty">No podcast candidates remaining</div>';
 
-  // Load follow-ups due
+  // Load alerts and follow-ups
+  loadAlerts();
   loadFollowups();
 }
 
@@ -671,6 +726,168 @@ async function loadFollowups() {
   } else {
     wrapExhausted.style.display = 'none';
   }
+}
+
+// ===== ALERTS (Cooling, Stale Sequences, Dead Suggestions) =====
+async function loadAlerts() {
+  const data = await fetch('/api/alerts').then(r => r.json());
+
+  const wrap = document.getElementById('sec-alerts-wrap');
+  const badge = document.getElementById('alert-count-badge');
+
+  if (data.totalAlerts === 0) {
+    wrap.style.display = 'none';
+    return;
+  }
+
+  wrap.style.display = 'block';
+  badge.textContent = data.totalAlerts;
+
+  // Cooling leads
+  const coolingWrap = document.getElementById('alert-cooling-wrap');
+  const coolingCards = document.getElementById('alert-cooling-cards');
+  const coolingCount = document.getElementById('alert-cooling-count');
+  if (data.cooling.length > 0) {
+    coolingWrap.style.display = 'block';
+    coolingCount.textContent = data.cooling.length;
+    coolingCards.innerHTML = data.cooling.map(p => renderAlertCard(p, 'cooling', `${p.alert_days_cold} days without engagement`)).join('');
+  } else {
+    coolingWrap.style.display = 'none';
+  }
+
+  // Stale sequences
+  const staleWrap = document.getElementById('alert-stale-wrap');
+  const staleCards = document.getElementById('alert-stale-cards');
+  const staleCount = document.getElementById('alert-stale-count');
+  if (data.stale.length > 0) {
+    staleWrap.style.display = 'block';
+    staleCount.textContent = data.stale.length;
+    staleCards.innerHTML = data.stale.map(p => renderAlertCard(p, 'stale', `Follow-up ${p.alert_days_overdue} days overdue`)).join('');
+  } else {
+    staleWrap.style.display = 'none';
+  }
+
+  // Dead lead suggestions
+  const deadWrap = document.getElementById('alert-dead-wrap');
+  const deadCards = document.getElementById('alert-dead-cards');
+  const deadCount = document.getElementById('alert-dead-count');
+  if (data.deadSuggestions.length > 0) {
+    deadWrap.style.display = 'block';
+    deadCount.textContent = data.deadSuggestions.length;
+    deadCards.innerHTML = data.deadSuggestions.map(p => renderAlertCard(p, 'dead', `${p.alert_days_stale} days since last action, no reply`)).join('');
+  } else {
+    deadWrap.style.display = 'none';
+  }
+}
+
+function renderAlertCard(p, alertType, reason) {
+  const username = p.linkedin_username || '';
+  const profileUrl = p.linkedin_url || `https://www.linkedin.com/in/${username}`;
+
+  let actionButtons = '';
+  if (alertType === 'cooling') {
+    actionButtons = `
+      <button class="p-btn" onclick="alertLogComment('${escHtml(p.id)}','${escHtml(profileUrl)}')">Log Comment</button>
+      <button class="p-btn skip" onclick="alertSnooze('${escHtml(p.id)}')">Snooze 7d</button>
+    `;
+  } else if (alertType === 'stale') {
+    actionButtons = `
+      <button class="p-btn" onclick="alertSendFollowup('${escHtml(p.id)}','${escHtml(profileUrl)}')">Send Follow-up</button>
+      <button class="p-btn skip" onclick="alertSkipFollowup('${escHtml(p.id)}')">Skip</button>
+    `;
+  } else if (alertType === 'dead') {
+    actionButtons = `
+      <button class="p-btn dead" onclick="alertMarkDead('${escHtml(p.id)}')">Mark Dead</button>
+      <button class="p-btn skip" onclick="alertDismiss('${escHtml(p.id)}')">Keep</button>
+    `;
+  }
+
+  return `
+    <div class="alert-card" id="alert-${escHtml(p.id)}">
+      <div class="ac-info">
+        <div class="ac-name">${escHtml(p.name || username)} <a href="#" onclick="openSafeLink('${escHtml(profileUrl)}');return false">Profile</a></div>
+        <div class="ac-detail">${escHtml(p.company || '')} ${p.title ? '&bull; ' + escHtml(p.title) : ''}</div>
+        <span class="ac-reason ${alertType}">${reason}</span>
+      </div>
+      <div class="ac-actions">${actionButtons}</div>
+    </div>
+  `;
+}
+
+// Alert action handlers
+async function alertLogComment(id, profileUrl) {
+  openSafeLink(profileUrl);
+  await fetch(`/api/prospects/${id}/engage`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ type: 'comment', note: 'Comment logged (from cooling alert)' })
+  });
+  loadToday();
+}
+
+async function alertSnooze(id) {
+  // Push next_check_in out by 7 days
+  const nextDate = new Date();
+  nextDate.setDate(nextDate.getDate() + 7);
+  const nextCheckIn = nextDate.toISOString().split('T')[0];
+  await fetch(`/api/prospects/${id}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ next_check_in: nextCheckIn, last_engagement_date: new Date().toISOString().split('T')[0] })
+  });
+  // Remove card with animation
+  const card = document.getElementById('alert-' + id);
+  if (card) { card.style.opacity = '0.3'; card.style.pointerEvents = 'none'; }
+  setTimeout(() => loadAlerts(), 300);
+}
+
+async function alertSendFollowup(id, profileUrl) {
+  openSafeLink(profileUrl);
+  const prospect = cachedProspects.find(p => p.id === id);
+  const fuNum = prospect ? (prospect.follow_up_count || 0) + 1 : '?';
+  await fetch(`/api/prospects/${id}/engage`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ type: 'follow_up', note: `Follow-up #${fuNum} sent (from stale alert)` })
+  });
+  loadToday();
+}
+
+async function alertSkipFollowup(id) {
+  // Push follow-up due date out by 1 day
+  const newDue = new Date();
+  newDue.setDate(newDue.getDate() + 1);
+  await fetch(`/api/prospects/${id}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ follow_up_due: newDue.toISOString().split('T')[0] })
+  });
+  const card = document.getElementById('alert-' + id);
+  if (card) { card.style.opacity = '0.3'; card.style.pointerEvents = 'none'; }
+  setTimeout(() => loadAlerts(), 300);
+}
+
+async function alertMarkDead(id) {
+  await fetch(`/api/prospects/${id}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ status: 'dead', sequence_status: 'dead' })
+  });
+  const card = document.getElementById('alert-' + id);
+  if (card) { card.style.opacity = '0.3'; card.style.pointerEvents = 'none'; }
+  setTimeout(() => { loadAlerts(); loadFollowups(); }, 300);
+}
+
+async function alertDismiss(id) {
+  // "Keep" — reset the last_action_date to today so it doesn't trigger dead suggestion again for 7 days
+  await fetch(`/api/prospects/${id}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ last_action_date: new Date().toISOString().split('T')[0] })
+  });
+  const card = document.getElementById('alert-' + id);
+  if (card) { card.style.opacity = '0.3'; card.style.pointerEvents = 'none'; }
+  setTimeout(() => loadAlerts(), 300);
 }
 
 function renderFollowupCard(p, today) {
