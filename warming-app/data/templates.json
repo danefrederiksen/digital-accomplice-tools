@@ -1,0 +1,14 @@
+{
+  "connected_icp": {
+    "offer": "Hey {name}, I put together a quick snapshot of {company}'s video presence vs. your top competitors. Want me to send it over?",
+    "followup_1": "Following up on this \u2014 the snapshot takes 2 min to review. Happy to send if useful.",
+    "followup_2": "Last follow-up on this. The data was interesting \u2014 {company} has some gaps competitors haven't filled yet. Let me know if you want a look.",
+    "followup_3": "Final bump on the {company} video snapshot. No worries if the timing's off \u2014 happy to revisit down the road."
+  },
+  "not_connected": {
+    "offer": "Hey {name}, I work with companies like {company} on video strategy. I put together a quick competitive snapshot \u2014 would love to share it if you're open to connecting.",
+    "followup_1": "Thanks for connecting! I mentioned a snapshot of {company}'s video presence vs. competitors \u2014 want me to send it over? Takes 2 min to review.",
+    "followup_2": "Following up on the {company} video snapshot. Happy to send if useful \u2014 no strings attached.",
+    "followup_3": "Last follow-up on this. The {company} data was interesting. Let me know if you ever want a look."
+  }
+}

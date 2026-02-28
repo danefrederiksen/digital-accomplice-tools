@@ -6,6 +6,7 @@ const { v4: uuidv4 } = require('uuid');
 const app = express();
 const PORT = 3847;
 const DATA_FILE = path.join(__dirname, 'data', 'prospects.json');
+const TEMPLATES_FILE = path.join(__dirname, 'data', 'templates.json');
 const BACKUP_DIR = path.join(__dirname, 'data', 'backups');
 
 // ============================================================
@@ -177,6 +178,37 @@ app.get('/api/followups', (req, res) => {
   );
 
   res.json({ due: followups, exhausted });
+});
+
+// GET message templates
+app.get('/api/templates', (req, res) => {
+  if (!fs.existsSync(TEMPLATES_FILE)) {
+    return res.json({});
+  }
+  const templates = JSON.parse(fs.readFileSync(TEMPLATES_FILE, 'utf8'));
+  res.json(templates);
+});
+
+// PUT update message templates
+app.put('/api/templates', (req, res) => {
+  const templates = req.body;
+  if (!templates || typeof templates !== 'object') {
+    return res.status(400).json({ error: 'Templates must be an object' });
+  }
+  // Sanitize all template strings
+  const clean = {};
+  for (const [seqType, steps] of Object.entries(templates)) {
+    if (typeof steps !== 'object') continue;
+    clean[seqType] = {};
+    for (const [step, text] of Object.entries(steps)) {
+      if (typeof text !== 'string') continue;
+      // Don't HTML-escape templates — they contain raw message text for LinkedIn,
+      // not HTML. Sanitize only strips dangerous chars if needed.
+      clean[seqType][step] = text.substring(0, 1000); // Max 1000 chars per template
+    }
+  }
+  fs.writeFileSync(TEMPLATES_FILE, JSON.stringify(clean, null, 2));
+  res.json(clean);
 });
 
 // GET stats

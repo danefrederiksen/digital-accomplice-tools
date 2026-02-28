@@ -124,6 +124,32 @@ a{color:var(--b);text-decoration:none}a:hover{text-decoration:underline}
 .seq-info{font-size:10px;color:var(--md);margin-top:4px;display:flex;gap:8px;align-items:center}
 .seq-info .seq-label{font-weight:600}
 
+/* Message templates */
+.tpl-wrap{margin-top:8px;background:var(--bg);border:1px solid var(--bdr);border-left:3px solid var(--o);border-radius:6px;padding:10px 12px}
+.tpl-label{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--o);margin-bottom:4px}
+.tpl-text{font-size:12px;line-height:1.5;color:var(--dk);white-space:pre-wrap}
+.tpl-actions{display:flex;gap:6px;margin-top:8px}
+.tpl-copy{display:inline-flex;align-items:center;gap:4px;background:var(--dk);color:#fff;border:none;padding:5px 12px;border-radius:6px;font-size:10px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .15s}
+.tpl-copy:hover{background:var(--o)}
+.tpl-copy.copied{background:var(--g);pointer-events:none}
+
+/* Template editor modal */
+.tpl-editor-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.5);z-index:300;display:flex;align-items:center;justify-content:center}
+.tpl-editor{background:var(--card);border-radius:12px;width:90%;max-width:700px;max-height:85vh;overflow-y:auto;padding:24px}
+.tpl-editor h2{font-size:16px;margin-bottom:16px}
+.tpl-seq-group{margin-bottom:20px}
+.tpl-seq-group h3{font-size:13px;font-weight:700;color:var(--o);margin-bottom:10px;text-transform:uppercase;letter-spacing:.05em}
+.tpl-field{margin-bottom:12px}
+.tpl-field label{display:block;font-size:11px;font-weight:600;color:var(--md);margin-bottom:4px}
+.tpl-field textarea{width:100%;min-height:60px;border:1px solid var(--bdr);border-radius:6px;padding:8px;font-size:12px;font-family:inherit;resize:vertical;line-height:1.5}
+.tpl-field textarea:focus{outline:none;border-color:var(--o)}
+.tpl-editor-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:16px;padding-top:16px;border-top:1px solid var(--bdr)}
+.tpl-editor-actions button{padding:8px 20px;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;border:1px solid var(--bdr)}
+.tpl-editor-actions .tpl-save{background:var(--o);color:#fff;border-color:var(--o)}
+.tpl-editor-actions .tpl-save:hover{opacity:.9}
+.tpl-editor-actions .tpl-cancel{background:var(--card);color:var(--md)}
+.tpl-editor-actions .tpl-cancel:hover{background:var(--bg)}
+
 /* Pipeline */
 .pipeline-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px}
 .pipeline-col{background:var(--card);border:1px solid var(--bdr);border-radius:10px;padding:10px}
@@ -202,6 +228,7 @@ textarea.import-area:focus{border-color:var(--o)}
     <h1>Warming Dashboard</h1>
   </div>
   <div class="hdr-r">
+    <button onclick="openTemplateEditor()">Templates</button>
     <button onclick="exportCSV()">Export CSV</button>
   </div>
 </div>
@@ -437,6 +464,75 @@ https://www.linkedin.com/in/username3"></textarea>
 let allProspects = [];
 let cachedProspects = [];
 let editingId = null;
+let messageTemplates = {};
+
+const TEMPLATE_STEP_LABELS = {
+  offer: 'Initial Offer',
+  followup_1: 'Follow-up #1',
+  followup_2: 'Follow-up #2',
+  followup_3: 'Follow-up #3'
+};
+
+const SEQ_TYPE_LABELS = {
+  connected_icp: 'Connected ICP',
+  not_connected: 'Not Connected'
+};
+
+async function loadTemplates() {
+  messageTemplates = await fetch('/api/templates').then(r => r.json());
+}
+
+function getTemplate(sequenceType, step, prospect) {
+  const tpl = (messageTemplates[sequenceType] || {})[step] || '';
+  if (!tpl) return null;
+  return tpl
+    .replace(/\{name\}/g, (prospect.name || '').split(' ')[0] || 'there')
+    .replace(/\{company\}/g, prospect.company || 'your company');
+}
+
+function renderTemplateBlock(sequenceType, step, prospect) {
+  const text = getTemplate(sequenceType, step, prospect);
+  if (!text) return '';
+  const stepLabel = TEMPLATE_STEP_LABELS[step] || step;
+  // Use data attributes for copy — avoids inline JS with complex strings
+  return `
+    <div class="tpl-wrap">
+      <div class="tpl-label">Template: ${escHtml(stepLabel)}</div>
+      <div class="tpl-text" id="tpl-${escHtml(prospect.id)}">${escHtml(text)}</div>
+      <div class="tpl-actions">
+        <button class="tpl-copy" onclick="copyTemplate('${escHtml(prospect.id)}', this)">Copy to Clipboard</button>
+      </div>
+    </div>
+  `;
+}
+
+async function copyTemplate(prospectId, btn) {
+  const el = document.getElementById('tpl-' + prospectId);
+  if (!el) return;
+  try {
+    await navigator.clipboard.writeText(el.textContent);
+    btn.textContent = 'Copied!';
+    btn.classList.add('copied');
+    setTimeout(() => {
+      btn.textContent = 'Copy to Clipboard';
+      btn.classList.remove('copied');
+    }, 2000);
+  } catch {
+    // Fallback for older browsers
+    const range = document.createRange();
+    range.selectNode(el);
+    window.getSelection().removeAllRanges();
+    window.getSelection().addRange(range);
+    document.execCommand('copy');
+    window.getSelection().removeAllRanges();
+    btn.textContent = 'Copied!';
+    btn.classList.add('copied');
+    setTimeout(() => {
+      btn.textContent = 'Copy to Clipboard';
+      btn.classList.remove('copied');
+    }, 2000);
+  }
+}
 
 // ============================================================
 // SECURITY: Safe link handling
@@ -603,6 +699,7 @@ function renderFollowupCard(p, today) {
       <div class="seq-info">
         <span class="seq-label">Sequence:</span> Day ${daysSinceStart} &bull; ${p.follow_up_count || 0} follow-ups sent &bull; Started ${p.sequence_started || '?'}
       </div>
+      ${renderTemplateBlock(p.sequence_type || 'connected_icp', 'followup_' + fuNum, p)}
       <div class="p-actions">
         <a href="#" onclick="openSafeLink('${escHtml(profileUrl)}');return false" class="p-btn primary">Open Profile &nearr;</a>
         <button class="p-btn dm" onclick="sendFollowup('${escHtml(p.id)}', ${fuNum}, this)">Sent Follow-up #${fuNum}</button>
@@ -861,6 +958,7 @@ function renderOutreachCard(p, type) {
           <span class="tier-badge tier-${p.tier}">T${p.tier}</span>
         </div>
       </div>
+      ${renderTemplateBlock(p.connected ? 'connected_icp' : 'not_connected', 'offer', p)}
       <div class="p-actions">
         <a href="#" onclick="openSafeLink('${escHtml(profileUrl)}');return false" class="p-btn primary">Open Profile &nearr;</a>
         <button class="p-btn dm" onclick="logOutreach('${escHtml(p.id)}','${type}',this)">${actionLabel}</button>
@@ -1312,8 +1410,63 @@ async function deleteProspect() {
 function exportCSV() { window.open('/api/export/csv', '_blank'); }
 document.getElementById('edit-modal').addEventListener('click', e => { if (e.target.classList.contains('modal-bg')) closeModal(); });
 
-// Init
-loadToday();
+// ===== TEMPLATE EDITOR =====
+function openTemplateEditor() {
+  const steps = ['offer', 'followup_1', 'followup_2', 'followup_3'];
+  let html = '<div class="tpl-editor-overlay" id="tpl-editor-overlay" onclick="if(event.target===this)closeTemplateEditor()">';
+  html += '<div class="tpl-editor">';
+  html += '<h2>Message Templates</h2>';
+  html += '<p style="font-size:12px;color:var(--md);margin-bottom:16px">Use <strong>{name}</strong> for the prospect\'s first name and <strong>{company}</strong> for their company. Templates appear on follow-up and outreach cards with a copy button.</p>';
+
+  for (const [seqType, label] of Object.entries(SEQ_TYPE_LABELS)) {
+    html += `<div class="tpl-seq-group"><h3>${escHtml(label)}</h3>`;
+    for (const step of steps) {
+      const val = (messageTemplates[seqType] || {})[step] || '';
+      const fieldId = `tpl-ed-${seqType}-${step}`;
+      html += `<div class="tpl-field">`;
+      html += `<label>${escHtml(TEMPLATE_STEP_LABELS[step])}</label>`;
+      html += `<textarea id="${fieldId}" data-seq="${seqType}" data-step="${step}">${escHtml(val)}</textarea>`;
+      html += `</div>`;
+    }
+    html += '</div>';
+  }
+
+  html += '<div class="tpl-editor-actions">';
+  html += '<button class="tpl-cancel" onclick="closeTemplateEditor()">Cancel</button>';
+  html += '<button class="tpl-save" onclick="saveTemplates()">Save Templates</button>';
+  html += '</div></div></div>';
+
+  document.body.insertAdjacentHTML('beforeend', html);
+}
+
+function closeTemplateEditor() {
+  const overlay = document.getElementById('tpl-editor-overlay');
+  if (overlay) overlay.remove();
+}
+
+async function saveTemplates() {
+  const updated = {};
+  document.querySelectorAll('#tpl-editor-overlay textarea').forEach(ta => {
+    const seq = ta.dataset.seq;
+    const step = ta.dataset.step;
+    if (!updated[seq]) updated[seq] = {};
+    updated[seq][step] = ta.value;
+  });
+
+  const res = await fetch('/api/templates', {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(updated)
+  });
+  messageTemplates = await res.json();
+  closeTemplateEditor();
+  // Re-render current view to pick up template changes
+  const activeTab = document.querySelector('.tab.on');
+  if (activeTab && activeTab.dataset.tab === 'today') loadToday();
+}
+
+// Init — load templates first, then render today view
+loadTemplates().then(() => loadToday());
 // Update triage badge on load
 fetch('/api/prospects').then(r => r.json()).then(prospects => {
   const newCount = prospects.filter(p => p.status === 'new').length;
