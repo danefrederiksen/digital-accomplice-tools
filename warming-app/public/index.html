@@ -386,6 +386,18 @@ textarea.import-area:focus{border-color:var(--o)}
     </div>
   </div>
 
+  <!-- SECTION 0c: Connection Requests to Check -->
+  <div class="section" id="sec-connection-wrap" style="display:none">
+    <div class="section-hdr" onclick="toggleSection('connection')">
+      <h2><span class="sh-badge" style="background:var(--b);color:#fff">&#128279;</span> Check Connection Requests</h2>
+      <div class="sh-right"><span id="connection-count-badge">0</span> pending</div>
+    </div>
+    <div class="section-body" id="sec-connection">
+      <div class="section-desc">You sent connection requests to these prospects 7+ days ago. Check if they accepted &mdash; if yes, mark connected and send your DM.</div>
+      <div id="connection-cards"></div>
+    </div>
+  </div>
+
   <!-- SECTION 1: Who Posted — Comment to Warm -->
   <div class="section">
     <div class="section-hdr" onclick="toggleSection('posted')">
@@ -626,7 +638,9 @@ const TEMPLATE_STEP_LABELS = {
 
 const SEQ_TYPE_LABELS = {
   connected_icp: 'Connected ICP',
-  not_connected: 'Not Connected'
+  not_connected: 'Not Connected',
+  referral_partner: 'Referral Partner',
+  podcast_guest: 'Podcast Guest'
 };
 
 async function loadTemplates() {
@@ -823,6 +837,19 @@ async function loadFollowups() {
     cardsExhausted.innerHTML = data.exhausted.map(p => renderExhaustedCard(p)).join('');
   } else {
     wrapExhausted.style.display = 'none';
+  }
+
+  // Connection requests to check
+  const wrapConn = document.getElementById('sec-connection-wrap');
+  const cardsConn = document.getElementById('connection-cards');
+  const connBadge = document.getElementById('connection-count-badge');
+
+  if (data.connectionPending && data.connectionPending.length > 0) {
+    wrapConn.style.display = 'block';
+    connBadge.textContent = data.connectionPending.length;
+    cardsConn.innerHTML = data.connectionPending.map(p => renderConnectionPendingCard(p)).join('');
+  } else {
+    wrapConn.style.display = 'none';
   }
 }
 
@@ -1053,6 +1080,83 @@ function renderExhaustedCard(p) {
   `;
 }
 
+function renderConnectionPendingCard(p) {
+  const username = p.linkedin_username || extractUsername(p.linkedin_url);
+  const profileUrl = p.linkedin_url || `https://www.linkedin.com/in/${username}`;
+  const daysSince = Math.floor((new Date() - new Date(p.follow_up_due)) / 86400000) + 7; // follow_up_due was set 7 days after request
+
+  // Determine what type of outreach this was for (from engagement note)
+  const lastEng = (p.engagements || []).filter(e => e.type === 'connection_request').pop();
+  const isReferral = lastEng && lastEng.note && lastEng.note.includes('referral');
+  const isPodcast = lastEng && lastEng.note && lastEng.note.includes('podcast');
+  const outreachType = isReferral ? 'referral' : isPodcast ? 'podcast' : 'snapshot';
+  const seqType = getSequenceTypeForOutreach(outreachType, true);
+
+  return `
+    <div class="p-card" id="cp-${escHtml(p.id)}">
+      <div class="p-top">
+        <div class="p-info">
+          <h3>${escHtml(p.name || username)} <a href="#" onclick="openSafeLink('${escHtml(profileUrl)}');return false" style="font-size:10px;font-weight:600">Profile</a></h3>
+          <div class="p-company">${escHtml(p.company || '')}</div>
+          <div class="p-title">${escHtml(p.title || '')}</div>
+        </div>
+        <div class="p-meta">
+          <span class="fu-step fu-step-1" style="font-size:9px">Sent ${daysSince}d ago</span>
+        </div>
+      </div>
+      <div class="seq-info">
+        <span class="seq-label">Connection request sent:</span> ${p.last_action_date || '?'} &bull; Check if they accepted
+      </div>
+      <div class="p-actions">
+        <a href="#" onclick="openSafeLink('${escHtml(profileUrl)}');return false" class="p-btn primary">Check Profile &nearr;</a>
+        <button class="p-btn green" onclick="connectionAccepted('${escHtml(p.id)}','${outreachType}',this)">Accepted! Send DM</button>
+        <button class="p-btn ghost" onclick="connectionSnooze('${escHtml(p.id)}',this)">Not Yet &mdash; Check Later</button>
+        <button class="p-btn dead" onclick="markDead('${escHtml(p.id)}',this)">Give Up</button>
+      </div>
+    </div>
+  `;
+}
+
+async function connectionAccepted(id, outreachType, btn) {
+  btn.disabled = true;
+  btn.textContent = 'Connected!';
+  // First mark as connected
+  await fetch(`/api/prospects/${id}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ connected: true })
+  });
+  // Then the user needs to actually send the DM — show a prompt
+  const card = document.getElementById('cp-' + id);
+  if (card) {
+    card.innerHTML = `
+      <div style="padding:12px;text-align:center">
+        <div style="font-size:13px;font-weight:700;margin-bottom:8px">Connected! Now send your DM, then click below.</div>
+        <button class="p-btn dm" onclick="logOutreach('${escHtml(id)}','${outreachType}',this)">DM Sent</button>
+      </div>
+    `;
+  }
+}
+
+async function connectionSnooze(id, btn) {
+  btn.disabled = true;
+  btn.textContent = 'Snoozed';
+  // Push follow_up_due out another 7 days
+  await fetch(`/api/prospects/${id}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ follow_up_due: calcNextCheckInClient(7) })
+  });
+  const card = document.getElementById('cp-' + id);
+  if (card) { card.style.opacity = '0.3'; card.style.pointerEvents = 'none'; }
+}
+
+function calcNextCheckInClient(days) {
+  const d = new Date();
+  d.setDate(d.getDate() + days);
+  return d.toISOString().split('T')[0];
+}
+
 async function sendFollowup(id, fuNum, btn) {
   btn.disabled = true;
   btn.textContent = 'Sent!';
@@ -1250,6 +1354,13 @@ async function quickComment(id, btn) {
   if (p) p.warmth_score = (p.warmth_score || 0) + 1;
 }
 
+// Map outreach type to sequence type for templates
+function getSequenceTypeForOutreach(type, connected) {
+  if (type === 'referral') return 'referral_partner';
+  if (type === 'podcast') return 'podcast_guest';
+  return connected ? 'connected_icp' : 'not_connected';
+}
+
 // Outreach card renderer
 function renderOutreachCard(p, type) {
   const username = p.linkedin_username || extractUsername(p.linkedin_url);
@@ -1258,7 +1369,23 @@ function renderOutreachCard(p, type) {
   const warmLabel = ws === 0 ? 'Cold' : ws < 3 ? `Warming (${ws})` : ws < 5 ? `Warm (${ws})` : `Hot (${ws})`;
   const warmBadgeClass = `warmth-${Math.min(ws, 5)}`;
 
-  const actionLabel = type === 'snapshot' ? 'Sent Snapshot DM' : type === 'referral' ? 'Sent Outreach' : 'Sent Podcast Invite';
+  const seqType = getSequenceTypeForOutreach(type, p.connected);
+  const isConnected = p.connected === true;
+  const isPending = p.sequence_status === 'connection_pending';
+
+  // Choose action button based on connection status
+  let actionButton;
+  if (isConnected || type === 'snapshot') {
+    // Connected or snapshot type — show DM button
+    const actionLabel = type === 'snapshot' ? 'Sent Snapshot DM' : type === 'referral' ? 'Sent Outreach' : 'Sent Podcast Invite';
+    actionButton = `<button class="p-btn dm" onclick="logOutreach('${escHtml(p.id)}','${type}',this)">${actionLabel}</button>`;
+  } else if (isPending) {
+    // Already sent connection request — show waiting state
+    actionButton = `<button class="p-btn" disabled style="opacity:.6">Connection Request Sent</button>`;
+  } else {
+    // Not connected — show connection request button
+    actionButton = `<button class="p-btn dm" onclick="sendConnectionRequest('${escHtml(p.id)}','${type}',this)">Send Connection Request</button>`;
+  }
 
   return `
     <div class="p-card" id="oc-${escHtml(p.id)}">
@@ -1269,14 +1396,15 @@ function renderOutreachCard(p, type) {
           <div class="p-title">${escHtml(p.title || '')}</div>
         </div>
         <div class="p-meta">
+          ${!isConnected && type !== 'snapshot' ? '<span class="fu-step fu-step-3" style="font-size:9px">Not Connected</span>' : ''}
           <span class="warmth-badge ${warmBadgeClass}">${warmLabel}</span>
           <span class="tier-badge tier-${p.tier}">T${p.tier}</span>
         </div>
       </div>
-      ${renderTemplateBlock(p.connected ? 'connected_icp' : 'not_connected', 'offer', p)}
+      ${renderTemplateBlock(seqType, 'offer', p)}
       <div class="p-actions">
         <a href="#" onclick="openSafeLink('${escHtml(profileUrl)}');return false" class="p-btn primary">Open Profile &nearr;</a>
-        <button class="p-btn dm" onclick="logOutreach('${escHtml(p.id)}','${type}',this)">${actionLabel}</button>
+        ${actionButton}
         <button class="p-btn ghost" onclick="openEdit('${escHtml(p.id)}')">Edit</button>
       </div>
     </div>
@@ -1287,10 +1415,11 @@ async function logOutreach(id, type, btn) {
   btn.disabled = true;
   btn.textContent = 'Sent!';
   const note = type === 'snapshot' ? 'Snapshot DM sent' : type === 'referral' ? 'Referral outreach sent' : 'Podcast invite sent';
+  const seqType = getSequenceTypeForOutreach(type, true); // connected if they're clicking DM button
   await fetch(`/api/prospects/${id}/engage`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ type: 'dm', note })
+    body: JSON.stringify({ type: 'dm', note, sequence_type: seqType })
   });
   const card = document.getElementById('oc-' + id);
   if (card) { card.style.opacity = '0.3'; card.style.pointerEvents = 'none'; }
@@ -1312,6 +1441,19 @@ async function logOutreach(id, type, btn) {
     el.textContent = n;
     el.className = 'dp-count done';
   }
+}
+
+async function sendConnectionRequest(id, type, btn) {
+  btn.disabled = true;
+  btn.textContent = 'Request Sent!';
+  const note = type === 'referral' ? 'Connection request sent (referral partner)' : 'Connection request sent (podcast guest)';
+  await fetch(`/api/prospects/${id}/engage`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ type: 'connection_request', note })
+  });
+  const card = document.getElementById('oc-' + id);
+  if (card) { card.style.opacity = '0.3'; card.style.pointerEvents = 'none'; }
 }
 
 function extractUsername(url) {

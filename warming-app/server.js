@@ -132,11 +132,12 @@ function calcNextCheckIn(lastDate, intervalDays) {
 // Prevents someone from injecting unexpected statuses,
 // segments, or other values through the API
 // ============================================================
-const VALID_SEGMENTS = ['cyber', 'ai_ml', 'referral_partner', 'warm_priority', 'warm_network'];
+const VALID_SEGMENTS = ['cyber', 'ai_ml', 'referral_partner', 'warm_priority', 'warm_network', 'cyber_cmo', 'demand_gen', 'podcast_target', 'ai_ml_leader'];
 const VALID_STATUSES = ['new', 'warming', 'warm', 'outreach_sent', 'replied', 'call_booked', 'won', 'lost', 'skip', 'dead'];
 const VALID_CONNECTED = [true, false, 'unknown'];
 const VALID_TIERS = [1, 2, 3];
-const VALID_ENGAGEMENT_TYPES = ['comment', 'dm', 'follow_up', 'reply_received'];
+const VALID_ENGAGEMENT_TYPES = ['comment', 'dm', 'follow_up', 'reply_received', 'connection_request'];
+const VALID_SEQUENCE_TYPES = ['connected_icp', 'not_connected', 'referral_partner', 'podcast_guest'];
 
 function validateSegment(seg) { return VALID_SEGMENTS.includes(seg) ? seg : 'cyber'; }
 function validateStatus(status) { return VALID_STATUSES.includes(status) ? status : 'warming'; }
@@ -177,7 +178,14 @@ app.get('/api/followups', (req, res) => {
     p.sequence_status === 'exhausted'
   );
 
-  res.json({ due: followups, exhausted });
+  // Connection requests to check on (sent 7+ days ago)
+  const connectionPending = data.prospects.filter(p =>
+    p.sequence_status === 'connection_pending' &&
+    p.follow_up_due &&
+    p.follow_up_due <= today
+  ).sort((a, b) => (a.follow_up_due || '').localeCompare(b.follow_up_due || ''));
+
+  res.json({ due: followups, exhausted, connectionPending });
 });
 
 // GET message templates
@@ -461,7 +469,7 @@ app.post('/api/prospects/:id/engage', (req, res) => {
   if (idx === -1) return res.status(404).json({ error: 'Not found' });
 
   const p = data.prospects[idx];
-  const { type, note } = req.body;
+  const { type, note, sequence_type: reqSeqType } = req.body;
 
   // SECURITY: Validate engagement type
   if (!VALID_ENGAGEMENT_TYPES.includes(type)) {
@@ -476,6 +484,12 @@ app.post('/api/prospects/:id/engage', (req, res) => {
   // Update warmth score
   if (type === 'comment') {
     p.warmth_score = (p.warmth_score || 0) + 1;
+  } else if (type === 'connection_request') {
+    // Track connection request — follow up in 7 days to check if accepted
+    p.last_action = sanitize(note || 'Sent connection request');
+    p.last_action_date = today;
+    p.follow_up_due = calcNextCheckIn(today, 7);
+    p.sequence_status = 'connection_pending';
   } else if (type === 'dm') {
     p.warmth_score = (p.warmth_score || 0) + 2;
     p.status = 'outreach_sent';
@@ -483,8 +497,13 @@ app.post('/api/prospects/:id/engage', (req, res) => {
     p.last_action_date = today;
 
     // Auto-start sequence if not already in one
-    if (!p.sequence_status || p.sequence_status === 'none') {
-      p.sequence_type = p.connected ? 'connected_icp' : 'not_connected';
+    if (!p.sequence_status || p.sequence_status === 'none' || p.sequence_status === 'connection_pending') {
+      // Use requested sequence type if valid, otherwise auto-detect from connected status
+      if (reqSeqType && VALID_SEQUENCE_TYPES.includes(reqSeqType)) {
+        p.sequence_type = reqSeqType;
+      } else {
+        p.sequence_type = p.connected ? 'connected_icp' : 'not_connected';
+      }
       p.sequence_step = 1;
       p.sequence_started = today;
       p.follow_up_count = 0;
@@ -698,6 +717,7 @@ app.get('/api/reports', (req, res) => {
     active: prospects.filter(p => p.sequence_status === 'active').length,
     exhausted: prospects.filter(p => p.sequence_status === 'exhausted').length,
     replied: prospects.filter(p => p.sequence_status === 'replied').length,
+    connection_pending: prospects.filter(p => p.sequence_status === 'connection_pending').length,
     total_started: prospects.filter(p => p.sequence_started).length
   };
   // Reply rate: replies / total sequences started

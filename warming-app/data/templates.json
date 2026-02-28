@@ -10,5 +10,17 @@
     "followup_1": "Thanks for connecting! I mentioned a snapshot of {company}'s video presence vs. competitors \u2014 want me to send it over? Takes 2 min to review.",
     "followup_2": "Following up on the {company} video snapshot. Happy to send if useful \u2014 no strings attached.",
     "followup_3": "Last follow-up on this. The {company} data was interesting. Let me know if you ever want a look."
+  },
+  "referral_partner": {
+    "offer": "Hey {name}, love what you're building at {company}. I run a video strategy agency and we share a lot of the same audience \u2014 would love to explore ways we could send each other referrals. Open to a quick chat?",
+    "followup_1": "Following up on this \u2014 I think there's a real overlap between our networks. Even a 15-min call could surface some easy wins for both of us.",
+    "followup_2": "Bumping this one more time. I've got a few clients right now who could use what {company} does \u2014 happy to make intros if you're open to it.",
+    "followup_3": "Last follow-up on the referral idea. No worries if the timing's off \u2014 the door's always open."
+  },
+  "podcast_guest": {
+    "offer": "Hey {name}, I'm producing a video series focused on leaders in the space, and your work at {company} keeps coming up. Would you be open to a 20-minute recorded conversation? No prep needed \u2014 just you sharing what you know.",
+    "followup_1": "Following up on the interview invite \u2014 it's a pretty low-lift format. 20 min on Zoom, we handle all the editing and promotion. Let me know if you're interested.",
+    "followup_2": "One more bump on this. The series is getting solid traction and I think your perspective from {company} would really stand out. Happy to send examples of past episodes.",
+    "followup_3": "Final follow-up on the interview. Totally understand if the timing's not right \u2014 would love to revisit down the road."
   }
 }
