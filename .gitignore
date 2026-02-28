@@ -1,0 +1,20 @@
+# Prospect data (contains real names, companies, LinkedIn URLs)
+data/prospects.json
+data/alerts.json
+*.xlsx
+*.xls
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Node
+node_modules/
+
+# Generated deliverables (PDFs, images)
+*.pdf
+*.jpg
+*.png
+
+# Sensitive docs
+*.docx

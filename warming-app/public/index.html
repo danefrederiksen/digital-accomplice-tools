@@ -1,0 +1,831 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DA Warming Dashboard</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--o:#F38B1C;--ol:#FFF3EB;--dk:#1a1a1a;--md:#5A6B7A;--lt:#999;--bg:#f5f5f5;--card:#fff;--bdr:#e5e5e5;--g:#22c55e;--gb:#dcfce7;--y:#d97706;--yb:#fef3c7;--r:#ef4444;--rb:#fee2e2;--b:#3b82f6;--bb:#dbeafe;--p:#8b5cf6;--pb:#ede9fe}
+body{font-family:'Inter',system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--dk);-webkit-font-smoothing:antialiased;min-height:100vh}
+a{color:var(--b);text-decoration:none}a:hover{text-decoration:underline}
+
+.hdr{background:var(--dk);padding:14px 24px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
+.hdr-l{display:flex;align-items:center;gap:12px}
+.hdr .logo{color:var(--o);font-size:10px;font-weight:700;letter-spacing:.15em;text-transform:uppercase}
+.hdr h1{color:#fff;font-size:16px;font-weight:700}
+.hdr-r{display:flex;gap:8px}
+.hdr-r button{background:transparent;border:1px solid rgba(255,255,255,.2);color:#fff;padding:6px 14px;border-radius:8px;font-size:11px;font-weight:600;cursor:pointer;font-family:inherit}
+.hdr-r button:hover{border-color:var(--o);color:var(--o)}
+
+.tabs{display:flex;gap:0;background:var(--card);border-bottom:1px solid var(--bdr);padding:0 24px;position:sticky;top:50px;z-index:90}
+.tab{padding:12px 20px;font-size:12px;font-weight:600;color:var(--md);cursor:pointer;border-bottom:2px solid transparent;transition:all .15s}
+.tab:hover{color:var(--dk)}
+.tab.on{color:var(--o);border-bottom-color:var(--o)}
+.tab .badge{background:var(--o);color:#fff;font-size:9px;font-weight:700;padding:1px 6px;border-radius:10px;margin-left:6px}
+
+.content{max-width:1000px;margin:0 auto;padding:20px 24px}
+.view{display:none}.view.on{display:block}
+
+/* Daily progress bar */
+.daily-progress{background:var(--card);border:1px solid var(--bdr);border-radius:12px;padding:16px 20px;margin-bottom:16px}
+.dp-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--md);margin-bottom:10px}
+.dp-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.dp-item{text-align:center}
+.dp-count{font-size:24px;font-weight:800}
+.dp-count.done{color:var(--g)}
+.dp-count.partial{color:var(--y)}
+.dp-count.none{color:var(--lt)}
+.dp-target{font-size:10px;color:var(--md);font-weight:600}
+.dp-label{font-size:10px;color:var(--lt);margin-top:2px}
+
+/* Section */
+.section{background:var(--card);border:1px solid var(--bdr);border-radius:12px;margin-bottom:12px;overflow:hidden}
+.section-hdr{padding:14px 20px 10px;display:flex;justify-content:space-between;align-items:center;cursor:pointer}
+.section-hdr:hover{background:#fafafa}
+.section-hdr h2{font-size:14px;font-weight:700;display:flex;align-items:center;gap:8px}
+.section-hdr .sh-badge{font-size:9px;font-weight:700;padding:2px 8px;border-radius:10px}
+.section-hdr .sh-badge.cyber{background:var(--ol);color:var(--o)}
+.section-hdr .sh-badge.ai{background:var(--bb);color:var(--b)}
+.section-hdr .sh-badge.ref{background:var(--gb);color:var(--g)}
+.section-hdr .sh-badge.warm{background:var(--pb);color:var(--p)}
+.section-hdr .sh-right{font-size:11px;color:var(--md);display:flex;align-items:center;gap:8px}
+.section-body{padding:0 20px 16px}
+.section-body.collapsed{display:none}
+.section-desc{font-size:11px;color:var(--md);margin-bottom:10px;line-height:1.5}
+
+/* Quick search for "who posted" */
+.qs-wrap{position:relative;margin-bottom:10px}
+.qs-input{width:100%;padding:10px 14px;border:2px solid var(--bdr);border-radius:10px;font-size:13px;font-family:inherit;outline:none;transition:border .15s}
+.qs-input:focus{border-color:var(--o)}
+.qs-input::placeholder{color:var(--lt)}
+.qs-results{position:absolute;top:100%;left:0;right:0;background:var(--card);border:1px solid var(--bdr);border-radius:0 0 10px 10px;max-height:300px;overflow-y:auto;z-index:50;display:none;box-shadow:0 8px 24px rgba(0,0,0,.1)}
+.qs-results.on{display:block}
+.qs-item{padding:10px 14px;border-bottom:1px solid var(--bdr);cursor:pointer;display:flex;justify-content:space-between;align-items:center;transition:background .1s}
+.qs-item:hover{background:var(--ol)}
+.qs-item-info{flex:1}
+.qs-item-name{font-size:13px;font-weight:700}
+.qs-item-co{font-size:11px;color:var(--md)}
+.qs-item-actions{display:flex;gap:4px}
+
+/* Prospect card (compact for sections) */
+.p-card{background:var(--bg);border:1px solid var(--bdr);border-radius:10px;padding:12px 16px;margin-bottom:6px;transition:all .15s}
+.p-card:hover{border-color:#ccc}
+.p-card.hot{border-left:3px solid var(--o)}
+.p-card.warm{border-left:3px solid var(--y)}
+.p-top{display:flex;justify-content:space-between;align-items:center}
+.p-info h3{font-size:13px;font-weight:700;margin-bottom:1px}
+.p-info .p-company{font-size:11px;color:var(--md)}
+.p-info .p-title{font-size:10px;color:var(--lt)}
+.p-meta{display:flex;gap:4px;align-items:center;flex-shrink:0}
+.warmth-badge{font-size:9px;font-weight:700;padding:2px 8px;border-radius:20px}
+.warmth-0{background:#f3f4f6;color:var(--md)}
+.warmth-1,.warmth-2{background:var(--bb);color:var(--b)}
+.warmth-3,.warmth-4{background:var(--yb);color:var(--y)}
+.warmth-5{background:var(--ol);color:var(--o)}
+.tier-badge{font-size:8px;font-weight:700;padding:2px 6px;border-radius:20px}
+.tier-1{background:var(--ol);color:var(--o)}.tier-2{background:var(--bb);color:var(--b)}.tier-3{background:#f3f4f6;color:var(--md)}
+
+.p-actions{display:flex;gap:4px;flex-wrap:wrap;margin-top:6px}
+.p-btn{padding:6px 12px;border-radius:8px;border:1px solid var(--bdr);background:var(--card);font-size:10px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .12s;display:flex;align-items:center;gap:3px}
+.p-btn:hover{border-color:var(--o);color:var(--o)}
+.p-btn.primary{background:var(--o);color:#fff;border-color:var(--o)}
+.p-btn.primary:hover{background:#d47810}
+.p-btn.green{background:var(--g);color:#fff;border-color:var(--g)}
+.p-btn.green:hover{background:#1aa34a}
+.p-btn.ghost{border:none;color:var(--md);padding:6px}
+.p-btn.ghost:hover{color:var(--o)}
+.p-btn.dm{background:var(--b);color:#fff;border-color:var(--b)}
+.p-btn.dm:hover{background:#2563eb}
+
+.p-engagement-log{margin-top:6px;padding-top:6px;border-top:1px solid var(--bdr)}
+.p-eng-item{font-size:9px;color:var(--md);padding:1px 0;display:flex;gap:6px}
+.p-eng-item .date{color:var(--lt);min-width:65px}
+.p-eng-item .type{font-weight:600;min-width:50px}
+
+/* Outreach card (for DM/referral/podcast sections) */
+.outreach-card{background:var(--bg);border:1px solid var(--bdr);border-radius:10px;padding:14px 16px;margin-bottom:6px}
+.outreach-card .oc-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px}
+.outreach-card h3{font-size:13px;font-weight:700}
+.outreach-card .oc-co{font-size:11px;color:var(--md)}
+.outreach-card .oc-hook{font-size:11px;color:var(--md);line-height:1.5;margin-bottom:8px;padding:8px;background:var(--card);border-radius:6px;border-left:3px solid var(--o)}
+
+/* Pipeline */
+.pipeline-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px}
+.pipeline-col{background:var(--card);border:1px solid var(--bdr);border-radius:10px;padding:10px}
+.pipeline-col h3{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--md);margin-bottom:6px;display:flex;justify-content:space-between}
+.pipeline-col h3 span{background:var(--bg);padding:1px 6px;border-radius:10px;font-size:9px}
+.pipeline-item{padding:6px 8px;background:var(--bg);border-radius:6px;margin-bottom:3px;font-size:11px;cursor:pointer;transition:background .1s}
+.pipeline-item:hover{background:var(--ol)}
+.pipeline-item .pi-name{font-weight:700}
+.pipeline-item .pi-co{font-size:9px;color:var(--md)}
+
+/* Filter bar */
+.filter-bar{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;align-items:center}
+.filter-bar input{padding:7px 12px;border:1px solid var(--bdr);border-radius:8px;font-size:12px;font-family:inherit;width:220px;outline:none}
+.filter-bar input:focus{border-color:var(--o)}
+.filter-bar select{padding:7px 10px;border:1px solid var(--bdr);border-radius:8px;font-size:11px;font-family:inherit;cursor:pointer}
+
+/* Import */
+.import-section{background:var(--card);border:1px solid var(--bdr);border-radius:12px;padding:24px;margin-bottom:16px}
+.import-section h3{font-size:14px;font-weight:700;margin-bottom:4px}
+.import-section p{font-size:12px;color:var(--md);margin-bottom:12px}
+textarea.import-area{width:100%;height:200px;border:1px solid var(--bdr);border-radius:8px;padding:12px;font-family:'SF Mono',Consolas,monospace;font-size:12px;resize:vertical;outline:none}
+textarea.import-area:focus{border-color:var(--o)}
+.import-opts{display:flex;gap:10px;margin:12px 0;flex-wrap:wrap;align-items:center}
+.import-opts label{font-size:11px;font-weight:600;color:var(--md)}
+.import-opts select,.import-opts input{padding:6px 10px;border:1px solid var(--bdr);border-radius:6px;font-size:11px;font-family:inherit}
+.import-result{margin-top:12px;padding:12px;border-radius:8px;font-size:12px;font-weight:600;display:none}
+.import-result.success{display:block;background:var(--gb);color:var(--g)}
+
+/* Modal */
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:200;display:none;align-items:center;justify-content:center}
+.modal-bg.on{display:flex}
+.modal{background:var(--card);border-radius:14px;width:90%;max-width:560px;max-height:80vh;overflow-y:auto;padding:24px}
+.modal h2{font-size:18px;font-weight:700;margin-bottom:4px}
+.modal .m-company{font-size:13px;color:var(--md);margin-bottom:16px}
+.modal label{font-size:11px;font-weight:600;color:var(--md);display:block;margin:10px 0 4px}
+.modal input,.modal select,.modal textarea{width:100%;padding:8px 10px;border:1px solid var(--bdr);border-radius:6px;font-size:12px;font-family:inherit}
+.modal textarea{height:60px;resize:vertical}
+.modal-actions{display:flex;gap:8px;margin-top:16px;justify-content:flex-end}
+
+.today-empty{text-align:center;padding:30px;color:var(--lt);font-size:12px}
+
+</style>
+</head>
+<body>
+
+<div class="hdr">
+  <div class="hdr-l">
+    <div class="logo">Digital Accomplice</div>
+    <h1>Warming Dashboard</h1>
+  </div>
+  <div class="hdr-r">
+    <button onclick="exportCSV()">Export CSV</button>
+  </div>
+</div>
+
+<div class="tabs">
+  <div class="tab on" data-tab="today">Today</div>
+  <div class="tab" data-tab="pipeline">Pipeline</div>
+  <div class="tab" data-tab="all">All Prospects</div>
+  <div class="tab" data-tab="import">Import</div>
+</div>
+
+<div class="content">
+
+<!-- TODAY VIEW -->
+<div class="view on" id="view-today">
+
+  <!-- Daily Progress -->
+  <div class="daily-progress">
+    <div class="dp-title">Today's Progress</div>
+    <div class="dp-grid">
+      <div class="dp-item"><div class="dp-count none" id="dp-comments">0</div><div class="dp-target" id="dp-comments-target">/ 8 target</div><div class="dp-label">Comments</div></div>
+      <div class="dp-item"><div class="dp-count none" id="dp-dms">0</div><div class="dp-target">/ 1 target</div><div class="dp-label">Snapshot DMs</div></div>
+      <div class="dp-item"><div class="dp-count none" id="dp-referral">0</div><div class="dp-target">/ 1 target</div><div class="dp-label">Referral Outreach</div></div>
+      <div class="dp-item"><div class="dp-count none" id="dp-podcast">0</div><div class="dp-target">/ 1 target</div><div class="dp-label">Podcast Invites</div></div>
+    </div>
+  </div>
+
+  <!-- SECTION 1: Who Posted — Comment to Warm -->
+  <div class="section">
+    <div class="section-hdr" onclick="toggleSection('posted')">
+      <h2><span class="sh-badge cyber">1</span> Who Posted? &mdash; Comment to Warm</h2>
+      <div class="sh-right">8/day target</div>
+    </div>
+    <div class="section-body" id="sec-posted">
+      <div class="section-desc">Search for prospects who posted on LinkedIn. Open their activity, leave a comment, then mark it done.</div>
+      <div class="qs-wrap">
+        <input type="text" class="qs-input" id="posted-search" placeholder="Search by name, company, or username..." autocomplete="off">
+        <div class="qs-results" id="posted-results"></div>
+      </div>
+      <div id="posted-cards"></div>
+    </div>
+  </div>
+
+  <!-- SECTION 2: Snapshot DMs -->
+  <div class="section">
+    <div class="section-hdr" onclick="toggleSection('snapshot')">
+      <h2><span class="sh-badge cyber">2</span> Snapshot DMs &mdash; 1st-Degree Connections</h2>
+      <div class="sh-right">1/day</div>
+    </div>
+    <div class="section-body" id="sec-snapshot">
+      <div class="section-desc">These are Tier 1 cyber prospects you're already connected with. Build a Snapshot, then DM them directly. No warming needed.</div>
+      <div id="snapshot-cards"></div>
+    </div>
+  </div>
+
+  <!-- SECTION 3: Referral Outreach -->
+  <div class="section">
+    <div class="section-hdr" onclick="toggleSection('referral')">
+      <h2><span class="sh-badge ref">3</span> Referral Partner Outreach</h2>
+      <div class="sh-right">1/day</div>
+    </div>
+    <div class="section-body" id="sec-referral">
+      <div class="section-desc">Agency leaders and content studios who can become ongoing referral sources.</div>
+      <div id="referral-cards"></div>
+    </div>
+  </div>
+
+  <!-- SECTION 4: Podcast Invites -->
+  <div class="section">
+    <div class="section-hdr" onclick="toggleSection('podcast')">
+      <h2><span class="sh-badge warm">4</span> Podcast Invites &mdash; Warm Network</h2>
+      <div class="sh-right">1/day</div>
+    </div>
+    <div class="section-body" id="sec-podcast">
+      <div class="section-desc">Warm contacts and former colleagues. Invite them to your B2B mini podcast.</div>
+      <div id="podcast-cards"></div>
+    </div>
+  </div>
+
+</div>
+
+<!-- PIPELINE VIEW -->
+<div class="view" id="view-pipeline">
+  <div class="pipeline-grid" id="pipeline-grid"></div>
+</div>
+
+<!-- ALL PROSPECTS VIEW -->
+<div class="view" id="view-all">
+  <div class="filter-bar">
+    <input type="text" id="search-input" placeholder="Search name, company, title...">
+    <select id="filter-segment">
+      <option value="">All Segments</option>
+      <option value="cyber">Cyber</option>
+      <option value="ai_ml">AI/ML</option>
+      <option value="referral_partner">Referral Partner</option>
+      <option value="warm_priority">Warm Priority</option>
+      <option value="warm_network">Warm Network</option>
+    </select>
+    <select id="filter-status">
+      <option value="">All Statuses</option>
+      <option value="new">New</option>
+      <option value="warming">Warming</option>
+      <option value="warm">Warm</option>
+      <option value="outreach_sent">Outreach Sent</option>
+      <option value="replied">Replied</option>
+      <option value="call_booked">Call Booked</option>
+      <option value="won">Won</option>
+      <option value="lost">Lost</option>
+    </select>
+    <select id="filter-tier">
+      <option value="">All Tiers</option>
+      <option value="1">Tier 1</option>
+      <option value="2">Tier 2</option>
+      <option value="3">Tier 3</option>
+    </select>
+  </div>
+  <div id="all-list"></div>
+</div>
+
+<!-- IMPORT VIEW -->
+<div class="view" id="view-import">
+  <div class="import-section">
+    <h3>Paste LinkedIn URLs</h3>
+    <p>Paste profile URLs from Sales Navigator (one per line). Added to warming queue immediately.</p>
+    <textarea class="import-area" id="url-input" placeholder="https://www.linkedin.com/in/username1
+https://www.linkedin.com/in/username2
+https://www.linkedin.com/in/username3"></textarea>
+    <div class="import-opts">
+      <label>Segment:</label>
+      <select id="imp-segment">
+        <option value="cyber">Cyber</option>
+        <option value="ai_ml">AI/ML</option>
+        <option value="referral_partner">Referral Partner</option>
+        <option value="warm_network">Warm Network</option>
+      </select>
+      <label>Tier:</label>
+      <select id="imp-tier"><option value="1">1</option><option value="2">2</option><option value="3">3</option></select>
+      <label>Check-in:</label>
+      <select id="imp-checkin"><option value="3">Every 3 days</option><option value="1">Daily</option><option value="7">Weekly</option></select>
+      <label>Tags:</label>
+      <input type="text" id="imp-tags" placeholder="cyber-cmo" style="width:140px">
+    </div>
+    <button class="p-btn primary" onclick="importURLs()">Import Prospects</button>
+    <div class="import-result" id="url-result"></div>
+  </div>
+  <div class="import-section">
+    <h3>Import from CSV</h3>
+    <p>Upload a CSV with columns: name, linkedin_url, company, title, segment, tier, icp_score, status, connected, notes, source</p>
+    <input type="file" id="csv-file" accept=".csv" style="font-size:12px">
+    <button class="p-btn primary" onclick="importCSV()" style="margin-top:10px">Import CSV</button>
+    <div class="import-result" id="csv-result"></div>
+  </div>
+  <div class="import-section">
+    <h3>Add Single Prospect</h3>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+      <div><label style="font-size:11px;font-weight:600;color:var(--md)">Name</label><input type="text" id="add-name" style="width:100%;padding:6px 10px;border:1px solid var(--bdr);border-radius:6px;font-size:12px"></div>
+      <div><label style="font-size:11px;font-weight:600;color:var(--md)">LinkedIn URL</label><input type="text" id="add-url" style="width:100%;padding:6px 10px;border:1px solid var(--bdr);border-radius:6px;font-size:12px"></div>
+      <div><label style="font-size:11px;font-weight:600;color:var(--md)">Company</label><input type="text" id="add-company" style="width:100%;padding:6px 10px;border:1px solid var(--bdr);border-radius:6px;font-size:12px"></div>
+      <div><label style="font-size:11px;font-weight:600;color:var(--md)">Title</label><input type="text" id="add-title" style="width:100%;padding:6px 10px;border:1px solid var(--bdr);border-radius:6px;font-size:12px"></div>
+    </div>
+    <button class="p-btn primary" onclick="addSingle()" style="margin-top:10px">Add Prospect</button>
+  </div>
+</div>
+
+</div>
+
+<!-- Edit Modal -->
+<div class="modal-bg" id="edit-modal">
+  <div class="modal">
+    <h2 id="modal-name"></h2>
+    <div class="m-company" id="modal-company"></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+      <div><label>Name</label><input id="ed-name"></div>
+      <div><label>Company</label><input id="ed-company"></div>
+      <div><label>Title</label><input id="ed-title"></div>
+      <div><label>LinkedIn URL</label><input id="ed-url"></div>
+      <div><label>Segment</label><select id="ed-segment"><option value="cyber">Cyber</option><option value="ai_ml">AI/ML</option><option value="referral_partner">Referral Partner</option><option value="warm_priority">Warm Priority</option><option value="warm_network">Warm Network</option></select></div>
+      <div><label>Tier</label><select id="ed-tier"><option value="1">1</option><option value="2">2</option><option value="3">3</option></select></div>
+      <div><label>Status</label><select id="ed-status"><option value="new">New</option><option value="warming">Warming</option><option value="warm">Warm</option><option value="outreach_sent">Outreach Sent</option><option value="replied">Replied</option><option value="call_booked">Call Booked</option><option value="won">Won</option><option value="lost">Lost</option><option value="skip">Skip</option></select></div>
+      <div><label>Check-in (days)</label><input id="ed-checkin" type="number"></div>
+      <div><label>ICP Score</label><input id="ed-score" type="number" step="0.5"></div>
+      <div><label>Connected</label><select id="ed-connected"><option value="false">No</option><option value="true">Yes</option></select></div>
+    </div>
+    <label>Notes</label><textarea id="ed-notes"></textarea>
+    <label>Engagement History</label>
+    <div id="ed-engagements" style="max-height:120px;overflow-y:auto;font-size:11px;color:var(--md);margin-top:4px"></div>
+    <div class="modal-actions">
+      <button class="p-btn" onclick="closeModal()">Cancel</button>
+      <button class="p-btn" style="color:var(--r)" onclick="deleteProspect()">Delete</button>
+      <button class="p-btn primary" onclick="saveModal()">Save</button>
+    </div>
+  </div>
+</div>
+
+<script>
+let allProspects = [];
+let cachedProspects = [];
+let editingId = null;
+
+// Tab switching
+document.querySelectorAll('.tab').forEach(t => {
+  t.addEventListener('click', () => {
+    document.querySelectorAll('.tab').forEach(x => x.classList.remove('on'));
+    document.querySelectorAll('.view').forEach(x => x.classList.remove('on'));
+    t.classList.add('on');
+    document.getElementById('view-' + t.dataset.tab).classList.add('on');
+    if (t.dataset.tab === 'today') loadToday();
+    if (t.dataset.tab === 'pipeline') loadPipeline();
+    if (t.dataset.tab === 'all') loadAll();
+  });
+});
+
+function toggleSection(id) {
+  document.getElementById('sec-' + id).classList.toggle('collapsed');
+}
+
+// ===== TODAY VIEW =====
+async function loadToday() {
+  const [prospects, stats] = await Promise.all([
+    fetch('/api/prospects').then(r => r.json()),
+    fetch('/api/stats').then(r => r.json())
+  ]);
+  cachedProspects = prospects;
+
+  // Update daily progress
+  updateProgress(stats);
+
+  // Section 2: Snapshot DMs — next 3 Tier 1 cyber connections who haven't been contacted
+  const snapshotCandidates = prospects.filter(p =>
+    (p.segment === 'cyber') &&
+    p.tier == 1 &&
+    p.connected &&
+    p.status === 'warming' &&
+    p.name
+  ).sort((a, b) => (b.icp_score || 0) - (a.icp_score || 0)).slice(0, 3);
+
+  const snapshotDiv = document.getElementById('snapshot-cards');
+  snapshotDiv.innerHTML = snapshotCandidates.length
+    ? snapshotCandidates.map(p => renderOutreachCard(p, 'snapshot')).join('')
+    : '<div class="today-empty">No snapshot candidates remaining</div>';
+
+  // Section 3: Referral outreach — next 2 referral partners
+  const referralCandidates = prospects.filter(p =>
+    p.segment === 'referral_partner' &&
+    p.tier == 1 &&
+    p.status === 'warming' &&
+    p.name
+  ).sort((a, b) => (b.icp_score || 0) - (a.icp_score || 0)).slice(0, 2);
+
+  const referralDiv = document.getElementById('referral-cards');
+  referralDiv.innerHTML = referralCandidates.length
+    ? referralCandidates.map(p => renderOutreachCard(p, 'referral')).join('')
+    : '<div class="today-empty">No referral candidates remaining</div>';
+
+  // Section 4: Podcast invites — next 2 warm priority
+  const podcastCandidates = prospects.filter(p =>
+    (p.segment === 'warm_priority' || p.segment === 'warm_network') &&
+    p.tier == 1 &&
+    p.status === 'warming' &&
+    p.name
+  ).sort((a, b) => (b.icp_score || 0) - (a.icp_score || 0)).slice(0, 2);
+
+  const podcastDiv = document.getElementById('podcast-cards');
+  podcastDiv.innerHTML = podcastCandidates.length
+    ? podcastCandidates.map(p => renderOutreachCard(p, 'podcast')).join('')
+    : '<div class="today-empty">No podcast candidates remaining</div>';
+}
+
+function updateProgress(stats) {
+  const commentsEl = document.getElementById('dp-comments');
+  const dmsEl = document.getElementById('dp-dms');
+  const refEl = document.getElementById('dp-referral');
+  const podEl = document.getElementById('dp-podcast');
+
+  commentsEl.textContent = stats.commentsToday;
+  commentsEl.className = 'dp-count ' + (stats.commentsToday >= 8 ? 'done' : stats.commentsToday > 0 ? 'partial' : 'none');
+
+  dmsEl.textContent = stats.dmsToday;
+  dmsEl.className = 'dp-count ' + (stats.dmsToday >= 1 ? 'done' : 'none');
+
+  // Count today's referral and podcast engagements from prospects
+  let refCount = 0, podCount = 0;
+  cachedProspects.forEach(p => {
+    const today = new Date().toISOString().split('T')[0];
+    (p.engagements || []).forEach(e => {
+      if (e.date === today && e.type === 'dm') {
+        if (p.segment === 'referral_partner') refCount++;
+        if (p.segment === 'warm_priority' || p.segment === 'warm_network') podCount++;
+      }
+    });
+  });
+  refEl.textContent = refCount;
+  refEl.className = 'dp-count ' + (refCount >= 1 ? 'done' : 'none');
+  podEl.textContent = podCount;
+  podEl.className = 'dp-count ' + (podCount >= 1 ? 'done' : 'none');
+}
+
+// Quick search for "who posted"
+const postedSearch = document.getElementById('posted-search');
+const postedResults = document.getElementById('posted-results');
+let searchTimeout;
+
+postedSearch.addEventListener('input', () => {
+  clearTimeout(searchTimeout);
+  const q = postedSearch.value.trim().toLowerCase();
+  if (q.length < 2) { postedResults.classList.remove('on'); return; }
+
+  searchTimeout = setTimeout(() => {
+    const matches = cachedProspects.filter(p =>
+      p.status === 'warming' &&
+      ((p.name || '').toLowerCase().includes(q) ||
+       (p.company || '').toLowerCase().includes(q) ||
+       (p.linkedin_username || '').toLowerCase().includes(q))
+    ).slice(0, 8);
+
+    if (matches.length === 0) {
+      postedResults.innerHTML = '<div style="padding:12px;color:var(--lt);font-size:12px">No matches found</div>';
+    } else {
+      postedResults.innerHTML = matches.map(p => {
+        const username = p.linkedin_username || extractUsername(p.linkedin_url);
+        const activityUrl = `https://www.linkedin.com/in/${username}/recent-activity/all/`;
+        return `
+          <div class="qs-item" onclick="addToPosted('${p.id}')">
+            <div class="qs-item-info">
+              <div class="qs-item-name">${p.name || username}</div>
+              <div class="qs-item-co">${p.company || ''} &mdash; ${p.title || ''}</div>
+            </div>
+            <div class="qs-item-actions">
+              <a href="${activityUrl}" target="_blank" class="p-btn primary" onclick="event.stopPropagation()" style="font-size:9px;padding:4px 8px">Activity &nearr;</a>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+    postedResults.classList.add('on');
+  }, 150);
+});
+
+postedSearch.addEventListener('blur', () => {
+  setTimeout(() => postedResults.classList.remove('on'), 200);
+});
+postedSearch.addEventListener('focus', () => {
+  if (postedSearch.value.trim().length >= 2) postedResults.classList.add('on');
+});
+
+function addToPosted(id) {
+  const p = cachedProspects.find(x => x.id === id);
+  if (!p) return;
+  postedSearch.value = '';
+  postedResults.classList.remove('on');
+
+  const container = document.getElementById('posted-cards');
+  const username = p.linkedin_username || extractUsername(p.linkedin_url);
+  const activityUrl = `https://www.linkedin.com/in/${username}/recent-activity/all/`;
+  const ws = p.warmth_score || 0;
+  const warmLabel = ws === 0 ? 'Cold' : ws < 3 ? `Warming (${ws})` : ws < 5 ? `Warm (${ws})` : `Hot (${ws})`;
+  const warmBadgeClass = `warmth-${Math.min(ws, 5)}`;
+
+  const card = document.createElement('div');
+  card.className = 'p-card';
+  card.innerHTML = `
+    <div class="p-top">
+      <div class="p-info">
+        <h3>${p.name || username}</h3>
+        <div class="p-company">${p.company || ''}</div>
+        <div class="p-title">${p.title || ''}</div>
+      </div>
+      <div class="p-meta">
+        <span class="warmth-badge ${warmBadgeClass}">${warmLabel}</span>
+        <span class="tier-badge tier-${p.tier}">T${p.tier}</span>
+      </div>
+    </div>
+    <div class="p-actions">
+      <a href="${activityUrl}" target="_blank" class="p-btn primary">Open LinkedIn Activity &nearr;</a>
+      <button class="p-btn green" onclick="quickComment('${p.id}', this)">Commented &#10003;</button>
+      <button class="p-btn ghost" onclick="this.closest('.p-card').remove()">Dismiss</button>
+    </div>
+  `;
+  container.prepend(card);
+}
+
+async function quickComment(id, btn) {
+  btn.disabled = true;
+  btn.textContent = 'Saved!';
+  await fetch(`/api/prospects/${id}/engage`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ type: 'comment', note: '' })
+  });
+  const card = btn.closest('.p-card');
+  card.style.opacity = '0.3';
+  card.style.pointerEvents = 'none';
+  // Update progress
+  const el = document.getElementById('dp-comments');
+  const n = parseInt(el.textContent) + 1;
+  el.textContent = n;
+  el.className = 'dp-count ' + (n >= 8 ? 'done' : 'partial');
+  // Update cached data
+  const p = cachedProspects.find(x => x.id === id);
+  if (p) p.warmth_score = (p.warmth_score || 0) + 1;
+}
+
+// Outreach card renderer
+function renderOutreachCard(p, type) {
+  const username = p.linkedin_username || extractUsername(p.linkedin_url);
+  const profileUrl = p.linkedin_url || `https://www.linkedin.com/in/${username}`;
+  const ws = p.warmth_score || 0;
+  const warmLabel = ws === 0 ? 'Cold' : ws < 3 ? `Warming (${ws})` : ws < 5 ? `Warm (${ws})` : `Hot (${ws})`;
+  const warmBadgeClass = `warmth-${Math.min(ws, 5)}`;
+
+  const actionLabel = type === 'snapshot' ? 'Sent Snapshot DM' : type === 'referral' ? 'Sent Outreach' : 'Sent Podcast Invite';
+
+  return `
+    <div class="p-card" id="oc-${p.id}">
+      <div class="p-top">
+        <div class="p-info">
+          <h3>${p.name || username} <a href="${profileUrl}" target="_blank" style="font-size:10px;font-weight:600">Profile</a></h3>
+          <div class="p-company">${p.company || ''}</div>
+          <div class="p-title">${p.title || ''}</div>
+        </div>
+        <div class="p-meta">
+          <span class="warmth-badge ${warmBadgeClass}">${warmLabel}</span>
+          <span class="tier-badge tier-${p.tier}">T${p.tier}</span>
+        </div>
+      </div>
+      <div class="p-actions">
+        <a href="${profileUrl}" target="_blank" class="p-btn primary">Open Profile &nearr;</a>
+        <button class="p-btn dm" onclick="logOutreach('${p.id}','${type}',this)">${actionLabel}</button>
+        <button class="p-btn ghost" onclick="openEdit('${p.id}')">Edit</button>
+      </div>
+    </div>
+  `;
+}
+
+async function logOutreach(id, type, btn) {
+  btn.disabled = true;
+  btn.textContent = 'Sent!';
+  const note = type === 'snapshot' ? 'Snapshot DM sent' : type === 'referral' ? 'Referral outreach sent' : 'Podcast invite sent';
+  await fetch(`/api/prospects/${id}/engage`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ type: 'dm', note })
+  });
+  const card = document.getElementById('oc-' + id);
+  if (card) { card.style.opacity = '0.3'; card.style.pointerEvents = 'none'; }
+
+  // Update progress counters
+  if (type === 'snapshot') {
+    const el = document.getElementById('dp-dms');
+    const n = parseInt(el.textContent) + 1;
+    el.textContent = n;
+    el.className = 'dp-count done';
+  } else if (type === 'referral') {
+    const el = document.getElementById('dp-referral');
+    const n = parseInt(el.textContent) + 1;
+    el.textContent = n;
+    el.className = 'dp-count done';
+  } else {
+    const el = document.getElementById('dp-podcast');
+    const n = parseInt(el.textContent) + 1;
+    el.textContent = n;
+    el.className = 'dp-count done';
+  }
+}
+
+function extractUsername(url) {
+  if (!url) return '';
+  const m = url.match(/linkedin\.com\/in\/([^\/\?]+)/);
+  return m ? m[1] : '';
+}
+
+// ===== PIPELINE =====
+async function loadPipeline() {
+  const prospects = await fetch('/api/prospects').then(r => r.json());
+  const stages = ['warming','warm','outreach_sent','replied','call_booked','won','lost'];
+  const labels = {warming:'Warming',warm:'Warm',outreach_sent:'Outreach Sent',replied:'Replied',call_booked:'Call Booked',won:'Won',lost:'Lost'};
+  const colors = {warming:'var(--b)',warm:'var(--y)',outreach_sent:'var(--o)',replied:'var(--p)',call_booked:'var(--g)',won:'var(--g)',lost:'var(--r)'};
+
+  document.getElementById('pipeline-grid').innerHTML = stages.map(s => {
+    const items = prospects.filter(p => p.status === s && p.name);
+    return `
+      <div class="pipeline-col">
+        <h3 style="color:${colors[s]}">${labels[s]} <span>${items.length}</span></h3>
+        ${items.slice(0, 20).map(p => `
+          <div class="pipeline-item" onclick="openEdit('${p.id}')">
+            <div class="pi-name">${p.name || p.linkedin_username || '?'}</div>
+            <div class="pi-co">${p.company || ''} ${p.warmth_score ? '| W:'+p.warmth_score : ''}</div>
+          </div>
+        `).join('')}
+        ${items.length > 20 ? `<div style="font-size:10px;color:var(--lt);padding:4px">+${items.length-20} more</div>` : ''}
+      </div>
+    `;
+  }).join('');
+}
+
+// ===== ALL PROSPECTS =====
+async function loadAll() {
+  allProspects = await fetch('/api/prospects').then(r => r.json());
+  renderAll();
+}
+function renderAll() {
+  const search = document.getElementById('search-input').value.toLowerCase();
+  const seg = document.getElementById('filter-segment').value;
+  const status = document.getElementById('filter-status').value;
+  const tier = document.getElementById('filter-tier').value;
+  let filtered = allProspects.filter(p => {
+    if (search && !(p.name||'').toLowerCase().includes(search) && !(p.company||'').toLowerCase().includes(search) && !(p.title||'').toLowerCase().includes(search)) return false;
+    if (seg && p.segment !== seg) return false;
+    if (status && p.status !== status) return false;
+    if (tier && String(p.tier) !== tier) return false;
+    return true;
+  });
+  document.getElementById('all-list').innerHTML =
+    `<div style="font-size:11px;color:var(--md);margin-bottom:8px">${filtered.length} prospects</div>` +
+    filtered.map(p => {
+      const username = p.linkedin_username || extractUsername(p.linkedin_url);
+      const profileUrl = p.linkedin_url || `https://www.linkedin.com/in/${username}`;
+      const ws = p.warmth_score || 0;
+      const warmLabel = ws === 0 ? 'Cold' : ws < 3 ? `W:${ws}` : ws < 5 ? `Warm:${ws}` : `Hot:${ws}`;
+      const warmBadgeClass = `warmth-${Math.min(ws, 5)}`;
+      return `
+        <div class="p-card">
+          <div class="p-top">
+            <div class="p-info">
+              <h3>${p.name || username} <a href="${profileUrl}" target="_blank" style="font-size:10px">Profile</a></h3>
+              <div class="p-company">${p.company || ''}</div>
+              <div class="p-title">${p.title || ''}</div>
+            </div>
+            <div class="p-meta">
+              <span class="warmth-badge ${warmBadgeClass}">${warmLabel}</span>
+              <span class="tier-badge tier-${p.tier}">T${p.tier}</span>
+              <span style="font-size:9px;color:var(--md)">${p.segment}</span>
+            </div>
+          </div>
+          <div class="p-actions">
+            <button class="p-btn ghost" onclick="openEdit('${p.id}')">Edit</button>
+          </div>
+        </div>
+      `;
+    }).join('');
+}
+document.getElementById('search-input').addEventListener('input', renderAll);
+document.getElementById('filter-segment').addEventListener('change', renderAll);
+document.getElementById('filter-status').addEventListener('change', renderAll);
+document.getElementById('filter-tier').addEventListener('change', renderAll);
+
+// ===== IMPORT =====
+async function importURLs() {
+  const text = document.getElementById('url-input').value;
+  const urls = text.split('\n').map(u => u.trim()).filter(u => u);
+  const segment = document.getElementById('imp-segment').value;
+  const tier = parseInt(document.getElementById('imp-tier').value);
+  const check_in_days = parseInt(document.getElementById('imp-checkin').value);
+  const tags = document.getElementById('imp-tags').value.split(',').map(t => t.trim()).filter(t => t);
+  const res = await fetch('/api/import/urls', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ urls, segment, tier, tags, check_in_days })
+  });
+  const data = await res.json();
+  const el = document.getElementById('url-result');
+  el.className = 'import-result success';
+  el.textContent = `Imported ${data.added} prospects. ${data.skipped} skipped.`;
+  document.getElementById('url-input').value = '';
+}
+async function importCSV() {
+  const file = document.getElementById('csv-file').files[0];
+  if (!file) return;
+  const text = await file.text();
+  const lines = text.split('\n');
+  const headers = lines[0].split(',').map(h => h.trim().replace(/^"|"$/g, ''));
+  const rows = [];
+  for (let i = 1; i < lines.length; i++) {
+    if (!lines[i].trim()) continue;
+    const vals = lines[i].match(/(".*?"|[^,]*)/g) || [];
+    const row = {};
+    headers.forEach((h, j) => { row[h] = (vals[j] || '').replace(/^"|"$/g, '').trim(); });
+    rows.push(row);
+  }
+  const res = await fetch('/api/import/csv', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ rows })
+  });
+  const data = await res.json();
+  const el = document.getElementById('csv-result');
+  el.className = 'import-result success';
+  el.textContent = `Imported ${data.added} prospects. ${data.skipped} skipped.`;
+}
+async function addSingle() {
+  const url = document.getElementById('add-url').value.trim();
+  if (!url) return;
+  const res = await fetch('/api/import/urls', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ urls: [url], segment: 'cyber', tier: 1, check_in_days: 3 })
+  });
+  const data = await res.json();
+  if (data.added > 0) {
+    const prospects = await fetch('/api/prospects').then(r => r.json());
+    const username = url.match(/linkedin\.com\/in\/([^\/\?]+)/)?.[1];
+    const p = prospects.find(p => p.linkedin_username === username);
+    if (p) {
+      await fetch(`/api/prospects/${p.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: document.getElementById('add-name').value, company: document.getElementById('add-company').value, title: document.getElementById('add-title').value })
+      });
+    }
+  }
+  ['add-name','add-url','add-company','add-title'].forEach(id => document.getElementById(id).value = '');
+}
+
+// ===== MODAL =====
+async function openEdit(id) {
+  const prospects = await fetch('/api/prospects').then(r => r.json());
+  const p = prospects.find(x => x.id === id);
+  if (!p) return;
+  editingId = id;
+  document.getElementById('modal-name').textContent = p.name || p.linkedin_username;
+  document.getElementById('modal-company').textContent = `${p.company || ''} | ${p.title || ''}`;
+  document.getElementById('ed-name').value = p.name || '';
+  document.getElementById('ed-company').value = p.company || '';
+  document.getElementById('ed-title').value = p.title || '';
+  document.getElementById('ed-url').value = p.linkedin_url || '';
+  document.getElementById('ed-segment').value = p.segment || 'cyber';
+  document.getElementById('ed-tier').value = p.tier || 1;
+  document.getElementById('ed-status').value = p.status || 'warming';
+  document.getElementById('ed-checkin').value = p.check_in_days || 3;
+  document.getElementById('ed-score').value = p.icp_score || 0;
+  document.getElementById('ed-connected').value = String(p.connected || false);
+  document.getElementById('ed-notes').value = p.notes || '';
+  document.getElementById('ed-engagements').innerHTML = (p.engagements || []).reverse().map(e =>
+    `<div style="padding:3px 0;border-bottom:1px solid var(--bdr)">${e.date} | <b>${e.type}</b> | ${e.note || '-'}</div>`
+  ).join('') || '<div style="color:var(--lt)">No engagements yet</div>';
+  document.getElementById('edit-modal').classList.add('on');
+}
+function closeModal() { document.getElementById('edit-modal').classList.remove('on'); editingId = null; }
+async function saveModal() {
+  if (!editingId) return;
+  await fetch(`/api/prospects/${editingId}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      name: document.getElementById('ed-name').value, company: document.getElementById('ed-company').value,
+      title: document.getElementById('ed-title').value, linkedin_url: document.getElementById('ed-url').value,
+      linkedin_username: extractUsername(document.getElementById('ed-url').value),
+      segment: document.getElementById('ed-segment').value, tier: parseInt(document.getElementById('ed-tier').value),
+      status: document.getElementById('ed-status').value, check_in_days: parseInt(document.getElementById('ed-checkin').value),
+      icp_score: parseFloat(document.getElementById('ed-score').value),
+      connected: document.getElementById('ed-connected').value === 'true', notes: document.getElementById('ed-notes').value
+    })
+  });
+  closeModal(); loadToday();
+}
+async function deleteProspect() {
+  if (!editingId || !confirm('Delete this prospect?')) return;
+  await fetch(`/api/prospects/${editingId}`, { method: 'DELETE' });
+  closeModal(); loadToday();
+}
+function exportCSV() { window.open('/api/export/csv', '_blank'); }
+document.getElementById('edit-modal').addEventListener('click', e => { if (e.target.classList.contains('modal-bg')) closeModal(); });
+
+// Init
+loadToday();
+</script>
+</body>
+</html>
