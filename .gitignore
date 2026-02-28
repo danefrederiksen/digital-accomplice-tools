@@ -1,6 +1,8 @@
 # Prospect data (contains real names, companies, LinkedIn URLs)
 data/prospects.json
 data/alerts.json
+data/templates.json
+data/backups/
 *.xlsx
 *.xls
 

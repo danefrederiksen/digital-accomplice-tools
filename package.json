@@ -1,0 +1,16 @@
+{
+  "name": "da-warming-dashboard",
+  "version": "1.0.0",
+  "description": "Digital Accomplice — Prospect Warming Dashboard",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "express-basic-auth": "^1.2.1",
+    "express-rate-limit": "^8.2.1",
+    "uuid": "^9.0.0"
+  }
+}
