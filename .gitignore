@@ -2,6 +2,8 @@
 data/prospects.json
 data/alerts.json
 data/templates.json
+data/b2b-prospects.json
+data/b2b-activity.json
 data/backups/
 *.xlsx
 *.xls
