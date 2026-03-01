@@ -1,0 +1,349 @@
+DA Prospect Tool — Build Process & Design Doc
+================================================
+Use this as a blueprint for building each tool.
+Each step has a CUSTOMIZE section — that's what changes per tool.
+
+Tool 1 (B2B 1st Connections) is the reference build.
+Copy this process, swap the CUSTOMIZE values, and you get Tools 2-10.
+
+
+========================================
+STEP 1: Define the Tool's Purpose
+========================================
+What to do:
+- Name the tool
+- Define who it tracks (what type of prospect)
+- Define the connection status (1st vs 2nd, email vs LinkedIn)
+- Define the goal (DMs, emails, referrals, etc.)
+
+CUSTOMIZE for each tool:
+- Tool name (e.g., "Cyber 1st Connections DM Tracker")
+- Prospect type (B2B, Cyber, Referral Partner, Substack, Customer)
+- Connection type (1st connection, 2nd connection, email-only)
+- Primary outreach channel (LinkedIn DM, email, connection request)
+
+Tool 1 values:
+- Name: B2B 1st Connections DM and Follow-Up Tracker
+- Prospect type: B2B (video/creative services buyers)
+- Connection type: Already connected on LinkedIn (1st degree)
+- Channel: LinkedIn DM
+
+
+========================================
+STEP 2: Define the Sequence Steps
+========================================
+What to do:
+- Map out the outreach sequence from first touch to end state
+- Define each status and what triggers the next step
+- Set the timing between steps (days between follow-ups)
+
+CUSTOMIZE for each tool:
+- Number of steps in the sequence
+- Status names and labels
+- Days between each step
+- End states (replied, cold, converted, etc.)
+
+Tool 1 values:
+- Step 1: DM Sent (initial outreach)
+- Step 2: Follow-Up 1 (3 days after DM)
+- Step 3: Follow-Up 2 / Final Nudge (7 days after DM)
+- End states: Replied (success) or Cold (no response)
+- Statuses: not_started → dm_sent → follow_up_1 → follow_up_2 → replied OR cold
+
+
+========================================
+STEP 3: Define the Data Model
+========================================
+What to do:
+- List every field stored per prospect
+- Define which fields are required vs optional
+- Define valid values for status fields
+
+CUSTOMIZE for each tool:
+- Fields specific to the outreach type
+- Status values matching the sequence
+- Any extra fields (e.g., email address for email tools, mutual connections for 2nd degree)
+
+Tool 1 fields:
+- id (UUID, auto-generated)
+- name (required)
+- company
+- title
+- linkedinUrl
+- status (not_started, dm_sent, follow_up_1, follow_up_2, replied, cold)
+- dmSentDate
+- followUp1Due
+- followUp2Due
+- lastActionDate
+- reply (free text — what they said)
+- nextStep (free text — what to do next)
+
+
+========================================
+STEP 4: Define the Import Method
+========================================
+What to do:
+- Decide how prospects get into the tool
+- Build CSV parser for the expected format(s)
+- Add manual entry as a fallback
+
+CUSTOMIZE for each tool:
+- CSV format (LinkedIn export, custom CSV, email list, etc.)
+- Column mapping (which CSV columns map to which fields)
+- Title keyword filters (which job titles to prioritize)
+- Whether deduplication checks name+company, email, or LinkedIn URL
+
+Tool 1 values:
+- Format 1: LinkedIn CSV export (First Name, Last Name, Company, Position, URL)
+- Format 2: Headerless CSV (Name, Company, Title, LinkedIn URL)
+- Title filter keywords: founder, ceo, cmo, vp marketing, head of marketing,
+  creative director, chief marketing, marketing director, co-founder, owner,
+  president, managing director
+- Dedup key: name + company (lowercase match)
+
+
+========================================
+STEP 5: Build the Server (b2b-serve.js pattern)
+========================================
+What to do:
+- Create a Node.js Express server
+- Set a unique port number
+- Define data file paths
+- Build CRUD API endpoints
+- Add security (origin check, sanitization, field whitelist)
+- Add auto-backup on every save
+- Add activity logging
+
+CUSTOMIZE for each tool:
+- Port number (each tool gets a unique port)
+- Data file name
+- Allowed fields list
+- Valid statuses list
+- Activity action labels
+
+Tool 1 values:
+- Port: 3851
+- HTML file: b2b-outreach.html
+- Data file: data/b2b-prospects.json
+- Activity file: data/b2b-activity.json
+- Backup dir: data/backups/
+- Max backups kept: 5
+
+API endpoints (same pattern for all tools):
+- GET  /                     → Serve the HTML file
+- GET  /api/prospects        → Return all prospects
+- POST /api/prospects        → Add one or many (with dedup)
+- POST /api/prospects/migrate → One-time migration from localStorage
+- PUT  /api/prospects/:id    → Update a single prospect
+- DELETE /api/prospects/:id  → Remove a prospect
+- GET  /api/activity         → Return activity log
+
+Security (same for all tools):
+- Origin check (localhost only)
+- Input sanitization (XSS prevention)
+- Field whitelist (reject unknown fields)
+- Status validation (reject invalid statuses)
+
+
+========================================
+STEP 6: Build the Frontend (single HTML file)
+========================================
+What to do:
+- Create a single-file HTML app (HTML + CSS + JS in one file)
+- Use DA brand styling
+- Build the tab navigation
+- Build the card-based UI for prospects
+
+CUSTOMIZE for each tool:
+- Page title and header text
+- Tab names
+- Card layout (which fields to show)
+- Action buttons on each card (match the sequence steps)
+- Status badge colors
+
+Tool 1 values:
+- Title: "DA B2B Outreach Sequencer"
+- Tabs: Dashboard, All Prospects, Import
+- Card shows: Name, Company, Title, LinkedIn link, Status badge, Timeline
+- Action buttons: Mark DM Sent, Mark Follow-Up, Mark Final Nudge, Got Reply, Mark Cold, Reset, Remove
+- Colors: Orange #F8901E, black header, Poppins font
+
+DA Brand Standards (same for all tools):
+- Primary orange: #F8901E
+- Black header bar
+- Font: Poppins (Google Fonts)
+- White cards with rounded corners (10px)
+- Status badges: colored pills
+- Mobile responsive (stacks on narrow screens)
+
+
+========================================
+STEP 7: Build the Dashboard Tab (Today View)
+========================================
+What to do:
+- Show an alert banner with key stats
+- Group prospects by urgency: Overdue → Due Today → Upcoming → Recent Replies
+- Make it the default landing tab
+
+CUSTOMIZE for each tool:
+- Stats shown in the banner
+- How "overdue" and "due" are calculated
+- Section groupings
+
+Tool 1 values:
+- Banner stats: Total prospects, Active sequences, Due today, Overdue
+- Overdue: follow-up due date < today
+- Due Today: follow-up due date = today
+- Sections: Overdue, Due Today, Coming Up, Recently Replied
+
+
+========================================
+STEP 8: Build the Import Tab
+========================================
+What to do:
+- Drag-and-drop CSV upload zone
+- Parse CSV and show preview table
+- Select All checkbox + individual checkboxes
+- "Activate Selected" button to add to tool
+- Show import results (added vs skipped)
+
+CUSTOMIZE for each tool:
+- CSV parsing logic (column mapping)
+- Preview table columns
+- Title keyword filter list
+
+Tool 1 values:
+- Upload zone accepts .csv files
+- Uses PapaParse library for CSV parsing
+- Preview table: checkbox, name, company, title, LinkedIn URL
+- Select All toggles all checkboxes
+- Skips duplicates already in the system
+
+
+========================================
+STEP 9: Build Prospect Cards + Actions
+========================================
+What to do:
+- Design the card layout for each prospect
+- Add action buttons that advance the sequence
+- Add reply field (appears after marking replied)
+- Add next step field
+- Add sequence timeline visualization
+- Wire up all buttons to server API
+
+CUSTOMIZE for each tool:
+- Which action buttons appear
+- Button labels
+- Timeline step labels
+- Whether there's a reply field, email field, notes field, etc.
+
+Tool 1 values:
+- Sequence timeline: Not Started → DM Sent → Follow-Up → Final Nudge → (Replied or Cold)
+- Reply field: textarea, debounced auto-save (500ms)
+- Next step field: text input, debounced auto-save
+- Remove: confirmation dialog before delete
+- Reset: puts prospect back to Not Started
+
+
+========================================
+STEP 10: Test Everything
+========================================
+What to do:
+- Start the server
+- Test CSV import (both formats if applicable)
+- Test manual add
+- Test each sequence step (click through the full flow)
+- Test reply tracking
+- Test cold marking
+- Test reset and remove
+- Test overdue/due today logic
+- Check mobile responsiveness
+- Verify data persists after server restart
+
+Test checklist (same for all tools):
+[ ] Server starts without errors
+[ ] HTML loads at localhost:{port}
+[ ] CSV import works (correct format)
+[ ] Manual add works
+[ ] Deduplication works (no double imports)
+[ ] Each sequence step advances correctly
+[ ] Due dates calculate correctly
+[ ] Overdue items flagged in dashboard
+[ ] Reply field saves
+[ ] Next step field saves
+[ ] Cold marking works
+[ ] Reset works
+[ ] Remove works (with confirmation)
+[ ] Data survives server restart
+[ ] Backups are created in data/backups/
+[ ] Activity log records actions
+[ ] Mobile layout doesn't break
+
+
+========================================
+TOOL-SPECIFIC DIFFERENCES (Quick Reference)
+========================================
+
+Tools 1-2 (B2B + Cyber, 1st Connections):
+- Import: LinkedIn CSV
+- Channel: LinkedIn DM
+- Sequence: DM → Follow-Up 1 → Follow-Up 2 → Replied/Cold
+- Same flow, different prospect lists
+
+Tools 3-4 (B2B + Cyber, 2nd Connections):
+- Import: LinkedIn CSV
+- Channel: Connection Request first, then DM
+- Extra step: Connection Request Sent → Accepted? → DM sequence
+- Extra field: mutual connections count
+- Different timing (7 days to accept, then 3-day DM cadence)
+
+Tools 5-6 (Referral Partners, 1st + 2nd Connections):
+- Import: LinkedIn CSV
+- Channel: LinkedIn DM (1st) or Connection Request + DM (2nd)
+- Different message tone (partnership, not sales)
+- Sequence may include: intro → value prop → ask → follow-up
+
+Tools 7-8 (B2B + Cyber Leads with Emails):
+- Import: CSV with email column
+- Channel: Email (not LinkedIn)
+- Extra field: email address
+- Different sequence: Email → Follow-Up 1 → Follow-Up 2 → Replied/Cold
+- No LinkedIn URL required
+
+Tool 9 (Substack Subscriber Emails):
+- Import: Substack export CSV
+- Channel: Email
+- Different relationship: they already follow you
+- Warmer tone, different sequence
+
+Tool 10 (Customers with Emails):
+- Import: Customer list CSV
+- Channel: Email
+- Existing relationship: upsell/cross-sell/referral ask
+- Different sequence focused on expansion
+
+
+========================================
+FILE NAMING CONVENTION
+========================================
+Each tool follows this pattern:
+- HTML file: {tool-slug}.html (e.g., cyber-outreach.html)
+- Server file: {tool-slug}-serve.js (e.g., cyber-outreach-serve.js)
+- Data file: data/{tool-slug}-prospects.json
+- Activity file: data/{tool-slug}-activity.json
+- Port: 3851 (Tool 1), 3852 (Tool 2), 3853 (Tool 3), etc.
+
+
+========================================
+PORTS
+========================================
+Tool 1:  3851  (B2B 1st Connections)
+Tool 2:  3852  (Cyber 1st Connections)
+Tool 3:  3853  (B2B 2nd Connections)
+Tool 4:  3854  (Cyber 2nd Connections)
+Tool 5:  3855  (Referral Partner 1st)
+Tool 6:  3856  (Referral Partner 2nd)
+Tool 7:  3857  (B2B Email Leads)
+Tool 8:  3858  (Cyber Email Leads)
+Tool 9:  3859  (Substack Subscribers)
+Tool 10: 3860  (Customers)
