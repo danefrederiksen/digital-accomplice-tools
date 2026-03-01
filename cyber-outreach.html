@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Prospecting Tool #1 — B2B 1st Connections DM Tracker</title>
+<title>Prospecting Tool #2 — Cyber 1st Connections DM Tracker</title>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
 <style>
@@ -140,7 +140,7 @@ body { font-family: 'Poppins', sans-serif; background: #f5f5f5; color: #1a1a1a; 
 </head>
 <body>
 <div class="header">
-  <h1><span>DA</span> Prospecting Tool #1 — B2B 1st Connections</h1>
+  <h1><span>DA</span> Prospecting Tool #2 — Cyber 1st Connections</h1>
   <div class="header-right" id="prospect-count"></div>
 </div>
 <div class="tabs" id="tabs"></div>
@@ -150,7 +150,7 @@ body { font-family: 'Poppins', sans-serif; background: #f5f5f5; color: #1a1a1a; 
 // ============================================================
 // STATE
 // ============================================================
-const TITLE_KEYWORDS = ['founder','ceo','cmo','vp marketing','head of marketing','creative director','chief marketing','marketing director','co-founder','owner','president','managing director'];
+const TITLE_KEYWORDS = ['ciso','cso','vp security','vp cybersecurity','vp information security','director security','director cybersecurity','director information security','head of security','head of cybersecurity','head of infosec','chief information security officer','chief security officer','security architect','security engineer','security operations','it director','it manager','vp it','cto','cio','founder','ceo','co-founder','owner','president','managing director'];
 
 let state = {
   prospects: [],
@@ -201,12 +201,12 @@ async function loadFromServer() {
     // One-time migration: if server is empty but localStorage has data
     if (state.prospects.length === 0) {
       try {
-        const local = JSON.parse(localStorage.getItem('da-b2b-outreach')) || [];
+        const local = JSON.parse(localStorage.getItem('da-cyber-outreach')) || [];
         if (local.length > 0 && confirm(`Found ${local.length} prospects in browser storage. Migrate to server?`)) {
           await apiPost('/api/prospects/migrate', { prospects: local });
           const refreshed = await apiGet('/api/prospects');
           state.prospects = refreshed.prospects || [];
-          localStorage.removeItem('da-b2b-outreach');
+          localStorage.removeItem('da-cyber-outreach');
           alert('Migration complete! Your data is now saved on the server.');
         }
       } catch (e) { /* localStorage empty or parse error */ }
@@ -214,7 +214,7 @@ async function loadFromServer() {
   } catch (err) {
     console.error('Failed to load from server:', err);
     // Fallback to localStorage if server is down
-    try { state.prospects = JSON.parse(localStorage.getItem('da-b2b-outreach')) || []; }
+    try { state.prospects = JSON.parse(localStorage.getItem('da-cyber-outreach')) || []; }
     catch { state.prospects = []; }
   }
   render();
@@ -260,7 +260,9 @@ function firstName(fullName) {
 function getMessage(prospect, step) {
   const name = firstName(prospect.name);
   if (step === 'dm') {
-    return `Hello ${name}, I'm producing a short video series on how B2B marketing leaders are adapting to the challenges as AI changes the game.
+    return `Hello ${name}, I'm launching a new video series on cybersecurity — how security leaders are navigating the threat landscape as AI changes the game.
+
+I've been producing video for AWS, BreachRx, and other cyber companies, and I want to bring those conversations to LinkedIn.
 
 Takes just 15 min, no prep and I'll post on LinkedIn same day and tag you.
 
@@ -270,10 +272,10 @@ Interested?
 
 Dane`;
   } else if (step === 'follow_up_1') {
-    return `Hey ${name} — quick way to get your POV in front of 1000s of B2B buyers on LinkedIn. 15 min, no prep, I do all the work.
-Worth a shot?`;
+    return `Hey ${name} — I'm putting together a cybersecurity video series featuring leaders like you. 15 min, no prep, I handle everything. Already working with companies like AWS and BreachRx on the video side.
+Worth a conversation?`;
   } else if (step === 'follow_up_2') {
-    return `${name} — free LinkedIn content featuring you as the expert. Worst case you look smart for 15 minutes. \u{1F604}
+    return `${name} — last ping on this. Free LinkedIn content featuring you as the cybersecurity expert. Worst case you look smart for 15 minutes. \u{1F604}
 Dane`;
   }
   return '';

@@ -4,11 +4,11 @@ const path = require('path');
 const { v4: uuidv4 } = require('uuid');
 
 const app = express();
-const PORT = 3851;
-const HTML_FILE = path.join(__dirname, 'b2b-outreach.html');
+const PORT = 3852;
+const HTML_FILE = path.join(__dirname, 'cyber-outreach.html');
 const DATA_DIR = path.join(__dirname, 'data');
-const DATA_FILE = path.join(DATA_DIR, 'b2b-prospects.json');
-const ACTIVITY_FILE = path.join(DATA_DIR, 'b2b-activity.json');
+const DATA_FILE = path.join(DATA_DIR, 'cyber-prospects.json');
+const ACTIVITY_FILE = path.join(DATA_DIR, 'cyber-activity.json');
 const BACKUP_DIR = path.join(DATA_DIR, 'backups');
 const MAX_BACKUPS = 5;
 const MAX_ACTIVITY = 500;
@@ -58,11 +58,11 @@ function backupData() {
   if (!fs.existsSync(DATA_FILE)) return;
   try {
     const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
-    const backupFile = path.join(BACKUP_DIR, `b2b-prospects_${timestamp}.json`);
+    const backupFile = path.join(BACKUP_DIR, `cyber-prospects_${timestamp}.json`);
     fs.copyFileSync(DATA_FILE, backupFile);
     // Prune old backups — keep last MAX_BACKUPS
     const backups = fs.readdirSync(BACKUP_DIR)
-      .filter(f => f.startsWith('b2b-prospects_'))
+      .filter(f => f.startsWith('cyber-prospects_'))
       .sort()
       .reverse();
     backups.slice(MAX_BACKUPS).forEach(f => {
@@ -278,7 +278,7 @@ app.get('/api/activity', (req, res) => {
 // ============================================================
 ensureDirs();
 app.listen(PORT, '127.0.0.1', () => {
-  console.log(`\n  DA Prospecting Tool #1 — B2B 1st Connections running at http://localhost:${PORT}`);
+  console.log(`\n  DA Prospecting Tool #2 — Cyber 1st Connections running at http://localhost:${PORT}`);
   console.log(`  Data: ${DATA_FILE}`);
   console.log(`  Backups: ${BACKUP_DIR} (last ${MAX_BACKUPS} kept)\n`);
 });
