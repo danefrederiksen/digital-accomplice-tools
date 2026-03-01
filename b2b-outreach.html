@@ -287,13 +287,12 @@ const STATUS_LABELS = {
 // CSV IMPORT
 // ============================================================
 function handleCSV(file) {
-  // First pass: detect if file has a header row
   Papa.parse(file, {
     header: false,
     skipEmptyLines: true,
     complete: function(results) {
       const raw = results.data;
-      if (!raw.length) return;
+      if (!raw.length) { alert('CSV appears empty — no rows found.'); return; }
 
       // Detect format: check if first row looks like LinkedIn headers
       const first = raw[0].map(c => (c || '').toLowerCase().trim());
@@ -301,46 +300,40 @@ function handleCSV(file) {
 
       let rows;
       if (isLinkedIn) {
-        // LinkedIn CSV with headers — re-parse with header mode
-        Papa.parse(file, {
-          header: true,
-          skipEmptyLines: true,
-          complete: function(r2) {
-            const mapped = r2.data.map(row => {
-              const firstName = row['First Name'] || row['first_name'] || '';
-              const lastName = row['Last Name'] || row['last_name'] || '';
-              const company = row['Company'] || row['company'] || row['Organization'] || '';
-              const position = row['Position'] || row['position'] || row['Title'] || row['title'] || '';
-              const url = row['URL'] || row['url'] || row['LinkedIn URL'] || row['Profile URL'] || '';
-              return { firstName, lastName, company, position, url, selected: false };
-            });
-            finishImport(mapped);
-          }
+        // LinkedIn CSV with headers — use first row as keys, remaining rows as data
+        const headers = raw[0].map(c => (c || '').trim());
+        const dataRows = raw.slice(1);
+        rows = dataRows.map(cols => {
+          const obj = {};
+          headers.forEach((h, i) => { obj[h] = (cols[i] || '').trim(); });
+          const firstName = obj['First Name'] || obj['first_name'] || '';
+          const lastName = obj['Last Name'] || obj['last_name'] || '';
+          const company = obj['Company'] || obj['company'] || obj['Organization'] || '';
+          const position = obj['Position'] || obj['position'] || obj['Title'] || obj['title'] || '';
+          const url = obj['URL'] || obj['url'] || obj['LinkedIn URL'] || obj['Profile URL'] || '';
+          return { firstName, lastName, company, position, url, selected: false };
         });
-        return;
+      } else {
+        // No-header CSV
+        rows = raw.map(cols => {
+          const name = (cols[0] || '').trim();
+          const companyOrHeadline = (cols[1] || '').trim();
+          const title = (cols[2] || '').trim();
+          let url = '';
+          for (let i = 0; i < cols.length; i++) {
+            if ((cols[i] || '').includes('linkedin.com/in/')) { url = cols[i].trim(); break; }
+          }
+          let company = companyOrHeadline;
+          if (companyOrHeadline.includes('|')) { company = ''; }
+          return { firstName: name, lastName: '', company, position: title, url, selected: false };
+        });
       }
 
-      // No-header CSV — detect by column content
-      // Your format: Name, Company/Headline, Title, Segment, ?, ?, Status, ..., LinkedIn URL, ...
-      rows = raw.map(cols => {
-        const name = (cols[0] || '').trim();
-        const companyOrHeadline = (cols[1] || '').trim();
-        const title = (cols[2] || '').trim();
-        // Find LinkedIn URL — scan all columns for it
-        let url = '';
-        for (let i = 0; i < cols.length; i++) {
-          if ((cols[i] || '').includes('linkedin.com/in/')) { url = cols[i].trim(); break; }
-        }
-        // Extract company: if col2 has pipes it's a headline, not a company name
-        let company = companyOrHeadline;
-        if (companyOrHeadline.includes('|')) {
-          // Headline like "Name | Title | Industry" — not useful as company, leave blank
-          company = '';
-        }
-        return { firstName: name, lastName: '', company, position: title, url, selected: false };
-      });
-
+      if (!rows.length) { alert('No contacts found in file.'); return; }
       finishImport(rows);
+    },
+    error: function(err) {
+      alert('CSV parse error: ' + err.message);
     }
   });
 }
