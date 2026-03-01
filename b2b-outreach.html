@@ -1,0 +1,774 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>B2B Outreach Sequencer — Digital Accomplice</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: 'Poppins', sans-serif; background: #f5f5f5; color: #1a1a1a; }
+
+/* Header */
+.header { background: #000; color: #fff; padding: 16px 24px; display: flex; align-items: center; justify-content: space-between; }
+.header h1 { font-size: 20px; font-weight: 700; }
+.header h1 span { color: #F8901E; }
+.header-right { font-size: 13px; color: #999; }
+
+/* Tabs */
+.tabs { background: #fff; border-bottom: 2px solid #eee; padding: 0 24px; display: flex; gap: 0; }
+.tab { padding: 12px 20px; cursor: pointer; font-weight: 500; font-size: 14px; color: #666; border-bottom: 3px solid transparent; transition: all 0.2s; }
+.tab:hover { color: #F8901E; }
+.tab.active { color: #F8901E; border-bottom-color: #F8901E; }
+
+/* Content */
+.content { max-width: 1100px; margin: 0 auto; padding: 24px; }
+
+/* Alert banner */
+.alert-banner { background: linear-gradient(135deg, #F8901E, #e07a10); color: #fff; border-radius: 10px; padding: 16px 20px; margin-bottom: 24px; font-size: 14px; line-height: 1.5; }
+.alert-banner strong { font-size: 16px; display: block; margin-bottom: 4px; }
+.alert-stat { display: inline-block; background: rgba(255,255,255,0.2); border-radius: 6px; padding: 4px 10px; margin: 4px 4px 4px 0; font-weight: 600; font-size: 13px; }
+
+/* Section headers */
+.section-header { font-size: 16px; font-weight: 700; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+.section-header .count { background: #F8901E; color: #fff; border-radius: 50%; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; }
+.section { margin-bottom: 32px; }
+
+/* Cards */
+.card { background: #fff; border-radius: 10px; padding: 16px; margin-bottom: 10px; border: 1px solid #e5e5e5; transition: box-shadow 0.2s; }
+.card:hover { box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+.card-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; }
+.card-name { font-weight: 700; font-size: 15px; }
+.card-company { font-size: 13px; color: #666; }
+.card-title { font-size: 12px; color: #999; margin-top: 2px; }
+.card-meta { display: flex; gap: 12px; font-size: 12px; color: #888; margin-top: 6px; flex-wrap: wrap; }
+.card-meta a { color: #F8901E; text-decoration: none; font-weight: 500; }
+.card-meta a:hover { text-decoration: underline; }
+
+/* Status badge */
+.status { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+.status-not_started { background: #e8e8e8; color: #666; }
+.status-dm_sent { background: #fff3e0; color: #e65100; }
+.status-follow_up_1 { background: #e3f2fd; color: #1565c0; }
+.status-follow_up_2 { background: #fce4ec; color: #c62828; }
+.status-replied { background: #e8f5e9; color: #2e7d32; }
+.status-cold { background: #f5f5f5; color: #999; }
+
+/* Buttons */
+.btn { padding: 7px 14px; border-radius: 6px; font-family: 'Poppins', sans-serif; font-size: 12px; font-weight: 600; cursor: pointer; border: none; transition: all 0.15s; }
+.btn-primary { background: #F8901E; color: #fff; }
+.btn-primary:hover { background: #e07a10; }
+.btn-secondary { background: #eee; color: #333; }
+.btn-secondary:hover { background: #ddd; }
+.btn-danger { background: #fee; color: #c62828; }
+.btn-danger:hover { background: #fdd; }
+.btn-success { background: #e8f5e9; color: #2e7d32; }
+.btn-success:hover { background: #c8e6c9; }
+.btn-sm { padding: 4px 10px; font-size: 11px; }
+.btn-group { display: flex; gap: 6px; margin-top: 10px; flex-wrap: wrap; }
+
+/* Import */
+.import-zone { border: 2px dashed #ccc; border-radius: 10px; padding: 40px; text-align: center; background: #fff; cursor: pointer; transition: border-color 0.2s; margin-bottom: 20px; }
+.import-zone:hover { border-color: #F8901E; }
+.import-zone input { display: none; }
+.import-zone p { color: #888; font-size: 14px; margin-top: 8px; }
+.import-zone .icon { font-size: 36px; margin-bottom: 8px; }
+
+/* Filter results table */
+.filter-table { width: 100%; border-collapse: collapse; background: #fff; border-radius: 10px; overflow: hidden; border: 1px solid #e5e5e5; }
+.filter-table th { background: #fafafa; text-align: left; padding: 10px 12px; font-size: 12px; font-weight: 600; color: #666; border-bottom: 2px solid #eee; }
+.filter-table td { padding: 10px 12px; font-size: 13px; border-bottom: 1px solid #f0f0f0; }
+.filter-table tr:hover td { background: #fafafa; }
+.filter-table input[type="checkbox"] { width: 16px; height: 16px; accent-color: #F8901E; cursor: pointer; }
+
+.selected-count { margin: 12px 0; font-size: 14px; font-weight: 500; }
+.selected-count span { color: #F8901E; font-weight: 700; }
+
+/* Reply field */
+.reply-area { margin-top: 8px; }
+.reply-area textarea { width: 100%; border: 1px solid #ddd; border-radius: 6px; padding: 8px; font-family: 'Poppins', sans-serif; font-size: 13px; resize: vertical; min-height: 60px; }
+.reply-area label { font-size: 12px; font-weight: 600; color: #666; display: block; margin-bottom: 4px; }
+
+/* Next step field */
+.next-step-field { margin-top: 6px; }
+.next-step-field input { width: 100%; border: 1px solid #ddd; border-radius: 6px; padding: 7px 10px; font-family: 'Poppins', sans-serif; font-size: 13px; }
+
+/* Empty state */
+.empty { text-align: center; padding: 40px; color: #aaa; font-size: 14px; }
+.empty .icon { font-size: 32px; margin-bottom: 8px; }
+
+/* Sequence timeline */
+.timeline { display: flex; gap: 0; margin-top: 8px; font-size: 11px; }
+.timeline-step { flex: 1; text-align: center; padding: 6px 4px; background: #f5f5f5; border-right: 1px solid #e5e5e5; color: #999; }
+.timeline-step:first-child { border-radius: 6px 0 0 6px; }
+.timeline-step:last-child { border-radius: 0 6px 6px 0; border-right: none; }
+.timeline-step.done { background: #e8f5e9; color: #2e7d32; }
+.timeline-step.current { background: #fff3e0; color: #e65100; font-weight: 600; }
+.timeline-step.upcoming { background: #f5f5f5; color: #bbb; }
+
+/* Manual add form */
+.add-form { background: #fff; border-radius: 10px; padding: 20px; border: 1px solid #e5e5e5; margin-bottom: 20px; }
+.add-form h3 { font-size: 14px; margin-bottom: 12px; }
+.form-row { display: flex; gap: 10px; margin-bottom: 10px; }
+.form-row input { flex: 1; padding: 8px 10px; border: 1px solid #ddd; border-radius: 6px; font-family: 'Poppins', sans-serif; font-size: 13px; }
+
+/* Overdue indicator */
+.overdue { color: #c62828; font-weight: 600; font-size: 11px; }
+
+/* Due date info */
+.due-info { font-size: 12px; color: #666; margin-top: 4px; }
+.due-info strong { color: #F8901E; }
+
+/* LinkedIn URL in card */
+.linkedin-link { color: #F8901E; text-decoration: none; font-size: 12px; font-weight: 500; }
+.linkedin-link:hover { text-decoration: underline; }
+
+@media (max-width: 700px) {
+  .content { padding: 16px; }
+  .form-row { flex-direction: column; }
+  .card-top { flex-direction: column; gap: 6px; }
+}
+</style>
+</head>
+<body>
+<div class="header">
+  <h1><span>DA</span> B2B Outreach Sequencer</h1>
+  <div class="header-right" id="prospect-count"></div>
+</div>
+<div class="tabs" id="tabs"></div>
+<div class="content" id="content"></div>
+
+<script>
+// ============================================================
+// STATE
+// ============================================================
+const STORAGE_KEY = 'da-b2b-outreach';
+const TITLE_KEYWORDS = ['founder','ceo','cmo','vp marketing','head of marketing','creative director','chief marketing','marketing director','co-founder','owner','president','managing director'];
+
+let state = {
+  prospects: loadProspects(),
+  importedContacts: [],
+  activeTab: 'dashboard'
+};
+
+function loadProspects() {
+  try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || []; }
+  catch { return []; }
+}
+
+function save() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(state.prospects));
+}
+
+// ============================================================
+// DATE HELPERS
+// ============================================================
+function today() {
+  const d = new Date();
+  return new Date(d.getFullYear(), d.getMonth(), d.getDate());
+}
+
+function addDays(dateStr, days) {
+  const d = new Date(dateStr);
+  d.setDate(d.getDate() + days);
+  return d.toISOString().split('T')[0];
+}
+
+function daysBetween(dateStr1, dateStr2) {
+  const d1 = new Date(dateStr1);
+  const d2 = new Date(dateStr2);
+  return Math.floor((d2 - d1) / (1000 * 60 * 60 * 24));
+}
+
+function formatDate(dateStr) {
+  if (!dateStr) return '—';
+  const d = new Date(dateStr + 'T00:00:00');
+  return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+}
+
+function todayStr() {
+  return today().toISOString().split('T')[0];
+}
+
+// ============================================================
+// PROSPECT ACTIONS
+// ============================================================
+function markDmSent(id) {
+  const p = state.prospects.find(x => x.id === id);
+  if (!p) return;
+  const t = todayStr();
+  p.status = 'dm_sent';
+  p.dmSentDate = t;
+  p.lastActionDate = t;
+  p.followUp1Due = addDays(t, 3);
+  p.followUp2Due = addDays(t, 7);
+  save(); render();
+}
+
+function markFollowUp1(id) {
+  const p = state.prospects.find(x => x.id === id);
+  if (!p) return;
+  p.status = 'follow_up_1';
+  p.lastActionDate = todayStr();
+  save(); render();
+}
+
+function markFollowUp2(id) {
+  const p = state.prospects.find(x => x.id === id);
+  if (!p) return;
+  p.status = 'follow_up_2';
+  p.lastActionDate = todayStr();
+  save(); render();
+}
+
+function markReplied(id) {
+  const p = state.prospects.find(x => x.id === id);
+  if (!p) return;
+  p.status = 'replied';
+  p.lastActionDate = todayStr();
+  save(); render();
+}
+
+function markCold(id) {
+  const p = state.prospects.find(x => x.id === id);
+  if (!p) return;
+  p.status = 'cold';
+  p.lastActionDate = todayStr();
+  save(); render();
+}
+
+function updateReply(id, text) {
+  const p = state.prospects.find(x => x.id === id);
+  if (!p) return;
+  p.reply = text;
+  save();
+}
+
+function updateNextStep(id, text) {
+  const p = state.prospects.find(x => x.id === id);
+  if (!p) return;
+  p.nextStep = text;
+  save();
+}
+
+function removeProspect(id) {
+  if (!confirm('Remove this prospect?')) return;
+  state.prospects = state.prospects.filter(x => x.id !== id);
+  save(); render();
+}
+
+function resetProspect(id) {
+  const p = state.prospects.find(x => x.id === id);
+  if (!p || !confirm('Reset this prospect to Not Started?')) return;
+  p.status = 'not_started';
+  p.dmSentDate = null;
+  p.followUp1Due = null;
+  p.followUp2Due = null;
+  p.lastActionDate = null;
+  p.reply = '';
+  p.nextStep = '';
+  save(); render();
+}
+
+// ============================================================
+// STATUS LABELS
+// ============================================================
+const STATUS_LABELS = {
+  not_started: 'Not Started',
+  dm_sent: 'DM Sent',
+  follow_up_1: 'Follow-Up Sent',
+  follow_up_2: 'Final Nudge Sent',
+  replied: 'Replied',
+  cold: 'Cold'
+};
+
+// ============================================================
+// CSV IMPORT
+// ============================================================
+function handleCSV(file) {
+  // First pass: detect if file has a header row
+  Papa.parse(file, {
+    header: false,
+    skipEmptyLines: true,
+    complete: function(results) {
+      const raw = results.data;
+      if (!raw.length) return;
+
+      // Detect format: check if first row looks like LinkedIn headers
+      const first = raw[0].map(c => (c || '').toLowerCase().trim());
+      const isLinkedIn = first.includes('first name') || first.includes('last name') || first.includes('position');
+
+      let rows;
+      if (isLinkedIn) {
+        // LinkedIn CSV with headers — re-parse with header mode
+        Papa.parse(file, {
+          header: true,
+          skipEmptyLines: true,
+          complete: function(r2) {
+            const mapped = r2.data.map(row => {
+              const firstName = row['First Name'] || row['first_name'] || '';
+              const lastName = row['Last Name'] || row['last_name'] || '';
+              const company = row['Company'] || row['company'] || row['Organization'] || '';
+              const position = row['Position'] || row['position'] || row['Title'] || row['title'] || '';
+              const url = row['URL'] || row['url'] || row['LinkedIn URL'] || row['Profile URL'] || '';
+              return { firstName, lastName, company, position, url, selected: false };
+            });
+            finishImport(mapped);
+          }
+        });
+        return;
+      }
+
+      // No-header CSV — detect by column content
+      // Your format: Name, Company/Headline, Title, Segment, ?, ?, Status, ..., LinkedIn URL, ...
+      rows = raw.map(cols => {
+        const name = (cols[0] || '').trim();
+        const companyOrHeadline = (cols[1] || '').trim();
+        const title = (cols[2] || '').trim();
+        // Find LinkedIn URL — scan all columns for it
+        let url = '';
+        for (let i = 0; i < cols.length; i++) {
+          if ((cols[i] || '').includes('linkedin.com/in/')) { url = cols[i].trim(); break; }
+        }
+        // Extract company: if col2 has pipes it's a headline, not a company name
+        let company = companyOrHeadline;
+        if (companyOrHeadline.includes('|')) {
+          // Headline like "Name | Title | Industry" — not useful as company, leave blank
+          company = '';
+        }
+        return { firstName: name, lastName: '', company, position: title, url, selected: false };
+      });
+
+      finishImport(rows);
+    }
+  });
+}
+
+function finishImport(rows) {
+  // Filter by title keywords
+  const filtered = rows.filter(r => {
+    const pos = r.position.toLowerCase();
+    return TITLE_KEYWORDS.some(kw => pos.includes(kw));
+  });
+
+  // If keyword filter removes everything, show all rows (user's CSV may already be pre-filtered)
+  state.importedContacts = filtered.length > 0 ? filtered : rows;
+  render();
+}
+
+function activateSelected() {
+  const selected = state.importedContacts.filter(c => c.selected);
+  const existing = state.prospects.map(p => (p.name + p.company).toLowerCase());
+
+  let added = 0;
+  selected.forEach(c => {
+    const name = (c.firstName + ' ' + c.lastName).trim();
+    const key = (name + c.company).toLowerCase();
+    if (existing.includes(key)) return; // skip dupes
+
+    state.prospects.push({
+      id: crypto.randomUUID(),
+      name: name,
+      company: c.company,
+      title: c.position,
+      linkedinUrl: c.url,
+      status: 'not_started',
+      dmSentDate: null,
+      followUp1Due: null,
+      followUp2Due: null,
+      lastActionDate: null,
+      reply: '',
+      nextStep: ''
+    });
+    added++;
+  });
+
+  save();
+  state.importedContacts = [];
+  alert(added + ' prospect(s) added.');
+  state.activeTab = 'dashboard';
+  render();
+}
+
+function addManualProspect() {
+  const name = document.getElementById('manual-name').value.trim();
+  const company = document.getElementById('manual-company').value.trim();
+  const title = document.getElementById('manual-title').value.trim();
+  const url = document.getElementById('manual-url').value.trim();
+
+  if (!name) { alert('Name is required.'); return; }
+
+  state.prospects.push({
+    id: crypto.randomUUID(),
+    name, company, title,
+    linkedinUrl: url,
+    status: 'not_started',
+    dmSentDate: null,
+    followUp1Due: null,
+    followUp2Due: null,
+    lastActionDate: null,
+    reply: '',
+    nextStep: ''
+  });
+  save();
+  document.getElementById('manual-name').value = '';
+  document.getElementById('manual-company').value = '';
+  document.getElementById('manual-title').value = '';
+  document.getElementById('manual-url').value = '';
+  render();
+}
+
+// ============================================================
+// DASHBOARD LOGIC
+// ============================================================
+function getDmToday() {
+  return state.prospects.filter(p => p.status === 'not_started');
+}
+
+function getFollowUpToday() {
+  const t = todayStr();
+  return state.prospects.filter(p => {
+    if (p.status === 'dm_sent' && p.followUp1Due && p.followUp1Due <= t) return true;
+    if (p.status === 'follow_up_1' && p.followUp2Due && p.followUp2Due <= t) return true;
+    if (p.status === 'follow_up_2' && p.lastActionDate && daysBetween(p.lastActionDate, t) >= 3) return true;
+    return false;
+  });
+}
+
+function getReplied() {
+  return state.prospects.filter(p => p.status === 'replied');
+}
+
+function getWaiting() {
+  const t = todayStr();
+  return state.prospects.filter(p => {
+    if (p.status === 'dm_sent' && p.followUp1Due && p.followUp1Due > t) return true;
+    if (p.status === 'follow_up_1' && p.followUp2Due && p.followUp2Due > t) return true;
+    return false;
+  });
+}
+
+// ============================================================
+// RENDER — TABS
+// ============================================================
+function render() {
+  // Prospect count
+  document.getElementById('prospect-count').textContent = state.prospects.length + ' prospect' + (state.prospects.length !== 1 ? 's' : '');
+
+  // Tabs
+  const tabs = [
+    { id: 'dashboard', label: 'Dashboard' },
+    { id: 'import', label: 'Import' },
+    { id: 'prospects', label: 'All Prospects' }
+  ];
+  document.getElementById('tabs').innerHTML = tabs.map(t =>
+    `<div class="tab ${state.activeTab === t.id ? 'active' : ''}" onclick="switchTab('${t.id}')">${t.label}</div>`
+  ).join('');
+
+  // Content
+  const el = document.getElementById('content');
+  if (state.activeTab === 'dashboard') el.innerHTML = renderDashboard();
+  else if (state.activeTab === 'import') el.innerHTML = renderImport();
+  else if (state.activeTab === 'prospects') el.innerHTML = renderProspects();
+
+}
+
+function switchTab(tab) {
+  state.activeTab = tab;
+  render();
+}
+
+// ============================================================
+// RENDER — DASHBOARD
+// ============================================================
+function renderDashboard() {
+  const dmList = getDmToday();
+  const fuList = getFollowUpToday();
+  const reList = getReplied();
+  const waitList = getWaiting();
+
+  const totalActive = state.prospects.filter(p => p.status !== 'cold').length;
+  const totalCold = state.prospects.filter(p => p.status === 'cold').length;
+
+  let html = '';
+
+  // Summary banner
+  if (state.prospects.length > 0) {
+    html += `<div class="alert-banner">
+      <strong>Today's Outreach</strong>
+      <span class="alert-stat">${dmList.length} DM${dmList.length !== 1 ? 's' : ''} to send</span>
+      <span class="alert-stat">${fuList.length} follow-up${fuList.length !== 1 ? 's' : ''} due</span>
+      <span class="alert-stat">${reList.length} repl${reList.length !== 1 ? 'ies' : 'y'} to handle</span>
+      <span class="alert-stat">${waitList.length} waiting</span>
+    </div>`;
+  }
+
+  // DM Today
+  html += `<div class="section">
+    <div class="section-header">DM Today <span class="count">${dmList.length}</span></div>`;
+  if (dmList.length === 0) {
+    html += `<div class="empty"><div class="icon">&#x2713;</div>No DMs to send today</div>`;
+  } else {
+    dmList.forEach(p => {
+      html += renderDashboardCard(p, 'dm');
+    });
+  }
+  html += `</div>`;
+
+  // Follow Up Today
+  html += `<div class="section">
+    <div class="section-header">Follow Up Today <span class="count">${fuList.length}</span></div>`;
+  if (fuList.length === 0) {
+    html += `<div class="empty"><div class="icon">&#x2713;</div>No follow-ups due today</div>`;
+  } else {
+    fuList.forEach(p => {
+      html += renderDashboardCard(p, 'followup');
+    });
+  }
+  html += `</div>`;
+
+  // Replied
+  html += `<div class="section">
+    <div class="section-header">Replied <span class="count">${reList.length}</span></div>`;
+  if (reList.length === 0) {
+    html += `<div class="empty"><div class="icon">&#x1F4AC;</div>No replies yet — keep going</div>`;
+  } else {
+    reList.forEach(p => {
+      html += renderDashboardCard(p, 'replied');
+    });
+  }
+  html += `</div>`;
+
+  // Waiting (collapsed info)
+  if (waitList.length > 0) {
+    html += `<div class="section">
+      <div class="section-header">Waiting for Response</div>`;
+    waitList.forEach(p => {
+      const t = todayStr();
+      let dueLabel = '';
+      if (p.status === 'dm_sent') dueLabel = 'Follow-up due ' + formatDate(p.followUp1Due);
+      else if (p.status === 'follow_up_1') dueLabel = 'Final nudge due ' + formatDate(p.followUp2Due);
+      html += `<div class="card">
+        <div class="card-top">
+          <div><span class="card-name">${esc(p.name)}</span> <span class="card-company">@ ${esc(p.company)}</span></div>
+          <span class="status status-${p.status}">${STATUS_LABELS[p.status]}</span>
+        </div>
+        <div class="due-info">${dueLabel}</div>
+      </div>`;
+    });
+    html += `</div>`;
+  }
+
+  return html;
+}
+
+function renderDashboardCard(p, mode) {
+  let buttons = '';
+  let extra = '';
+  const t = todayStr();
+
+  if (mode === 'dm') {
+    buttons = `
+      <button class="btn btn-primary btn-sm" onclick="markDmSent('${p.id}')">Mark DM Sent</button>
+      ${p.linkedinUrl ? `<a href="${esc(p.linkedinUrl)}" target="_blank" class="btn btn-secondary btn-sm">Open LinkedIn</a>` : ''}
+    `;
+  } else if (mode === 'followup') {
+    if (p.status === 'dm_sent') {
+      const daysOver = daysBetween(p.followUp1Due, t);
+      const overdueLabel = daysOver > 0 ? `<span class="overdue">${daysOver} day${daysOver > 1 ? 's' : ''} overdue</span>` : '';
+      extra = `<div class="due-info">First follow-up ${overdueLabel}</div>`;
+      buttons = `
+        <button class="btn btn-primary btn-sm" onclick="markFollowUp1('${p.id}')">Mark Follow-Up Sent</button>
+        <button class="btn btn-success btn-sm" onclick="markReplied('${p.id}')">Got Reply</button>
+        ${p.linkedinUrl ? `<a href="${esc(p.linkedinUrl)}" target="_blank" class="btn btn-secondary btn-sm">Open LinkedIn</a>` : ''}
+      `;
+    } else if (p.status === 'follow_up_1') {
+      const daysOver = daysBetween(p.followUp2Due, t);
+      const overdueLabel = daysOver > 0 ? `<span class="overdue">${daysOver} day${daysOver > 1 ? 's' : ''} overdue</span>` : '';
+      extra = `<div class="due-info">Final nudge ${overdueLabel}</div>`;
+      buttons = `
+        <button class="btn btn-primary btn-sm" onclick="markFollowUp2('${p.id}')">Mark Final Nudge Sent</button>
+        <button class="btn btn-success btn-sm" onclick="markReplied('${p.id}')">Got Reply</button>
+        ${p.linkedinUrl ? `<a href="${esc(p.linkedinUrl)}" target="_blank" class="btn btn-secondary btn-sm">Open LinkedIn</a>` : ''}
+      `;
+    } else if (p.status === 'follow_up_2') {
+      extra = `<div class="due-info">No reply after final nudge — time to close?</div>`;
+      buttons = `
+        <button class="btn btn-danger btn-sm" onclick="markCold('${p.id}')">Mark Cold</button>
+        <button class="btn btn-success btn-sm" onclick="markReplied('${p.id}')">Got Reply</button>
+      `;
+    }
+  } else if (mode === 'replied') {
+    extra = `
+      <div class="reply-area">
+        <label>Their reply:</label>
+        <textarea placeholder="Paste what they said..." onblur="updateReply('${p.id}', this.value)">${esc(p.reply || '')}</textarea>
+      </div>
+      <div class="next-step-field">
+        <label style="font-size:12px;font-weight:600;color:#666;display:block;margin-bottom:4px;">Next step:</label>
+        <input placeholder="e.g. Schedule call for Tuesday" value="${esc(p.nextStep || '')}" onblur="updateNextStep('${p.id}', this.value)" />
+      </div>
+    `;
+  }
+
+  return `<div class="card">
+    <div class="card-top">
+      <div>
+        <span class="card-name">${esc(p.name)}</span> <span class="card-company">@ ${esc(p.company)}</span>
+        <div class="card-title">${esc(p.title)}</div>
+      </div>
+      <span class="status status-${p.status}">${STATUS_LABELS[p.status]}</span>
+    </div>
+    ${extra}
+    ${renderTimeline(p)}
+    <div class="btn-group">${buttons}</div>
+  </div>`;
+}
+
+function renderTimeline(p) {
+  const steps = [
+    { label: 'DM', key: 'dm_sent' },
+    { label: 'Follow-Up', key: 'follow_up_1' },
+    { label: 'Final Nudge', key: 'follow_up_2' }
+  ];
+  const statusOrder = ['not_started', 'dm_sent', 'follow_up_1', 'follow_up_2'];
+  const currentIdx = statusOrder.indexOf(p.status);
+
+  if (p.status === 'not_started' || p.status === 'replied' || p.status === 'cold') return '';
+
+  return `<div class="timeline">${steps.map((s, i) => {
+    const stepIdx = i + 1;
+    let cls = 'upcoming';
+    if (stepIdx < currentIdx) cls = 'done';
+    else if (stepIdx === currentIdx) cls = 'current';
+    return `<div class="timeline-step ${cls}">${s.label}</div>`;
+  }).join('')}</div>`;
+}
+
+// ============================================================
+// RENDER — IMPORT
+// ============================================================
+function renderImport() {
+  let html = `
+    <div class="import-zone" onclick="document.getElementById('csv-input').click()">
+      <div class="icon">&#x1F4C4;</div>
+      <strong>Upload LinkedIn Connections CSV</strong>
+      <p>Export from LinkedIn: Settings > Data Privacy > Get a copy of your data > Connections</p>
+      <input type="file" id="csv-input" accept=".csv" onchange="if(this.files[0]){handleCSV(this.files[0]);this.value='';}" />
+    </div>
+  `;
+
+  // Manual add
+  html += `
+    <div class="add-form">
+      <h3>Or add manually</h3>
+      <div class="form-row">
+        <input id="manual-name" placeholder="Full name *" />
+        <input id="manual-company" placeholder="Company" />
+      </div>
+      <div class="form-row">
+        <input id="manual-title" placeholder="Title" />
+        <input id="manual-url" placeholder="LinkedIn URL" />
+      </div>
+      <button class="btn btn-primary" onclick="addManualProspect()">Add Prospect</button>
+    </div>
+  `;
+
+  // Imported contacts table
+  if (state.importedContacts.length > 0) {
+    const selectedCount = state.importedContacts.filter(c => c.selected).length;
+    html += `<div class="selected-count">Selected: <span>${selectedCount}</span> / 10</div>`;
+    html += `<table class="filter-table">
+      <thead><tr>
+        <th></th><th>Name</th><th>Company</th><th>Title</th>
+      </tr></thead><tbody>`;
+
+    state.importedContacts.forEach((c, i) => {
+      const name = (c.firstName + ' ' + c.lastName).trim();
+      html += `<tr>
+        <td><input type="checkbox" ${c.selected ? 'checked' : ''} onchange="toggleContact(${i})" ${!c.selected && selectedCount >= 10 ? 'disabled' : ''} /></td>
+        <td>${esc(name)}</td>
+        <td>${esc(c.company)}</td>
+        <td>${esc(c.position)}</td>
+      </tr>`;
+    });
+
+    html += `</tbody></table>`;
+    html += `<div style="margin-top:12px">
+      <button class="btn btn-primary" onclick="activateSelected()" ${selectedCount === 0 ? 'disabled' : ''}>Activate ${selectedCount} Prospect${selectedCount !== 1 ? 's' : ''}</button>
+    </div>`;
+  }
+
+  return html;
+}
+
+function toggleContact(index) {
+  const c = state.importedContacts[index];
+  const selectedCount = state.importedContacts.filter(x => x.selected).length;
+  if (!c.selected && selectedCount >= 10) return;
+  c.selected = !c.selected;
+  render();
+}
+
+// ============================================================
+// RENDER — ALL PROSPECTS
+// ============================================================
+function renderProspects() {
+  if (state.prospects.length === 0) {
+    return `<div class="empty"><div class="icon">&#x1F465;</div>No prospects yet. Import a CSV or add manually.</div>`;
+  }
+
+  let html = '';
+  const order = ['not_started', 'dm_sent', 'follow_up_1', 'follow_up_2', 'replied', 'cold'];
+  const sorted = [...state.prospects].sort((a, b) => order.indexOf(a.status) - order.indexOf(b.status));
+
+  sorted.forEach(p => {
+    html += `<div class="card">
+      <div class="card-top">
+        <div>
+          <span class="card-name">${esc(p.name)}</span> <span class="card-company">@ ${esc(p.company)}</span>
+          <div class="card-title">${esc(p.title)}</div>
+          <div class="card-meta">
+            ${p.linkedinUrl ? `<a href="${esc(p.linkedinUrl)}" target="_blank" class="linkedin-link">LinkedIn Profile</a>` : ''}
+            ${p.dmSentDate ? `<span>DM: ${formatDate(p.dmSentDate)}</span>` : ''}
+            ${p.lastActionDate ? `<span>Last action: ${formatDate(p.lastActionDate)}</span>` : ''}
+          </div>
+        </div>
+        <span class="status status-${p.status}">${STATUS_LABELS[p.status]}</span>
+      </div>
+      ${renderTimeline(p)}
+      ${p.reply ? `<div style="margin-top:8px;font-size:13px;"><strong>Reply:</strong> ${esc(p.reply)}</div>` : ''}
+      ${p.nextStep ? `<div style="margin-top:4px;font-size:13px;"><strong>Next:</strong> ${esc(p.nextStep)}</div>` : ''}
+      <div class="btn-group">
+        ${p.status === 'not_started' ? `<button class="btn btn-primary btn-sm" onclick="markDmSent('${p.id}')">Mark DM Sent</button>` : ''}
+        ${p.status === 'dm_sent' ? `<button class="btn btn-primary btn-sm" onclick="markFollowUp1('${p.id}')">Mark Follow-Up Sent</button>` : ''}
+        ${p.status === 'follow_up_1' ? `<button class="btn btn-primary btn-sm" onclick="markFollowUp2('${p.id}')">Mark Final Nudge Sent</button>` : ''}
+        ${p.status !== 'replied' && p.status !== 'cold' ? `<button class="btn btn-success btn-sm" onclick="markReplied('${p.id}')">Got Reply</button>` : ''}
+        ${p.status !== 'cold' ? `<button class="btn btn-danger btn-sm" onclick="markCold('${p.id}')">Mark Cold</button>` : ''}
+        <button class="btn btn-secondary btn-sm" onclick="resetProspect('${p.id}')">Reset</button>
+        <button class="btn btn-secondary btn-sm" onclick="removeProspect('${p.id}')">Remove</button>
+      </div>
+    </div>`;
+  });
+
+  return html;
+}
+
+// ============================================================
+// HELPERS
+// ============================================================
+function esc(str) {
+  if (!str) return '';
+  const div = document.createElement('div');
+  div.textContent = str;
+  return div.innerHTML;
+}
+
+// ============================================================
+// INIT
+// ============================================================
+render();
+</script>
+</body>
+</html>
