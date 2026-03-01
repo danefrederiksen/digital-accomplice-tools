@@ -107,6 +107,13 @@ body { font-family: 'Poppins', sans-serif; background: #f5f5f5; color: #1a1a1a; 
 .timeline-step.current { background: #fff3e0; color: #e65100; font-weight: 600; }
 .timeline-step.upcoming { background: #f5f5f5; color: #bbb; }
 
+/* Copy message button */
+.btn-copy { background: #f0e6ff; color: #6b21a8; }
+.btn-copy:hover { background: #e0d0ff; }
+.btn-copy.copied { background: #e8f5e9; color: #2e7d32; }
+.msg-preview { background: #fafafa; border: 1px solid #eee; border-radius: 6px; padding: 10px 12px; margin-top: 8px; font-size: 12px; color: #555; line-height: 1.5; white-space: pre-wrap; display: none; }
+.msg-preview.show { display: block; }
+
 /* Manual add form */
 .add-form { background: #fff; border-radius: 10px; padding: 20px; border: 1px solid #e5e5e5; margin-bottom: 20px; }
 .add-form h3 { font-size: 14px; margin-bottom: 12px; }
@@ -241,6 +248,62 @@ function formatDate(dateStr) {
 
 function todayStr() {
   return today().toISOString().split('T')[0];
+}
+
+// ============================================================
+// MESSAGE TEMPLATES
+// ============================================================
+function firstName(fullName) {
+  return (fullName || '').split(' ')[0];
+}
+
+function getMessage(prospect, step) {
+  const name = firstName(prospect.name);
+  if (step === 'dm') {
+    return `Hello ${name}, I'm producing a short video series on how B2B marketing leaders are adapting to the challenges as AI changes the game.
+
+Takes just 15 min, no prep and I'll post on LinkedIn same day and tag you.
+
+https://www.digitalaccomplice.com/video-series
+
+Interested?
+
+Dane`;
+  } else if (step === 'follow_up_1') {
+    return `Hey ${name} — quick way to get your POV in front of 1000s of B2B buyers on LinkedIn. 15 min, no prep, I do all the work.
+Worth a shot?`;
+  } else if (step === 'follow_up_2') {
+    return `${name} — free LinkedIn content featuring you as the expert. Worst case you look smart for 15 minutes. \u{1F604}
+Dane`;
+  }
+  return '';
+}
+
+async function copyMessage(prospectId, step) {
+  const p = state.prospects.find(x => x.id === prospectId);
+  if (!p) return;
+  const msg = getMessage(p, step);
+  try {
+    await navigator.clipboard.writeText(msg);
+    const btn = document.getElementById('copy-btn-' + prospectId);
+    if (btn) {
+      btn.textContent = 'Copied!';
+      btn.classList.add('copied');
+      setTimeout(() => { btn.textContent = 'Copy Message'; btn.classList.remove('copied'); }, 2000);
+    }
+  } catch (err) { alert('Copy failed — check browser permissions'); }
+}
+
+function togglePreview(prospectId, step) {
+  const el = document.getElementById('msg-preview-' + prospectId);
+  if (!el) return;
+  if (el.classList.contains('show')) {
+    el.classList.remove('show');
+  } else {
+    const p = state.prospects.find(x => x.id === prospectId);
+    if (p) el.textContent = getMessage(p, step);
+    el.classList.add('show');
+  }
 }
 
 // ============================================================
@@ -637,15 +700,20 @@ function renderDashboardCard(p, mode) {
 
   if (mode === 'dm') {
     buttons = `
+      <button class="btn btn-copy btn-sm" id="copy-btn-${p.id}" onclick="copyMessage('${p.id}','dm')">Copy Message</button>
+      <button class="btn btn-secondary btn-sm" onclick="togglePreview('${p.id}','dm')">Preview</button>
       <button class="btn btn-primary btn-sm" onclick="markDmSent('${p.id}')">Mark DM Sent</button>
       ${p.linkedinUrl ? `<a href="${esc(p.linkedinUrl)}" target="_blank" class="btn btn-secondary btn-sm">Open LinkedIn</a>` : ''}
     `;
+    extra = `<div class="msg-preview" id="msg-preview-${p.id}"></div>`;
   } else if (mode === 'followup') {
     if (p.status === 'dm_sent') {
       const daysOver = daysBetween(p.followUp1Due, t);
       const overdueLabel = daysOver > 0 ? `<span class="overdue">${daysOver} day${daysOver > 1 ? 's' : ''} overdue</span>` : '';
-      extra = `<div class="due-info">First follow-up ${overdueLabel}</div>`;
+      extra = `<div class="due-info">First follow-up ${overdueLabel}</div><div class="msg-preview" id="msg-preview-${p.id}"></div>`;
       buttons = `
+        <button class="btn btn-copy btn-sm" id="copy-btn-${p.id}" onclick="copyMessage('${p.id}','follow_up_1')">Copy Message</button>
+        <button class="btn btn-secondary btn-sm" onclick="togglePreview('${p.id}','follow_up_1')">Preview</button>
         <button class="btn btn-primary btn-sm" onclick="markFollowUp1('${p.id}')">Mark Follow-Up Sent</button>
         <button class="btn btn-success btn-sm" onclick="markReplied('${p.id}')">Got Reply</button>
         ${p.linkedinUrl ? `<a href="${esc(p.linkedinUrl)}" target="_blank" class="btn btn-secondary btn-sm">Open LinkedIn</a>` : ''}
@@ -653,8 +721,10 @@ function renderDashboardCard(p, mode) {
     } else if (p.status === 'follow_up_1') {
       const daysOver = daysBetween(p.followUp2Due, t);
       const overdueLabel = daysOver > 0 ? `<span class="overdue">${daysOver} day${daysOver > 1 ? 's' : ''} overdue</span>` : '';
-      extra = `<div class="due-info">Final nudge ${overdueLabel}</div>`;
+      extra = `<div class="due-info">Final nudge ${overdueLabel}</div><div class="msg-preview" id="msg-preview-${p.id}"></div>`;
       buttons = `
+        <button class="btn btn-copy btn-sm" id="copy-btn-${p.id}" onclick="copyMessage('${p.id}','follow_up_2')">Copy Message</button>
+        <button class="btn btn-secondary btn-sm" onclick="togglePreview('${p.id}','follow_up_2')">Preview</button>
         <button class="btn btn-primary btn-sm" onclick="markFollowUp2('${p.id}')">Mark Final Nudge Sent</button>
         <button class="btn btn-success btn-sm" onclick="markReplied('${p.id}')">Got Reply</button>
         ${p.linkedinUrl ? `<a href="${esc(p.linkedinUrl)}" target="_blank" class="btn btn-secondary btn-sm">Open LinkedIn</a>` : ''}
