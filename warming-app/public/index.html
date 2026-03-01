@@ -611,15 +611,19 @@ https://www.linkedin.com/in/username3"></textarea>
     <button class="p-btn primary" onclick="importCSV()" style="margin-top:10px">Import CSV</button>
     <div class="import-result" id="csv-result"></div>
   </div>
-  <div class="import-section">
-    <h3>Add Single Prospect</h3>
+  <div class="import-section" style="border:2px solid var(--o);background:var(--card)">
+    <h3 style="color:var(--o);font-size:16px">+ Add Single Prospect</h3>
+    <p>Quickly add one prospect with all their details. Name and LinkedIn URL are required.</p>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
-      <div><label style="font-size:11px;font-weight:600;color:var(--md)">Name</label><input type="text" id="add-name" style="width:100%;padding:6px 10px;border:1px solid var(--bdr);border-radius:6px;font-size:12px"></div>
-      <div><label style="font-size:11px;font-weight:600;color:var(--md)">LinkedIn URL</label><input type="text" id="add-url" style="width:100%;padding:6px 10px;border:1px solid var(--bdr);border-radius:6px;font-size:12px"></div>
-      <div><label style="font-size:11px;font-weight:600;color:var(--md)">Company</label><input type="text" id="add-company" style="width:100%;padding:6px 10px;border:1px solid var(--bdr);border-radius:6px;font-size:12px"></div>
-      <div><label style="font-size:11px;font-weight:600;color:var(--md)">Title</label><input type="text" id="add-title" style="width:100%;padding:6px 10px;border:1px solid var(--bdr);border-radius:6px;font-size:12px"></div>
+      <div><label style="font-size:11px;font-weight:600;color:var(--md)">Name *</label><input type="text" id="add-name" placeholder="Jason Fox" style="width:100%;padding:6px 10px;border:1px solid var(--bdr);border-radius:6px;font-size:12px"></div>
+      <div><label style="font-size:11px;font-weight:600;color:var(--md)">LinkedIn URL *</label><input type="text" id="add-url" placeholder="https://www.linkedin.com/in/username" style="width:100%;padding:6px 10px;border:1px solid var(--bdr);border-radius:6px;font-size:12px"></div>
+      <div><label style="font-size:11px;font-weight:600;color:var(--md)">Company</label><input type="text" id="add-company" placeholder="Acme Corp" style="width:100%;padding:6px 10px;border:1px solid var(--bdr);border-radius:6px;font-size:12px"></div>
+      <div><label style="font-size:11px;font-weight:600;color:var(--md)">Title</label><input type="text" id="add-title" placeholder="CEO" style="width:100%;padding:6px 10px;border:1px solid var(--bdr);border-radius:6px;font-size:12px"></div>
+      <div><label style="font-size:11px;font-weight:600;color:var(--md)">Segment</label><select id="add-segment" style="width:100%;padding:6px 10px;border:1px solid var(--bdr);border-radius:6px;font-size:12px"><option value="cyber">Cyber</option><option value="ai_ml">AI/ML</option><option value="referral_partner">Referral Partner</option><option value="warm_network">Warm Network</option></select></div>
+      <div><label style="font-size:11px;font-weight:600;color:var(--md)">Tier</label><select id="add-tier" style="width:100%;padding:6px 10px;border:1px solid var(--bdr);border-radius:6px;font-size:12px"><option value="1">1</option><option value="2">2</option><option value="3">3</option></select></div>
     </div>
     <button class="p-btn primary" onclick="addSingle()" style="margin-top:10px">Add Prospect</button>
+    <div class="import-result" id="add-single-result"></div>
   </div>
 </div>
 
@@ -1826,12 +1830,16 @@ async function importCSV() {
   el.textContent = `Imported ${data.added} prospects. ${data.skipped} skipped.`;
 }
 async function addSingle() {
+  const name = document.getElementById('add-name').value.trim();
   const url = document.getElementById('add-url').value.trim();
-  if (!url) return;
+  const el = document.getElementById('add-single-result');
+  if (!name || !url) { el.className = 'import-result success'; el.style.display = 'block'; el.style.background = '#fff3cd'; el.style.color = '#856404'; el.textContent = 'Name and LinkedIn URL are required.'; return; }
+  const segment = document.getElementById('add-segment').value;
+  const tier = parseInt(document.getElementById('add-tier').value);
   const res = await fetch('/api/import/urls', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ urls: [url], segment: 'cyber', tier: 1, check_in_days: 3 })
+    body: JSON.stringify({ urls: [url], segment, tier, check_in_days: 3 })
   });
   const data = await res.json();
   if (data.added > 0) {
@@ -1845,6 +1853,9 @@ async function addSingle() {
         body: JSON.stringify({ name: document.getElementById('add-name').value, company: document.getElementById('add-company').value, title: document.getElementById('add-title').value })
       });
     }
+    el.className = 'import-result success'; el.style.display = 'block'; el.textContent = `Added ${name} to pipeline (${segment}, Tier ${tier})`;
+  } else {
+    el.className = 'import-result success'; el.style.display = 'block'; el.style.background = '#fff3cd'; el.style.color = '#856404'; el.textContent = data.skippedUrls ? data.skippedUrls[0] : 'Prospect already exists or URL invalid.';
   }
   ['add-name','add-url','add-company','add-title'].forEach(id => document.getElementById(id).value = '');
 }
