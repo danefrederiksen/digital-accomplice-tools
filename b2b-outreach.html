@@ -671,7 +671,7 @@ function renderImport() {
   // Imported contacts table
   if (state.importedContacts.length > 0) {
     const selectedCount = state.importedContacts.filter(c => c.selected).length;
-    html += `<div class="selected-count">Selected: <span>${selectedCount}</span> / 10</div>`;
+    html += `<div class="selected-count">Selected: <span>${selectedCount}</span> of ${state.importedContacts.length}</div>`;
     html += `<table class="filter-table">
       <thead><tr>
         <th></th><th>Name</th><th>Company</th><th>Title</th>
@@ -680,7 +680,7 @@ function renderImport() {
     state.importedContacts.forEach((c, i) => {
       const name = (c.firstName + ' ' + c.lastName).trim();
       html += `<tr>
-        <td><input type="checkbox" ${c.selected ? 'checked' : ''} onchange="toggleContact(${i})" ${!c.selected && selectedCount >= 10 ? 'disabled' : ''} /></td>
+        <td><input type="checkbox" ${c.selected ? 'checked' : ''} onchange="toggleContact(${i})" /></td>
         <td>${esc(name)}</td>
         <td>${esc(c.company)}</td>
         <td>${esc(c.position)}</td>
@@ -688,7 +688,8 @@ function renderImport() {
     });
 
     html += `</tbody></table>`;
-    html += `<div style="margin-top:12px">
+    html += `<div style="margin-top:12px; display:flex; gap:8px; align-items:center;">
+      <button class="btn btn-primary" onclick="selectAllContacts()">Select All</button>
       <button class="btn btn-primary" onclick="activateSelected()" ${selectedCount === 0 ? 'disabled' : ''}>Activate ${selectedCount} Prospect${selectedCount !== 1 ? 's' : ''}</button>
     </div>`;
   }
@@ -697,10 +698,13 @@ function renderImport() {
 }
 
 function toggleContact(index) {
-  const c = state.importedContacts[index];
-  const selectedCount = state.importedContacts.filter(x => x.selected).length;
-  if (!c.selected && selectedCount >= 10) return;
-  c.selected = !c.selected;
+  state.importedContacts[index].selected = !state.importedContacts[index].selected;
+  render();
+}
+
+function selectAllContacts() {
+  const allSelected = state.importedContacts.every(c => c.selected);
+  state.importedContacts.forEach(c => { c.selected = !allSelected; });
   render();
 }
 
