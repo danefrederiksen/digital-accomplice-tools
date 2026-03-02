@@ -24,6 +24,12 @@ const SOURCE_FILES = {
     tool: '#4',
     port: 3854
   },
+  'referral_1st': {
+    file: path.join(DATA_DIR, 'referral-1st-prospects.json'),
+    label: 'Referral 1st Connection',
+    tool: '#5',
+    port: 3855
+  },
   'referral_2nd': {
     file: path.join(DATA_DIR, 'referral-2nd-prospects.json'),
     label: 'Referral 2nd Connection',
@@ -240,8 +246,8 @@ app.get('/api/stats', (req, res) => {
   const weekComments = log.filter(e => e.date >= weekStart);
 
   // Per-segment breakdown
-  const segments = { b2b_2nd: 0, cyber_2nd: 0, referral_2nd: 0 };
-  const segmentsWeek = { b2b_2nd: 0, cyber_2nd: 0, referral_2nd: 0 };
+  const segments = { b2b_2nd: 0, cyber_2nd: 0, referral_1st: 0, referral_2nd: 0 };
+  const segmentsWeek = { b2b_2nd: 0, cyber_2nd: 0, referral_1st: 0, referral_2nd: 0 };
 
   todayComments.forEach(e => { if (segments[e.segment] !== undefined) segments[e.segment]++; });
   weekComments.forEach(e => { if (segmentsWeek[e.segment] !== undefined) segmentsWeek[e.segment]++; });

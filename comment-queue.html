@@ -77,6 +77,7 @@
     }
     .segment-badge.b2b_2nd { background: #3B82F6; }
     .segment-badge.cyber_2nd { background: #8B5CF6; }
+    .segment-badge.referral_1st { background: #F38B1C; }
     .segment-badge.referral_2nd { background: #10B981; }
     .status-badge {
       display: inline-block; padding: 2px 8px; border-radius: 10px;
@@ -172,6 +173,7 @@
     .segment-row .dot { width: 8px; height: 8px; border-radius: 50%; }
     .segment-row .dot.b2b { background: #3B82F6; }
     .segment-row .dot.cyber { background: #8B5CF6; }
+    .segment-row .dot.referral1st { background: #F38B1C; }
     .segment-row .dot.referral { background: #10B981; }
 
     /* History tab */
@@ -236,7 +238,7 @@
     <div class="container">
       <div class="search-section">
         <input type="text" class="search-box" id="searchInput" placeholder="Type a name from Sales Nav..." autofocus>
-        <div class="search-hint">Search across B2B, Cyber, and Referral 2nd connection prospects</div>
+        <div class="search-hint">Search across B2B 2nd, Cyber 2nd, Referral 1st, and Referral 2nd prospects</div>
       </div>
 
       <div class="results-area" id="searchResults"></div>
@@ -258,7 +260,8 @@
         <div style="display:flex;gap:12px;">
           <div class="segment-row"><span class="dot b2b"></span> B2B: <strong id="segB2b">0</strong></div>
           <div class="segment-row"><span class="dot cyber"></span> Cyber: <strong id="segCyber">0</strong></div>
-          <div class="segment-row"><span class="dot referral"></span> Referral: <strong id="segReferral">0</strong></div>
+          <div class="segment-row"><span class="dot referral1st"></span> Ref 1st: <strong id="segReferral1st">0</strong></div>
+          <div class="segment-row"><span class="dot referral"></span> Ref 2nd: <strong id="segReferral">0</strong></div>
         </div>
       </div>
 
@@ -275,6 +278,7 @@
         <div class="filter-btn active" data-filter="" onclick="filterHistory('')">All</div>
         <div class="filter-btn" data-filter="b2b_2nd" onclick="filterHistory('b2b_2nd')">B2B 2nd</div>
         <div class="filter-btn" data-filter="cyber_2nd" onclick="filterHistory('cyber_2nd')">Cyber 2nd</div>
+        <div class="filter-btn" data-filter="referral_1st" onclick="filterHistory('referral_1st')">Referral 1st</div>
         <div class="filter-btn" data-filter="referral_2nd" onclick="filterHistory('referral_2nd')">Referral 2nd</div>
       </div>
       <div id="historyList"></div>
@@ -542,6 +546,7 @@ async function loadStats() {
   // Segment breakdown (today)
   document.getElementById('segB2b').textContent = stats.today.bySegment.b2b_2nd || 0;
   document.getElementById('segCyber').textContent = stats.today.bySegment.cyber_2nd || 0;
+  document.getElementById('segReferral1st').textContent = stats.today.bySegment.referral_1st || 0;
   document.getElementById('segReferral').textContent = stats.today.bySegment.referral_2nd || 0;
 }
 
@@ -565,7 +570,7 @@ function renderTodayComments() {
   div.innerHTML = todayHistory.map(c => {
     const segClass = c.segment || '';
     const segLabel = {
-      b2b_2nd: 'B2B 2nd', cyber_2nd: 'Cyber 2nd', referral_2nd: 'Referral 2nd'
+      b2b_2nd: 'B2B 2nd', cyber_2nd: 'Cyber 2nd', referral_1st: 'Referral 1st', referral_2nd: 'Referral 2nd'
     }[c.segment] || c.segment;
 
     return `
@@ -619,7 +624,7 @@ function renderHistory(comments) {
     html += `<div class="section-header">${esc(label)} (${items.length}) <span class="line"></span></div>`;
     html += items.map(c => {
       const segLabel = {
-        b2b_2nd: 'B2B 2nd', cyber_2nd: 'Cyber 2nd', referral_2nd: 'Referral 2nd'
+        b2b_2nd: 'B2B 2nd', cyber_2nd: 'Cyber 2nd', referral_1st: 'Referral 1st', referral_2nd: 'Referral 2nd'
       }[c.segment] || c.segment;
 
       return `
