@@ -150,7 +150,7 @@ body { font-family: 'Poppins', sans-serif; background: #f5f5f5; color: #1a1a1a; 
 // ============================================================
 // STATE
 // ============================================================
-const TITLE_KEYWORDS = ['founder','ceo','co-founder','owner','president','managing director','agency','consultant','advisor','strategist','partner','head of partnerships','vp partnerships','business development','director of marketing','vp marketing','cmo','creative director','head of content','content strategist'];
+const TITLE_KEYWORDS = ['founder','ceo','co-founder','owner','partner','managing partner','president','managing director','principal','director of partnerships','head of partnerships','vp partnerships','vp alliances','vp business development','head of business development','agency owner','creative director','fractional cmo'];
 
 let state = {
   prospects: [],
@@ -259,20 +259,15 @@ function firstName(fullName) {
 
 function getMessage(prospect, step) {
   const name = firstName(prospect.name);
+  const company = prospect.company || 'your company';
   if (step === 'dm') {
-    return `Hey ${name}, I run Digital Accomplice, a video production agency focused on B2B companies. I noticed we serve a similar audience and wanted to see if there's an opportunity to send referrals back and forth.
-
-We do video strategy, production, and LinkedIn content — so when your clients need video, we're a natural fit. And if we run into companies that need what you do, I'd love to send them your way.
-
-Worth a quick chat?
+    return `Hey ${name}, love what you're building at ${company}. I run a video strategy agency and a lot of our clients overlap — yours need video, mine need what you do. Open to a quick chat about sending each other referrals?
 
 Dane`;
   } else if (step === 'follow_up_1') {
-    return `Hey ${name} — circling back on the referral idea. I've found that the best partnerships start with a quick intro call — 15 min to see if there's a fit.
-Open to it?`;
+    return `Following up on this — I think there's real overlap between our networks. Even a 15-min call could surface some easy wins for both sides.`;
   } else if (step === 'follow_up_2') {
-    return `${name} — last note on this. If referral partnerships aren't your thing, no worries at all. But if you ever need a video partner for your clients, keep Digital Accomplice in mind.
-Dane`;
+    return `Last bump on this. I've got a few clients right now who could use what ${company} does — happy to make intros if you're open to it. Door's always open.`;
   }
   return '';
 }

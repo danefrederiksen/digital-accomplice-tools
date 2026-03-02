@@ -18,7 +18,9 @@ All tools follow: **Prospecting Tool #N — [Name]**
 
 4. **Prospecting Tool #4** — Cyber 2nd Connections DM Tracker
 
-5. **Prospecting Tool #5** — Referral Partner 1st Connections DM Tracker
+5. **Prospecting Tool #5** — Referral Partner 1st Connections DM Tracker — **BUILT**
+   - File: `referral-1st-outreach.html` / Server: `referral-1st-serve.js` (port 3855)
+   - Same pattern as #1/#2 but referral partner messaging, partner/agency title filters
 
 6. **Prospecting Tool #6** — Referral Partner 2nd Connections DM Tracker
 
