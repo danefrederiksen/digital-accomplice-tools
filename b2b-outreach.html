@@ -131,6 +131,20 @@ body { font-family: 'Poppins', sans-serif; background: #f5f5f5; color: #1a1a1a; 
 .linkedin-link { color: #F8901E; text-decoration: none; font-size: 12px; font-weight: 500; }
 .linkedin-link:hover { text-decoration: underline; }
 
+/* Daily progress */
+.daily-progress { background: #fff; border-radius: 10px; padding: 14px 20px; border: 1px solid #e5e5e5; margin-bottom: 20px; }
+.daily-progress h3 { font-size: 13px; font-weight: 700; margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
+.daily-progress .lbl { color: #999; font-weight: 400; font-size: 11px; }
+.progress-row { display: flex; align-items: center; gap: 12px; margin-bottom: 6px; }
+.progress-row:last-child { margin-bottom: 0; }
+.progress-label { font-size: 12px; font-weight: 600; color: #555; min-width: 120px; }
+.progress-track { flex: 1; height: 20px; background: #f0f0f0; border-radius: 10px; overflow: hidden; }
+.progress-fill { height: 100%; border-radius: 10px; transition: width 0.3s; }
+.progress-fill.orange { background: linear-gradient(135deg, #F8901E, #e07a10); }
+.progress-fill.green { background: linear-gradient(135deg, #4caf50, #388e3c); }
+.progress-nums { font-size: 13px; font-weight: 700; min-width: 50px; text-align: right; }
+.progress-nums.done { color: #2e7d32; }
+
 @media (max-width: 700px) {
   .content { padding: 16px; }
   .form-row { flex-direction: column; }
@@ -611,6 +625,39 @@ function switchTab(tab) {
 }
 
 // ============================================================
+// DAILY PROGRESS
+// ============================================================
+const DAILY_TARGETS = { newOutreach: 4, totalTouches: 10 };
+
+function getDailyProgress() {
+  const t = todayStr();
+  const newSends = state.prospects.filter(p => p.dmSentDate === t).length;
+  const followUps = state.prospects.filter(p => p.lastActionDate === t && (p.status === 'follow_up_1' || p.status === 'follow_up_2')).length;
+  return { newSends, followUps, total: newSends + followUps };
+}
+
+function renderDailyProgress() {
+  const { newSends, total } = getDailyProgress();
+  const newPct = Math.min(100, Math.round((newSends / DAILY_TARGETS.newOutreach) * 100));
+  const totalPct = Math.min(100, Math.round((total / DAILY_TARGETS.totalTouches) * 100));
+  const newDone = newSends >= DAILY_TARGETS.newOutreach;
+  const totalDone = total >= DAILY_TARGETS.totalTouches;
+  return `<div class="daily-progress">
+    <h3>Daily Target <span class="lbl">LinkedIn DMs</span></h3>
+    <div class="progress-row">
+      <span class="progress-label">New DMs</span>
+      <div class="progress-track"><div class="progress-fill ${newDone ? 'green' : 'orange'}" style="width:${newPct}%"></div></div>
+      <span class="progress-nums ${newDone ? 'done' : ''}">${newSends} / ${DAILY_TARGETS.newOutreach}</span>
+    </div>
+    <div class="progress-row">
+      <span class="progress-label">Total touches</span>
+      <div class="progress-track"><div class="progress-fill ${totalDone ? 'green' : 'orange'}" style="width:${totalPct}%"></div></div>
+      <span class="progress-nums ${totalDone ? 'done' : ''}">${total} / ${DAILY_TARGETS.totalTouches}</span>
+    </div>
+  </div>`;
+}
+
+// ============================================================
 // RENDER — DASHBOARD
 // ============================================================
 function renderDashboard() {
@@ -634,6 +681,8 @@ function renderDashboard() {
       <span class="alert-stat">${waitList.length} waiting</span>
     </div>`;
   }
+
+  html += renderDailyProgress();
 
   // DM Today
   html += `<div class="section">

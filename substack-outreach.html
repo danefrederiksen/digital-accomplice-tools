@@ -136,6 +136,20 @@ body { font-family: 'Poppins', sans-serif; background: #f5f5f5; color: #1a1a1a; 
   .form-row { flex-direction: column; }
   .card-top { flex-direction: column; gap: 6px; }
 }
+
+/* Daily progress */
+.daily-progress { background: #fff; border-radius: 10px; padding: 14px 20px; border: 1px solid #e5e5e5; margin-bottom: 20px; }
+.daily-progress h3 { font-size: 13px; font-weight: 700; margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
+.daily-progress .lbl { color: #999; font-weight: 400; font-size: 11px; }
+.progress-row { display: flex; align-items: center; gap: 12px; margin-bottom: 6px; }
+.progress-row:last-child { margin-bottom: 0; }
+.progress-label { font-size: 12px; font-weight: 600; color: #555; min-width: 120px; }
+.progress-track { flex: 1; height: 20px; background: #f0f0f0; border-radius: 10px; overflow: hidden; }
+.progress-fill { height: 100%; border-radius: 10px; transition: width 0.3s; }
+.progress-fill.orange { background: linear-gradient(135deg, #F8901E, #e07a10); }
+.progress-fill.green { background: linear-gradient(135deg, #4caf50, #388e3c); }
+.progress-nums { font-size: 13px; font-weight: 700; min-width: 50px; text-align: right; }
+.progress-nums.done { color: #2e7d32; }
 </style>
 </head>
 <body>
@@ -632,6 +646,33 @@ function switchTab(tab) {
 }
 
 // ============================================================
+// DAILY PROGRESS
+// ============================================================
+const DAILY_TARGETS = { newEmails: 5 };
+
+function getDailyProgress() {
+  const t = todayStr();
+  const newEmails = state.prospects.filter(p => p.emailSentDate === t).length;
+  const followUps = state.prospects.filter(p => p.lastActionDate === t && (p.status === 'follow_up_1' || p.status === 'follow_up_2')).length;
+  return { newEmails, followUps, total: newEmails + followUps };
+}
+
+function renderDailyProgress() {
+  const { newEmails, followUps, total } = getDailyProgress();
+  const pct = Math.min(100, Math.round((newEmails / DAILY_TARGETS.newEmails) * 100));
+  const emailDone = newEmails >= DAILY_TARGETS.newEmails;
+  return `<div class="daily-progress">
+    <h3>Daily Target <span class="lbl">Email — warm subscribers</span></h3>
+    <div class="progress-row">
+      <span class="progress-label">New emails</span>
+      <div class="progress-track"><div class="progress-fill ${emailDone ? 'green' : 'orange'}" style="width:${pct}%"></div></div>
+      <span class="progress-nums ${emailDone ? 'done' : ''}">${newEmails} / ${DAILY_TARGETS.newEmails}</span>
+    </div>
+    ${followUps > 0 ? `<div class="progress-row"><span class="progress-label">Follow-ups done</span><div class="progress-track"><div class="progress-fill green" style="width:100%"></div></div><span class="progress-nums done">${followUps}</span></div>` : ''}
+  </div>`;
+}
+
+// ============================================================
 // RENDER — DASHBOARD
 // ============================================================
 function renderDashboard() {
@@ -655,6 +696,8 @@ function renderDashboard() {
       <span class="alert-stat">${waitList.length} waiting</span>
     </div>`;
   }
+
+  html += renderDailyProgress();
 
   // Email Today
   html += `<div class="section">
