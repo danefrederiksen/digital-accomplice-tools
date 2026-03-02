@@ -322,6 +322,170 @@ app.get('/api/prospects', (req, res) => {
 });
 
 // ============================================================
+// DAILY TARGETS — auto-generated list of 8 prospects to comment on today
+// ============================================================
+const DAILY_TARGET = 8;
+const EXCLUDE_STATUSES = ['cold', 'replied'];
+const ENGAGED_STATUSES = ['connection_accepted', 'dm_sent', 'follow_up_1', 'follow_up_2'];
+
+// Deterministic shuffle using date as seed (stable within same day)
+function seededShuffle(arr, seed) {
+  const shuffled = [...arr];
+  let s = 0;
+  for (let i = 0; i < seed.length; i++) s = ((s << 5) - s + seed.charCodeAt(i)) | 0;
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    s = (s * 1103515245 + 12345) & 0x7fffffff;
+    const j = s % (i + 1);
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+  }
+  return shuffled;
+}
+
+app.get('/api/daily-targets', (req, res) => {
+  const all = loadAllProspects();
+  const commentLog = loadCommentLog();
+  const now = new Date();
+  const todayStr = now.toISOString().split('T')[0];
+
+  // Build comment stats per prospect
+  const commentStats = {};
+  commentLog.forEach(entry => {
+    if (!commentStats[entry.prospectId]) {
+      commentStats[entry.prospectId] = { count: 0, lastDate: null, commentedToday: false };
+    }
+    commentStats[entry.prospectId].count++;
+    if (!commentStats[entry.prospectId].lastDate || entry.date > commentStats[entry.prospectId].lastDate) {
+      commentStats[entry.prospectId].lastDate = entry.date;
+    }
+    if (entry.date.startsWith(todayStr)) {
+      commentStats[entry.prospectId].commentedToday = true;
+    }
+  });
+
+  // IDs already commented on today
+  const commentedTodayIds = new Set();
+  commentLog.forEach(entry => {
+    if (entry.date.startsWith(todayStr)) commentedTodayIds.add(entry.prospectId);
+  });
+
+  // Filter out excluded statuses, header rows, and already-commented-today
+  const candidates = all.filter(p => {
+    if (!p.name || p.name === 'Name') return false;
+    const status = (p.status || '').toLowerCase();
+    if (EXCLUDE_STATUSES.includes(status)) return false;
+    if (commentedTodayIds.has(p.id)) return false;
+    return true;
+  });
+
+  // Score each candidate (lower = higher priority)
+  const nowMs = now.getTime();
+  const DAY_MS = 86400000;
+
+  const scored = candidates.map(p => {
+    const stats = commentStats[p.id] || { count: 0, lastDate: null };
+    const status = (p.status || '').toLowerCase();
+    const daysSinceComment = stats.lastDate
+      ? Math.floor((nowMs - new Date(stats.lastDate).getTime()) / DAY_MS)
+      : Infinity;
+
+    let priority;
+
+    if (ENGAGED_STATUSES.includes(status) && stats.count === 0) {
+      // Tier 1: Engaged but never commented — hottest leads
+      priority = 1;
+    } else if (stats.count > 0 && daysSinceComment >= 21) {
+      // Tier 2: Stale — commented before but 3+ weeks ago
+      priority = 2;
+    } else if (stats.count > 0 && daysSinceComment >= 7) {
+      // Tier 3: Aging — commented 1-3 weeks ago, good refresh
+      priority = 3;
+    } else if (stats.count === 0) {
+      // Tier 4: Never commented — cold prospects to warm up
+      priority = 4;
+    } else {
+      // Tier 5: Recently commented (< 7 days) — lowest priority
+      priority = 5;
+    }
+
+    return {
+      id: p.id,
+      name: p.name,
+      company: p.company,
+      title: p.title,
+      linkedinUrl: p.linkedinUrl,
+      status: p.status,
+      segment: p.segment,
+      segmentLabel: p.segmentLabel,
+      sourceTool: p.sourceTool,
+      sourcePort: p.sourcePort,
+      commentCount: stats.count,
+      lastCommented: stats.lastDate,
+      priority,
+      daysSinceComment: daysSinceComment === Infinity ? null : daysSinceComment
+    };
+  });
+
+  // Sort by priority tier, then shuffle within each tier using today's date as seed
+  scored.sort((a, b) => a.priority - b.priority);
+
+  // Group by tier, shuffle each, then flatten
+  const tiers = {};
+  scored.forEach(p => {
+    if (!tiers[p.priority]) tiers[p.priority] = [];
+    tiers[p.priority].push(p);
+  });
+
+  let pool = [];
+  for (const tier of Object.keys(tiers).sort((a, b) => a - b)) {
+    pool.push(...seededShuffle(tiers[tier], todayStr + tier));
+  }
+
+  // Spread segments: pick round-robin from segments to avoid all-cyber or all-b2b
+  const segmentBuckets = {};
+  pool.forEach(p => {
+    if (!segmentBuckets[p.segment]) segmentBuckets[p.segment] = [];
+    segmentBuckets[p.segment].push(p);
+  });
+
+  const segKeys = Object.keys(segmentBuckets);
+  const balanced = [];
+  const usedIds = new Set();
+  let round = 0;
+
+  while (balanced.length < DAILY_TARGET && round < 200) {
+    const seg = segKeys[round % segKeys.length];
+    const bucket = segmentBuckets[seg];
+    const next = bucket.find(p => !usedIds.has(p.id));
+    if (next) {
+      balanced.push(next);
+      usedIds.add(next.id);
+    }
+    round++;
+  }
+
+  // If we didn't fill 8 from round-robin, fill from remaining pool
+  if (balanced.length < DAILY_TARGET) {
+    for (const p of pool) {
+      if (balanced.length >= DAILY_TARGET) break;
+      if (!usedIds.has(p.id)) {
+        balanced.push(p);
+        usedIds.add(p.id);
+      }
+    }
+  }
+
+  const targets = balanced.slice(0, DAILY_TARGET);
+  const doneToday = commentedTodayIds.size;
+
+  res.json({
+    targets,
+    doneToday,
+    dailyTarget: DAILY_TARGET,
+    remaining: Math.max(0, DAILY_TARGET - doneToday)
+  });
+});
+
+// ============================================================
 // SCREENSHOTS
 // ============================================================
 const ALLOWED_MIME = { 'image/png': 'png', 'image/jpeg': 'jpg', 'image/webp': 'webp' };

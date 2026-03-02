@@ -254,6 +254,56 @@
       display: inline-block; padding: 2px 8px; font-size: 11px; font-weight: 600;
       color: #065F46; animation: flashIn 0.3s ease;
     }
+
+    /* Daily Targets */
+    .targets-section { margin-bottom: 28px; }
+    .targets-header {
+      display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;
+    }
+    .targets-title {
+      font-size: 16px; font-weight: 800; color: #000; display: flex; align-items: center; gap: 10px;
+    }
+    .targets-title .fire { font-size: 18px; }
+    .targets-progress {
+      padding: 4px 12px; border-radius: 16px; font-size: 12px; font-weight: 700;
+      background: rgba(243, 139, 28, 0.12); color: #F38B1C; border: 1px solid #F38B1C;
+    }
+    .targets-progress.done { background: rgba(16, 185, 129, 0.12); color: #10B981; border-color: #10B981; }
+    .targets-grid {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
+    }
+    @media (max-width: 700px) { .targets-grid { grid-template-columns: 1fr; } }
+    .target-card {
+      background: #fff; border-radius: 10px; padding: 12px 16px; border: 1px solid #eee;
+      display: flex; align-items: center; justify-content: space-between; gap: 8px;
+      transition: border-color 0.15s, box-shadow 0.15s; cursor: default;
+    }
+    .target-card:hover { border-color: #F38B1C; box-shadow: 0 2px 8px rgba(243,139,28,0.08); }
+    .target-card.commented {
+      opacity: 0.5; border-color: #10B981; background: #F0FDF4;
+    }
+    .target-card .tc-info { flex: 1; min-width: 0; }
+    .target-card .tc-name { font-weight: 700; font-size: 14px; color: #000; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .target-card .tc-meta {
+      font-size: 11px; color: #5A6B7A; margin-top: 2px;
+      display: flex; align-items: center; gap: 6px; flex-wrap: wrap;
+    }
+    .target-card .tc-actions { display: flex; gap: 6px; align-items: center; flex-shrink: 0; }
+    .target-card .tc-check { color: #10B981; font-size: 18px; font-weight: 800; }
+    .targets-done-banner {
+      background: linear-gradient(135deg, #D1FAE5 0%, #F0FDF4 100%);
+      border: 1px solid #10B981; border-radius: 12px; padding: 20px;
+      text-align: center; font-size: 15px; font-weight: 700; color: #065F46;
+    }
+    .targets-done-banner .emoji { font-size: 28px; margin-bottom: 6px; }
+    .priority-badge {
+      display: inline-block; padding: 1px 6px; border-radius: 8px;
+      font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.3px;
+    }
+    .priority-badge.hot { background: #FEE2E2; color: #991B1B; }
+    .priority-badge.stale { background: #FEF3C7; color: #92400E; }
+    .priority-badge.refresh { background: #DBEAFE; color: #1E40AF; }
+    .priority-badge.new { background: #F3F4F6; color: #374151; }
   </style>
 </head>
 <body>
@@ -279,6 +329,16 @@
   <!-- SEARCH TAB -->
   <div class="tab-panel active" id="panel-search">
     <div class="container">
+
+      <!-- Daily Targets -->
+      <div class="targets-section" id="targetsSection">
+        <div class="targets-header">
+          <div class="targets-title"><span class="fire">&#127919;</span> Today's Targets</div>
+          <span class="targets-progress" id="targetsProgress">0/8</span>
+        </div>
+        <div id="targetsGrid" class="targets-grid"></div>
+      </div>
+
       <div class="search-section">
         <input type="text" class="search-box" id="searchInput" placeholder="Type a name from Sales Nav..." autofocus>
         <div class="search-hint">Search across B2B 2nd, Cyber 2nd, Referral 1st, and Referral 2nd prospects</div>
@@ -367,6 +427,7 @@
 let stats = { today: { total: 0, target: 8, bySegment: {} }, week: { total: 0, bySegment: {} } };
 let todayHistory = [];
 let allProspects = [];
+let dailyTargets = [];
 let historyFilter = '';
 let searchDebounce = null;
 
@@ -572,8 +633,9 @@ async function logComment(prospectId, name, company, segment) {
       setTimeout(() => flash.remove(), 2000);
     }
 
-    // Refresh stats and today's list
+    // Refresh stats, targets, and today's list
     await loadStats();
+    await loadDailyTargets();
     await loadTodayComments();
 
     // Clear search and refocus for next lookup
@@ -615,6 +677,117 @@ async function loadStats() {
   document.getElementById('segCyber').textContent = stats.today.bySegment.cyber_2nd || 0;
   document.getElementById('segReferral1st').textContent = stats.today.bySegment.referral_1st || 0;
   document.getElementById('segReferral').textContent = stats.today.bySegment.referral_2nd || 0;
+}
+
+// ============================================================
+// DAILY TARGETS
+// ============================================================
+async function loadDailyTargets() {
+  const data = await apiGet('/api/daily-targets');
+  dailyTargets = data.targets || [];
+  renderDailyTargets(data);
+}
+
+function renderDailyTargets(data) {
+  const grid = document.getElementById('targetsGrid');
+  const pill = document.getElementById('targetsProgress');
+  const doneToday = data.doneToday || 0;
+  const target = data.dailyTarget || 8;
+
+  // Update progress pill
+  pill.textContent = `${doneToday}/${target} done`;
+  pill.className = 'targets-progress' + (doneToday >= target ? ' done' : '');
+
+  // All done for the day
+  if (doneToday >= target) {
+    grid.innerHTML = `
+      <div class="targets-done-banner" style="grid-column: 1 / -1;">
+        <div class="emoji">&#127881;</div>
+        Daily target hit! ${doneToday} comments logged today.
+      </div>
+    `;
+    return;
+  }
+
+  if (dailyTargets.length === 0) {
+    grid.innerHTML = '<div class="no-match" style="grid-column: 1 / -1;">No targets available — all prospects commented recently</div>';
+    return;
+  }
+
+  // IDs already commented today (from todayHistory)
+  const commentedTodayIds = new Set(todayHistory.map(c => c.prospectId));
+
+  grid.innerHTML = dailyTargets.map(p => {
+    const isDone = commentedTodayIds.has(p.id);
+    const priorityLabel = {
+      1: '<span class="priority-badge hot">Engaged</span>',
+      2: '<span class="priority-badge stale">Stale</span>',
+      3: '<span class="priority-badge refresh">Refresh</span>',
+      4: '<span class="priority-badge new">New</span>',
+      5: ''
+    }[p.priority] || '';
+
+    const commentInfo = p.commentCount > 0
+      ? `${p.commentCount} comment${p.commentCount !== 1 ? 's' : ''}`
+      : 'Never commented';
+
+    const activityUrl = getActivityUrl(p.linkedinUrl);
+
+    return `
+      <div class="target-card ${isDone ? 'commented' : ''}" id="target-${esc(p.id)}">
+        <div class="tc-info">
+          <div class="tc-name">${isDone ? '&#10003; ' : ''}${esc(p.name)}</div>
+          <div class="tc-meta">
+            <span>${esc(p.company || '')}</span>
+            <span class="segment-badge ${esc(p.segment)}" style="font-size:9px;padding:1px 6px;">${esc(p.segmentLabel)}</span>
+            ${priorityLabel}
+            <span style="color:#bbb;">${commentInfo}</span>
+          </div>
+        </div>
+        <div class="tc-actions">
+          ${isDone
+            ? '<span class="tc-check">&#10003;</span>'
+            : `${activityUrl ? `<a href="${esc(activityUrl)}" target="_blank" class="btn btn-secondary btn-sm" title="View recent posts">Activity</a>` : ''}
+               <button class="btn btn-primary btn-sm" onclick="showTargetLogForm('${esc(p.id)}', '${esc(p.name).replace(/'/g, "\\'")}', '${esc(p.company || '').replace(/'/g, "\\'")}', '${esc(p.segment)}')">Log</button>`
+          }
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function showTargetLogForm(prospectId, name, company, segment) {
+  const card = document.getElementById('target-' + prospectId);
+  if (!card || card.querySelector('.post-url-row')) return;
+
+  const form = document.createElement('div');
+  form.className = 'post-url-row';
+  form.style.gridColumn = '1 / -1';
+  form.innerHTML = `
+    <input type="text" class="post-url-input" placeholder="Post URL (optional)" id="turl-${prospectId}">
+    <button class="btn btn-primary btn-sm" onclick="logTargetComment('${prospectId}', '${name.replace(/'/g, "\\'")}', '${company.replace(/'/g, "\\'")}', '${segment}')">Save</button>
+    <button class="btn btn-secondary btn-sm" onclick="this.parentElement.remove()">Cancel</button>
+  `;
+  card.appendChild(form);
+  form.querySelector('input').focus();
+  form.querySelector('input').addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') logTargetComment(prospectId, name, company, segment);
+  });
+}
+
+async function logTargetComment(prospectId, name, company, segment) {
+  const urlInput = document.getElementById('turl-' + prospectId);
+  const postUrl = urlInput ? urlInput.value.trim() : '';
+
+  const result = await apiPost('/api/comment', {
+    prospectId, prospectName: name, company, segment, postUrl
+  });
+
+  if (result.ok) {
+    await loadStats();
+    await loadTodayComments();
+    await loadDailyTargets();
+  }
 }
 
 // ============================================================
@@ -934,6 +1107,7 @@ function switchTab(tab) {
 async function init() {
   await loadStats();
   await loadTodayComments();
+  await loadDailyTargets();
   searchInput.focus();
 }
 
