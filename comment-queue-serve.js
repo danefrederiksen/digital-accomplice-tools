@@ -2,6 +2,7 @@ const express = require('express');
 const fs = require('fs');
 const path = require('path');
 const { v4: uuidv4 } = require('uuid');
+const Tesseract = require('tesseract.js');
 
 const app = express();
 const PORT = 3861;
@@ -540,6 +541,95 @@ app.get('/api/daily-targets', (req, res) => {
     dailyTarget: DAILY_TARGET,
     remaining: Math.max(0, DAILY_TARGET - doneToday)
   });
+});
+
+// ============================================================
+// OCR — extract names from screenshot
+// ============================================================
+app.post('/api/screenshots/:id/ocr', async (req, res) => {
+  const meta = loadScreenshotsMeta();
+  const entry = meta.find(s => s.id === req.params.id);
+  if (!entry) return res.status(404).json({ error: 'Screenshot not found' });
+
+  const filepath = path.join(SCREENSHOTS_DIR, `${entry.id}.${entry.ext}`);
+  if (!fs.existsSync(filepath)) return res.status(404).json({ error: 'File not found' });
+
+  try {
+    console.log(`[OCR] Starting OCR on ${entry.filename}...`);
+    const { data: { text } } = await Tesseract.recognize(filepath, 'eng');
+    console.log(`[OCR] Raw text extracted (${text.length} chars)`);
+
+    // Strategy: use two approaches and merge results
+    // 1. Pattern-based: find Sales Nav specific patterns in the raw text
+    // 2. Fuzzy match: compare every word sequence against the prospect database
+    const extractedNames = [];
+    const seenNames = new Set();
+
+    function addName(name) {
+      const cleaned = name.replace(/[^\w\s'-]/g, '').trim();
+      if (cleaned.length < 3) return;
+      // Filter file names, extensions, UI elements
+      if (/\.(png|jpg|txt|json|md|js|html|mp4|docx|xlsx|csv|pdf|webp)/i.test(cleaned)) return;
+      if (/[_]/.test(cleaned)) return;  // underscores = file/variable names
+      if (/^\d/.test(cleaned)) return;
+      const key = cleaned.toLowerCase();
+      if (!seenNames.has(key)) {
+        seenNames.add(key);
+        extractedNames.push(cleaned);
+      }
+    }
+
+    // --- Approach 1: Sales Nav patterns in raw text ---
+    // Join lines to handle names split across lines, normalize whitespace
+    const fullText = text.replace(/\n/g, ' ').replace(/\s+/g, ' ');
+
+    // Name word pattern: capitalized word, possibly hyphenated (Still-Baxter)
+    // Using [A-Z] without i flag so we only match capitalized words (proper nouns)
+    const NW = '[A-Z][a-zA-Z\'-]+';
+    const NAME = `${NW}(?:\\s+${NW}){1,4}`;
+
+    const patterns = [
+      // "Suggested lead: [Name] ..."
+      new RegExp(`Suggested lead:?\\s*(${NAME})`, 'g'),
+      // "[Name] shared a post"
+      new RegExp(`(${NAME})\\s+shared a post`, 'g'),
+      // "[Name] accepted your"
+      new RegExp(`(${NAME})\\s+accepted your`, 'g'),
+      // "[Name] commented on"
+      new RegExp(`(${NAME})\\s+commented on`, 'g'),
+      // "[Name] liked your/a post"
+      new RegExp(`(${NAME})\\s+liked (?:your|a post)`, 'g'),
+      // "[Name] viewed your"
+      new RegExp(`(${NAME})\\s+viewed your`, 'g'),
+      // "[Name] sent you a message"
+      new RegExp(`(${NAME})\\s+sent you`, 'g'),
+    ];
+
+    let match;
+    for (const pattern of patterns) {
+      while ((match = pattern.exec(fullText)) !== null) {
+        addName(match[1]);
+      }
+    }
+
+    // --- Approach 2: Match raw text against prospect database ---
+    const allProspects = loadAllProspects();
+    const prospectNames = allProspects.map(p => p.name).filter(Boolean);
+    const lowerText = text.toLowerCase();
+
+    for (const pName of prospectNames) {
+      // Check if prospect name appears anywhere in the OCR text
+      if (pName && pName.length > 3 && lowerText.includes(pName.toLowerCase())) {
+        addName(pName);
+      }
+    }
+
+    console.log(`[OCR] Extracted ${extractedNames.length} names: ${extractedNames.join(', ')}`);
+    res.json({ ok: true, names: extractedNames });
+  } catch (err) {
+    console.error('[OCR] Failed:', err.message);
+    res.status(500).json({ error: 'OCR failed: ' + err.message });
+  }
 });
 
 // ============================================================

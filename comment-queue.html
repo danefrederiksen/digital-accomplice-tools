@@ -415,8 +415,8 @@
               <input type="file" id="importFileInput" accept="image/png,image/jpeg,image/webp" style="display:none">
             </div>
             <div class="import-names-area">
-              <textarea id="importNames" placeholder="Paste names from Sales Nav alerts (one per line)&#10;&#10;Example:&#10;Jason Fox&#10;Julien Sauvage&#10;Sibasish Misra"></textarea>
-              <div class="import-hint">One name per line. Names are matched against your prospect database.</div>
+              <textarea id="importNames" placeholder="Drop a screenshot above — names are extracted automatically.&#10;&#10;Or paste names manually (one per line):&#10;Jason Fox&#10;Julien Sauvage&#10;Sibasish Misra"></textarea>
+              <div class="import-hint">Drop a screenshot and names are extracted automatically. Or paste manually and click Find Matches.</div>
               <div class="import-actions">
                 <button class="btn btn-primary" onclick="matchNames()">Find Matches</button>
                 <span id="matchStatus" style="font-size:12px;color:#999;"></span>
@@ -1250,12 +1250,39 @@ async function handleImportUpload(file) {
         // Show thumbnail preview
         document.getElementById('importPreview').innerHTML =
           `<img src="/api/screenshots/${result.screenshot.id}/image" alt="Screenshot">`;
+        // Auto-run OCR to extract names
+        await runOcrAndMatch(result.screenshot.id);
       }
     } catch (err) {
       alert('Upload failed: ' + err.message);
     }
   };
   reader.readAsDataURL(file);
+}
+
+async function runOcrAndMatch(screenshotId) {
+  const statusEl = document.getElementById('matchStatus');
+  const namesEl = document.getElementById('importNames');
+  statusEl.textContent = 'Reading names from screenshot...';
+  namesEl.value = '';
+  namesEl.placeholder = 'Extracting names from screenshot...';
+
+  try {
+    const ocrResult = await apiPost(`/api/screenshots/${screenshotId}/ocr`, {});
+    if (ocrResult.ok && ocrResult.names && ocrResult.names.length > 0) {
+      namesEl.value = ocrResult.names.join('\n');
+      statusEl.textContent = `Found ${ocrResult.names.length} names — matching...`;
+      // Auto-trigger the match
+      await matchNames();
+    } else {
+      statusEl.textContent = 'No names detected. Paste names manually below.';
+      namesEl.placeholder = 'Paste names from Sales Nav alerts (one per line)';
+    }
+  } catch (err) {
+    statusEl.textContent = 'OCR failed — paste names manually.';
+    namesEl.placeholder = 'Paste names from Sales Nav alerts (one per line)';
+    console.error('OCR error:', err);
+  }
 }
 
 async function matchNames() {
