@@ -818,7 +818,10 @@ function renderDashboard() {
       }
       html += `<div class="card">
         <div class="card-top">
-          <div><span class="card-name">${esc(p.name)}</span> <span class="card-company">@ ${esc(p.company)}</span></div>
+          <div>
+            <span class="card-name">${esc(p.name)}</span> <span class="card-company">@ ${esc(p.company)}</span>
+            ${p.linkedinUrl ? `<div style="margin-top:2px;"><a href="${esc(p.linkedinUrl)}" target="_blank" class="linkedin-link">&#x1F517; ${esc(p.linkedinUrl)}</a></div>` : ''}
+          </div>
           <span class="status status-${p.status}">${STATUS_LABELS[p.status]}</span>
         </div>
         <div class="due-info">${dueLabel}</div>
@@ -909,6 +912,7 @@ function renderDashboardCard(p, mode) {
       <div>
         <span class="card-name">${esc(p.name)}</span> <span class="card-company">@ ${esc(p.company)}</span>
         <div class="card-title">${esc(p.title)}</div>
+        ${p.linkedinUrl ? `<div style="margin-top:2px;"><a href="${esc(p.linkedinUrl)}" target="_blank" class="linkedin-link">&#x1F517; ${esc(p.linkedinUrl)}</a></div>` : ''}
       </div>
       <span class="status status-${p.status}">${STATUS_LABELS[p.status]}</span>
     </div>
