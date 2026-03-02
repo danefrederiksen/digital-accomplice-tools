@@ -1,0 +1,993 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Prospecting Tool #8 — Cyber Leads w/ Emails</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: 'Poppins', sans-serif; background: #f5f5f5; color: #1a1a1a; }
+
+/* Header */
+.header { background: #000; color: #fff; padding: 16px 24px; display: flex; align-items: center; justify-content: space-between; }
+.header h1 { font-size: 20px; font-weight: 700; }
+.header h1 span { color: #F8901E; }
+.header-right { font-size: 13px; color: #999; }
+
+/* Tabs */
+.tabs { background: #fff; border-bottom: 2px solid #eee; padding: 0 24px; display: flex; gap: 0; }
+.tab { padding: 12px 20px; cursor: pointer; font-weight: 500; font-size: 14px; color: #666; border-bottom: 3px solid transparent; transition: all 0.2s; }
+.tab:hover { color: #F8901E; }
+.tab.active { color: #F8901E; border-bottom-color: #F8901E; }
+
+/* Content */
+.content { max-width: 1100px; margin: 0 auto; padding: 24px; }
+
+/* Alert banner */
+.alert-banner { background: linear-gradient(135deg, #F8901E, #e07a10); color: #fff; border-radius: 10px; padding: 16px 20px; margin-bottom: 24px; font-size: 14px; line-height: 1.5; }
+.alert-banner strong { font-size: 16px; display: block; margin-bottom: 4px; }
+.alert-stat { display: inline-block; background: rgba(255,255,255,0.2); border-radius: 6px; padding: 4px 10px; margin: 4px 4px 4px 0; font-weight: 600; font-size: 13px; }
+
+/* Section headers */
+.section-header { font-size: 16px; font-weight: 700; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+.section-header .count { background: #F8901E; color: #fff; border-radius: 50%; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; }
+.section { margin-bottom: 32px; }
+
+/* Cards */
+.card { background: #fff; border-radius: 10px; padding: 16px; margin-bottom: 10px; border: 1px solid #e5e5e5; transition: box-shadow 0.2s; }
+.card:hover { box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+.card-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; }
+.card-name { font-weight: 700; font-size: 15px; }
+.card-company { font-size: 13px; color: #666; }
+.card-title { font-size: 12px; color: #999; margin-top: 2px; }
+.card-meta { display: flex; gap: 12px; font-size: 12px; color: #888; margin-top: 6px; flex-wrap: wrap; align-items: center; }
+.card-meta a { color: #F8901E; text-decoration: none; font-weight: 500; }
+.card-meta a:hover { text-decoration: underline; }
+
+/* Status badge */
+.status { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+.status-not_started { background: #e8e8e8; color: #666; }
+.status-email_sent { background: #fff3e0; color: #e65100; }
+.status-follow_up_1 { background: #e3f2fd; color: #1565c0; }
+.status-follow_up_2 { background: #fce4ec; color: #c62828; }
+.status-replied { background: #e8f5e9; color: #2e7d32; }
+.status-cold { background: #f5f5f5; color: #999; }
+
+/* Buttons */
+.btn { padding: 7px 14px; border-radius: 6px; font-family: 'Poppins', sans-serif; font-size: 12px; font-weight: 600; cursor: pointer; border: none; transition: all 0.15s; }
+.btn-primary { background: #F8901E; color: #fff; }
+.btn-primary:hover { background: #e07a10; }
+.btn-secondary { background: #eee; color: #333; }
+.btn-secondary:hover { background: #ddd; }
+.btn-danger { background: #fee; color: #c62828; }
+.btn-danger:hover { background: #fdd; }
+.btn-success { background: #e8f5e9; color: #2e7d32; }
+.btn-success:hover { background: #c8e6c9; }
+.btn-sm { padding: 4px 10px; font-size: 11px; }
+.btn-group { display: flex; gap: 6px; margin-top: 10px; flex-wrap: wrap; }
+
+/* Import */
+.import-zone { border: 2px dashed #ccc; border-radius: 10px; padding: 40px; text-align: center; background: #fff; cursor: pointer; transition: border-color 0.2s; margin-bottom: 20px; }
+.import-zone:hover { border-color: #F8901E; }
+.import-zone input { display: none; }
+.import-zone p { color: #888; font-size: 14px; margin-top: 8px; }
+.import-zone .icon { font-size: 36px; margin-bottom: 8px; }
+
+/* Filter results table */
+.filter-table { width: 100%; border-collapse: collapse; background: #fff; border-radius: 10px; overflow: hidden; border: 1px solid #e5e5e5; }
+.filter-table th { background: #fafafa; text-align: left; padding: 10px 12px; font-size: 12px; font-weight: 600; color: #666; border-bottom: 2px solid #eee; }
+.filter-table td { padding: 10px 12px; font-size: 13px; border-bottom: 1px solid #f0f0f0; }
+.filter-table tr:hover td { background: #fafafa; }
+.filter-table input[type="checkbox"] { width: 16px; height: 16px; accent-color: #F8901E; cursor: pointer; }
+
+.selected-count { margin: 12px 0; font-size: 14px; font-weight: 500; }
+.selected-count span { color: #F8901E; font-weight: 700; }
+
+/* Reply field */
+.reply-area { margin-top: 8px; }
+.reply-area textarea { width: 100%; border: 1px solid #ddd; border-radius: 6px; padding: 8px; font-family: 'Poppins', sans-serif; font-size: 13px; resize: vertical; min-height: 60px; }
+.reply-area label { font-size: 12px; font-weight: 600; color: #666; display: block; margin-bottom: 4px; }
+
+/* Next step field */
+.next-step-field { margin-top: 6px; }
+.next-step-field input { width: 100%; border: 1px solid #ddd; border-radius: 6px; padding: 7px 10px; font-family: 'Poppins', sans-serif; font-size: 13px; }
+
+/* Empty state */
+.empty { text-align: center; padding: 40px; color: #aaa; font-size: 14px; }
+.empty .icon { font-size: 32px; margin-bottom: 8px; }
+
+/* Sequence timeline */
+.timeline { display: flex; gap: 0; margin-top: 8px; font-size: 11px; }
+.timeline-step { flex: 1; text-align: center; padding: 6px 4px; background: #f5f5f5; border-right: 1px solid #e5e5e5; color: #999; }
+.timeline-step:first-child { border-radius: 6px 0 0 6px; }
+.timeline-step:last-child { border-radius: 0 6px 6px 0; border-right: none; }
+.timeline-step.done { background: #e8f5e9; color: #2e7d32; }
+.timeline-step.current { background: #fff3e0; color: #e65100; font-weight: 600; }
+.timeline-step.upcoming { background: #f5f5f5; color: #bbb; }
+
+/* Copy message button */
+.btn-copy { background: #f0e6ff; color: #6b21a8; }
+.btn-copy:hover { background: #e0d0ff; }
+.btn-copy.copied { background: #e8f5e9; color: #2e7d32; }
+.msg-preview { background: #fafafa; border: 1px solid #eee; border-radius: 6px; padding: 10px 12px; margin-top: 8px; font-size: 12px; color: #555; line-height: 1.5; white-space: pre-wrap; display: none; }
+.msg-preview.show { display: block; }
+
+/* Manual add form */
+.add-form { background: #fff; border-radius: 10px; padding: 20px; border: 1px solid #e5e5e5; margin-bottom: 20px; }
+.add-form h3 { font-size: 14px; margin-bottom: 12px; }
+.form-row { display: flex; gap: 10px; margin-bottom: 10px; }
+.form-row input { flex: 1; padding: 8px 10px; border: 1px solid #ddd; border-radius: 6px; font-family: 'Poppins', sans-serif; font-size: 13px; }
+
+/* Overdue indicator */
+.overdue { color: #c62828; font-weight: 600; font-size: 11px; }
+
+/* Due date info */
+.due-info { font-size: 12px; color: #666; margin-top: 4px; }
+.due-info strong { color: #F8901E; }
+
+/* LinkedIn URL in card */
+.linkedin-link { color: #F8901E; text-decoration: none; font-size: 12px; font-weight: 500; }
+.linkedin-link:hover { text-decoration: underline; }
+
+@media (max-width: 700px) {
+  .content { padding: 16px; }
+  .form-row { flex-direction: column; }
+  .card-top { flex-direction: column; gap: 6px; }
+}
+</style>
+</head>
+<body>
+<div class="header">
+  <h1><span>DA</span> Prospecting Tool #8 — Cyber Leads w/ Emails</h1>
+  <div class="header-right" id="prospect-count"></div>
+</div>
+<div class="tabs" id="tabs"></div>
+<div class="content" id="content"></div>
+
+<script>
+// ============================================================
+// STATE
+// ============================================================
+const TITLE_KEYWORDS = ['ciso','cso','vp security','vp cybersecurity','vp information security','director security','director cybersecurity','director information security','head of security','head of cybersecurity','head of infosec','chief information security officer','chief security officer','security architect','security engineer','security operations','it director','it manager','vp it','cto','cio','founder','ceo','co-founder','owner','president','managing director'];
+
+let state = {
+  prospects: [],
+  importedContacts: [],
+  activeTab: 'dashboard'
+};
+
+// ============================================================
+// API HELPERS
+// ============================================================
+async function apiGet(url) {
+  const res = await fetch(url);
+  if (!res.ok) throw new Error(`GET ${url} failed: ${res.status}`);
+  return res.json();
+}
+
+async function apiPost(url, body) {
+  const res = await fetch(url, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body)
+  });
+  if (!res.ok) throw new Error(`POST ${url} failed: ${res.status}`);
+  return res.json();
+}
+
+async function apiPut(url, body) {
+  const res = await fetch(url, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body)
+  });
+  if (!res.ok) throw new Error(`PUT ${url} failed: ${res.status}`);
+  return res.json();
+}
+
+async function apiDelete(url) {
+  const res = await fetch(url, { method: 'DELETE' });
+  if (!res.ok) throw new Error(`DELETE ${url} failed: ${res.status}`);
+  return res.json();
+}
+
+async function loadFromServer() {
+  try {
+    const data = await apiGet('/api/prospects');
+    state.prospects = data.prospects || [];
+
+    // One-time migration: if server is empty but localStorage has data
+    if (state.prospects.length === 0) {
+      try {
+        const local = JSON.parse(localStorage.getItem('da-cyber-email-outreach')) || [];
+        if (local.length > 0 && confirm(`Found ${local.length} prospects in browser storage. Migrate to server?`)) {
+          await apiPost('/api/prospects/migrate', { prospects: local });
+          const refreshed = await apiGet('/api/prospects');
+          state.prospects = refreshed.prospects || [];
+          localStorage.removeItem('da-cyber-email-outreach');
+          alert('Migration complete! Your data is now saved on the server.');
+        }
+      } catch (e) { /* localStorage empty or parse error */ }
+    }
+  } catch (err) {
+    console.error('Failed to load from server:', err);
+    // Fallback to localStorage if server is down
+    try { state.prospects = JSON.parse(localStorage.getItem('da-cyber-email-outreach')) || []; }
+    catch { state.prospects = []; }
+  }
+  render();
+}
+
+// ============================================================
+// DATE HELPERS
+// ============================================================
+function today() {
+  const d = new Date();
+  return new Date(d.getFullYear(), d.getMonth(), d.getDate());
+}
+
+function addDays(dateStr, days) {
+  const d = new Date(dateStr);
+  d.setDate(d.getDate() + days);
+  return d.toISOString().split('T')[0];
+}
+
+function daysBetween(dateStr1, dateStr2) {
+  const d1 = new Date(dateStr1);
+  const d2 = new Date(dateStr2);
+  return Math.floor((d2 - d1) / (1000 * 60 * 60 * 24));
+}
+
+function formatDate(dateStr) {
+  if (!dateStr) return '—';
+  const d = new Date(dateStr + 'T00:00:00');
+  return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+}
+
+function todayStr() {
+  return today().toISOString().split('T')[0];
+}
+
+// ============================================================
+// MESSAGE TEMPLATES
+// ============================================================
+function firstName(fullName) {
+  return (fullName || '').split(' ')[0];
+}
+
+function getMessage(prospect, step) {
+  const name = firstName(prospect.name);
+  if (step === 'email') {
+    return {
+      subject: `Cybersecurity video series — ${name}`,
+      body: `Hi ${name},\n\nI run Digital Accomplice — we produce video content for cybersecurity companies like AWS and BreachRx. I'm launching a video series on how security leaders are navigating the threat landscape as AI changes the game.\n\nThe format is simple: 15-minute conversation, no prep needed. I handle editing, posting on LinkedIn, and tag you so your network sees it.\n\nHere's what it looks like: https://www.digitalaccomplice.com/video-series\n\nWould you be interested in being featured?\n\nBest,\nDane Frederiksen\nDigital Accomplice`
+    };
+  } else if (step === 'follow_up_1') {
+    return {
+      subject: `Re: Cybersecurity video series — ${name}`,
+      body: `Hey ${name} — wanted to bump this. I'm putting together a cybersecurity video series featuring leaders like you. 15 min, no prep, I handle everything.\n\nAlready producing content for AWS and BreachRx — this is the same approach but for LinkedIn.\n\nWorth a conversation?\n\nDane`
+    };
+  } else if (step === 'follow_up_2') {
+    return {
+      subject: `Re: Cybersecurity video series — ${name}`,
+      body: `${name} — last note on this. Free LinkedIn content featuring you as the cybersecurity expert. If the timing isn't right, totally understand — but wanted to make sure you saw this.\n\nDane Frederiksen\nDigital Accomplice`
+    };
+  }
+  return { subject: '', body: '' };
+}
+
+async function copySubject(prospectId, step) {
+  const p = state.prospects.find(x => x.id === prospectId);
+  if (!p) return;
+  const msg = getMessage(p, step);
+  try {
+    await navigator.clipboard.writeText(msg.subject);
+    const btn = document.getElementById('subj-btn-' + prospectId);
+    if (btn) {
+      btn.textContent = 'Copied!';
+      btn.classList.add('copied');
+      setTimeout(() => { btn.textContent = 'Copy Subject'; btn.classList.remove('copied'); }, 2000);
+    }
+  } catch (err) { alert('Copy failed — check browser permissions'); }
+}
+
+async function copyBody(prospectId, step) {
+  const p = state.prospects.find(x => x.id === prospectId);
+  if (!p) return;
+  const msg = getMessage(p, step);
+  try {
+    await navigator.clipboard.writeText(msg.body);
+    const btn = document.getElementById('body-btn-' + prospectId);
+    if (btn) {
+      btn.textContent = 'Copied!';
+      btn.classList.add('copied');
+      setTimeout(() => { btn.textContent = 'Copy Email'; btn.classList.remove('copied'); }, 2000);
+    }
+  } catch (err) { alert('Copy failed — check browser permissions'); }
+}
+
+function togglePreview(prospectId, step) {
+  const el = document.getElementById('msg-preview-' + prospectId);
+  if (!el) return;
+  if (el.classList.contains('show')) {
+    el.classList.remove('show');
+  } else {
+    const p = state.prospects.find(x => x.id === prospectId);
+    if (p) {
+      const msg = getMessage(p, step);
+      el.textContent = 'Subject: ' + msg.subject + '\n\n' + msg.body;
+    }
+    el.classList.add('show');
+  }
+}
+
+// ============================================================
+// PROSPECT ACTIONS (async — saved to server)
+// ============================================================
+async function markEmailSent(id) {
+  const t = todayStr();
+  try {
+    const updated = await apiPut('/api/prospects/' + id, {
+      status: 'email_sent',
+      emailSentDate: t,
+      lastActionDate: t,
+      followUp1Due: addDays(t, 4),
+      followUp2Due: addDays(t, 9)
+    });
+    const idx = state.prospects.findIndex(x => x.id === id);
+    if (idx !== -1) state.prospects[idx] = updated;
+    render();
+  } catch (err) { alert('Failed to save: ' + err.message); }
+}
+
+async function markFollowUp1(id) {
+  try {
+    const updated = await apiPut('/api/prospects/' + id, {
+      status: 'follow_up_1',
+      lastActionDate: todayStr()
+    });
+    const idx = state.prospects.findIndex(x => x.id === id);
+    if (idx !== -1) state.prospects[idx] = updated;
+    render();
+  } catch (err) { alert('Failed to save: ' + err.message); }
+}
+
+async function markFollowUp2(id) {
+  try {
+    const updated = await apiPut('/api/prospects/' + id, {
+      status: 'follow_up_2',
+      lastActionDate: todayStr()
+    });
+    const idx = state.prospects.findIndex(x => x.id === id);
+    if (idx !== -1) state.prospects[idx] = updated;
+    render();
+  } catch (err) { alert('Failed to save: ' + err.message); }
+}
+
+async function markReplied(id) {
+  try {
+    const updated = await apiPut('/api/prospects/' + id, {
+      status: 'replied',
+      lastActionDate: todayStr()
+    });
+    const idx = state.prospects.findIndex(x => x.id === id);
+    if (idx !== -1) state.prospects[idx] = updated;
+    render();
+  } catch (err) { alert('Failed to save: ' + err.message); }
+}
+
+async function markCold(id) {
+  try {
+    const updated = await apiPut('/api/prospects/' + id, {
+      status: 'cold',
+      lastActionDate: todayStr()
+    });
+    const idx = state.prospects.findIndex(x => x.id === id);
+    if (idx !== -1) state.prospects[idx] = updated;
+    render();
+  } catch (err) { alert('Failed to save: ' + err.message); }
+}
+
+const _debounce = {};
+function updateReply(id, text) {
+  clearTimeout(_debounce['reply_' + id]);
+  _debounce['reply_' + id] = setTimeout(async () => {
+    try {
+      await apiPut('/api/prospects/' + id, { reply: text });
+      const p = state.prospects.find(x => x.id === id);
+      if (p) p.reply = text;
+    } catch (err) { console.error('Failed to save reply:', err); }
+  }, 500);
+}
+
+function updateNextStep(id, text) {
+  clearTimeout(_debounce['next_' + id]);
+  _debounce['next_' + id] = setTimeout(async () => {
+    try {
+      await apiPut('/api/prospects/' + id, { nextStep: text });
+      const p = state.prospects.find(x => x.id === id);
+      if (p) p.nextStep = text;
+    } catch (err) { console.error('Failed to save next step:', err); }
+  }, 500);
+}
+
+async function removeProspect(id) {
+  if (!confirm('Remove this prospect?')) return;
+  try {
+    await apiDelete('/api/prospects/' + id);
+    state.prospects = state.prospects.filter(x => x.id !== id);
+    render();
+  } catch (err) { alert('Failed to remove: ' + err.message); }
+}
+
+async function resetProspect(id) {
+  const p = state.prospects.find(x => x.id === id);
+  if (!p || !confirm('Reset this prospect to Not Started?')) return;
+  try {
+    const updated = await apiPut('/api/prospects/' + id, {
+      status: 'not_started',
+      emailSentDate: null,
+      followUp1Due: null,
+      followUp2Due: null,
+      lastActionDate: null,
+      reply: '',
+      nextStep: ''
+    });
+    const idx = state.prospects.findIndex(x => x.id === id);
+    if (idx !== -1) state.prospects[idx] = updated;
+    render();
+  } catch (err) { alert('Failed to reset: ' + err.message); }
+}
+
+// ============================================================
+// STATUS LABELS
+// ============================================================
+const STATUS_LABELS = {
+  not_started: 'Not Started',
+  email_sent: 'Email Sent',
+  follow_up_1: 'Follow-Up Sent',
+  follow_up_2: 'Final Nudge Sent',
+  replied: 'Replied',
+  cold: 'Cold'
+};
+
+// ============================================================
+// CSV IMPORT
+// ============================================================
+function handleCSV(file) {
+  Papa.parse(file, {
+    header: false,
+    skipEmptyLines: true,
+    complete: function(results) {
+      const raw = results.data;
+      if (!raw.length) { alert('CSV appears empty.'); return; }
+
+      const first = raw[0].map(c => (c || '').toLowerCase().trim());
+      const hasHeaders = first.includes('email') || first.includes('email address') || first.includes('first name');
+
+      let rows;
+      if (hasHeaders) {
+        const headers = raw[0].map(c => (c || '').trim());
+        const dataRows = raw.slice(1);
+        rows = dataRows.map(cols => {
+          const obj = {};
+          headers.forEach((h, i) => { obj[h] = (cols[i] || '').trim(); });
+          const fn = obj['First Name'] || obj['first_name'] || obj['Name'] || obj['name'] || '';
+          const ln = obj['Last Name'] || obj['last_name'] || '';
+          const email = obj['Email'] || obj['email'] || obj['Email Address'] || obj['email_address'] || '';
+          const company = obj['Company'] || obj['company'] || obj['Organization'] || '';
+          const position = obj['Position'] || obj['position'] || obj['Title'] || obj['title'] || obj['Job Title'] || '';
+          const url = obj['URL'] || obj['url'] || obj['LinkedIn URL'] || obj['Profile URL'] || '';
+          const source = obj['Source'] || obj['source'] || '';
+          return { firstName: fn, lastName: ln, email, company, position, url, source, selected: false };
+        });
+      } else {
+        rows = raw.map(cols => {
+          const name = (cols[0] || '').trim();
+          let email = '';
+          let company = (cols[1] || '').trim();
+          let title = (cols[2] || '').trim();
+          let url = '';
+          for (let i = 0; i < cols.length; i++) {
+            if ((cols[i] || '').includes('@')) { email = cols[i].trim(); }
+            if ((cols[i] || '').includes('linkedin.com/in/')) { url = cols[i].trim(); }
+          }
+          if (company.includes('|')) { company = ''; }
+          return { firstName: name, lastName: '', email, company, position: title, url, source: '', selected: false };
+        });
+      }
+
+      // Filter out rows without email
+      rows = rows.filter(r => r.email && r.email.includes('@'));
+      if (!rows.length) { alert('No contacts with valid email addresses found.'); return; }
+      finishImport(rows);
+    },
+    error: function(err) {
+      alert('CSV parse error: ' + err.message);
+    }
+  });
+}
+
+function finishImport(rows) {
+  // Filter by title keywords
+  const filtered = rows.filter(r => {
+    const pos = r.position.toLowerCase();
+    return TITLE_KEYWORDS.some(kw => pos.includes(kw));
+  });
+
+  // If keyword filter removes everything, show all rows (user's CSV may already be pre-filtered)
+  state.importedContacts = filtered.length > 0 ? filtered : rows;
+  render();
+}
+
+async function activateSelected() {
+  const selected = state.importedContacts.filter(c => c.selected);
+  if (!selected.length) return;
+
+  const prospects = selected.map(c => ({
+    name: (c.firstName + ' ' + c.lastName).trim(),
+    company: c.company,
+    title: c.position,
+    email: c.email,
+    linkedinUrl: c.url,
+    source: c.source
+  }));
+
+  try {
+    const result = await apiPost('/api/prospects', { prospects });
+    const data = await apiGet('/api/prospects');
+    state.prospects = data.prospects || [];
+    state.importedContacts = [];
+    alert(result.added + ' prospect(s) added.' + (result.skipped ? ' ' + result.skipped + ' skipped (duplicates).' : ''));
+    state.activeTab = 'dashboard';
+    render();
+  } catch (err) { alert('Failed to add prospects: ' + err.message); }
+}
+
+async function addManualProspect() {
+  const name = document.getElementById('manual-name').value.trim();
+  const email = document.getElementById('manual-email').value.trim();
+  const company = document.getElementById('manual-company').value.trim();
+  const title = document.getElementById('manual-title').value.trim();
+  const source = document.getElementById('manual-source').value.trim();
+  const url = document.getElementById('manual-url').value.trim();
+
+  if (!name) { alert('Name is required.'); return; }
+  if (!email || !email.includes('@')) { alert('Valid email is required.'); return; }
+
+  try {
+    await apiPost('/api/prospects', { prospects: [{ name, company, title, email, linkedinUrl: url, source }] });
+    const data = await apiGet('/api/prospects');
+    state.prospects = data.prospects || [];
+    document.getElementById('manual-name').value = '';
+    document.getElementById('manual-email').value = '';
+    document.getElementById('manual-company').value = '';
+    document.getElementById('manual-title').value = '';
+    document.getElementById('manual-source').value = '';
+    document.getElementById('manual-url').value = '';
+    render();
+  } catch (err) { alert('Failed to add prospect: ' + err.message); }
+}
+
+// ============================================================
+// DASHBOARD LOGIC
+// ============================================================
+function getEmailToday() {
+  return state.prospects.filter(p => p.status === 'not_started');
+}
+
+function getFollowUpToday() {
+  const t = todayStr();
+  return state.prospects.filter(p => {
+    if (p.status === 'email_sent' && p.followUp1Due && p.followUp1Due <= t) return true;
+    if (p.status === 'follow_up_1' && p.followUp2Due && p.followUp2Due <= t) return true;
+    if (p.status === 'follow_up_2' && p.lastActionDate && daysBetween(p.lastActionDate, t) >= 5) return true;
+    return false;
+  });
+}
+
+function getReplied() {
+  return state.prospects.filter(p => p.status === 'replied');
+}
+
+function getWaiting() {
+  const t = todayStr();
+  return state.prospects.filter(p => {
+    if (p.status === 'email_sent' && p.followUp1Due && p.followUp1Due > t) return true;
+    if (p.status === 'follow_up_1' && p.followUp2Due && p.followUp2Due > t) return true;
+    return false;
+  });
+}
+
+// ============================================================
+// RENDER — TABS
+// ============================================================
+function render() {
+  // Prospect count
+  document.getElementById('prospect-count').textContent = state.prospects.length + ' prospect' + (state.prospects.length !== 1 ? 's' : '');
+
+  // Tabs
+  const tabs = [
+    { id: 'dashboard', label: 'Dashboard' },
+    { id: 'import', label: 'Import' },
+    { id: 'prospects', label: 'All Prospects' },
+    { id: 'activity', label: 'Activity Log' }
+  ];
+  document.getElementById('tabs').innerHTML = tabs.map(t =>
+    `<div class="tab ${state.activeTab === t.id ? 'active' : ''}" onclick="switchTab('${t.id}')">${t.label}</div>`
+  ).join('');
+
+  // Content
+  const el = document.getElementById('content');
+  if (state.activeTab === 'dashboard') el.innerHTML = renderDashboard();
+  else if (state.activeTab === 'import') el.innerHTML = renderImport();
+  else if (state.activeTab === 'prospects') el.innerHTML = renderProspects();
+  else if (state.activeTab === 'activity') {
+    el.innerHTML = '<div class="empty">Loading activity...</div>';
+    loadActivityLog();
+  }
+}
+
+function switchTab(tab) {
+  state.activeTab = tab;
+  render();
+}
+
+// ============================================================
+// RENDER — DASHBOARD
+// ============================================================
+function renderDashboard() {
+  const emailList = getEmailToday();
+  const fuList = getFollowUpToday();
+  const reList = getReplied();
+  const waitList = getWaiting();
+
+  const totalActive = state.prospects.filter(p => p.status !== 'cold').length;
+  const totalCold = state.prospects.filter(p => p.status === 'cold').length;
+
+  let html = '';
+
+  // Summary banner
+  if (state.prospects.length > 0) {
+    html += `<div class="alert-banner">
+      <strong>Today's Outreach</strong>
+      <span class="alert-stat">${emailList.length} email${emailList.length !== 1 ? 's' : ''} to send</span>
+      <span class="alert-stat">${fuList.length} follow-up${fuList.length !== 1 ? 's' : ''} due</span>
+      <span class="alert-stat">${reList.length} repl${reList.length !== 1 ? 'ies' : 'y'} to handle</span>
+      <span class="alert-stat">${waitList.length} waiting</span>
+    </div>`;
+  }
+
+  // Email Today
+  html += `<div class="section">
+    <div class="section-header">Email Today <span class="count">${emailList.length}</span></div>`;
+  if (emailList.length === 0) {
+    html += `<div class="empty"><div class="icon">&#x2713;</div>No emails to send today</div>`;
+  } else {
+    emailList.forEach(p => {
+      html += renderDashboardCard(p, 'email');
+    });
+  }
+  html += `</div>`;
+
+  // Follow Up Today
+  html += `<div class="section">
+    <div class="section-header">Follow Up Today <span class="count">${fuList.length}</span></div>`;
+  if (fuList.length === 0) {
+    html += `<div class="empty"><div class="icon">&#x2713;</div>No follow-ups due today</div>`;
+  } else {
+    fuList.forEach(p => {
+      html += renderDashboardCard(p, 'followup');
+    });
+  }
+  html += `</div>`;
+
+  // Replied
+  html += `<div class="section">
+    <div class="section-header">Replied <span class="count">${reList.length}</span></div>`;
+  if (reList.length === 0) {
+    html += `<div class="empty"><div class="icon">&#x1F4AC;</div>No replies yet — keep going</div>`;
+  } else {
+    reList.forEach(p => {
+      html += renderDashboardCard(p, 'replied');
+    });
+  }
+  html += `</div>`;
+
+  // Waiting (collapsed info)
+  if (waitList.length > 0) {
+    html += `<div class="section">
+      <div class="section-header">Waiting for Response</div>`;
+    waitList.forEach(p => {
+      const t = todayStr();
+      let dueLabel = '';
+      if (p.status === 'email_sent') dueLabel = 'Follow-up due ' + formatDate(p.followUp1Due);
+      else if (p.status === 'follow_up_1') dueLabel = 'Final nudge due ' + formatDate(p.followUp2Due);
+      html += `<div class="card">
+        <div class="card-top">
+          <div>
+            <span class="card-name">${esc(p.name)}</span> <span class="card-company">@ ${esc(p.company)}</span>
+            <div class="card-meta">
+              <span>${esc(p.email)}</span>
+            </div>
+          </div>
+          <span class="status status-${p.status}">${STATUS_LABELS[p.status]}</span>
+        </div>
+        <div class="due-info">${dueLabel}</div>
+      </div>`;
+    });
+    html += `</div>`;
+  }
+
+  return html;
+}
+
+function renderDashboardCard(p, mode) {
+  let buttons = '';
+  let extra = '';
+  const t = todayStr();
+
+  if (mode === 'email') {
+    buttons = `
+      <button class="btn btn-copy btn-sm" id="subj-btn-${p.id}" onclick="copySubject('${p.id}','email')">Copy Subject</button>
+      <button class="btn btn-copy btn-sm" id="body-btn-${p.id}" onclick="copyBody('${p.id}','email')">Copy Email</button>
+      <button class="btn btn-secondary btn-sm" onclick="togglePreview('${p.id}','email')">Preview</button>
+      <button class="btn btn-primary btn-sm" onclick="markEmailSent('${p.id}')">Mark Email Sent</button>
+    `;
+    extra = `<div class="msg-preview" id="msg-preview-${p.id}"></div>`;
+  } else if (mode === 'followup') {
+    if (p.status === 'email_sent') {
+      const daysOver = daysBetween(p.followUp1Due, t);
+      const overdueLabel = daysOver > 0 ? `<span class="overdue">${daysOver} day${daysOver > 1 ? 's' : ''} overdue</span>` : '';
+      extra = `<div class="due-info">First follow-up ${overdueLabel}</div><div class="msg-preview" id="msg-preview-${p.id}"></div>`;
+      buttons = `
+        <button class="btn btn-copy btn-sm" id="subj-btn-${p.id}" onclick="copySubject('${p.id}','follow_up_1')">Copy Subject</button>
+        <button class="btn btn-copy btn-sm" id="body-btn-${p.id}" onclick="copyBody('${p.id}','follow_up_1')">Copy Email</button>
+        <button class="btn btn-secondary btn-sm" onclick="togglePreview('${p.id}','follow_up_1')">Preview</button>
+        <button class="btn btn-primary btn-sm" onclick="markFollowUp1('${p.id}')">Mark Follow-Up Sent</button>
+        <button class="btn btn-success btn-sm" onclick="markReplied('${p.id}')">Got Reply</button>
+      `;
+    } else if (p.status === 'follow_up_1') {
+      const daysOver = daysBetween(p.followUp2Due, t);
+      const overdueLabel = daysOver > 0 ? `<span class="overdue">${daysOver} day${daysOver > 1 ? 's' : ''} overdue</span>` : '';
+      extra = `<div class="due-info">Final nudge ${overdueLabel}</div><div class="msg-preview" id="msg-preview-${p.id}"></div>`;
+      buttons = `
+        <button class="btn btn-copy btn-sm" id="subj-btn-${p.id}" onclick="copySubject('${p.id}','follow_up_2')">Copy Subject</button>
+        <button class="btn btn-copy btn-sm" id="body-btn-${p.id}" onclick="copyBody('${p.id}','follow_up_2')">Copy Email</button>
+        <button class="btn btn-secondary btn-sm" onclick="togglePreview('${p.id}','follow_up_2')">Preview</button>
+        <button class="btn btn-primary btn-sm" onclick="markFollowUp2('${p.id}')">Mark Final Nudge Sent</button>
+        <button class="btn btn-success btn-sm" onclick="markReplied('${p.id}')">Got Reply</button>
+      `;
+    } else if (p.status === 'follow_up_2') {
+      extra = `<div class="due-info">No reply after final nudge — time to close?</div>`;
+      buttons = `
+        <button class="btn btn-danger btn-sm" onclick="markCold('${p.id}')">Mark Cold</button>
+        <button class="btn btn-success btn-sm" onclick="markReplied('${p.id}')">Got Reply</button>
+      `;
+    }
+  } else if (mode === 'replied') {
+    extra = `
+      <div class="reply-area">
+        <label>Their reply:</label>
+        <textarea placeholder="Paste what they said..." onblur="updateReply('${p.id}', this.value)">${esc(p.reply || '')}</textarea>
+      </div>
+      <div class="next-step-field">
+        <label style="font-size:12px;font-weight:600;color:#666;display:block;margin-bottom:4px;">Next step:</label>
+        <input placeholder="e.g. Schedule call for Tuesday" value="${esc(p.nextStep || '')}" onblur="updateNextStep('${p.id}', this.value)" />
+      </div>
+    `;
+  }
+
+  return `<div class="card">
+    <div class="card-top">
+      <div>
+        <span class="card-name">${esc(p.name)}</span> <span class="card-company">@ ${esc(p.company)}</span>
+        <div class="card-title">${esc(p.title)}</div>
+        <div class="card-meta">
+          <span>${esc(p.email)}</span>
+          ${p.source ? `<span style="background:#f0f0f0;padding:2px 8px;border-radius:4px;font-size:11px;">${esc(p.source)}</span>` : ''}
+          ${p.linkedinUrl ? `<a href="${esc(p.linkedinUrl)}" target="_blank" class="linkedin-link">LinkedIn</a>` : ''}
+        </div>
+      </div>
+      <span class="status status-${p.status}">${STATUS_LABELS[p.status]}</span>
+    </div>
+    ${extra}
+    ${renderTimeline(p)}
+    <div class="btn-group">${buttons}</div>
+  </div>`;
+}
+
+function renderTimeline(p) {
+  const steps = [
+    { label: 'Email', key: 'email_sent' },
+    { label: 'Follow-Up', key: 'follow_up_1' },
+    { label: 'Final Nudge', key: 'follow_up_2' }
+  ];
+  const statusOrder = ['not_started', 'email_sent', 'follow_up_1', 'follow_up_2'];
+  const currentIdx = statusOrder.indexOf(p.status);
+
+  if (p.status === 'not_started' || p.status === 'replied' || p.status === 'cold') return '';
+
+  return `<div class="timeline">${steps.map((s, i) => {
+    const stepIdx = i + 1;
+    let cls = 'upcoming';
+    if (stepIdx < currentIdx) cls = 'done';
+    else if (stepIdx === currentIdx) cls = 'current';
+    return `<div class="timeline-step ${cls}">${s.label}</div>`;
+  }).join('')}</div>`;
+}
+
+// ============================================================
+// RENDER — IMPORT
+// ============================================================
+function renderImport() {
+  let html = `
+    <div class="import-zone" onclick="document.getElementById('csv-input').click()">
+      <div class="icon">&#x1F4C4;</div>
+      <strong>Upload CSV with Email Addresses</strong>
+      <p>CSV should include name and email columns</p>
+      <input type="file" id="csv-input" accept=".csv" onchange="if(this.files[0]){handleCSV(this.files[0]);this.value='';}" />
+    </div>
+  `;
+
+  // Manual add
+  html += `
+    <div class="add-form">
+      <h3>Or add manually</h3>
+      <div class="form-row">
+        <input id="manual-name" placeholder="Full name *" />
+        <input id="manual-email" placeholder="Email *" />
+      </div>
+      <div class="form-row">
+        <input id="manual-company" placeholder="Company" />
+        <input id="manual-title" placeholder="Title" />
+      </div>
+      <div class="form-row">
+        <input id="manual-source" placeholder="Source (e.g. Conference, Sales Nav)" />
+        <input id="manual-url" placeholder="LinkedIn URL (optional)" />
+      </div>
+      <button class="btn btn-primary" onclick="addManualProspect()">Add Prospect</button>
+    </div>
+  `;
+
+  // Imported contacts table
+  if (state.importedContacts.length > 0) {
+    const selectedCount = state.importedContacts.filter(c => c.selected).length;
+    html += `<div class="selected-count">Selected: <span>${selectedCount}</span> of ${state.importedContacts.length}</div>`;
+    html += `<table class="filter-table">
+      <thead><tr>
+        <th></th><th>Name</th><th>Email</th><th>Company</th><th>Title</th>
+      </tr></thead><tbody>`;
+
+    state.importedContacts.forEach((c, i) => {
+      const name = (c.firstName + ' ' + c.lastName).trim();
+      html += `<tr>
+        <td><input type="checkbox" ${c.selected ? 'checked' : ''} onchange="toggleContact(${i})" /></td>
+        <td>${esc(name)}</td>
+        <td>${esc(c.email)}</td>
+        <td>${esc(c.company)}</td>
+        <td>${esc(c.position)}</td>
+      </tr>`;
+    });
+
+    html += `</tbody></table>`;
+    html += `<div style="margin-top:12px; display:flex; gap:8px; align-items:center;">
+      <button class="btn btn-primary" onclick="selectAllContacts()">Select All</button>
+      <button class="btn btn-primary" onclick="activateSelected()" ${selectedCount === 0 ? 'disabled' : ''}>Activate ${selectedCount} Prospect${selectedCount !== 1 ? 's' : ''}</button>
+    </div>`;
+  }
+
+  return html;
+}
+
+function toggleContact(index) {
+  state.importedContacts[index].selected = !state.importedContacts[index].selected;
+  render();
+}
+
+function selectAllContacts() {
+  const allSelected = state.importedContacts.every(c => c.selected);
+  state.importedContacts.forEach(c => { c.selected = !allSelected; });
+  render();
+}
+
+// ============================================================
+// RENDER — ALL PROSPECTS
+// ============================================================
+function renderProspects() {
+  if (state.prospects.length === 0) {
+    return `<div class="empty"><div class="icon">&#x1F465;</div>No prospects yet. Import a CSV or add manually.</div>`;
+  }
+
+  let html = '';
+  const order = ['not_started', 'email_sent', 'follow_up_1', 'follow_up_2', 'replied', 'cold'];
+  const sorted = [...state.prospects].sort((a, b) => order.indexOf(a.status) - order.indexOf(b.status));
+
+  sorted.forEach(p => {
+    html += `<div class="card">
+      <div class="card-top">
+        <div>
+          <span class="card-name">${esc(p.name)}</span> <span class="card-company">@ ${esc(p.company)}</span>
+          <div class="card-title">${esc(p.title)}</div>
+          <div class="card-meta">
+            <span>${esc(p.email)}</span>
+            ${p.source ? `<span style="background:#f0f0f0;padding:2px 8px;border-radius:4px;font-size:11px;">${esc(p.source)}</span>` : ''}
+            ${p.linkedinUrl ? `<a href="${esc(p.linkedinUrl)}" target="_blank" class="linkedin-link">LinkedIn</a>` : ''}
+            ${p.emailSentDate ? `<span>Email: ${formatDate(p.emailSentDate)}</span>` : ''}
+            ${p.lastActionDate ? `<span>Last action: ${formatDate(p.lastActionDate)}</span>` : ''}
+          </div>
+        </div>
+        <span class="status status-${p.status}">${STATUS_LABELS[p.status]}</span>
+      </div>
+      ${renderTimeline(p)}
+      ${p.reply ? `<div style="margin-top:8px;font-size:13px;"><strong>Reply:</strong> ${esc(p.reply)}</div>` : ''}
+      ${p.nextStep ? `<div style="margin-top:4px;font-size:13px;"><strong>Next:</strong> ${esc(p.nextStep)}</div>` : ''}
+      <div class="btn-group">
+        ${p.status === 'not_started' ? `<button class="btn btn-primary btn-sm" onclick="markEmailSent('${p.id}')">Mark Email Sent</button>` : ''}
+        ${p.status === 'email_sent' ? `<button class="btn btn-primary btn-sm" onclick="markFollowUp1('${p.id}')">Mark Follow-Up Sent</button>` : ''}
+        ${p.status === 'follow_up_1' ? `<button class="btn btn-primary btn-sm" onclick="markFollowUp2('${p.id}')">Mark Final Nudge Sent</button>` : ''}
+        ${p.status !== 'replied' && p.status !== 'cold' ? `<button class="btn btn-success btn-sm" onclick="markReplied('${p.id}')">Got Reply</button>` : ''}
+        ${p.status !== 'cold' ? `<button class="btn btn-danger btn-sm" onclick="markCold('${p.id}')">Mark Cold</button>` : ''}
+        <button class="btn btn-secondary btn-sm" onclick="resetProspect('${p.id}')">Reset</button>
+        <button class="btn btn-secondary btn-sm" onclick="removeProspect('${p.id}')">Remove</button>
+      </div>
+    </div>`;
+  });
+
+  return html;
+}
+
+// ============================================================
+// RENDER — ACTIVITY LOG
+// ============================================================
+async function loadActivityLog() {
+  try {
+    const data = await apiGet('/api/activity?limit=100');
+    const el = document.getElementById('content');
+    if (state.activeTab !== 'activity') return;
+
+    if (!data.activity || data.activity.length === 0) {
+      el.innerHTML = '<div class="empty"><div class="icon">&#x1F4CB;</div>No activity recorded yet. Actions will appear here as you use the tool.</div>';
+      return;
+    }
+
+    let html = '<div class="section"><div class="section-header">Activity Log <span class="count">' + data.activity.length + '</span></div>';
+    let lastDate = '';
+    data.activity.forEach(a => {
+      const dateStr = a.date ? a.date.split('T')[0] : '';
+      const timeStr = a.date ? new Date(a.date).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' }) : '';
+      if (dateStr !== lastDate) {
+        lastDate = dateStr;
+        html += `<div style="font-size:13px;font-weight:700;color:#333;margin:16px 0 8px;padding-bottom:4px;border-bottom:1px solid #eee;">${formatDate(dateStr)}</div>`;
+      }
+      html += `<div class="card" style="padding:10px 16px;">
+        <span style="font-size:12px;color:#888;min-width:70px;display:inline-block;">${timeStr}</span>
+        <span style="font-size:13px;margin-left:8px;"><strong>${esc(a.action)}</strong>${a.prospectName ? ' — ' + esc(a.prospectName) : ''}</span>
+      </div>`;
+    });
+    html += '</div>';
+    el.innerHTML = html;
+  } catch (err) {
+    document.getElementById('content').innerHTML = '<div class="empty">Failed to load activity log.</div>';
+  }
+}
+
+// ============================================================
+// HELPERS
+// ============================================================
+function esc(str) {
+  if (!str) return '';
+  const div = document.createElement('div');
+  div.textContent = str;
+  return div.innerHTML;
+}
+
+// ============================================================
+// INIT
+// ============================================================
+loadFromServer();
+</script>
+</body>
+</html>
