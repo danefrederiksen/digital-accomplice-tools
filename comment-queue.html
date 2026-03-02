@@ -304,6 +304,75 @@
     .priority-badge.stale { background: #FEF3C7; color: #92400E; }
     .priority-badge.refresh { background: #DBEAFE; color: #1E40AF; }
     .priority-badge.new { background: #F3F4F6; color: #374151; }
+    .priority-badge.screenshot { background: #EDE9FE; color: #5B21B6; }
+
+    /* Screenshot Import */
+    .import-section {
+      background: #fff; border-radius: 12px; border: 1px solid #eee;
+      padding: 20px; margin-bottom: 20px;
+    }
+    .import-section.collapsed .import-body { display: none; }
+    .import-header {
+      display: flex; align-items: center; justify-content: space-between; cursor: pointer;
+    }
+    .import-header:hover .import-title { color: #F38B1C; }
+    .import-title {
+      font-size: 15px; font-weight: 700; color: #333; display: flex; align-items: center; gap: 8px;
+      transition: color 0.15s;
+    }
+    .import-toggle {
+      font-size: 12px; color: #999; font-weight: 600; padding: 4px 10px;
+      border-radius: 12px; background: #f5f5f5;
+    }
+    .import-body { margin-top: 16px; }
+    .import-row { display: flex; gap: 12px; align-items: flex-start; }
+    .import-upload-mini {
+      width: 140px; min-height: 120px; border: 2px dashed #ddd; border-radius: 10px;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      cursor: pointer; transition: all 0.15s; background: #fafafa; flex-shrink: 0;
+      text-align: center; padding: 10px;
+    }
+    .import-upload-mini:hover { border-color: #F38B1C; background: rgba(243,139,28,0.03); }
+    .import-upload-mini .icon { font-size: 24px; margin-bottom: 4px; }
+    .import-upload-mini .label { font-size: 11px; color: #999; font-weight: 600; }
+    .import-upload-mini img {
+      width: 100%; max-height: 100px; object-fit: cover; border-radius: 6px;
+    }
+    .import-names-area { flex: 1; }
+    .import-names-area textarea {
+      width: 100%; height: 120px; border: 1px solid #ddd; border-radius: 8px;
+      padding: 10px; font-family: 'Poppins', sans-serif; font-size: 13px;
+      resize: vertical; outline: none;
+    }
+    .import-names-area textarea:focus { border-color: #F38B1C; }
+    .import-names-area textarea::placeholder { color: #bbb; }
+    .import-hint { font-size: 11px; color: #999; margin-top: 4px; }
+    .import-actions { display: flex; gap: 8px; margin-top: 10px; align-items: center; }
+    .import-match-results { margin-top: 12px; }
+    .match-item {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 8px 12px; border-radius: 8px; font-size: 13px;
+    }
+    .match-item:nth-child(odd) { background: #fafafa; }
+    .match-item .match-name { font-weight: 600; }
+    .match-item .match-meta { font-size: 11px; color: #5A6B7A; }
+    .match-item .match-badge {
+      font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 10px;
+    }
+    .match-item .match-badge.found { background: #D1FAE5; color: #065F46; }
+    .match-item .match-badge.notfound { background: #FEE2E2; color: #991B1B; }
+    .override-banner {
+      background: linear-gradient(135deg, #EDE9FE 0%, #F5F3FF 100%);
+      border: 1px solid #8B5CF6; border-radius: 10px; padding: 10px 16px;
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 10px; font-size: 13px; color: #5B21B6; font-weight: 600;
+    }
+    .override-banner .clear-btn {
+      background: none; border: 1px solid #8B5CF6; color: #5B21B6;
+      padding: 3px 10px; border-radius: 8px; font-size: 11px; font-weight: 700;
+      cursor: pointer; font-family: 'Poppins', sans-serif;
+    }
+    .override-banner .clear-btn:hover { background: #8B5CF6; color: #fff; }
   </style>
 </head>
 <body>
@@ -330,12 +399,41 @@
   <div class="tab-panel active" id="panel-search">
     <div class="container">
 
+      <!-- Screenshot Import -->
+      <div class="import-section collapsed" id="importSection">
+        <div class="import-header" onclick="toggleImport()">
+          <div class="import-title">&#128247; Import from Sales Nav Screenshot</div>
+          <span class="import-toggle" id="importToggle">Show</span>
+        </div>
+        <div class="import-body">
+          <div class="import-row">
+            <div class="import-upload-mini" id="importUploadZone">
+              <div id="importPreview">
+                <div class="icon">&#128247;</div>
+                <div class="label">Drop screenshot<br>or click</div>
+              </div>
+              <input type="file" id="importFileInput" accept="image/png,image/jpeg,image/webp" style="display:none">
+            </div>
+            <div class="import-names-area">
+              <textarea id="importNames" placeholder="Paste names from Sales Nav alerts (one per line)&#10;&#10;Example:&#10;Jason Fox&#10;Julien Sauvage&#10;Sibasish Misra"></textarea>
+              <div class="import-hint">One name per line. Names are matched against your prospect database.</div>
+              <div class="import-actions">
+                <button class="btn btn-primary" onclick="matchNames()">Find Matches</button>
+                <span id="matchStatus" style="font-size:12px;color:#999;"></span>
+              </div>
+            </div>
+          </div>
+          <div class="import-match-results" id="matchResults"></div>
+        </div>
+      </div>
+
       <!-- Daily Targets -->
       <div class="targets-section" id="targetsSection">
         <div class="targets-header">
           <div class="targets-title"><span class="fire">&#127919;</span> Today's Targets</div>
           <span class="targets-progress" id="targetsProgress">0/8</span>
         </div>
+        <div id="overrideBanner" style="display:none;"></div>
         <div id="targetsGrid" class="targets-grid"></div>
       </div>
 
@@ -691,12 +789,26 @@ async function loadDailyTargets() {
 function renderDailyTargets(data) {
   const grid = document.getElementById('targetsGrid');
   const pill = document.getElementById('targetsProgress');
+  const banner = document.getElementById('overrideBanner');
   const doneToday = data.doneToday || 0;
   const target = data.dailyTarget || 8;
+  const isOverride = data.isOverride || false;
 
   // Update progress pill
   pill.textContent = `${doneToday}/${target} done`;
   pill.className = 'targets-progress' + (doneToday >= target ? ' done' : '');
+
+  // Show/hide override banner
+  if (isOverride) {
+    banner.style.display = 'flex';
+    banner.innerHTML = `
+      <span>&#128247; Targets loaded from screenshot (${dailyTargets.length} prospects)</span>
+      <button class="clear-btn" onclick="clearOverride()">Clear &amp; use auto</button>
+    `;
+    banner.className = 'override-banner';
+  } else {
+    banner.style.display = 'none';
+  }
 
   // All done for the day
   if (doneToday >= target) {
@@ -720,6 +832,7 @@ function renderDailyTargets(data) {
   grid.innerHTML = dailyTargets.map(p => {
     const isDone = commentedTodayIds.has(p.id);
     const priorityLabel = {
+      0: '<span class="priority-badge screenshot">From Screenshot</span>',
       1: '<span class="priority-badge hot">Engaged</span>',
       2: '<span class="priority-badge stale">Stale</span>',
       3: '<span class="priority-badge refresh">Refresh</span>',
@@ -1085,6 +1198,159 @@ async function deleteScreenshot(id) {
   if (!confirm('Delete this screenshot?')) return;
   await fetch('/api/screenshots/' + id, { method: 'DELETE' });
   loadScreenshots();
+}
+
+// ============================================================
+// SCREENSHOT IMPORT → TARGETS
+// ============================================================
+let lastMatches = [];
+let importedScreenshotId = null;
+
+function toggleImport() {
+  const section = document.getElementById('importSection');
+  const toggle = document.getElementById('importToggle');
+  section.classList.toggle('collapsed');
+  toggle.textContent = section.classList.contains('collapsed') ? 'Show' : 'Hide';
+}
+
+// Mini upload zone in import section
+const importUploadZone = document.getElementById('importUploadZone');
+const importFileInput = document.getElementById('importFileInput');
+
+importUploadZone.addEventListener('click', () => importFileInput.click());
+importUploadZone.addEventListener('dragover', (e) => { e.preventDefault(); importUploadZone.style.borderColor = '#F38B1C'; });
+importUploadZone.addEventListener('dragleave', () => { importUploadZone.style.borderColor = '#ddd'; });
+importUploadZone.addEventListener('drop', (e) => {
+  e.preventDefault();
+  importUploadZone.style.borderColor = '#ddd';
+  const file = e.dataTransfer.files[0];
+  if (file) handleImportUpload(file);
+});
+importFileInput.addEventListener('change', () => {
+  const file = importFileInput.files[0];
+  if (file) handleImportUpload(file);
+  importFileInput.value = '';
+});
+
+async function handleImportUpload(file) {
+  const allowed = ['image/png', 'image/jpeg', 'image/webp'];
+  if (!allowed.includes(file.type)) { alert('Only PNG, JPG, and WebP allowed.'); return; }
+  if (file.size > 10 * 1024 * 1024) { alert('File too large (max 10MB).'); return; }
+
+  const reader = new FileReader();
+  reader.onload = async () => {
+    const base64 = reader.result.split(',')[1];
+    try {
+      // Upload to server
+      const result = await apiPost('/api/screenshots', {
+        filename: file.name, mimeType: file.type, data: base64, notes: 'Imported for daily targets'
+      });
+      if (result.ok) {
+        importedScreenshotId = result.screenshot.id;
+        // Show thumbnail preview
+        document.getElementById('importPreview').innerHTML =
+          `<img src="/api/screenshots/${result.screenshot.id}/image" alt="Screenshot">`;
+      }
+    } catch (err) {
+      alert('Upload failed: ' + err.message);
+    }
+  };
+  reader.readAsDataURL(file);
+}
+
+async function matchNames() {
+  const raw = document.getElementById('importNames').value.trim();
+  if (!raw) { alert('Paste some names first.'); return; }
+
+  const names = raw.split('\n').map(n => n.trim()).filter(n => n.length > 0);
+  if (names.length === 0) { alert('No names found.'); return; }
+
+  document.getElementById('matchStatus').textContent = 'Searching...';
+
+  try {
+    const data = await apiPost('/api/match-names', { names });
+    lastMatches = data.matches || [];
+    const unmatched = data.unmatched || [];
+
+    const resultsDiv = document.getElementById('matchResults');
+    let html = '';
+
+    if (lastMatches.length > 0) {
+      html += lastMatches.map(m => `
+        <div class="match-item">
+          <div>
+            <span class="match-name">${esc(m.name)}</span>
+            <span class="match-meta"> — ${esc(m.company || '')} &middot; ${esc(m.segmentLabel)}</span>
+            ${m.commentedToday ? '<span style="color:#10B981;font-size:11px;font-weight:600;margin-left:6px;">Done today</span>' : ''}
+          </div>
+          <span class="match-badge found">Matched</span>
+        </div>
+      `).join('');
+    }
+
+    if (unmatched.length > 0) {
+      html += unmatched.map(name => `
+        <div class="match-item">
+          <div><span class="match-name" style="color:#999;">${esc(name)}</span></div>
+          <span class="match-badge notfound">Not in system</span>
+        </div>
+      `).join('');
+    }
+
+    if (lastMatches.length > 0) {
+      html += `
+        <div class="import-actions" style="margin-top:12px;">
+          <button class="btn btn-primary" onclick="setOverrideTargets()">
+            Set ${lastMatches.length} as Today's Targets
+          </button>
+          <span style="font-size:12px;color:#999;">Replaces auto-generated targets for today</span>
+        </div>
+      `;
+    }
+
+    resultsDiv.innerHTML = html;
+    document.getElementById('matchStatus').textContent = `${lastMatches.length} matched, ${unmatched.length} not found`;
+
+  } catch (err) {
+    document.getElementById('matchStatus').textContent = 'Error: ' + err.message;
+  }
+}
+
+async function setOverrideTargets() {
+  if (lastMatches.length === 0) return;
+
+  const prospectIds = lastMatches.map(m => m.id);
+
+  try {
+    await apiPost('/api/daily-targets/override', {
+      prospectIds,
+      screenshotId: importedScreenshotId || null
+    });
+
+    // Clear the import UI
+    document.getElementById('matchResults').innerHTML = '';
+    document.getElementById('importNames').value = '';
+    document.getElementById('matchStatus').textContent = '';
+    document.getElementById('importSection').classList.add('collapsed');
+    document.getElementById('importToggle').textContent = 'Show';
+    lastMatches = [];
+
+    // Reload targets
+    await loadDailyTargets();
+    await loadStats();
+
+  } catch (err) {
+    alert('Failed to set targets: ' + err.message);
+  }
+}
+
+async function clearOverride() {
+  try {
+    await fetch('/api/daily-targets/override', { method: 'DELETE' });
+    await loadDailyTargets();
+  } catch (err) {
+    alert('Failed to clear: ' + err.message);
+  }
 }
 
 // ============================================================

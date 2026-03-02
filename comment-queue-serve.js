@@ -11,6 +11,7 @@ const COMMENT_LOG_FILE = path.join(DATA_DIR, 'comment-log.json');
 const BACKUP_DIR = path.join(DATA_DIR, 'backups');
 const SCREENSHOTS_DIR = path.join(DATA_DIR, 'screenshots');
 const SCREENSHOTS_META_FILE = path.join(DATA_DIR, 'screenshots.json');
+const DAILY_OVERRIDES_FILE = path.join(DATA_DIR, 'daily-overrides.json');
 
 // Source tool data files — Tool #11 reads directly from these
 const SOURCE_FILES = {
@@ -131,6 +132,23 @@ function sanitize(str) {
     .replace(/[\x00-\x08\x0B\x0C\x0E-\x1F]/g, '')
     .replace(/</g, '&lt;')
     .replace(/>/g, '&gt;');
+}
+
+function loadDailyOverrides() {
+  try {
+    if (!fs.existsSync(DAILY_OVERRIDES_FILE)) return {};
+    return JSON.parse(fs.readFileSync(DAILY_OVERRIDES_FILE, 'utf8')) || {};
+  } catch { return {}; }
+}
+
+function saveDailyOverrides(data) {
+  fs.writeFileSync(DAILY_OVERRIDES_FILE, JSON.stringify(data, null, 2), 'utf8');
+}
+
+function getTodayOverride() {
+  const overrides = loadDailyOverrides();
+  const todayStr = new Date().toISOString().split('T')[0];
+  return overrides[todayStr] || null;
 }
 
 // ============================================================
@@ -368,6 +386,45 @@ app.get('/api/daily-targets', (req, res) => {
     if (entry.date.startsWith(todayStr)) commentedTodayIds.add(entry.prospectId);
   });
 
+  // Check for screenshot-based override
+  const override = getTodayOverride();
+  if (override) {
+    const overrideTargets = [];
+    const allMap = {};
+    all.forEach(p => { allMap[p.id] = p; });
+
+    for (const pid of override.prospectIds) {
+      const p = allMap[pid];
+      if (!p) continue;
+      const stats = commentStats[pid] || { count: 0, lastDate: null };
+      overrideTargets.push({
+        id: p.id,
+        name: p.name,
+        company: p.company,
+        title: p.title,
+        linkedinUrl: p.linkedinUrl,
+        status: p.status,
+        segment: p.segment,
+        segmentLabel: p.segmentLabel,
+        sourceTool: p.sourceTool,
+        sourcePort: p.sourcePort,
+        commentCount: stats.count,
+        lastCommented: stats.lastDate,
+        priority: 0,
+        daysSinceComment: stats.lastDate ? Math.floor((now.getTime() - new Date(stats.lastDate).getTime()) / 86400000) : null
+      });
+    }
+
+    return res.json({
+      targets: overrideTargets,
+      doneToday: commentedTodayIds.size,
+      dailyTarget: Math.max(DAILY_TARGET, overrideTargets.length),
+      remaining: Math.max(0, overrideTargets.length - commentedTodayIds.size),
+      isOverride: true,
+      overrideSetAt: override.setAt
+    });
+  }
+
   // Filter out excluded statuses, header rows, and already-commented-today
   const candidates = all.filter(p => {
     if (!p.name || p.name === 'Name') return false;
@@ -483,6 +540,146 @@ app.get('/api/daily-targets', (req, res) => {
     dailyTarget: DAILY_TARGET,
     remaining: Math.max(0, DAILY_TARGET - doneToday)
   });
+});
+
+// ============================================================
+// BULK NAME MATCH — search multiple names at once
+// ============================================================
+app.post('/api/match-names', (req, res) => {
+  const { names } = req.body;
+  if (!names || !Array.isArray(names)) {
+    return res.status(400).json({ error: 'names array required' });
+  }
+
+  const all = loadAllProspects();
+  const commentLog = loadCommentLog();
+  const todayStr = new Date().toISOString().split('T')[0];
+
+  // Build comment stats
+  const commentStats = {};
+  commentLog.forEach(entry => {
+    if (!commentStats[entry.prospectId]) {
+      commentStats[entry.prospectId] = { count: 0, lastDate: null, commentedToday: false };
+    }
+    commentStats[entry.prospectId].count++;
+    if (!commentStats[entry.prospectId].lastDate || entry.date > commentStats[entry.prospectId].lastDate) {
+      commentStats[entry.prospectId].lastDate = entry.date;
+    }
+    if (entry.date.startsWith(todayStr)) {
+      commentStats[entry.prospectId].commentedToday = true;
+    }
+  });
+
+  const results = [];
+  const unmatched = [];
+
+  for (const rawName of names) {
+    const q = (rawName || '').toLowerCase().trim();
+    if (!q) continue;
+
+    // Find best match: exact name > starts with > contains
+    let match = null;
+    let matchType = 'none';
+
+    for (const p of all) {
+      const pName = (p.name || '').toLowerCase();
+      if (pName === q) {
+        match = p;
+        matchType = 'exact';
+        break;
+      }
+      if (!match && pName.startsWith(q)) {
+        match = p;
+        matchType = 'starts';
+      }
+      if (!match && pName.includes(q)) {
+        match = p;
+        matchType = 'contains';
+      }
+    }
+
+    // Also try first-name + last-name matching (Sales Nav often shows "First Last")
+    if (!match) {
+      const parts = q.split(/\s+/);
+      if (parts.length >= 2) {
+        for (const p of all) {
+          const pName = (p.name || '').toLowerCase();
+          // Check if all parts appear in the prospect name
+          if (parts.every(part => pName.includes(part))) {
+            match = p;
+            matchType = 'partial';
+            break;
+          }
+        }
+      }
+    }
+
+    if (match) {
+      const stats = commentStats[match.id] || { count: 0, lastDate: null, commentedToday: false };
+      results.push({
+        id: match.id,
+        name: match.name,
+        company: match.company,
+        title: match.title,
+        linkedinUrl: match.linkedinUrl,
+        status: match.status,
+        segment: match.segment,
+        segmentLabel: match.segmentLabel,
+        sourceTool: match.sourceTool,
+        sourcePort: match.sourcePort,
+        commentCount: stats.count,
+        lastCommented: stats.lastDate,
+        commentedToday: stats.commentedToday,
+        matchType,
+        searchedName: rawName.trim()
+      });
+    } else {
+      unmatched.push(rawName.trim());
+    }
+  }
+
+  res.json({ matches: results, unmatched, total: names.length });
+});
+
+// ============================================================
+// DAILY OVERRIDE — set/get/clear screenshot-based targets
+// ============================================================
+
+// Set today's override targets
+app.post('/api/daily-targets/override', (req, res) => {
+  const { prospectIds, screenshotId } = req.body;
+  if (!prospectIds || !Array.isArray(prospectIds) || prospectIds.length === 0) {
+    return res.status(400).json({ error: 'prospectIds array required' });
+  }
+
+  const todayStr = new Date().toISOString().split('T')[0];
+  const overrides = loadDailyOverrides();
+
+  overrides[todayStr] = {
+    prospectIds: prospectIds.map(id => sanitize(id)),
+    screenshotId: screenshotId ? sanitize(screenshotId) : null,
+    setAt: new Date().toISOString()
+  };
+
+  // Clean up old overrides (keep last 7 days)
+  const cutoff = new Date();
+  cutoff.setDate(cutoff.getDate() - 7);
+  const cutoffStr = cutoff.toISOString().split('T')[0];
+  for (const key of Object.keys(overrides)) {
+    if (key < cutoffStr) delete overrides[key];
+  }
+
+  saveDailyOverrides(overrides);
+  res.json({ ok: true, date: todayStr, count: prospectIds.length });
+});
+
+// Clear today's override
+app.delete('/api/daily-targets/override', (req, res) => {
+  const todayStr = new Date().toISOString().split('T')[0];
+  const overrides = loadDailyOverrides();
+  delete overrides[todayStr];
+  saveDailyOverrides(overrides);
+  res.json({ ok: true });
 });
 
 // ============================================================
