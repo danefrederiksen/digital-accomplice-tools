@@ -124,7 +124,10 @@ function updateSourceProspect(sourceKey, prospectId, updates) {
 
 function sanitize(str) {
   if (typeof str !== 'string') return str;
-  return str.replace(/[\x00-\x08\x0B\x0C\x0E-\x1F]/g, '');
+  return str
+    .replace(/[\x00-\x08\x0B\x0C\x0E-\x1F]/g, '')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
 }
 
 // ============================================================
