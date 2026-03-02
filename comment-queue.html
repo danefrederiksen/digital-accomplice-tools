@@ -212,6 +212,48 @@
     /* Tab panels */
     .tab-panel { display: none; }
     .tab-panel.active { display: block; }
+
+    /* Upload zone */
+    .upload-zone {
+      border: 2px dashed #ddd; border-radius: 12px; padding: 40px 20px;
+      text-align: center; cursor: pointer; transition: all 0.15s;
+      background: #fff; margin-bottom: 24px;
+    }
+    .upload-zone:hover, .upload-zone.dragover {
+      border-color: #F38B1C; background: rgba(243, 139, 28, 0.05);
+    }
+    .upload-icon { font-size: 36px; margin-bottom: 8px; }
+    .upload-text { font-size: 16px; font-weight: 600; color: #333; }
+    .upload-subtext { font-size: 12px; color: #999; margin-top: 4px; }
+    .upload-zone.uploading { opacity: 0.5; pointer-events: none; }
+
+    /* Screenshot cards */
+    .screenshot-card {
+      background: #fff; border-radius: 10px; padding: 16px; margin-bottom: 10px;
+      border: 1px solid #eee; display: flex; gap: 16px; align-items: flex-start;
+    }
+    .screenshot-card:hover { border-color: #F38B1C; }
+    .screenshot-thumb {
+      width: 160px; height: 100px; object-fit: cover; border-radius: 6px;
+      border: 1px solid #eee; cursor: pointer;
+    }
+    .screenshot-meta { flex: 1; }
+    .screenshot-meta .filename { font-weight: 600; font-size: 14px; }
+    .screenshot-meta .timestamp { font-size: 12px; color: #999; margin-top: 2px; }
+    .screenshot-meta .filepath {
+      font-size: 11px; color: #5A6B7A; margin-top: 6px; font-family: monospace;
+      background: #f5f5f5; padding: 4px 8px; border-radius: 4px; word-break: break-all;
+    }
+    .screenshot-status {
+      display: inline-block; padding: 2px 8px; border-radius: 10px;
+      font-size: 10px; font-weight: 600; text-transform: uppercase; margin-top: 4px;
+    }
+    .screenshot-status.new { background: #FEF3C7; color: #92400E; }
+    .screenshot-status.processed { background: #D1FAE5; color: #065F46; }
+    .copy-toast {
+      display: inline-block; padding: 2px 8px; font-size: 11px; font-weight: 600;
+      color: #065F46; animation: flashIn 0.3s ease;
+    }
   </style>
 </head>
 <body>
@@ -231,6 +273,7 @@
     <div class="tab active" data-tab="search" onclick="switchTab('search')">Search</div>
     <div class="tab" data-tab="history" onclick="switchTab('history')">History</div>
     <div class="tab" data-tab="prospects" onclick="switchTab('prospects')">All Prospects</div>
+    <div class="tab" data-tab="uploads" onclick="switchTab('uploads')">Uploads</div>
   </div>
 
   <!-- SEARCH TAB -->
@@ -303,6 +346,20 @@
     </div>
   </div>
 
+  <!-- UPLOADS TAB -->
+  <div class="tab-panel" id="panel-uploads">
+    <div class="container">
+      <div class="upload-zone" id="uploadZone">
+        <div class="upload-icon">&#128247;</div>
+        <div class="upload-text">Drop Sales Nav screenshot here</div>
+        <div class="upload-subtext">or click to browse — PNG, JPG, WebP (max 10MB)</div>
+        <input type="file" id="fileInput" accept="image/png,image/jpeg,image/webp" style="display:none">
+      </div>
+      <div class="section-header">Screenshots <span class="line"></span></div>
+      <div id="screenshotsList"></div>
+    </div>
+  </div>
+
 <script>
 // ============================================================
 // STATE
@@ -371,6 +428,13 @@ function daysSince(isoStr) {
   const d = new Date(isoStr);
   const now = new Date();
   return Math.floor((now - d) / (1000 * 60 * 60 * 24));
+}
+
+function getActivityUrl(linkedinUrl) {
+  if (!linkedinUrl) return null;
+  const match = linkedinUrl.match(/linkedin\.com\/in\/([^/?#]+)/);
+  if (!match) return null;
+  return `https://www.linkedin.com/in/${match[1]}/detail/recent-activity/`;
 }
 
 // ============================================================
@@ -451,6 +515,7 @@ function renderSearchCard(p) {
         </div>
       </div>
       <div class="prospect-actions">
+        ${p.linkedinUrl && getActivityUrl(p.linkedinUrl) ? `<a href="${esc(getActivityUrl(p.linkedinUrl))}" target="_blank" class="btn btn-secondary btn-sm" title="View recent posts (no profile view)">Activity</a>` : ''}
         ${p.linkedinUrl ? `<a href="${esc(p.linkedinUrl)}" target="_blank" class="btn btn-secondary btn-sm">Profile</a>` : ''}
         <button class="btn btn-primary" onclick="showLogForm('${esc(p.id)}', '${esc(p.name)}', '${esc(p.company)}', '${esc(p.segment)}')">Log Comment</button>
       </div>
@@ -719,11 +784,128 @@ function renderProspectsTab() {
           </div>
         </div>
         <div class="prospect-actions">
+          ${p.linkedinUrl && getActivityUrl(p.linkedinUrl) ? `<a href="${esc(getActivityUrl(p.linkedinUrl))}" target="_blank" class="btn btn-secondary btn-sm" title="View recent posts (no profile view)">Activity</a>` : ''}
           ${p.linkedinUrl ? `<a href="${esc(p.linkedinUrl)}" target="_blank" class="btn btn-secondary btn-sm">Profile</a>` : ''}
         </div>
       </div>
     `;
   }).join('');
+}
+
+// ============================================================
+// UPLOADS TAB
+// ============================================================
+const uploadZone = document.getElementById('uploadZone');
+const fileInput = document.getElementById('fileInput');
+
+uploadZone.addEventListener('click', () => fileInput.click());
+uploadZone.addEventListener('dragover', (e) => { e.preventDefault(); uploadZone.classList.add('dragover'); });
+uploadZone.addEventListener('dragleave', () => uploadZone.classList.remove('dragover'));
+uploadZone.addEventListener('drop', (e) => {
+  e.preventDefault();
+  uploadZone.classList.remove('dragover');
+  const file = e.dataTransfer.files[0];
+  if (file) handleFileUpload(file);
+});
+fileInput.addEventListener('change', () => {
+  const file = fileInput.files[0];
+  if (file) handleFileUpload(file);
+  fileInput.value = '';
+});
+
+async function handleFileUpload(file) {
+  const allowed = ['image/png', 'image/jpeg', 'image/webp'];
+  if (!allowed.includes(file.type)) {
+    alert('Only PNG, JPG, and WebP images are allowed.');
+    return;
+  }
+  if (file.size > 10 * 1024 * 1024) {
+    alert('File too large (max 10MB).');
+    return;
+  }
+
+  uploadZone.classList.add('uploading');
+
+  const reader = new FileReader();
+  reader.onload = async () => {
+    const base64 = reader.result.split(',')[1];
+    try {
+      const result = await apiPost('/api/screenshots', {
+        filename: file.name,
+        mimeType: file.type,
+        data: base64,
+        notes: ''
+      });
+      if (result.ok) loadScreenshots();
+    } catch (err) {
+      alert('Upload failed: ' + err.message);
+    }
+    uploadZone.classList.remove('uploading');
+  };
+  reader.readAsDataURL(file);
+}
+
+async function loadScreenshots() {
+  const data = await apiGet('/api/screenshots');
+  renderScreenshots(data.screenshots || []);
+}
+
+function renderScreenshots(screenshots) {
+  const div = document.getElementById('screenshotsList');
+  if (screenshots.length === 0) {
+    div.innerHTML = '<div class="no-match">No screenshots uploaded yet</div>';
+    return;
+  }
+
+  div.innerHTML = screenshots.map(sc => {
+    const statusLabel = { new: 'New', processed: 'Processed' }[sc.status] || sc.status;
+    const filepath = `/Users/danefrederiksen/Desktop/Claude code/data/screenshots/${sc.id}.${sc.ext}`;
+
+    return `
+      <div class="screenshot-card">
+        <img class="screenshot-thumb" src="/api/screenshots/${esc(sc.id)}/image"
+             onclick="window.open('/api/screenshots/${esc(sc.id)}/image', '_blank')"
+             title="Click to view full size">
+        <div class="screenshot-meta">
+          <div class="filename">${esc(sc.filename)}</div>
+          <div class="timestamp">${formatTime(sc.uploadedAt)} &middot; ${formatDate(sc.uploadedAt)} &middot; ${Math.round(sc.sizeBytes / 1024)}KB</div>
+          <span class="screenshot-status ${esc(sc.status)}">${statusLabel}</span>
+          <div class="filepath">${esc(filepath)}</div>
+          <div style="margin-top:8px;display:flex;gap:6px;align-items:center;">
+            <button class="btn btn-secondary btn-sm" onclick="copyFilepath(this, '${esc(filepath)}')">Copy Path</button>
+            ${sc.status === 'new'
+              ? `<button class="btn btn-primary btn-sm" onclick="markScreenshot('${esc(sc.id)}', 'processed')">Mark Processed</button>`
+              : ''}
+            <button class="btn btn-secondary btn-sm" style="color:#991B1B;" onclick="deleteScreenshot('${esc(sc.id)}')">Delete</button>
+          </div>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function copyFilepath(btn, filepath) {
+  navigator.clipboard.writeText(filepath);
+  const toast = document.createElement('span');
+  toast.className = 'copy-toast';
+  toast.textContent = 'Copied!';
+  btn.parentElement.appendChild(toast);
+  setTimeout(() => toast.remove(), 1500);
+}
+
+async function markScreenshot(id, status) {
+  await fetch('/api/screenshots/' + id, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ status })
+  });
+  loadScreenshots();
+}
+
+async function deleteScreenshot(id) {
+  if (!confirm('Delete this screenshot?')) return;
+  await fetch('/api/screenshots/' + id, { method: 'DELETE' });
+  loadScreenshots();
 }
 
 // ============================================================
@@ -739,6 +921,8 @@ function switchTab(tab) {
     loadHistory();
   } else if (tab === 'prospects') {
     loadProspectsData();
+  } else if (tab === 'uploads') {
+    loadScreenshots();
   }
 }
 

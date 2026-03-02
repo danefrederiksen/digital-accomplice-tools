@@ -9,6 +9,8 @@ const HTML_FILE = path.join(__dirname, 'comment-queue.html');
 const DATA_DIR = path.join(__dirname, 'data');
 const COMMENT_LOG_FILE = path.join(DATA_DIR, 'comment-log.json');
 const BACKUP_DIR = path.join(DATA_DIR, 'backups');
+const SCREENSHOTS_DIR = path.join(DATA_DIR, 'screenshots');
+const SCREENSHOTS_META_FILE = path.join(DATA_DIR, 'screenshots.json');
 
 // Source tool data files — Tool #11 reads directly from these
 const SOURCE_FILES = {
@@ -52,7 +54,7 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use(express.json({ limit: '5mb' }));
+app.use(express.json({ limit: '10mb' }));
 
 // ============================================================
 // DATA HELPERS
@@ -60,6 +62,7 @@ app.use(express.json({ limit: '5mb' }));
 function ensureDirs() {
   if (!fs.existsSync(DATA_DIR)) fs.mkdirSync(DATA_DIR, { recursive: true });
   if (!fs.existsSync(BACKUP_DIR)) fs.mkdirSync(BACKUP_DIR, { recursive: true });
+  if (!fs.existsSync(SCREENSHOTS_DIR)) fs.mkdirSync(SCREENSHOTS_DIR, { recursive: true });
 }
 
 function loadSourceProspects(sourceKey) {
@@ -316,6 +319,109 @@ app.get('/api/prospects', (req, res) => {
   });
 
   res.json({ prospects: enriched, total: enriched.length });
+});
+
+// ============================================================
+// SCREENSHOTS
+// ============================================================
+const ALLOWED_MIME = { 'image/png': 'png', 'image/jpeg': 'jpg', 'image/webp': 'webp' };
+
+function loadScreenshotsMeta() {
+  try {
+    if (!fs.existsSync(SCREENSHOTS_META_FILE)) return [];
+    return JSON.parse(fs.readFileSync(SCREENSHOTS_META_FILE, 'utf8')) || [];
+  } catch { return []; }
+}
+
+function saveScreenshotsMeta(entries) {
+  fs.writeFileSync(SCREENSHOTS_META_FILE, JSON.stringify(entries, null, 2), 'utf8');
+}
+
+// Upload screenshot
+app.post('/api/screenshots', (req, res) => {
+  const { filename, mimeType, data, notes } = req.body;
+
+  if (!data || !mimeType) {
+    return res.status(400).json({ error: 'data and mimeType required' });
+  }
+
+  const ext = ALLOWED_MIME[mimeType];
+  if (!ext) {
+    return res.status(400).json({ error: 'Only PNG, JPG, and WebP allowed' });
+  }
+
+  try {
+    const id = uuidv4();
+    const buffer = Buffer.from(data, 'base64');
+    const filepath = path.join(SCREENSHOTS_DIR, `${id}.${ext}`);
+    fs.writeFileSync(filepath, buffer);
+
+    const entry = {
+      id,
+      filename: sanitize(filename || `screenshot.${ext}`),
+      mimeType,
+      ext,
+      sizeBytes: buffer.length,
+      uploadedAt: new Date().toISOString(),
+      notes: sanitize(notes || ''),
+      status: 'new'
+    };
+
+    const meta = loadScreenshotsMeta();
+    meta.unshift(entry);
+    saveScreenshotsMeta(meta);
+
+    res.json({ ok: true, screenshot: entry });
+  } catch (err) {
+    console.error('Screenshot upload failed:', err.message);
+    res.status(500).json({ error: 'Upload failed' });
+  }
+});
+
+// List screenshots (metadata only)
+app.get('/api/screenshots', (req, res) => {
+  res.json({ screenshots: loadScreenshotsMeta() });
+});
+
+// Serve screenshot image
+app.get('/api/screenshots/:id/image', (req, res) => {
+  const meta = loadScreenshotsMeta();
+  const entry = meta.find(s => s.id === req.params.id);
+  if (!entry) return res.status(404).json({ error: 'Not found' });
+
+  const filepath = path.join(SCREENSHOTS_DIR, `${entry.id}.${entry.ext}`);
+  if (!fs.existsSync(filepath)) return res.status(404).json({ error: 'File not found' });
+
+  res.setHeader('Content-Type', entry.mimeType);
+  res.sendFile(filepath);
+});
+
+// Update screenshot metadata (status, notes)
+app.put('/api/screenshots/:id', (req, res) => {
+  const meta = loadScreenshotsMeta();
+  const idx = meta.findIndex(s => s.id === req.params.id);
+  if (idx === -1) return res.status(404).json({ error: 'Not found' });
+
+  if (req.body.status) meta[idx].status = sanitize(req.body.status);
+  if (req.body.notes !== undefined) meta[idx].notes = sanitize(req.body.notes);
+
+  saveScreenshotsMeta(meta);
+  res.json({ ok: true, screenshot: meta[idx] });
+});
+
+// Delete screenshot
+app.delete('/api/screenshots/:id', (req, res) => {
+  const meta = loadScreenshotsMeta();
+  const idx = meta.findIndex(s => s.id === req.params.id);
+  if (idx === -1) return res.status(404).json({ error: 'Not found' });
+
+  const entry = meta[idx];
+  const filepath = path.join(SCREENSHOTS_DIR, `${entry.id}.${entry.ext}`);
+  if (fs.existsSync(filepath)) fs.unlinkSync(filepath);
+
+  meta.splice(idx, 1);
+  saveScreenshotsMeta(meta);
+  res.json({ ok: true });
 });
 
 // ============================================================
