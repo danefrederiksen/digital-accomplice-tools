@@ -556,7 +556,13 @@ async function addManualProspect() {
 // DASHBOARD LOGIC
 // ============================================================
 function getDmToday() {
-  return state.prospects.filter(p => p.status === 'not_started');
+  // Show only DAILY_TARGETS.newOutreach prospects at a time (matches outreach plan: 1-2/day)
+  const queue = state.prospects.filter(p => p.status === 'not_started');
+  return queue.slice(0, DAILY_TARGETS.newOutreach);
+}
+
+function getQueueCount() {
+  return state.prospects.filter(p => p.status === 'not_started').length;
 }
 
 function getFollowUpToday() {
@@ -661,6 +667,7 @@ function renderDashboard() {
 
   const totalActive = state.prospects.filter(p => p.status !== 'cold').length;
   const totalCold = state.prospects.filter(p => p.status === 'cold').length;
+  const queueTotal = getQueueCount();
 
   let html = '';
 
@@ -672,6 +679,7 @@ function renderDashboard() {
       <span class="alert-stat">${fuList.length} follow-up${fuList.length !== 1 ? 's' : ''} due</span>
       <span class="alert-stat">${reList.length} repl${reList.length !== 1 ? 'ies' : 'y'} to handle</span>
       <span class="alert-stat">${waitList.length} waiting</span>
+      ${queueTotal > dmList.length ? `<span class="alert-stat">${queueTotal - dmList.length} in queue</span>` : ''}
     </div>`;
   }
 
@@ -679,9 +687,9 @@ function renderDashboard() {
 
   // DM Today
   html += `<div class="section">
-    <div class="section-header">DM Today <span class="count">${dmList.length}</span></div>`;
+    <div class="section-header">DM Today <span class="count">${dmList.length}</span>${queueTotal > dmList.length ? ` <span style="font-size:12px;font-weight:400;color:#999;margin-left:4px;">(${queueTotal} total in queue)</span>` : ''}</div>`;
   if (dmList.length === 0) {
-    html += `<div class="empty"><div class="icon">&#x2713;</div>No DMs to send today</div>`;
+    html += `<div class="empty"><div class="icon">&#x2713;</div>All caught up — next prospects auto-queue when you finish these</div>`;
   } else {
     dmList.forEach(p => {
       html += renderDashboardCard(p, 'dm');
