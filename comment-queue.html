@@ -1,0 +1,753 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Prospecting Tool #11 — Comment Queue</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Poppins', Arial, sans-serif; background: #F5F5F5; color: #000; min-height: 100vh; }
+
+    /* Header */
+    .header {
+      background: #000; color: #fff; padding: 14px 24px;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .header-left { display: flex; align-items: center; gap: 12px; }
+    .header-left .logo { font-weight: 800; font-size: 16px; color: #F38B1C; }
+    .header-left .title { font-weight: 600; font-size: 15px; color: #fff; }
+    .header-right { display: flex; align-items: center; gap: 16px; }
+    .stat-pill {
+      background: rgba(243, 139, 28, 0.15); border: 1px solid #F38B1C;
+      border-radius: 20px; padding: 4px 14px; font-size: 13px; font-weight: 600; color: #F38B1C;
+    }
+    .stat-pill.done { background: rgba(16, 185, 129, 0.15); border-color: #10B981; color: #10B981; }
+
+    /* Tabs */
+    .tabs {
+      background: #000; display: flex; gap: 0; padding: 0 24px; border-bottom: 2px solid #222;
+    }
+    .tab {
+      padding: 10px 20px; font-size: 13px; font-weight: 600; color: #888;
+      cursor: pointer; border-bottom: 2px solid transparent; transition: all 0.15s;
+    }
+    .tab:hover { color: #ccc; }
+    .tab.active { color: #F38B1C; border-bottom-color: #F38B1C; }
+
+    /* Main container */
+    .container { max-width: 900px; margin: 0 auto; padding: 24px; }
+
+    /* Search bar */
+    .search-section { margin-bottom: 24px; }
+    .search-box {
+      width: 100%; padding: 16px 20px; font-size: 18px; font-family: 'Poppins', sans-serif;
+      border: 2px solid #ddd; border-radius: 12px; outline: none; transition: border-color 0.15s;
+      background: #fff;
+    }
+    .search-box:focus { border-color: #F38B1C; }
+    .search-box::placeholder { color: #bbb; }
+    .search-hint {
+      font-size: 12px; color: #999; margin-top: 6px; padding-left: 4px;
+    }
+
+    /* Search results */
+    .results-area { min-height: 60px; }
+    .no-match {
+      text-align: center; padding: 20px; color: #999; font-size: 14px;
+      background: #fff; border-radius: 10px; border: 1px dashed #ddd;
+    }
+    .no-match .big { font-size: 16px; font-weight: 600; color: #666; margin-bottom: 4px; }
+
+    /* Prospect card */
+    .prospect-card {
+      background: #fff; border-radius: 10px; padding: 16px 20px; margin-bottom: 10px;
+      border: 1px solid #eee; display: flex; align-items: center; justify-content: space-between;
+      transition: border-color 0.15s, box-shadow 0.15s;
+    }
+    .prospect-card:hover { border-color: #F38B1C; box-shadow: 0 2px 8px rgba(243,139,28,0.1); }
+    .prospect-info { flex: 1; }
+    .prospect-name { font-weight: 700; font-size: 15px; color: #000; }
+    .prospect-meta {
+      font-size: 12px; color: #5A6B7A; margin-top: 2px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+    }
+    .segment-badge {
+      display: inline-block; padding: 2px 8px; border-radius: 10px;
+      font-size: 11px; font-weight: 600; color: #fff;
+    }
+    .segment-badge.b2b_2nd { background: #3B82F6; }
+    .segment-badge.cyber_2nd { background: #8B5CF6; }
+    .segment-badge.referral_2nd { background: #10B981; }
+    .status-badge {
+      display: inline-block; padding: 2px 8px; border-radius: 10px;
+      font-size: 10px; font-weight: 600; text-transform: uppercase;
+    }
+    .status-badge.not_started { background: #f0f0f0; color: #666; }
+    .status-badge.connection_sent { background: #FEF3C7; color: #92400E; }
+    .status-badge.connection_accepted { background: #D1FAE5; color: #065F46; }
+    .status-badge.dm_sent { background: #DBEAFE; color: #1E40AF; }
+    .status-badge.follow_up_1 { background: #E0E7FF; color: #3730A3; }
+    .status-badge.follow_up_2 { background: #EDE9FE; color: #5B21B6; }
+    .status-badge.replied { background: #D1FAE5; color: #065F46; }
+    .status-badge.cold { background: #FEE2E2; color: #991B1B; }
+    .comment-stat {
+      font-size: 11px; color: #999;
+    }
+    .prospect-actions { display: flex; gap: 8px; align-items: center; }
+    .btn {
+      padding: 8px 16px; border-radius: 8px; font-size: 13px; font-weight: 600;
+      font-family: 'Poppins', sans-serif; cursor: pointer; border: none; transition: all 0.15s;
+    }
+    .btn-primary { background: #F38B1C; color: #fff; }
+    .btn-primary:hover { background: #e07d10; }
+    .btn-primary:disabled { background: #ccc; cursor: default; }
+    .btn-secondary { background: #f0f0f0; color: #333; }
+    .btn-secondary:hover { background: #e0e0e0; }
+    .btn-sm { padding: 5px 10px; font-size: 11px; }
+    .btn-link {
+      background: none; border: none; color: #F38B1C; font-size: 12px;
+      font-weight: 600; cursor: pointer; text-decoration: underline; padding: 0;
+      font-family: 'Poppins', sans-serif;
+    }
+    .btn-link:hover { color: #e07d10; }
+
+    /* Post URL input */
+    .post-url-row {
+      display: flex; align-items: center; gap: 8px; margin-top: 8px;
+    }
+    .post-url-input {
+      flex: 1; padding: 6px 10px; font-size: 12px; font-family: 'Poppins', sans-serif;
+      border: 1px solid #ddd; border-radius: 6px; outline: none;
+    }
+    .post-url-input:focus { border-color: #F38B1C; }
+
+    /* Logged confirmation */
+    .logged-flash {
+      background: #D1FAE5; color: #065F46; border-radius: 8px; padding: 8px 16px;
+      font-size: 13px; font-weight: 600; animation: flashIn 0.3s ease;
+    }
+    @keyframes flashIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+
+    /* Section headers */
+    .section-header {
+      font-size: 14px; font-weight: 700; color: #333; margin: 28px 0 12px;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .section-header .line { flex: 1; height: 1px; background: #ddd; }
+
+    /* Today's comments list */
+    .comment-item {
+      background: #fff; border-radius: 8px; padding: 10px 16px; margin-bottom: 6px;
+      border: 1px solid #eee; display: flex; align-items: center; justify-content: space-between;
+      font-size: 13px;
+    }
+    .comment-item .name { font-weight: 600; }
+    .comment-item .time { color: #999; font-size: 12px; }
+
+    /* Stats bar */
+    .stats-bar {
+      background: #fff; border-radius: 12px; padding: 16px 20px; margin-bottom: 24px;
+      border: 1px solid #eee; display: flex; align-items: center; gap: 24px; flex-wrap: wrap;
+    }
+    .stat-block { text-align: center; }
+    .stat-block .number { font-size: 28px; font-weight: 800; color: #F38B1C; }
+    .stat-block .label { font-size: 11px; color: #999; font-weight: 600; text-transform: uppercase; }
+    .stat-block.week .number { color: #5A6B7A; }
+    .progress-bar-wrap {
+      flex: 1; min-width: 200px;
+    }
+    .progress-label { font-size: 11px; color: #999; font-weight: 600; margin-bottom: 4px; }
+    .progress-bar {
+      height: 10px; background: #eee; border-radius: 5px; overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%; background: #F38B1C; border-radius: 5px; transition: width 0.3s;
+    }
+    .progress-fill.complete { background: #10B981; }
+
+    /* Segment breakdown */
+    .segment-row {
+      display: flex; align-items: center; gap: 6px; font-size: 12px; color: #5A6B7A; font-weight: 500;
+    }
+    .segment-row .dot { width: 8px; height: 8px; border-radius: 50%; }
+    .segment-row .dot.b2b { background: #3B82F6; }
+    .segment-row .dot.cyber { background: #8B5CF6; }
+    .segment-row .dot.referral { background: #10B981; }
+
+    /* History tab */
+    .history-filters {
+      display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap;
+    }
+    .filter-btn {
+      padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: 600;
+      font-family: 'Poppins', sans-serif; cursor: pointer; border: 1px solid #ddd;
+      background: #fff; color: #666; transition: all 0.15s;
+    }
+    .filter-btn.active { background: #000; color: #fff; border-color: #000; }
+    .filter-btn:hover { border-color: #999; }
+
+    /* All Prospects tab */
+    .prospect-table-controls {
+      display: flex; gap: 12px; margin-bottom: 16px; align-items: center; flex-wrap: wrap;
+    }
+    .table-search {
+      padding: 8px 14px; font-size: 13px; font-family: 'Poppins', sans-serif;
+      border: 1px solid #ddd; border-radius: 8px; outline: none; flex: 1; min-width: 200px;
+    }
+    .table-search:focus { border-color: #F38B1C; }
+    .sort-select {
+      padding: 8px 12px; font-size: 12px; font-family: 'Poppins', sans-serif;
+      border: 1px solid #ddd; border-radius: 8px; outline: none; background: #fff;
+    }
+    .prospect-count { font-size: 12px; color: #999; font-weight: 600; }
+
+    /* Inactive flags */
+    .inactive-flag {
+      display: inline-block; padding: 2px 8px; border-radius: 10px;
+      font-size: 10px; font-weight: 600; background: #FEF3C7; color: #92400E;
+    }
+
+    /* Tab panels */
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+  </style>
+</head>
+<body>
+
+  <div class="header">
+    <div class="header-left">
+      <span class="logo">DA</span>
+      <span class="title">Comment Queue</span>
+    </div>
+    <div class="header-right">
+      <span class="stat-pill" id="todayPill">0/8 today</span>
+      <span class="stat-pill" id="weekPill" style="border-color:#5A6B7A;color:#5A6B7A;background:rgba(90,107,122,0.1);">0 this week</span>
+    </div>
+  </div>
+
+  <div class="tabs">
+    <div class="tab active" data-tab="search" onclick="switchTab('search')">Search</div>
+    <div class="tab" data-tab="history" onclick="switchTab('history')">History</div>
+    <div class="tab" data-tab="prospects" onclick="switchTab('prospects')">All Prospects</div>
+  </div>
+
+  <!-- SEARCH TAB -->
+  <div class="tab-panel active" id="panel-search">
+    <div class="container">
+      <div class="search-section">
+        <input type="text" class="search-box" id="searchInput" placeholder="Type a name from Sales Nav..." autofocus>
+        <div class="search-hint">Search across B2B, Cyber, and Referral 2nd connection prospects</div>
+      </div>
+
+      <div class="results-area" id="searchResults"></div>
+
+      <!-- Stats bar -->
+      <div class="stats-bar" id="statsBar">
+        <div class="stat-block">
+          <div class="number" id="todayCount">0</div>
+          <div class="label">Today</div>
+        </div>
+        <div class="progress-bar-wrap">
+          <div class="progress-label">Daily target: <span id="targetLabel">0/8</span></div>
+          <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+        </div>
+        <div class="stat-block week">
+          <div class="number" id="weekCount">0</div>
+          <div class="label">This Week</div>
+        </div>
+        <div style="display:flex;gap:12px;">
+          <div class="segment-row"><span class="dot b2b"></span> B2B: <strong id="segB2b">0</strong></div>
+          <div class="segment-row"><span class="dot cyber"></span> Cyber: <strong id="segCyber">0</strong></div>
+          <div class="segment-row"><span class="dot referral"></span> Referral: <strong id="segReferral">0</strong></div>
+        </div>
+      </div>
+
+      <!-- Today's comments -->
+      <div class="section-header">Today's Comments <span class="line"></span></div>
+      <div id="todayComments"></div>
+    </div>
+  </div>
+
+  <!-- HISTORY TAB -->
+  <div class="tab-panel" id="panel-history">
+    <div class="container">
+      <div class="history-filters">
+        <div class="filter-btn active" data-filter="" onclick="filterHistory('')">All</div>
+        <div class="filter-btn" data-filter="b2b_2nd" onclick="filterHistory('b2b_2nd')">B2B 2nd</div>
+        <div class="filter-btn" data-filter="cyber_2nd" onclick="filterHistory('cyber_2nd')">Cyber 2nd</div>
+        <div class="filter-btn" data-filter="referral_2nd" onclick="filterHistory('referral_2nd')">Referral 2nd</div>
+      </div>
+      <div id="historyList"></div>
+    </div>
+  </div>
+
+  <!-- ALL PROSPECTS TAB -->
+  <div class="tab-panel" id="panel-prospects">
+    <div class="container">
+      <div class="prospect-table-controls">
+        <input type="text" class="table-search" id="tableSearch" placeholder="Filter prospects..." oninput="renderProspectsTab()">
+        <select class="sort-select" id="sortSelect" onchange="renderProspectsTab()">
+          <option value="name">Sort: Name</option>
+          <option value="comments_desc">Sort: Most Comments</option>
+          <option value="comments_asc">Sort: Least Comments</option>
+          <option value="recent">Sort: Recently Commented</option>
+          <option value="stale">Sort: Needs Attention</option>
+        </select>
+        <span class="prospect-count" id="prospectCount"></span>
+      </div>
+      <div id="prospectsList"></div>
+    </div>
+  </div>
+
+<script>
+// ============================================================
+// STATE
+// ============================================================
+let stats = { today: { total: 0, target: 8, bySegment: {} }, week: { total: 0, bySegment: {} } };
+let todayHistory = [];
+let allProspects = [];
+let historyFilter = '';
+let searchDebounce = null;
+
+// ============================================================
+// API HELPERS
+// ============================================================
+async function apiGet(url) {
+  const res = await fetch(url);
+  return res.json();
+}
+
+async function apiPost(url, body) {
+  const res = await fetch(url, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body)
+  });
+  return res.json();
+}
+
+// ============================================================
+// XSS PROTECTION
+// ============================================================
+function esc(str) {
+  const el = document.createElement('span');
+  el.textContent = str || '';
+  return el.innerHTML;
+}
+
+// ============================================================
+// DATE HELPERS
+// ============================================================
+function todayStr() { return new Date().toISOString().split('T')[0]; }
+
+function formatTime(isoStr) {
+  if (!isoStr) return '';
+  const d = new Date(isoStr);
+  return d.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
+}
+
+function formatDate(isoStr) {
+  if (!isoStr) return 'Never';
+  const d = new Date(isoStr);
+  return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+}
+
+function formatDateGroup(isoStr) {
+  if (!isoStr) return '';
+  const d = new Date(isoStr);
+  const today = new Date();
+  const yesterday = new Date(); yesterday.setDate(today.getDate() - 1);
+  if (d.toDateString() === today.toDateString()) return 'Today';
+  if (d.toDateString() === yesterday.toDateString()) return 'Yesterday';
+  return d.toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' });
+}
+
+function daysSince(isoStr) {
+  if (!isoStr) return null;
+  const d = new Date(isoStr);
+  const now = new Date();
+  return Math.floor((now - d) / (1000 * 60 * 60 * 24));
+}
+
+// ============================================================
+// SEARCH
+// ============================================================
+const searchInput = document.getElementById('searchInput');
+searchInput.addEventListener('input', () => {
+  clearTimeout(searchDebounce);
+  searchDebounce = setTimeout(doSearch, 150);
+});
+
+// Focus search on Escape or / key
+document.addEventListener('keydown', (e) => {
+  if (e.key === '/' && document.activeElement !== searchInput) {
+    e.preventDefault();
+    searchInput.focus();
+    searchInput.select();
+  }
+  if (e.key === 'Escape') {
+    searchInput.value = '';
+    searchInput.focus();
+    document.getElementById('searchResults').innerHTML = '';
+  }
+});
+
+async function doSearch() {
+  const q = searchInput.value.trim();
+  const resultsDiv = document.getElementById('searchResults');
+
+  if (!q) {
+    resultsDiv.innerHTML = '';
+    return;
+  }
+
+  const data = await apiGet('/api/search?q=' + encodeURIComponent(q));
+  const results = data.results || [];
+
+  if (results.length === 0) {
+    resultsDiv.innerHTML = `
+      <div class="no-match">
+        <div class="big">Not in system</div>
+        Skip and move to next alert
+      </div>
+    `;
+    return;
+  }
+
+  resultsDiv.innerHTML = results.map(p => renderSearchCard(p)).join('');
+}
+
+function renderSearchCard(p) {
+  const commentInfo = p.commentCount > 0
+    ? `${p.commentCount} comment${p.commentCount !== 1 ? 's' : ''} &middot; Last: ${formatDate(p.lastCommented)}`
+    : 'No comments yet';
+
+  const staleWarning = p.lastCommented && daysSince(p.lastCommented) >= 21
+    ? '<span class="inactive-flag">3+ weeks since last comment</span>'
+    : '';
+
+  const statusLabel = {
+    not_started: 'Not Started', connection_sent: 'Conn Sent', connection_accepted: 'Conn Accepted',
+    dm_sent: 'DM Sent', follow_up_1: 'Follow-Up 1', follow_up_2: 'Follow-Up 2',
+    replied: 'Replied', cold: 'Cold'
+  }[p.status] || p.status;
+
+  return `
+    <div class="prospect-card" id="card-${esc(p.id)}">
+      <div class="prospect-info">
+        <div class="prospect-name">${esc(p.name)}</div>
+        <div class="prospect-meta">
+          <span>${esc(p.company || 'No company')}</span>
+          <span class="segment-badge ${esc(p.segment)}">${esc(p.segmentLabel)} (Tool ${esc(p.sourceTool)})</span>
+          <span class="status-badge ${esc(p.status)}">${statusLabel}</span>
+          ${staleWarning}
+        </div>
+        <div class="prospect-meta" style="margin-top:4px;">
+          <span class="comment-stat">${commentInfo}</span>
+        </div>
+      </div>
+      <div class="prospect-actions">
+        ${p.linkedinUrl ? `<a href="${esc(p.linkedinUrl)}" target="_blank" class="btn btn-secondary btn-sm">Profile</a>` : ''}
+        <button class="btn btn-primary" onclick="showLogForm('${esc(p.id)}', '${esc(p.name)}', '${esc(p.company)}', '${esc(p.segment)}')">Log Comment</button>
+      </div>
+    </div>
+  `;
+}
+
+function showLogForm(prospectId, name, company, segment) {
+  const card = document.getElementById('card-' + prospectId);
+  if (!card) return;
+
+  // Check if form already exists
+  if (card.querySelector('.post-url-row')) return;
+
+  const form = document.createElement('div');
+  form.className = 'post-url-row';
+  form.innerHTML = `
+    <input type="text" class="post-url-input" placeholder="Post URL (optional)" id="url-${prospectId}">
+    <button class="btn btn-primary btn-sm" onclick="logComment('${prospectId}', '${name.replace(/'/g, "\\'")}', '${company.replace(/'/g, "\\'")}', '${segment}')">Save</button>
+    <button class="btn btn-secondary btn-sm" onclick="this.parentElement.remove()">Cancel</button>
+  `;
+  card.appendChild(form);
+  form.querySelector('input').focus();
+
+  // Enter key submits
+  form.querySelector('input').addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      logComment(prospectId, name, company, segment);
+    }
+  });
+}
+
+async function logComment(prospectId, name, company, segment) {
+  const urlInput = document.getElementById('url-' + prospectId);
+  const postUrl = urlInput ? urlInput.value.trim() : '';
+
+  const result = await apiPost('/api/comment', {
+    prospectId, prospectName: name, company, segment, postUrl
+  });
+
+  if (result.ok) {
+    // Flash confirmation on the card
+    const card = document.getElementById('card-' + prospectId);
+    if (card) {
+      const flash = document.createElement('div');
+      flash.className = 'logged-flash';
+      flash.textContent = `Logged! (${result.totalComments} total)`;
+      // Replace the url form if it exists
+      const urlRow = card.querySelector('.post-url-row');
+      if (urlRow) urlRow.remove();
+      card.appendChild(flash);
+      setTimeout(() => flash.remove(), 2000);
+    }
+
+    // Refresh stats and today's list
+    await loadStats();
+    await loadTodayComments();
+
+    // Clear search and refocus for next lookup
+    searchInput.value = '';
+    searchInput.focus();
+    document.getElementById('searchResults').innerHTML = '';
+  }
+}
+
+// ============================================================
+// STATS
+// ============================================================
+async function loadStats() {
+  stats = await apiGet('/api/stats');
+
+  // Update header pills
+  const todayPill = document.getElementById('todayPill');
+  const weekPill = document.getElementById('weekPill');
+  todayPill.textContent = `${stats.today.total}/${stats.today.target} today`;
+  if (stats.today.total >= stats.today.target) {
+    todayPill.className = 'stat-pill done';
+  } else {
+    todayPill.className = 'stat-pill';
+  }
+  weekPill.textContent = `${stats.week.total} this week`;
+
+  // Update stats bar
+  document.getElementById('todayCount').textContent = stats.today.total;
+  document.getElementById('weekCount').textContent = stats.week.total;
+  document.getElementById('targetLabel').textContent = `${stats.today.total}/${stats.today.target}`;
+
+  const pct = Math.min(100, (stats.today.total / stats.today.target) * 100);
+  const fill = document.getElementById('progressFill');
+  fill.style.width = pct + '%';
+  fill.className = 'progress-fill' + (pct >= 100 ? ' complete' : '');
+
+  // Segment breakdown (today)
+  document.getElementById('segB2b').textContent = stats.today.bySegment.b2b_2nd || 0;
+  document.getElementById('segCyber').textContent = stats.today.bySegment.cyber_2nd || 0;
+  document.getElementById('segReferral').textContent = stats.today.bySegment.referral_2nd || 0;
+}
+
+// ============================================================
+// TODAY'S COMMENTS
+// ============================================================
+async function loadTodayComments() {
+  const data = await apiGet('/api/history?limit=100');
+  const today = todayStr();
+  todayHistory = (data.comments || []).filter(c => c.date.startsWith(today));
+  renderTodayComments();
+}
+
+function renderTodayComments() {
+  const div = document.getElementById('todayComments');
+  if (todayHistory.length === 0) {
+    div.innerHTML = '<div class="no-match">No comments logged today yet</div>';
+    return;
+  }
+
+  div.innerHTML = todayHistory.map(c => {
+    const segClass = c.segment || '';
+    const segLabel = {
+      b2b_2nd: 'B2B 2nd', cyber_2nd: 'Cyber 2nd', referral_2nd: 'Referral 2nd'
+    }[c.segment] || c.segment;
+
+    return `
+      <div class="comment-item">
+        <div>
+          <span class="name">${esc(c.prospectName)}</span>
+          <span style="color:#999;font-size:12px;"> — ${esc(c.company || '')}</span>
+          <span class="segment-badge ${esc(segClass)}" style="margin-left:6px;font-size:10px;">${segLabel}</span>
+        </div>
+        <span class="time">${formatTime(c.date)}</span>
+      </div>
+    `;
+  }).join('');
+}
+
+// ============================================================
+// HISTORY TAB
+// ============================================================
+async function loadHistory() {
+  const seg = historyFilter ? `&segment=${historyFilter}` : '';
+  const data = await apiGet('/api/history?limit=200' + seg);
+  renderHistory(data.comments || []);
+}
+
+function filterHistory(segment) {
+  historyFilter = segment;
+  document.querySelectorAll('.filter-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.filter === segment);
+  });
+  loadHistory();
+}
+
+function renderHistory(comments) {
+  const div = document.getElementById('historyList');
+  if (comments.length === 0) {
+    div.innerHTML = '<div class="no-match">No comments logged yet</div>';
+    return;
+  }
+
+  // Group by date
+  const groups = {};
+  comments.forEach(c => {
+    const dateKey = c.date.split('T')[0];
+    if (!groups[dateKey]) groups[dateKey] = [];
+    groups[dateKey].push(c);
+  });
+
+  let html = '';
+  for (const [dateKey, items] of Object.entries(groups)) {
+    const label = formatDateGroup(dateKey + 'T12:00:00');
+    html += `<div class="section-header">${esc(label)} (${items.length}) <span class="line"></span></div>`;
+    html += items.map(c => {
+      const segLabel = {
+        b2b_2nd: 'B2B 2nd', cyber_2nd: 'Cyber 2nd', referral_2nd: 'Referral 2nd'
+      }[c.segment] || c.segment;
+
+      return `
+        <div class="comment-item">
+          <div>
+            <span class="name">${esc(c.prospectName)}</span>
+            <span style="color:#999;font-size:12px;"> — ${esc(c.company || '')}</span>
+            <span class="segment-badge ${esc(c.segment)}" style="margin-left:6px;font-size:10px;">${segLabel}</span>
+            ${c.postUrl ? `<a href="${esc(c.postUrl)}" target="_blank" class="btn-link" style="margin-left:6px;">View Post</a>` : ''}
+          </div>
+          <span class="time">${formatTime(c.date)}</span>
+        </div>
+      `;
+    }).join('');
+  }
+
+  div.innerHTML = html;
+}
+
+// ============================================================
+// ALL PROSPECTS TAB
+// ============================================================
+async function loadProspectsData() {
+  const data = await apiGet('/api/prospects');
+  allProspects = data.prospects || [];
+  renderProspectsTab();
+}
+
+function renderProspectsTab() {
+  const searchQ = (document.getElementById('tableSearch').value || '').toLowerCase();
+  const sortBy = document.getElementById('sortSelect').value;
+
+  let filtered = allProspects;
+  if (searchQ) {
+    filtered = filtered.filter(p =>
+      (p.name || '').toLowerCase().includes(searchQ) ||
+      (p.company || '').toLowerCase().includes(searchQ)
+    );
+  }
+
+  // Sort
+  filtered = [...filtered].sort((a, b) => {
+    switch (sortBy) {
+      case 'name': return (a.name || '').localeCompare(b.name || '');
+      case 'comments_desc': return (b.commentCount || 0) - (a.commentCount || 0);
+      case 'comments_asc': return (a.commentCount || 0) - (b.commentCount || 0);
+      case 'recent': return (b.lastCommented || '').localeCompare(a.lastCommented || '');
+      case 'stale': {
+        const aLast = a.lastCommented || '1970-01-01';
+        const bLast = b.lastCommented || '1970-01-01';
+        return aLast.localeCompare(bLast);
+      }
+      default: return 0;
+    }
+  });
+
+  document.getElementById('prospectCount').textContent = `${filtered.length} of ${allProspects.length} prospects`;
+
+  const div = document.getElementById('prospectsList');
+  if (filtered.length === 0) {
+    div.innerHTML = '<div class="no-match">No prospects found</div>';
+    return;
+  }
+
+  div.innerHTML = filtered.map(p => {
+    const commentInfo = p.commentCount > 0
+      ? `${p.commentCount} comment${p.commentCount !== 1 ? 's' : ''} &middot; Last: ${formatDate(p.lastCommented)}`
+      : 'No comments yet';
+
+    const stale = p.lastCommented && daysSince(p.lastCommented) >= 21;
+    const neverCommented = !p.lastCommented;
+
+    const statusLabel = {
+      not_started: 'Not Started', connection_sent: 'Conn Sent', connection_accepted: 'Conn Accepted',
+      dm_sent: 'DM Sent', follow_up_1: 'Follow-Up 1', follow_up_2: 'Follow-Up 2',
+      replied: 'Replied', cold: 'Cold'
+    }[p.status] || p.status;
+
+    return `
+      <div class="prospect-card">
+        <div class="prospect-info">
+          <div class="prospect-name">${esc(p.name)}</div>
+          <div class="prospect-meta">
+            <span>${esc(p.company || 'No company')}</span>
+            <span class="segment-badge ${esc(p.segment)}">${esc(p.segmentLabel)}</span>
+            <span class="status-badge ${esc(p.status)}">${statusLabel}</span>
+            ${stale ? '<span class="inactive-flag">Stale (3+ weeks)</span>' : ''}
+            ${neverCommented ? '<span class="inactive-flag" style="background:#EDE9FE;color:#5B21B6;">Never commented</span>' : ''}
+          </div>
+          <div class="prospect-meta" style="margin-top:4px;">
+            <span class="comment-stat">${commentInfo}</span>
+          </div>
+        </div>
+        <div class="prospect-actions">
+          ${p.linkedinUrl ? `<a href="${esc(p.linkedinUrl)}" target="_blank" class="btn btn-secondary btn-sm">Profile</a>` : ''}
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+// ============================================================
+// TAB SWITCHING
+// ============================================================
+function switchTab(tab) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t.dataset.tab === tab));
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.toggle('active', p.id === 'panel-' + tab));
+
+  if (tab === 'search') {
+    searchInput.focus();
+  } else if (tab === 'history') {
+    loadHistory();
+  } else if (tab === 'prospects') {
+    loadProspectsData();
+  }
+}
+
+// ============================================================
+// INIT
+// ============================================================
+async function init() {
+  await loadStats();
+  await loadTodayComments();
+  searchInput.focus();
+}
+
+init();
+</script>
+
+</body>
+</html>
