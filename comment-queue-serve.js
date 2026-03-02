@@ -54,7 +54,7 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use(express.json({ limit: '10mb' }));
+app.use(express.json({ limit: '20mb' }));
 
 // ============================================================
 // DATA HELPERS
@@ -422,6 +422,17 @@ app.delete('/api/screenshots/:id', (req, res) => {
   meta.splice(idx, 1);
   saveScreenshotsMeta(meta);
   res.json({ ok: true });
+});
+
+// ============================================================
+// ERROR HANDLER (catches body-parser errors like payload too large)
+// ============================================================
+app.use((err, req, res, next) => {
+  if (err.type === 'entity.too.large') {
+    return res.status(413).json({ error: 'File too large. Max upload size is ~15MB.' });
+  }
+  console.error('Server error:', err.message);
+  res.status(500).json({ error: err.message || 'Internal server error' });
 });
 
 // ============================================================

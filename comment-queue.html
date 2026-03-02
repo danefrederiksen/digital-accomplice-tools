@@ -384,7 +384,9 @@ async function apiPost(url, body) {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(body)
   });
-  return res.json();
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.error || `Server error ${res.status}`);
+  return data;
 }
 
 // ============================================================
