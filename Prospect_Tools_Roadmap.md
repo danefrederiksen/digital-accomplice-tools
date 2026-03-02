@@ -32,9 +32,18 @@ All tools follow: **Prospecting Tool #N — [Name]**
 
 10. **Prospecting Tool #10** — Customers w/ Emails
 
+11. **Prospecting Tool #11** — Comment Queue (Unified) — **PLANNED**
+    - File: `comment-queue.html` / Server: `comment-queue-serve.js` (port 3861)
+    - Unified comment tracking across Tools 3, 4, 6 (all 2nd connection tools)
+    - Instant search bar: type a name from Sales Nav alerts → instantly see if they're a prospect and which segment
+    - Logs comments back to the correct source tool's JSON data
+    - Tracks: last checked, last commented, comment count, days since last post
+    - Flags inactive prospects (no posts in 3+ weeks) for deprioritization or cold connection
+    - Design doc: `Comment_Queue_Design_Doc.md`
+
 ## Pattern
 - All tools are single-file HTML apps with local Node.js servers
 - Data persists in JSON files under `data/` with auto-backups
 - DA brand styling: #F8901E orange, Poppins font, black header
-- Port range: 3851–3860
+- Port range: 3851–3861
 - Created: 2026-03-01
