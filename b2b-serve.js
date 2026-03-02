@@ -102,12 +102,9 @@ function logActivity(action, prospectName, prospectId) {
 // ============================================================
 function sanitize(str) {
   if (typeof str !== 'string') return str;
-  return str
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#x27;');
+  // Strip control characters and null bytes only.
+  // HTML encoding happens client-side via esc() at render time.
+  return str.replace(/[\x00-\x08\x0B\x0C\x0E-\x1F]/g, '');
 }
 
 function sanitizeObj(obj) {

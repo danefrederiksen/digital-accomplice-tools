@@ -571,6 +571,7 @@ function getWaiting() {
   return state.prospects.filter(p => {
     if (p.status === 'dm_sent' && p.followUp1Due && p.followUp1Due > t) return true;
     if (p.status === 'follow_up_1' && p.followUp2Due && p.followUp2Due > t) return true;
+    if (p.status === 'follow_up_2' && p.lastActionDate && daysBetween(p.lastActionDate, t) < 3) return true;
     return false;
   });
 }
@@ -679,6 +680,10 @@ function renderDashboard() {
       let dueLabel = '';
       if (p.status === 'dm_sent') dueLabel = 'Follow-up due ' + formatDate(p.followUp1Due);
       else if (p.status === 'follow_up_1') dueLabel = 'Final nudge due ' + formatDate(p.followUp2Due);
+      else if (p.status === 'follow_up_2') {
+        const daysLeft = 3 - daysBetween(p.lastActionDate, todayStr());
+        dueLabel = 'Final nudge sent — check back in ' + daysLeft + ' day' + (daysLeft !== 1 ? 's' : '');
+      }
       html += `<div class="card">
         <div class="card-top">
           <div><span class="card-name">${esc(p.name)}</span> <span class="card-company">@ ${esc(p.company)}</span></div>
