@@ -712,6 +712,11 @@ function getActivityUrl(linkedinUrl) {
   return `https://www.linkedin.com/in/${match[1]}/recent-activity/all/`;
 }
 
+function getLinkedInSearchUrl(name) {
+  if (!name) return null;
+  return `https://www.linkedin.com/search/results/people/?keywords=${encodeURIComponent(name)}`;
+}
+
 // Render warming progress dots (0-4)
 function renderWarmingProgress(commentCount, warmingStatus) {
   const count = Math.min(commentCount || 0, COMMENTS_TO_DM);
@@ -817,7 +822,9 @@ function renderSearchCard(p) {
         </div>
       </div>
       <div class="prospect-actions">
-        ${p.linkedinUrl && getActivityUrl(p.linkedinUrl) ? `<a href="${esc(getActivityUrl(p.linkedinUrl))}" target="_blank" class="btn btn-primary btn-sm" title="View recent posts — won't trigger profile view">Activity</a>` : ''}
+        ${getActivityUrl(p.linkedinUrl)
+          ? `<a href="${esc(getActivityUrl(p.linkedinUrl))}" target="_blank" class="btn btn-primary btn-sm" title="View recent posts — won't trigger profile view">Activity</a>`
+          : `<a href="${esc(getLinkedInSearchUrl(p.name))}" target="_blank" class="btn btn-secondary btn-sm" title="Search LinkedIn to find their profile">Find</a>`}
         ${isDmReady ? `<button class="btn btn-success" onclick="switchTab('dmqueue')">Go to DM Queue</button>` : ''}
         ${canComment ? `<button class="btn btn-primary" onclick="showLogForm('${esc(p.id)}', '${esc(p.name)}', '${esc(p.company)}', '${esc(p.segment)}')">Log Comment</button>` : ''}
       </div>
@@ -1013,7 +1020,9 @@ function renderDailyTargets(data) {
         <div class="tc-actions">
           ${isDone
             ? '<span class="tc-check">&#10003;</span>'
-            : `${activityUrl ? `<a href="${esc(activityUrl)}" target="_blank" class="btn btn-primary btn-sm" title="View recent posts — won't trigger profile view">Activity</a>` : ''}
+            : `${activityUrl
+                ? `<a href="${esc(activityUrl)}" target="_blank" class="btn btn-primary btn-sm" title="View recent posts — won't trigger profile view">Activity</a>`
+                : `<a href="${esc(getLinkedInSearchUrl(p.name))}" target="_blank" class="btn btn-secondary btn-sm" title="Search LinkedIn to find their profile">Find</a>`}
                <button class="btn btn-primary btn-sm" onclick="showTargetLogForm('${esc(p.id)}', '${esc(p.name).replace(/'/g, "\\'")}', '${esc(p.company || '').replace(/'/g, "\\'")}', '${esc(p.segment)}')">Log</button>`
           }
         </div>
@@ -1248,7 +1257,9 @@ function renderProspectsTab() {
           </div>
         </div>
         <div class="prospect-actions">
-          ${p.linkedinUrl && getActivityUrl(p.linkedinUrl) ? `<a href="${esc(getActivityUrl(p.linkedinUrl))}" target="_blank" class="btn btn-primary btn-sm" title="View recent posts — won't trigger profile view">Activity</a>` : ''}
+          ${getActivityUrl(p.linkedinUrl)
+            ? `<a href="${esc(getActivityUrl(p.linkedinUrl))}" target="_blank" class="btn btn-primary btn-sm" title="View recent posts — won't trigger profile view">Activity</a>`
+            : `<a href="${esc(getLinkedInSearchUrl(p.name))}" target="_blank" class="btn btn-secondary btn-sm" title="Search LinkedIn to find their profile">Find</a>`}
         </div>
       </div>
     `;
