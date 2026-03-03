@@ -595,7 +595,7 @@ function getActivityUrl(linkedinUrl) {
   if (!linkedinUrl) return null;
   const match = linkedinUrl.match(/linkedin\.com\/in\/([^/?#]+)/);
   if (!match) return null;
-  return `https://www.linkedin.com/in/${match[1]}/detail/recent-activity/`;
+  return `https://www.linkedin.com/in/${match[1]}/recent-activity/all/`;
 }
 
 // ============================================================
@@ -676,8 +676,7 @@ function renderSearchCard(p) {
         </div>
       </div>
       <div class="prospect-actions">
-        ${p.linkedinUrl && getActivityUrl(p.linkedinUrl) ? `<a href="${esc(getActivityUrl(p.linkedinUrl))}" target="_blank" class="btn btn-secondary btn-sm" title="View recent posts (no profile view)">Activity</a>` : ''}
-        ${p.linkedinUrl ? `<a href="${esc(p.linkedinUrl)}" target="_blank" class="btn btn-secondary btn-sm">Profile</a>` : ''}
+        ${p.linkedinUrl && getActivityUrl(p.linkedinUrl) ? `<a href="${esc(getActivityUrl(p.linkedinUrl))}" target="_blank" class="btn btn-primary btn-sm" title="View recent posts — won't trigger profile view">Activity</a>` : ''}
         <button class="btn btn-primary" onclick="showLogForm('${esc(p.id)}', '${esc(p.name)}', '${esc(p.company)}', '${esc(p.segment)}')">Log Comment</button>
       </div>
     </div>
@@ -860,7 +859,7 @@ function renderDailyTargets(data) {
         <div class="tc-actions">
           ${isDone
             ? '<span class="tc-check">&#10003;</span>'
-            : `${activityUrl ? `<a href="${esc(activityUrl)}" target="_blank" class="btn btn-secondary btn-sm" title="View recent posts">Activity</a>` : ''}
+            : `${activityUrl ? `<a href="${esc(activityUrl)}" target="_blank" class="btn btn-primary btn-sm" title="View recent posts — won't trigger profile view">Activity</a>` : ''}
                <button class="btn btn-primary btn-sm" onclick="showTargetLogForm('${esc(p.id)}', '${esc(p.name).replace(/'/g, "\\'")}', '${esc(p.company || '').replace(/'/g, "\\'")}', '${esc(p.segment)}')">Log</button>`
           }
         </div>
@@ -1072,8 +1071,7 @@ function renderProspectsTab() {
           </div>
         </div>
         <div class="prospect-actions">
-          ${p.linkedinUrl && getActivityUrl(p.linkedinUrl) ? `<a href="${esc(getActivityUrl(p.linkedinUrl))}" target="_blank" class="btn btn-secondary btn-sm" title="View recent posts (no profile view)">Activity</a>` : ''}
-          ${p.linkedinUrl ? `<a href="${esc(p.linkedinUrl)}" target="_blank" class="btn btn-secondary btn-sm">Profile</a>` : ''}
+          ${p.linkedinUrl && getActivityUrl(p.linkedinUrl) ? `<a href="${esc(getActivityUrl(p.linkedinUrl))}" target="_blank" class="btn btn-primary btn-sm" title="View recent posts — won't trigger profile view">Activity</a>` : ''}
         </div>
       </div>
     `;
