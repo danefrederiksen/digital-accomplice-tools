@@ -13,6 +13,30 @@ const BACKUP_DIR = path.join(DATA_DIR, 'backups');
 const SCREENSHOTS_DIR = path.join(DATA_DIR, 'screenshots');
 const SCREENSHOTS_META_FILE = path.join(DATA_DIR, 'screenshots.json');
 const DAILY_OVERRIDES_FILE = path.join(DATA_DIR, 'daily-overrides.json');
+const WARMING_DM_LOG_FILE = path.join(DATA_DIR, 'warming-dm-log.json');
+
+// Warming config
+const COMMENTS_TO_DM = 4; // Number of comments before prospect is "warmed up"
+
+// DM templates per segment — shown when prospect is ready to DM
+const DM_TEMPLATES = {
+  b2b_2nd: {
+    label: 'B2B 2nd Connection',
+    template: `Hey {name} — been enjoying your content lately. I run a video strategy agency that helps B2B companies turn expertise into content that drives pipeline. Would you be open to a quick convo about how video could work for {company}?`
+  },
+  cyber_2nd: {
+    label: 'Cyber 2nd Connection',
+    template: `Hey {name} — been following your posts on cybersecurity. I work with cyber companies on video content that builds authority and generates leads. Curious if {company} has explored video as part of your GTM. Open to a quick chat?`
+  },
+  referral_1st: {
+    label: 'Referral 1st Connection',
+    template: `Hey {name} — been enjoying your content. I run Digital Accomplice, a video strategy agency. Always looking for people in complementary spaces to refer business back and forth. Would you be open to exploring a referral partnership?`
+  },
+  referral_2nd: {
+    label: 'Referral 2nd Connection',
+    template: `Hey {name} — I've been engaging with your content and appreciate your perspective. I run Digital Accomplice, a video strategy agency. I think there could be synergy between what we do. Would you be open to connecting and exploring ways to refer business?`
+  }
+};
 
 // Source tool data files — Tool #11 reads directly from these
 const SOURCE_FILES = {
@@ -152,6 +176,28 @@ function getTodayOverride() {
   return overrides[todayStr] || null;
 }
 
+// Warming DM log — tracks DMs sent and replies received through the warming pipeline
+function loadWarmingDmLog() {
+  try {
+    if (!fs.existsSync(WARMING_DM_LOG_FILE)) return [];
+    return JSON.parse(fs.readFileSync(WARMING_DM_LOG_FILE, 'utf8')) || [];
+  } catch { return []; }
+}
+
+function saveWarmingDmLog(entries) {
+  fs.writeFileSync(WARMING_DM_LOG_FILE, JSON.stringify(entries, null, 2), 'utf8');
+}
+
+// Derive warming status from prospect fields
+function getWarmingStatus(prospect) {
+  if (prospect.warming_reply_date) return 'replied';
+  if (prospect.warming_dm_sent) return 'dm_sent';
+  const count = prospect.comment_count || 0;
+  if (count >= COMMENTS_TO_DM) return 'dm_ready';
+  if (count > 0) return 'commenting';
+  return 'not_started';
+}
+
 // ============================================================
 // ROUTES
 // ============================================================
@@ -188,6 +234,8 @@ app.get('/api/search', (req, res) => {
     })
     .map(p => {
       const stats = commentStats[p.id] || { count: 0, lastDate: null };
+      // Use stored count from prospect data (more reliable than log count)
+      const effectiveCount = p.comment_count || stats.count;
       return {
         id: p.id,
         name: p.name,
@@ -199,8 +247,12 @@ app.get('/api/search', (req, res) => {
         segmentLabel: p.segmentLabel,
         sourceTool: p.sourceTool,
         sourcePort: p.sourcePort,
-        commentCount: stats.count,
-        lastCommented: stats.lastDate
+        commentCount: effectiveCount,
+        lastCommented: stats.lastDate,
+        warmingStatus: getWarmingStatus({ ...p, comment_count: effectiveCount }),
+        commentsNeeded: Math.max(0, COMMENTS_TO_DM - effectiveCount),
+        warmingDmSent: p.warming_dm_sent || null,
+        warmingReplyDate: p.warming_reply_date || null
       };
     })
     // Sort: exact name match first, then starts-with, then contains
@@ -250,7 +302,10 @@ app.post('/api/comment', (req, res) => {
     comment_count: totalComments
   });
 
-  res.json({ ok: true, entry, totalComments });
+  // Check if prospect just became DM-ready
+  const dmReady = totalComments >= COMMENTS_TO_DM;
+
+  res.json({ ok: true, entry, totalComments, dmReady, commentsNeeded: Math.max(0, COMMENTS_TO_DM - totalComments) });
 });
 
 // STATS — today's and this week's comment counts
@@ -322,6 +377,7 @@ app.get('/api/prospects', (req, res) => {
 
   const enriched = all.map(p => {
     const stats = commentStats[p.id] || { count: 0, lastDate: null };
+    const effectiveCount = p.comment_count || stats.count;
     return {
       id: p.id,
       name: p.name,
@@ -332,8 +388,12 @@ app.get('/api/prospects', (req, res) => {
       segment: p.segment,
       segmentLabel: p.segmentLabel,
       sourceTool: p.sourceTool,
-      commentCount: stats.count,
-      lastCommented: stats.lastDate
+      commentCount: effectiveCount,
+      lastCommented: stats.lastDate,
+      warmingStatus: getWarmingStatus({ ...p, comment_count: effectiveCount }),
+      commentsNeeded: Math.max(0, COMMENTS_TO_DM - effectiveCount),
+      warmingDmSent: p.warming_dm_sent || null,
+      warmingReplyDate: p.warming_reply_date || null
     };
   });
 
@@ -426,12 +486,15 @@ app.get('/api/daily-targets', (req, res) => {
     });
   }
 
-  // Filter out excluded statuses, header rows, and already-commented-today
+  // Filter out excluded statuses, header rows, already-commented-today, and warmed-up prospects
   const candidates = all.filter(p => {
     if (!p.name || p.name === 'Name') return false;
     const status = (p.status || '').toLowerCase();
     if (EXCLUDE_STATUSES.includes(status)) return false;
     if (commentedTodayIds.has(p.id)) return false;
+    // Exclude prospects who are warmed up (4+ comments), DM'd, or replied
+    const warmStatus = getWarmingStatus(p);
+    if (['dm_ready', 'dm_sent', 'replied'].includes(warmStatus)) return false;
     return true;
   });
 
@@ -873,6 +936,233 @@ app.delete('/api/screenshots/:id', (req, res) => {
   meta.splice(idx, 1);
   saveScreenshotsMeta(meta);
   res.json({ ok: true });
+});
+
+// ============================================================
+// WARMING PIPELINE — DM Queue, DM Logging, Reply Tracking
+// ============================================================
+
+// GET DM TEMPLATES — returns templates per segment
+app.get('/api/dm-templates', (req, res) => {
+  res.json({ templates: DM_TEMPLATES, commentsRequired: COMMENTS_TO_DM });
+});
+
+// GET DM QUEUE — prospects warmed up (4+ comments) and ready to DM
+app.get('/api/dm-queue', (req, res) => {
+  const all = loadAllProspects();
+  const commentLog = loadCommentLog();
+
+  // Build comment stats
+  const commentStats = {};
+  commentLog.forEach(entry => {
+    if (!commentStats[entry.prospectId]) {
+      commentStats[entry.prospectId] = { count: 0, lastDate: null };
+    }
+    commentStats[entry.prospectId].count++;
+    if (!commentStats[entry.prospectId].lastDate || entry.date > commentStats[entry.prospectId].lastDate) {
+      commentStats[entry.prospectId].lastDate = entry.date;
+    }
+  });
+
+  const dmReady = all
+    .filter(p => {
+      if (!p.name || p.name === 'Name') return false;
+      const effectiveCount = p.comment_count || (commentStats[p.id] || {}).count || 0;
+      const warmStatus = getWarmingStatus({ ...p, comment_count: effectiveCount });
+      return warmStatus === 'dm_ready';
+    })
+    .map(p => {
+      const stats = commentStats[p.id] || { count: 0, lastDate: null };
+      const effectiveCount = p.comment_count || stats.count;
+      const template = DM_TEMPLATES[p.segment] || DM_TEMPLATES.b2b_2nd;
+      const personalizedMessage = template.template
+        .replace(/\{name\}/g, (p.name || '').split(' ')[0])
+        .replace(/\{company\}/g, p.company || 'your company');
+      return {
+        id: p.id,
+        name: p.name,
+        company: p.company,
+        title: p.title,
+        linkedinUrl: p.linkedinUrl,
+        status: p.status,
+        segment: p.segment,
+        segmentLabel: p.segmentLabel,
+        sourceTool: p.sourceTool,
+        sourcePort: p.sourcePort,
+        commentCount: effectiveCount,
+        lastCommented: stats.lastDate,
+        dmTemplate: personalizedMessage,
+        templateLabel: template.label
+      };
+    })
+    .sort((a, b) => (b.lastCommented || '').localeCompare(a.lastCommented || ''));
+
+  res.json({ prospects: dmReady, total: dmReady.length });
+});
+
+// POST LOG DM SENT — marks prospect as DM'd, removes from comment queue
+app.post('/api/warming-dm', (req, res) => {
+  const { prospectId, segment, message } = req.body;
+
+  if (!prospectId || !segment) {
+    return res.status(400).json({ error: 'prospectId and segment required' });
+  }
+
+  const now = new Date().toISOString();
+
+  // Update source prospect
+  const updated = updateSourceProspect(segment, prospectId, {
+    warming_dm_sent: now
+  });
+
+  if (!updated) {
+    return res.status(404).json({ error: 'Prospect not found in source data' });
+  }
+
+  // Log to warming DM log
+  const log = loadWarmingDmLog();
+  const entry = {
+    id: uuidv4(),
+    prospectId: sanitize(prospectId),
+    segment: sanitize(segment),
+    type: 'dm_sent',
+    message: sanitize(message || ''),
+    date: now
+  };
+  log.unshift(entry);
+  if (log.length > 1000) log.length = 1000;
+  saveWarmingDmLog(log);
+
+  res.json({ ok: true, entry });
+});
+
+// POST LOG REPLY — marks prospect as replied, tracks conversion
+app.post('/api/warming-reply', (req, res) => {
+  const { prospectId, segment, notes } = req.body;
+
+  if (!prospectId || !segment) {
+    return res.status(400).json({ error: 'prospectId and segment required' });
+  }
+
+  const now = new Date().toISOString();
+
+  // Update source prospect
+  const updated = updateSourceProspect(segment, prospectId, {
+    warming_reply_date: now
+  });
+
+  if (!updated) {
+    return res.status(404).json({ error: 'Prospect not found in source data' });
+  }
+
+  // Log to warming DM log
+  const log = loadWarmingDmLog();
+  const entry = {
+    id: uuidv4(),
+    prospectId: sanitize(prospectId),
+    segment: sanitize(segment),
+    type: 'reply_received',
+    message: sanitize(notes || ''),
+    date: now
+  };
+  log.unshift(entry);
+  saveWarmingDmLog(log);
+
+  res.json({ ok: true, entry });
+});
+
+// GET DM SENT — prospects who have been DM'd (waiting for reply)
+app.get('/api/dm-sent', (req, res) => {
+  const all = loadAllProspects();
+  const commentLog = loadCommentLog();
+  const dmLog = loadWarmingDmLog();
+
+  const commentStats = {};
+  commentLog.forEach(entry => {
+    if (!commentStats[entry.prospectId]) {
+      commentStats[entry.prospectId] = { count: 0, lastDate: null };
+    }
+    commentStats[entry.prospectId].count++;
+    if (!commentStats[entry.prospectId].lastDate || entry.date > commentStats[entry.prospectId].lastDate) {
+      commentStats[entry.prospectId].lastDate = entry.date;
+    }
+  });
+
+  // Get DM details from log
+  const dmDetails = {};
+  dmLog.forEach(entry => {
+    if (entry.type === 'dm_sent' && !dmDetails[entry.prospectId]) {
+      dmDetails[entry.prospectId] = entry;
+    }
+  });
+
+  const sent = all
+    .filter(p => {
+      if (!p.name || p.name === 'Name') return false;
+      const warmStatus = getWarmingStatus(p);
+      return warmStatus === 'dm_sent' || warmStatus === 'replied';
+    })
+    .map(p => {
+      const stats = commentStats[p.id] || { count: 0, lastDate: null };
+      const dmDetail = dmDetails[p.id] || {};
+      return {
+        id: p.id,
+        name: p.name,
+        company: p.company,
+        title: p.title,
+        linkedinUrl: p.linkedinUrl,
+        segment: p.segment,
+        segmentLabel: p.segmentLabel,
+        commentCount: p.comment_count || stats.count,
+        lastCommented: stats.lastDate,
+        warmingStatus: getWarmingStatus(p),
+        dmSentDate: p.warming_dm_sent,
+        replyDate: p.warming_reply_date,
+        dmMessage: dmDetail.message || ''
+      };
+    })
+    .sort((a, b) => (b.dmSentDate || '').localeCompare(a.dmSentDate || ''));
+
+  res.json({ prospects: sent, total: sent.length });
+});
+
+// GET WARMING STATS — conversion funnel
+app.get('/api/warming-stats', (req, res) => {
+  const all = loadAllProspects();
+  const commentLog = loadCommentLog();
+
+  const commentStats = {};
+  commentLog.forEach(entry => {
+    if (!commentStats[entry.prospectId]) {
+      commentStats[entry.prospectId] = { count: 0 };
+    }
+    commentStats[entry.prospectId].count++;
+  });
+
+  let commenting = 0, dmReady = 0, dmSent = 0, replied = 0, notStarted = 0;
+
+  all.forEach(p => {
+    if (!p.name || p.name === 'Name') return;
+    const effectiveCount = p.comment_count || (commentStats[p.id] || {}).count || 0;
+    const status = getWarmingStatus({ ...p, comment_count: effectiveCount });
+    switch (status) {
+      case 'commenting': commenting++; break;
+      case 'dm_ready': dmReady++; break;
+      case 'dm_sent': dmSent++; break;
+      case 'replied': replied++; break;
+      default: notStarted++;
+    }
+  });
+
+  const conversionRate = dmSent + replied > 0
+    ? Math.round((replied / (dmSent + replied)) * 100)
+    : 0;
+
+  res.json({
+    funnel: { notStarted, commenting, dmReady, dmSent, replied },
+    conversionRate,
+    commentsRequired: COMMENTS_TO_DM
+  });
 });
 
 // ============================================================
