@@ -824,7 +824,7 @@ function renderSearchCard(p) {
       <div class="prospect-actions">
         ${getActivityUrl(p.linkedinUrl)
           ? `<a href="${esc(getActivityUrl(p.linkedinUrl))}" target="_blank" class="btn btn-primary btn-sm" title="View recent posts — won't trigger profile view">Activity</a>`
-          : `<a href="${esc(getLinkedInSearchUrl(p.name))}" target="_blank" class="btn btn-secondary btn-sm" title="Search LinkedIn to find their profile">Find</a>`}
+          : `<a href="${esc(getLinkedInSearchUrl(p.name))}" target="_blank" class="btn btn-secondary btn-sm" title="Search LinkedIn to find their activity">Activity</a>`}
         ${isDmReady ? `<button class="btn btn-success" onclick="switchTab('dmqueue')">Go to DM Queue</button>` : ''}
         ${canComment ? `<button class="btn btn-primary" onclick="showLogForm('${esc(p.id)}', '${esc(p.name)}', '${esc(p.company)}', '${esc(p.segment)}')">Log Comment</button>` : ''}
       </div>
@@ -1022,7 +1022,7 @@ function renderDailyTargets(data) {
             ? '<span class="tc-check">&#10003;</span>'
             : `${activityUrl
                 ? `<a href="${esc(activityUrl)}" target="_blank" class="btn btn-primary btn-sm" title="View recent posts — won't trigger profile view">Activity</a>`
-                : `<a href="${esc(getLinkedInSearchUrl(p.name))}" target="_blank" class="btn btn-secondary btn-sm" title="Search LinkedIn to find their profile">Find</a>`}
+                : `<a href="${esc(getLinkedInSearchUrl(p.name))}" target="_blank" class="btn btn-secondary btn-sm" title="Search LinkedIn to find their activity">Activity</a>`}
                <button class="btn btn-primary btn-sm" onclick="showTargetLogForm('${esc(p.id)}', '${esc(p.name).replace(/'/g, "\\'")}', '${esc(p.company || '').replace(/'/g, "\\'")}', '${esc(p.segment)}')">Log</button>`
           }
         </div>
@@ -1259,7 +1259,7 @@ function renderProspectsTab() {
         <div class="prospect-actions">
           ${getActivityUrl(p.linkedinUrl)
             ? `<a href="${esc(getActivityUrl(p.linkedinUrl))}" target="_blank" class="btn btn-primary btn-sm" title="View recent posts — won't trigger profile view">Activity</a>`
-            : `<a href="${esc(getLinkedInSearchUrl(p.name))}" target="_blank" class="btn btn-secondary btn-sm" title="Search LinkedIn to find their profile">Find</a>`}
+            : `<a href="${esc(getLinkedInSearchUrl(p.name))}" target="_blank" class="btn btn-secondary btn-sm" title="Search LinkedIn to find their activity">Activity</a>`}
         </div>
       </div>
     `;
