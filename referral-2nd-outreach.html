@@ -835,7 +835,7 @@ function renderDashboard() {
         <div class="card-top">
           <div>
             <span class="card-name">${esc(p.name)}</span> <span class="card-company">@ ${esc(p.company)}</span>
-            ${p.linkedinUrl ? `<div style="margin-top:2px;"><a href="${esc(p.linkedinUrl)}" target="_blank" class="linkedin-link">&#x1F517; ${esc(p.linkedinUrl)}</a></div>` : ''}
+            <div style="margin-top:2px;"><a href="${p.linkedinUrl ? esc(p.linkedinUrl) : 'https://www.linkedin.com/search/results/people/?keywords=' + encodeURIComponent(p.name + ' ' + p.company)}" target="_blank" style="background:#0077B5;color:#fff;text-decoration:none;font-size:11px;padding:3px 8px;border-radius:4px;font-weight:600;display:inline-block;">Open LinkedIn &#x2197;</a></div>
           </div>
           <span class="status status-${p.status}">${STATUS_LABELS[p.status]}</span>
         </div>
@@ -917,11 +917,12 @@ function renderDashboardCard(p, mode) {
     `;
   }
 
+  const linkedinSearchUrl = 'https://www.linkedin.com/search/results/people/?keywords=' + encodeURIComponent(p.name + ' ' + p.company);
   const linkedinField = `<div class="linkedin-field" style="margin-top:6px;display:flex;align-items:center;gap:6px;">
     <input type="text" placeholder="Paste LinkedIn URL..." value="${esc(p.linkedinUrl || '')}"
       onblur="updateLinkedinUrl('${p.id}', this.value)"
       style="flex:1;padding:5px 8px;border:1px solid #ddd;border-radius:5px;font-size:12px;font-family:'Poppins',sans-serif;color:#333;" />
-    ${p.linkedinUrl ? `<a href="${esc(p.linkedinUrl)}" target="_blank" class="btn btn-sm" style="background:#0077B5;color:#fff;white-space:nowrap;text-decoration:none;font-size:12px;padding:5px 10px;border-radius:5px;font-weight:600;">Open LinkedIn &#x2197;</a>` : ''}
+    <a href="${p.linkedinUrl ? esc(p.linkedinUrl) : linkedinSearchUrl}" target="_blank" class="btn btn-sm" style="background:#0077B5;color:#fff;white-space:nowrap;text-decoration:none;font-size:12px;padding:5px 10px;border-radius:5px;font-weight:600;">Open LinkedIn &#x2197;</a>
   </div>`;
 
   return `<div class="card">
@@ -1052,7 +1053,7 @@ function renderProspects() {
             <input type="text" placeholder="Paste LinkedIn URL..." value="${esc(p.linkedinUrl || '')}"
               onblur="updateLinkedinUrl('${p.id}', this.value)"
               style="flex:1;max-width:350px;padding:4px 8px;border:1px solid #ddd;border-radius:5px;font-size:11px;font-family:'Poppins',sans-serif;color:#333;" />
-            ${p.linkedinUrl ? `<a href="${esc(p.linkedinUrl)}" target="_blank" style="color:#0077B5;font-size:12px;font-weight:600;text-decoration:none;white-space:nowrap;">Open &#x2197;</a>` : ''}
+            <a href="${p.linkedinUrl ? esc(p.linkedinUrl) : 'https://www.linkedin.com/search/results/people/?keywords=' + encodeURIComponent(p.name + ' ' + p.company)}" target="_blank" style="color:#0077B5;font-size:12px;font-weight:600;text-decoration:none;white-space:nowrap;">Open LinkedIn &#x2197;</a>
           </div>
           <div class="card-meta">
             ${p.connectionSentDate ? `<span>Request: ${formatDate(p.connectionSentDate)}</span>` : ''}
