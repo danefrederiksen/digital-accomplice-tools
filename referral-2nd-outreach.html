@@ -450,6 +450,21 @@ function updateNextStep(id, text) {
   }, 500);
 }
 
+function updateLinkedinUrl(id, url) {
+  clearTimeout(_debounce['linkedin_' + id]);
+  _debounce['linkedin_' + id] = setTimeout(async () => {
+    try {
+      await apiPut('/api/prospects/' + id, { linkedinUrl: url });
+      const p = state.prospects.find(x => x.id === id);
+      if (p) {
+        p.linkedinUrl = url;
+        // Re-render to show/hide the Open LinkedIn button
+        render();
+      }
+    } catch (err) { console.error('Failed to save LinkedIn URL:', err); }
+  }, 500);
+}
+
 async function removeProspect(id) {
   if (!confirm('Remove this prospect?')) return;
   try {
@@ -843,7 +858,6 @@ function renderDashboardCard(p, mode) {
       <button class="btn btn-copy btn-sm" id="copy-btn-${p.id}" onclick="copyMessage('${p.id}','connection_note')">Copy Connection Note</button>
       <button class="btn btn-secondary btn-sm" onclick="togglePreview('${p.id}','connection_note')">Preview</button>
       <button class="btn btn-primary btn-sm" onclick="markConnectionSent('${p.id}')">Mark Request Sent</button>
-      ${p.linkedinUrl ? `<a href="${esc(p.linkedinUrl)}" target="_blank" class="btn btn-secondary btn-sm">Open LinkedIn</a>` : ''}
     `;
     extra = `<div class="msg-preview" id="msg-preview-${p.id}"></div>`;
   } else if (mode === 'connection_check') {
@@ -854,14 +868,12 @@ function renderDashboardCard(p, mode) {
       <button class="btn btn-success btn-sm" onclick="markConnectionAccepted('${p.id}')">Mark Accepted</button>
       <button class="btn btn-warning btn-sm" onclick="snoozeConnectionCheck('${p.id}')">Snooze 7 Days</button>
       <button class="btn btn-danger btn-sm" onclick="markCold('${p.id}')">Give Up</button>
-      ${p.linkedinUrl ? `<a href="${esc(p.linkedinUrl)}" target="_blank" class="btn btn-secondary btn-sm">Open LinkedIn</a>` : ''}
     `;
   } else if (mode === 'dm') {
     buttons = `
       <button class="btn btn-copy btn-sm" id="copy-btn-${p.id}" onclick="copyMessage('${p.id}','dm')">Copy Message</button>
       <button class="btn btn-secondary btn-sm" onclick="togglePreview('${p.id}','dm')">Preview</button>
       <button class="btn btn-primary btn-sm" onclick="markDmSent('${p.id}')">Mark DM Sent</button>
-      ${p.linkedinUrl ? `<a href="${esc(p.linkedinUrl)}" target="_blank" class="btn btn-secondary btn-sm">Open LinkedIn</a>` : ''}
     `;
     extra = `<div class="msg-preview" id="msg-preview-${p.id}"></div>`;
   } else if (mode === 'followup') {
@@ -874,8 +886,7 @@ function renderDashboardCard(p, mode) {
         <button class="btn btn-secondary btn-sm" onclick="togglePreview('${p.id}','follow_up_1')">Preview</button>
         <button class="btn btn-primary btn-sm" onclick="markFollowUp1('${p.id}')">Mark Follow-Up Sent</button>
         <button class="btn btn-success btn-sm" onclick="markReplied('${p.id}')">Got Reply</button>
-        ${p.linkedinUrl ? `<a href="${esc(p.linkedinUrl)}" target="_blank" class="btn btn-secondary btn-sm">Open LinkedIn</a>` : ''}
-      `;
+        `;
     } else if (p.status === 'follow_up_1') {
       const daysOver = daysBetween(p.followUp2Due, t);
       const overdueLabel = daysOver > 0 ? `<span class="overdue">${daysOver} day${daysOver > 1 ? 's' : ''} overdue</span>` : '';
@@ -885,8 +896,7 @@ function renderDashboardCard(p, mode) {
         <button class="btn btn-secondary btn-sm" onclick="togglePreview('${p.id}','follow_up_2')">Preview</button>
         <button class="btn btn-primary btn-sm" onclick="markFollowUp2('${p.id}')">Mark Final Nudge Sent</button>
         <button class="btn btn-success btn-sm" onclick="markReplied('${p.id}')">Got Reply</button>
-        ${p.linkedinUrl ? `<a href="${esc(p.linkedinUrl)}" target="_blank" class="btn btn-secondary btn-sm">Open LinkedIn</a>` : ''}
-      `;
+        `;
     } else if (p.status === 'follow_up_2') {
       extra = `<div class="due-info">No reply after final nudge \u2014 time to close?</div>`;
       buttons = `
@@ -907,12 +917,19 @@ function renderDashboardCard(p, mode) {
     `;
   }
 
+  const linkedinField = `<div class="linkedin-field" style="margin-top:6px;display:flex;align-items:center;gap:6px;">
+    <input type="text" placeholder="Paste LinkedIn URL..." value="${esc(p.linkedinUrl || '')}"
+      onblur="updateLinkedinUrl('${p.id}', this.value)"
+      style="flex:1;padding:5px 8px;border:1px solid #ddd;border-radius:5px;font-size:12px;font-family:'Poppins',sans-serif;color:#333;" />
+    ${p.linkedinUrl ? `<a href="${esc(p.linkedinUrl)}" target="_blank" class="btn btn-sm" style="background:#0077B5;color:#fff;white-space:nowrap;text-decoration:none;font-size:12px;padding:5px 10px;border-radius:5px;font-weight:600;">Open LinkedIn &#x2197;</a>` : ''}
+  </div>`;
+
   return `<div class="card">
     <div class="card-top">
       <div>
         <span class="card-name">${esc(p.name)}</span> <span class="card-company">@ ${esc(p.company)}</span>
         <div class="card-title">${esc(p.title)}</div>
-        ${p.linkedinUrl ? `<div style="margin-top:2px;"><a href="${esc(p.linkedinUrl)}" target="_blank" class="linkedin-link">&#x1F517; ${esc(p.linkedinUrl)}</a></div>` : ''}
+        ${linkedinField}
       </div>
       <span class="status status-${p.status}">${STATUS_LABELS[p.status]}</span>
     </div>
@@ -1031,8 +1048,13 @@ function renderProspects() {
         <div>
           <span class="card-name">${esc(p.name)}</span> <span class="card-company">@ ${esc(p.company)}</span>
           <div class="card-title">${esc(p.title)}</div>
+          <div class="linkedin-field" style="margin-top:4px;display:flex;align-items:center;gap:6px;">
+            <input type="text" placeholder="Paste LinkedIn URL..." value="${esc(p.linkedinUrl || '')}"
+              onblur="updateLinkedinUrl('${p.id}', this.value)"
+              style="flex:1;max-width:350px;padding:4px 8px;border:1px solid #ddd;border-radius:5px;font-size:11px;font-family:'Poppins',sans-serif;color:#333;" />
+            ${p.linkedinUrl ? `<a href="${esc(p.linkedinUrl)}" target="_blank" style="color:#0077B5;font-size:12px;font-weight:600;text-decoration:none;white-space:nowrap;">Open &#x2197;</a>` : ''}
+          </div>
           <div class="card-meta">
-            ${p.linkedinUrl ? `<a href="${esc(p.linkedinUrl)}" target="_blank" class="linkedin-link">LinkedIn Profile</a>` : ''}
             ${p.connectionSentDate ? `<span>Request: ${formatDate(p.connectionSentDate)}</span>` : ''}
             ${p.connectionAcceptedDate ? `<span>Connected: ${formatDate(p.connectionAcceptedDate)}</span>` : ''}
             ${p.dmSentDate ? `<span>DM: ${formatDate(p.dmSentDate)}</span>` : ''}
