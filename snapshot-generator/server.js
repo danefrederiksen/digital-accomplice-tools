@@ -12,7 +12,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 const CHROME = '/Applications/Google\\ Chrome.app/Contents/MacOS/Google\\ Chrome';
 const OUTPUT_DIR = path.resolve(__dirname, '..');
 
-// Export snapshot as PDF (letter-size, one-page)
+// Export snapshot as PDF (letter-size, one-page) — POST with full HTML body
 app.post('/api/export-pdf', (req, res) => {
   const { html, companyName } = req.body;
   if (!html || !companyName) return res.status(400).json({ error: 'Missing html or companyName' });
@@ -32,6 +32,54 @@ app.post('/api/export-pdf', (req, res) => {
       files: { html: htmlPath, pdf: pdfPath },
       message: `PDF exported to ${pdfPath}`
     });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Export any public HTML file as PDF — GET with query params
+// Usage: /api/export-pdf?file=hinge-snapshot.html&name=HingeMarketing
+app.get('/api/export-pdf', (req, res) => {
+  const { file, name } = req.query;
+  if (!file || !name) return res.status(400).json({ error: 'Missing ?file= or ?name= query params' });
+
+  const safeName = name.replace(/[^a-zA-Z0-9]/g, '');
+  const sourcePath = path.join(__dirname, 'public', file);
+  const pdfPath = path.join(OUTPUT_DIR, `${safeName}_AI_Snapshot.pdf`);
+
+  if (!fs.existsSync(sourcePath)) return res.status(404).json({ error: `File not found: ${file}` });
+
+  try {
+    const cmd = `${CHROME} --headless --disable-gpu --no-pdf-header-footer --print-to-pdf="${pdfPath}" --run-all-compositor-stages-before-draw "file://${sourcePath}"`;
+    execSync(cmd, { timeout: 30000 });
+
+    res.json({
+      success: true,
+      file: pdfPath,
+      message: `PDF exported to ${pdfPath}`
+    });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Download PDF directly in browser
+// Usage: /api/download-pdf?file=hinge-snapshot.html&name=HingeMarketing
+app.get('/api/download-pdf', (req, res) => {
+  const { file, name } = req.query;
+  if (!file || !name) return res.status(400).json({ error: 'Missing ?file= or ?name= query params' });
+
+  const safeName = name.replace(/[^a-zA-Z0-9]/g, '');
+  const sourcePath = path.join(__dirname, 'public', file);
+  const pdfPath = path.join(OUTPUT_DIR, `${safeName}_AI_Snapshot.pdf`);
+
+  if (!fs.existsSync(sourcePath)) return res.status(404).json({ error: `File not found: ${file}` });
+
+  try {
+    const cmd = `${CHROME} --headless --disable-gpu --no-pdf-header-footer --print-to-pdf="${pdfPath}" --run-all-compositor-stages-before-draw "file://${sourcePath}"`;
+    execSync(cmd, { timeout: 30000 });
+
+    res.download(pdfPath, `${safeName}_AI_Snapshot.pdf`);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

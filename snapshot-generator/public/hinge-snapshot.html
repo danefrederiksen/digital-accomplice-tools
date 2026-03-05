@@ -289,6 +289,47 @@
     line-height: 1.5;
     flex-shrink: 0;
   }
+
+  /* ========== EXPORT TOOLBAR (hidden in print/PDF) ========== */
+  @media print { .export-bar { display: none !important; } }
+  .export-bar {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    background: #1a1a1a;
+    padding: 10px 24px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    z-index: 9999;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+  }
+  .export-bar .btn {
+    background: #F38B1C;
+    color: #fff;
+    border: none;
+    padding: 8px 20px;
+    font-size: 13px;
+    font-weight: 700;
+    font-family: 'Inter', Arial, sans-serif;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  .export-bar .btn:hover { background: #e07d10; }
+  .export-bar .btn:disabled { opacity: 0.5; cursor: wait; }
+  .export-bar .status {
+    font-size: 12px;
+    color: #888;
+    font-family: 'Inter', Arial, sans-serif;
+  }
+  .export-bar .title {
+    font-size: 12px;
+    color: #F38B1C;
+    font-weight: 700;
+    font-family: 'Inter', Arial, sans-serif;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-right: auto;
+  }
 </style>
 </head>
 <body>
@@ -450,6 +491,40 @@
   </div>
 
 </div>
+
+<!-- ===== EXPORT TOOLBAR ===== -->
+<div class="export-bar">
+  <span class="title">Snapshot Preview</span>
+  <button class="btn" id="exportPdf" onclick="exportPDF()">Export PDF</button>
+  <span class="status" id="exportStatus"></span>
+</div>
+
+<script>
+async function exportPDF() {
+  const btn = document.getElementById('exportPdf');
+  const status = document.getElementById('exportStatus');
+  btn.disabled = true;
+  status.textContent = 'Generating PDF...';
+  try {
+    const resp = await fetch('/api/download-pdf?file=hinge-snapshot.html&name=HingeMarketing');
+    if (!resp.ok) {
+      const err = await resp.json();
+      throw new Error(err.error || 'Export failed');
+    }
+    const blob = await resp.blob();
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'HingeMarketing_AI_Snapshot.pdf';
+    a.click();
+    URL.revokeObjectURL(url);
+    status.textContent = 'PDF downloaded!';
+  } catch (err) {
+    status.textContent = 'Error: ' + err.message;
+  }
+  btn.disabled = false;
+}
+</script>
 
 </body>
 </html>
