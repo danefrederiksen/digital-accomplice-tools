@@ -29,20 +29,18 @@
 - **Before going live:** Dane must run 10 prompts on ChatGPT + Perplexity to get real cross-model data
 - Template methodology line says "ChatGPT and Perplexity" — data must match
 
+## What's Done
+
+### Phase A: Real Queries — COMPLETE (March 5)
+- 20 queries across ChatGPT + Perplexity. Scores: Hinge 7.0, Rattleback 1.8, Jumpfactor 0.0, Edge 0.3.
+- See PHASE-A-PROGRESS-REPORT.md for full data.
+
+### Phase B: YouTube Video Verification — COMPLETE (March 5)
+- Hinge: 332 videos, 1.53K subs, active. Rattleback: 19 videos, dormant. Jumpfactor: 18 videos, dormant. Edge: 28 videos, no traction.
+- Key finding: Hinge has 332 YouTube videos but ZERO appear in AI answers. Template updated with new narrative.
+- Jumpfactor corrected from 1 to 0 (pilot didn't replicate).
+
 ## What's Next (Pick Up Here)
-
-### Phase A: Run Real Queries (Dane does this manually)
-1. Open ChatGPT (new session each time), run all 10 prompts from the pilot
-2. Open Perplexity (new session each time), run all 10 prompts
-3. Screenshot every response
-4. Score each: 0=Absent, 1=Cited, 2=Mentioned, 3=Recommended
-5. Calculate normalized scores per model, then average → final score
-
-### Phase B: Update Template with Real Data
-1. Replace the 8.7 with actual cross-model score
-2. Update competitor scores
-3. Update proof line with actual result
-4. Verify video presence data is still current (YouTube search for each company)
 
 ### Phase C: Add PDF Export
 - Current server.js only exports to JPG (for infographic DMs)

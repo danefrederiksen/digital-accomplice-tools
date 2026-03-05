@@ -1,6 +1,6 @@
-# AI Visibility Snapshot — Phase A Progress Report
+# AI Visibility Snapshot — Phase A+B Progress Report
 **Date:** March 5, 2026
-**Status:** Phase A complete. Template updated with real cross-model data.
+**Status:** Phase A complete (real AI query data). Phase B complete (YouTube video verification).
 
 ---
 
@@ -98,10 +98,33 @@
 
 ---
 
-## What's Next
+## Phase B: YouTube Video Verification — COMPLETE (March 5, 2026)
 
-### Still in Phase B (minor)
-- [ ] Verify video presence data via YouTube search for each company (pilot had Hinge=0, Rattleback=0, Jumpfactor=1, Edge=0)
+### YouTube Channel Data (verified manually)
+| Company | Channel | Subscribers | Videos | Last Upload | Status |
+|---------|---------|-------------|--------|-------------|--------|
+| **Hinge Marketing** | @HingeMarketing | 1,530 | 332 | 8 days ago | Very active — podcast "Spiraling Up", Shorts, regular uploads |
+| **Rattleback** | @rattleback9574 | 15 | 19 | ~1 year ago | Dormant |
+| **Jumpfactor** | @jumpfactormarketing | 158 | 18 | ~2 years ago | Dormant — MSP case studies |
+| **Edge Marketing** | @EdgeMarketingInc | 2 | 28 | 9 days ago | Active but zero traction (0-8 views/video) |
+
+### Key Finding
+**Hinge has 332 YouTube videos but ZERO appeared in any AI answer across all 20 queries.** This is more compelling than "zero video" — they're investing in video, it's just not reaching AI search. Same for competitors: Rattleback (19 videos), Jumpfactor (18), Edge (28) — none surfaced in AI answers.
+
+### Data Corrections Applied
+- **Jumpfactor video score:** Pilot had 1, real data = **0** (no video from any company in any AI answer)
+- **All 4 companies:** 0/10 on Video in AI Answers (confirmed across ChatGPT + Perplexity)
+
+### Template Updates (hinge-snapshot.html)
+- **Headline:** "332 videos. Zero reach AI. That's the gap." (was "Zero video. That lead won't last." — could backfire since Hinge actually has 332 videos)
+- **Stat box:** "0/332 YouTube videos found in AI answers" (was just "0")
+- **Callout:** "That's not a content problem — it's an optimization problem." (was "Nobody in your space has video showing up")
+- **Chart title:** "Video in AI Answers (/10)" (was "Video Presence" — too ambiguous)
+- **Jumpfactor:** Corrected from 1 to 0
+
+---
+
+## What's Next
 
 ### Phase C: PDF Export
 - [ ] Add `--print-to-pdf` Chrome headless flag to `snapshot-generator/server.js`
