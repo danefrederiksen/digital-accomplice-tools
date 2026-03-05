@@ -117,6 +117,48 @@ app.post('/api/export-dm', (req, res) => {
   }
 });
 
+// Download snapshot as PDF or JPG — POST with HTML body, streams file to browser
+app.post('/api/download-snapshot', (req, res) => {
+  const { html, companyName, format } = req.body;
+  if (!html || !companyName) return res.status(400).json({ error: 'Missing html or companyName' });
+
+  const safeName = companyName.replace(/[^a-zA-Z0-9]/g, '');
+  const tmpHtml = path.join(OUTPUT_DIR, `_tmp_${safeName}_snapshot.html`);
+
+  try {
+    fs.writeFileSync(tmpHtml, html, 'utf8');
+
+    if (format === 'jpg') {
+      const pngPath = path.join(OUTPUT_DIR, `${safeName}_AI_Snapshot.png`);
+      const jpgPath = path.join(OUTPUT_DIR, `${safeName}_AI_Snapshot.jpg`);
+
+      // 816x1056 = 8.5x11in at 96dpi, 2x for quality
+      const cmd = `${CHROME} --headless --disable-gpu --screenshot="${pngPath}" --window-size=816,1056 --force-device-scale-factor=2 "file://${tmpHtml}"`;
+      execSync(cmd, { timeout: 30000 });
+
+      const sipsCmd = `sips -s format jpeg -s formatOptions 95 "${pngPath}" --out "${jpgPath}"`;
+      execSync(sipsCmd, { timeout: 10000 });
+
+      if (fs.existsSync(pngPath)) fs.unlinkSync(pngPath);
+      if (fs.existsSync(tmpHtml)) fs.unlinkSync(tmpHtml);
+
+      res.download(jpgPath, `${safeName}_AI_Snapshot.jpg`);
+    } else {
+      const pdfPath = path.join(OUTPUT_DIR, `${safeName}_AI_Snapshot.pdf`);
+
+      const cmd = `${CHROME} --headless --disable-gpu --no-pdf-header-footer --print-to-pdf="${pdfPath}" --run-all-compositor-stages-before-draw "file://${tmpHtml}"`;
+      execSync(cmd, { timeout: 30000 });
+
+      if (fs.existsSync(tmpHtml)) fs.unlinkSync(tmpHtml);
+
+      res.download(pdfPath, `${safeName}_AI_Snapshot.pdf`);
+    }
+  } catch (err) {
+    if (fs.existsSync(tmpHtml)) try { fs.unlinkSync(tmpHtml); } catch(e) {}
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // Legacy export endpoint (keep for backward compat)
 app.post('/api/export', (req, res) => {
   const { html, companyName, format, contentHeight } = req.body;
@@ -158,6 +200,7 @@ app.post('/api/export', (req, res) => {
 
 app.listen(PORT, () => {
   console.log(`Snapshot Generator running at http://localhost:${PORT}`);
-  console.log(`  Generator UI:  http://localhost:${PORT}/`);
-  console.log(`  Hinge example: http://localhost:${PORT}/hinge-snapshot.html`);
+  console.log(`  Snapshot Generator: http://localhost:${PORT}/snapshot-generator.html`);
+  console.log(`  DM Generator:       http://localhost:${PORT}/`);
+  console.log(`  Hinge example:      http://localhost:${PORT}/hinge-snapshot.html`);
 });
