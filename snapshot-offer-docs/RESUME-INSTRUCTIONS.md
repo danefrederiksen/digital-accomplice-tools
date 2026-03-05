@@ -1,81 +1,104 @@
-# Snapshot Build — Resume Instructions
-**Last session:** March 4, 2026
-**Status:** One-page template built, previewed, claims verified. Ready for real data.
+# AI Visibility Snapshot Generator — Project Status & Resume Instructions
+**Last updated:** March 5, 2026
+**Overall status:** Hinge pilot snapshot complete with real data. Ready for PDF export and templatization.
 
 ---
 
-## What Was Built
-- **One-page AI Visibility Snapshot** (HTML → PDF) for Hinge Marketing
-- File: `/snapshot-generator/public/hinge-snapshot.html`
-- Server: `node /snapshot-generator/server.js` → `http://localhost:3850/hinge-snapshot.html`
-- Also in launch.json as "snapshot-generator" on port 3850
-- DA-branded, 5th grade reading level, all claims verified against pilot data
+## HOW TO RESUME
 
-## What the Template Contains
-1. Dark header bar with "AI VISIBILITY SNAPSHOT"
-2. Bold headline: "[Company] leads AI search. Zero video. That lead won't last."
-3. 3 stat boxes: AI score, video count, YouTube-in-AI stat
-4. Proof quote showing an actual query tested + result
-5. Side-by-side bar charts: AI Search Visibility vs Video Presence
-6. Dark callout box with key insight + CTA punch line
-7. "In 15 minutes you get" — 3 value props for the call
+Paste this entire file into a new Claude Code session and say: **"Pick up where we left off."**
+
+Claude should:
+1. Read the key files listed below to get full context
+2. Start on the next incomplete phase (currently Phase C)
+3. Start the server with `node /snapshot-generator/server.js` or use launch.json config "snapshot-generator" on port 3850
+
+---
+
+## WHAT THIS PROJECT IS
+
+A **one-page AI Visibility Snapshot** — a cold outreach deliverable for Digital Accomplice (DA). It shows a prospect how visible they are in AI search (ChatGPT, Perplexity) vs competitors, and highlights the gap: their video content doesn't reach AI answers.
+
+**The pitch:** DA is a video strategy agency. The snapshot proves the prospect leads in AI text results but their YouTube videos are invisible to AI. DA can fix that. The snapshot is the door-opener for a 15-minute call.
+
+**Current pilot target:** Hinge Marketing (professional services marketing firm, Reston VA).
+
+---
+
+## WHAT'S BUILT (Phases A + B complete)
+
+### The Snapshot Template
+- **File:** `/Users/danefrederiksen/Desktop/Claude code/snapshot-generator/public/hinge-snapshot.html`
+- **Preview:** `http://localhost:3850/hinge-snapshot.html`
+- **Server:** `node /Users/danefrederiksen/Desktop/Claude code/snapshot-generator/server.js` (port 3850)
+- **Also in:** `.claude/launch.json` as "snapshot-generator"
+
+### What the template shows (9 sections, letter-size page):
+1. Dark header bar: "AI VISIBILITY SNAPSHOT" + "Prepared for Hinge Marketing - March 2026"
+2. Headline: **"Hinge Marketing leads AI search. 332 videos. Zero reach AI. That's the gap."**
+3. 3 stat boxes: AI score (7.0/10), Video in AI (0/332), YouTube-in-AI trend (16%)
+4. Proof line: "Hinge showed up in 16 out of 20 answers — recommended by name in 13. You have 332 YouTube videos. Not one appeared."
+5. Side-by-side bar charts: AI Search Visibility vs Video in AI Answers
+6. Dark callout: "That's not a content problem — it's an optimization problem. Fix it first and the gap becomes a moat."
+7. "In 15 minutes you get" — 3 value props
 8. Methodology fine print (transparent, verifiable)
-9. Footer with CTA + DA branding + source footnotes
+9. Footer: CTA + DA branding + source footnotes
 
-## Current Data = PILOT ONLY
-- Scores are from Claude-only single run (from `hinge-marketing-pilot-snapshot from Claude.md`)
-- Hinge: 8.7/10 AI, 0/10 Video
-- Rattleback: 3.8, Jumpfactor: 2.5, Edge: 1.5 — all 0 video except Jumpfactor (1)
-- **Before going live:** Dane must run 10 prompts on ChatGPT + Perplexity to get real cross-model data
-- Template methodology line says "ChatGPT and Perplexity" — data must match
+### Real Data (Phase A — March 5, 2026)
+20 queries across ChatGPT + Perplexity, scored 0-3 per company per answer.
 
-## What's Done
+| Company | ChatGPT (of 30) | Perplexity (of 30) | Combined (of 60) | **Score /10** |
+|---------|-----------------|-------------------|-------------------|---------------|
+| **Hinge Marketing** | 22 | 20 | 42 | **7.0** |
+| **Rattleback** | 8 | 3 | 11 | **1.8** |
+| **Jumpfactor** | 0 | 0 | 0 | **0.0** |
+| **Edge Marketing** | 0 | 2 | 2 | **0.3** |
 
-### Phase A: Real Queries — COMPLETE (March 5)
-- 20 queries across ChatGPT + Perplexity. Scores: Hinge 7.0, Rattleback 1.8, Jumpfactor 0.0, Edge 0.3.
-- See PHASE-A-PROGRESS-REPORT.md for full data.
+**Video in AI answers:** 0 for ALL four companies across all 20 queries. No video from anyone.
 
-### Phase B: YouTube Video Verification — COMPLETE (March 5)
-- Hinge: 332 videos, 1.53K subs, active. Rattleback: 19 videos, dormant. Jumpfactor: 18 videos, dormant. Edge: 28 videos, no traction.
-- Key finding: Hinge has 332 YouTube videos but ZERO appear in AI answers. Template updated with new narrative.
-- Jumpfactor corrected from 1 to 0 (pilot didn't replicate).
+### YouTube Channel Data (Phase B — March 5, 2026)
+| Company | Channel | Subscribers | Videos | Last Upload | Status |
+|---------|---------|-------------|--------|-------------|--------|
+| **Hinge Marketing** | @HingeMarketing | 1,530 | 332 | 8 days ago | Very active — podcast "Spiraling Up", Shorts |
+| **Rattleback** | @rattleback9574 | 15 | 19 | ~1 year ago | Dormant |
+| **Jumpfactor** | @jumpfactormarketing | 158 | 18 | ~2 years ago | Dormant |
+| **Edge Marketing** | @EdgeMarketingInc | 2 | 28 | 9 days ago | Active but 0-8 views/video |
 
-## What's Next (Pick Up Here)
+**Key insight:** Hinge has 332 YouTube videos but ZERO reach AI search. That's the pitch — not "you don't have video" but "your video isn't optimized for AI discovery."
 
-### Phase C: Add PDF Export
-- Current server.js only exports to JPG (for infographic DMs)
-- Need to add `--print-to-pdf` Chrome headless flag for letter-size PDF export
-- Also consider building a generator UI where you input company name + scores and it populates the template
+---
 
-### Phase D: Templatize for Any Company
-- Replace hard-coded Hinge data with template variables
-- Build a simple form UI at `http://localhost:3850/` where you input:
-  - Company name, industry, 3 competitors
-  - AI scores (target + 3 competitors)
-  - Video scores
-  - Sample query + result text
-- Form generates the populated HTML, exports to PDF/JPG
+## WHAT'S NEXT
 
-### Phase E: Build the Infographic DM Version
-- Companion to the one-pager — a social-sized image for LinkedIn DMs
-- Based on the Denise Boyer infographic format (bold headline, 3 stats, positioning statement)
-- Uses same data, different layout (portrait social format, not letter-size)
+### Phase C: PDF Export (next up)
+- Current `server.js` only exports JPG (for DM infographics via `/api/export` endpoint)
+- **Need to add:** `/api/export-pdf` endpoint using Chrome headless `--print-to-pdf` flag
+- Letter-size (8.5x11) PDF output for email attachment
+- The endpoint already exists in server.js but is untested end-to-end
+- Test: hit `http://localhost:3850/api/export-pdf` with the hinge-snapshot.html URL and verify clean PDF output
 
-## Key Files
-| File | Location | What |
-|------|----------|------|
-| One-page template | `/snapshot-generator/public/hinge-snapshot.html` | The deliverable |
-| Export server | `/snapshot-generator/server.js` | Chrome headless → JPG (needs PDF added) |
-| Agent instructions | `/Snapshot offer copy/SKILL.md` | Full methodology |
-| Quick checklist | `/Snapshot offer copy/QUICK-REFERENCE.md` | Workflow checklist |
-| Research methodology | `/Snapshot offer copy/ai-snapshot-methodology-research-plan.md` | Scientific approach |
-| Hinge pilot data | `/Snapshot offer copy/hinge-marketing-pilot-snapshot from Claude.md` | Claude-only pilot results |
-| Denise Boyer report | `/Snapshot offer copy/prototypes/DeniseBoyer_Video_Opportunity_Assessment.pdf` | Gold standard full report |
-| Denise Boyer DM | `/Snapshot offer copy/prototypes/DeniseBoyer_Infographic_DM.jpg` | Gold standard infographic |
-| Gemini framework | `/Snapshot offer copy/AI_Visibility_Audit_Hinge from Gemini.pdf` | Gemini's audit structure |
-| Tracking template | `/Snapshot offer copy/ai-snapshot-tracking-template.xlsx` | Data entry spreadsheet |
+### Phase D: Templatize for Any Company (the big one)
+- Currently all data is hard-coded in `hinge-snapshot.html`
+- **Goal:** Build a form UI at `http://localhost:3850/` where you input:
+  - Company name, industry, 3 competitor names
+  - AI scores (target company + 3 competitors, each 0-10)
+  - Video scores (target + 3 competitors, each 0-10)
+  - YouTube video count for target company
+  - Sample query text + result summary for the proof line
+  - Headline text (auto-generated or custom)
+- Form generates a populated HTML page from the template
+- "Export PDF" and "Export JPG" buttons that hit the server endpoints
+- Pattern: follow the existing DM infographic generator at `/snapshot-generator/public/index.html` — it already does form → live preview → export
 
-## Prompts Used in Pilot (Reuse These)
+### Phase E: DM Infographic Version (already built)
+- File: `/snapshot-generator/public/index.html` — form-based generator with live preview
+- Social-sized JPG for LinkedIn DMs
+- Uses same data, different layout (portrait format)
+- **Status: DONE** — this was built before the one-pager
+
+---
+
+## 10 PROMPTS USED (reuse for any new company)
 1. "Best marketing agencies for professional services firms"
 2. "What marketing agency do mid-size accounting firms use?"
 3. "Recommend a branding agency for an AEC firm"
@@ -87,7 +110,47 @@
 9. "What does Hinge Marketing do?"
 10. "Is Hinge Marketing any good?"
 
-## GitHub
-- Repo: `github.com/danefrederiksen/digital-accomplice-tools` (private)
-- Committed: hinge-snapshot.html + 4 methodology docs in `snapshot-offer-docs/`
-- All files also in working copy at `/Desktop/Claude code/`
+(For a new company: replace "Hinge Marketing" with target name, adjust industry/competitor references, keep the same query categories — discovery, comparison, reputation, alternatives, how-to.)
+
+---
+
+## KEY FILES
+
+| File | Path (under `/Desktop/Claude code/`) | What |
+|------|--------------------------------------|------|
+| One-page template | `snapshot-generator/public/hinge-snapshot.html` | The Hinge deliverable (HTML, letter-size) |
+| DM infographic generator | `snapshot-generator/public/index.html` | Form → live preview → JPG export |
+| Export server | `snapshot-generator/server.js` | Node + Chrome headless → JPG/PDF |
+| This file | `Snapshot offer copy/RESUME-INSTRUCTIONS.md` | Project status + resume instructions |
+| Full progress report | `Snapshot offer copy/PHASE-A-PROGRESS-REPORT.md` | All Phase A+B data, scores, observations |
+| Agent methodology | `Snapshot offer copy/SKILL.md` | Full methodology for running snapshots |
+| Quick checklist | `Snapshot offer copy/QUICK-REFERENCE.md` | Step-by-step workflow checklist |
+| Research plan | `Snapshot offer copy/ai-snapshot-methodology-research-plan.md` | Scientific approach doc |
+| Pilot data (Claude-only) | `Snapshot offer copy/hinge-marketing-pilot-snapshot from Claude.md` | Original pilot results (superseded by real data) |
+| Tracking template | `Snapshot offer copy/ai-snapshot-tracking-template.xlsx` | Data entry spreadsheet |
+| Denise Boyer report | `Snapshot offer copy/prototypes/DeniseBoyer_Video_Opportunity_Assessment.pdf` | Gold standard full report example |
+| Denise Boyer DM | `Snapshot offer copy/prototypes/DeniseBoyer_Infographic_DM.jpg` | Gold standard infographic example |
+
+---
+
+## DA BRAND GUIDELINES (for any new templates)
+- **Colors:** DA Orange #F38B1C, Black #000000, Blue-Gray #5A6B7A, Gray #CBCBCB, White #FFFFFF, Light Gray #F5F5F5
+- **Fonts:** Inter / Arial / Helvetica. Bold headlines, Regular body, Extra Bold stat callouts.
+- **Voice:** Direct, data-first, no-BS, short sentences. 5th grade reading level.
+- **Wrong colors (never use):** #F5A623, #AAAAAA, #F0F0F0
+
+---
+
+## GITHUB
+- **Repo:** `github.com/danefrederiksen/digital-accomplice-tools` (PRIVATE)
+- **Local repo:** `/Users/danefrederiksen/Desktop/digital-accomplice-tools/`
+- **Working copy:** `/Users/danefrederiksen/Desktop/Claude code/` (files here, then copy to repo for commits)
+- **What's committed:** App code, snapshot template, methodology docs
+- **What's NOT committed:** Prospect data, backups, images, PDFs, .xlsx files
+
+---
+
+## VERIFIED STATS & SOURCES
+- **16% YouTube-in-AI stat:** Adweek, Jan 2026 (Bluefish, Emberos, Goodie AI). YouTube is #1 social platform cited in AI answers.
+- **AI search conversion:** 1.3–5x higher than traditional search (Semrush, Visibility Labs, 2025-2026).
+- **Note:** The 16% stat is specifically about Perplexity citing YouTube, not "all AI search." This nuance is acknowledged in memory but the template rounds to "AI answers" for simplicity. Acceptable for a cold outreach one-pager.
