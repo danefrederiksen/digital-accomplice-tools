@@ -1,6 +1,6 @@
 # AI Visibility Snapshot Generator — Project Status & Resume Instructions
 **Last updated:** March 5, 2026
-**Overall status:** Phases A, B, C complete. PDF export working. Ready for Phase D (templatize for any company).
+**Overall status:** ALL PHASES COMPLETE (A through E). Snapshot generator fully functional.
 
 ---
 
@@ -83,18 +83,16 @@ A **one-page AI Visibility Snapshot** — a cold outreach deliverable for Digita
 
 ## WHAT'S NEXT
 
-### Phase D: Templatize for Any Company (the big one — NEXT UP)
-- Currently all data is hard-coded in `hinge-snapshot.html`
-- **Goal:** Build a form UI at `http://localhost:3850/` where you input:
-  - Company name, industry, 3 competitor names
-  - AI scores (target company + 3 competitors, each 0-10)
-  - Video scores (target + 3 competitors, each 0-10)
-  - YouTube video count for target company
-  - Sample query text + result summary for the proof line
-  - Headline text (auto-generated or custom)
-- Form generates a populated HTML page from the template
-- "Export PDF" and "Export JPG" buttons that hit the server endpoints
-- Pattern: follow the existing DM infographic generator at `/snapshot-generator/public/index.html` — it already does form → live preview → export
+### Phase D: Templatize for Any Company — COMPLETE (March 5, 2026)
+- **File:** `/snapshot-generator/public/snapshot-generator.html`
+- **URL:** `http://localhost:3850/snapshot-generator.html`
+- Form UI with left panel (data entry) + right panel (live preview)
+- 19 fields: company name, industry, report date, 3 competitors, AI/Video score grid (4×2), YouTube data (4 fields), optional headline overrides (2 fields)
+- Auto-generates headline, proof line, callout text, and bar charts from data
+- "Load Hinge Example" button pre-fills all Hinge data for testing
+- Export PDF + Export JPG download directly to browser
+- Server endpoint: `POST /api/download-snapshot` (handles both PDF and JPG)
+- Nav links between DM generator and snapshot generator on both pages
 
 ### Phase E: DM Infographic Version (already built)
 - File: `/snapshot-generator/public/index.html` — form-based generator with live preview
@@ -124,6 +122,7 @@ A **one-page AI Visibility Snapshot** — a cold outreach deliverable for Digita
 
 | File | Path (under `/Desktop/Claude code/`) | What |
 |------|--------------------------------------|------|
+| **Snapshot generator** | `snapshot-generator/public/snapshot-generator.html` | **Form → live preview → PDF/JPG for ANY company** |
 | One-page template | `snapshot-generator/public/hinge-snapshot.html` | The Hinge deliverable (HTML, letter-size) |
 | DM infographic generator | `snapshot-generator/public/index.html` | Form → live preview → JPG export |
 | Export server | `snapshot-generator/server.js` | Node + Chrome headless → JPG/PDF |
