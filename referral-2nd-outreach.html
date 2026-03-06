@@ -47,6 +47,16 @@ body { font-family: 'Poppins', sans-serif; background: #f5f5f5; color: #1a1a1a; 
 .card-meta a:hover { text-decoration: underline; }
 
 /* Status badge */
+.card-delete { position: absolute; top: 8px; right: 8px; background: none; border: none; color: #ccc; font-size: 16px; cursor: pointer; padding: 2px 6px; border-radius: 4px; line-height: 1; }
+.card-delete:hover { color: #c62828; background: #fee; }
+.card { position: relative; }
+
+/* Search bar */
+.search-bar { width: 100%; padding: 12px 16px; font-size: 15px; font-family: 'Poppins', sans-serif; border: 2px solid #ddd; border-radius: 10px; outline: none; transition: border-color 0.15s; background: #fff; margin-bottom: 16px; }
+.search-bar:focus { border-color: #F8901E; }
+.search-bar::placeholder { color: #bbb; }
+.search-count { font-size: 12px; color: #999; margin-bottom: 12px; }
+
 .status { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
 .status-not_started { background: #e8e8e8; color: #666; }
 .status-connection_sent { background: #fff8e1; color: #f57f17; }
@@ -138,6 +148,19 @@ body { font-family: 'Poppins', sans-serif; background: #f5f5f5; color: #1a1a1a; 
 .linkedin-link { color: #F8901E; text-decoration: none; font-size: 12px; font-weight: 500; }
 .linkedin-link:hover { text-decoration: underline; }
 
+/* Template editor modal */
+.modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center; }
+.modal-overlay.show { display: flex; }
+.modal { background: #fff; border-radius: 12px; padding: 24px; max-width: 700px; width: 95%; max-height: 85vh; overflow-y: auto; box-shadow: 0 8px 32px rgba(0,0,0,0.2); }
+.modal h2 { font-size: 18px; font-weight: 700; margin-bottom: 16px; }
+.modal label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 4px; color: #333; }
+.modal textarea { width: 100%; min-height: 100px; padding: 10px; font-family: 'Poppins', sans-serif; font-size: 13px; border: 2px solid #ddd; border-radius: 8px; resize: vertical; margin-bottom: 16px; outline: none; transition: border-color 0.15s; }
+.modal textarea:focus { border-color: #F8901E; }
+.modal .hint { font-size: 11px; color: #999; margin: -12px 0 16px; }
+.modal-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 8px; }
+.btn-templates { background: transparent; border: 1px solid #F8901E; color: #F8901E; padding: 6px 14px; border-radius: 6px; font-family: 'Poppins', sans-serif; font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.15s; }
+.btn-templates:hover { background: #F8901E; color: #fff; }
+
 @media (max-width: 700px) {
   .content { padding: 16px; }
   .form-row { flex-direction: column; }
@@ -162,10 +185,13 @@ body { font-family: 'Poppins', sans-serif; background: #f5f5f5; color: #1a1a1a; 
 <body>
 <div class="header">
   <h1><span>DA</span> Prospecting Tool #6 — Referral Partner 2nd Connections</h1>
-  <div class="header-right" id="prospect-count"></div>
+  <div class="header-right"><button class="btn-templates" onclick="openTemplateEditor()">Edit Templates</button> <span id="prospect-count" style="margin-left:8px;"></span></div>
 </div>
 <div class="tabs" id="tabs"></div>
 <div class="content" id="content"></div>
+<div class="modal-overlay" id="template-modal" onclick="if(event.target===this)closeTemplateEditor()">
+  <div class="modal" id="template-modal-content"></div>
+</div>
 
 <script>
 // ============================================================
@@ -176,7 +202,8 @@ const TITLE_KEYWORDS = ['founder','ceo','co-founder','owner','president','managi
 let state = {
   prospects: [],
   importedContacts: [],
-  activeTab: 'dashboard'
+  activeTab: 'dashboard',
+  searchQuery: ''
 };
 
 // ============================================================
@@ -272,24 +299,81 @@ function todayStr() {
 }
 
 // ============================================================
-// MESSAGE TEMPLATES
+// MESSAGE TEMPLATES (editable via localStorage)
 // ============================================================
+const TOOL_KEY = 'da_templates_tool6';
+const DEFAULT_TEMPLATES = {
+  'connection_note': `Hi {name} — I run a video agency for B2B companies. Looks like we serve a similar audience — always looking to connect with potential referral partners. — Dane`,
+  'dm': `Hey {name}, thanks for connecting! I run Digital Accomplice — video production for B2B companies. I noticed we serve a similar audience and wanted to see if there's an opportunity to send referrals back and forth.\n\nWe do video strategy, production, and LinkedIn content. When your clients need video, we're a natural fit. And if we meet companies that need what you do, happy to send them your way.\n\nWorth a quick chat?\n\nDane`,
+  'follow_up_1': `Hey {name} — circling back on the referral idea. I've found that the best partnerships start with a quick intro call — 15 min to see if there's a fit.\nOpen to it?`,
+  'follow_up_2': `{name} — last note on this. If referral partnerships aren't your thing, no worries at all. But if you ever need a video partner for your clients, keep Digital Accomplice in mind.\nDane`
+};
+
+const TEMPLATE_LABELS = {
+  'connection_note': 'Connection Note',
+  'dm': 'Initial DM',
+  'follow_up_1': 'Follow-Up #1',
+  'follow_up_2': 'Follow-Up #2'
+};
+
+function loadTemplates() {
+  try {
+    const saved = localStorage.getItem(TOOL_KEY);
+    if (saved) return { ...DEFAULT_TEMPLATES, ...JSON.parse(saved) };
+  } catch {}
+  return { ...DEFAULT_TEMPLATES };
+}
+
+function saveTemplates(templates) {
+  localStorage.setItem(TOOL_KEY, JSON.stringify(templates));
+}
+
+function openTemplateEditor() {
+  const templates = loadTemplates();
+  const modal = document.getElementById('template-modal-content');
+  let html = `<h2>Edit Message Templates</h2><p class="hint">Use {name} for first name, {company} for company name.</p>`;
+  for (const [key, label] of Object.entries(TEMPLATE_LABELS)) {
+    html += `<label>${label}</label>`;
+    html += `<textarea id="tpl-${key}">${esc(templates[key] || DEFAULT_TEMPLATES[key])}</textarea>`;
+  }
+  html += `<div class="modal-actions">
+    <button class="btn btn-secondary" onclick="resetTemplates()">Reset to Defaults</button>
+    <button class="btn btn-secondary" onclick="closeTemplateEditor()">Cancel</button>
+    <button class="btn btn-primary" onclick="saveTemplateEditor()">Save</button>
+  </div>`;
+  modal.innerHTML = html;
+  document.getElementById('template-modal').classList.add('show');
+}
+
+function closeTemplateEditor() {
+  document.getElementById('template-modal').classList.remove('show');
+}
+
+function saveTemplateEditor() {
+  const templates = {};
+  for (const key of Object.keys(TEMPLATE_LABELS)) {
+    templates[key] = document.getElementById('tpl-' + key).value;
+  }
+  saveTemplates(templates);
+  closeTemplateEditor();
+}
+
+function resetTemplates() {
+  if (!confirm('Reset all templates to defaults?')) return;
+  localStorage.removeItem(TOOL_KEY);
+  openTemplateEditor();
+}
+
 function firstName(fullName) {
   return (fullName || '').split(' ')[0];
 }
 
 function getMessage(prospect, step) {
-  const name = firstName(prospect.name);
-  if (step === 'connection_note') {
-    return `Hi ${name} \u2014 I run a video agency for B2B companies. Looks like we serve a similar audience \u2014 always looking to connect with potential referral partners. \u2014 Dane`;
-  } else if (step === 'dm') {
-    return `Hey ${name}, thanks for connecting! I run Digital Accomplice \u2014 video production for B2B companies. I noticed we serve a similar audience and wanted to see if there's an opportunity to send referrals back and forth.\n\nWe do video strategy, production, and LinkedIn content. When your clients need video, we're a natural fit. And if we meet companies that need what you do, happy to send them your way.\n\nWorth a quick chat?\n\nDane`;
-  } else if (step === 'follow_up_1') {
-    return `Hey ${name} \u2014 circling back on the referral idea. I've found that the best partnerships start with a quick intro call \u2014 15 min to see if there's a fit.\nOpen to it?`;
-  } else if (step === 'follow_up_2') {
-    return `${name} \u2014 last note on this. If referral partnerships aren't your thing, no worries at all. But if you ever need a video partner for your clients, keep Digital Accomplice in mind.\nDane`;
-  }
-  return '';
+  const templates = loadTemplates();
+  const template = templates[step] || '';
+  return template
+    .replace(/\{name\}/g, firstName(prospect.name))
+    .replace(/\{company\}/g, prospect.company || 'your company');
 }
 
 async function copyMessage(prospectId, step) {
@@ -832,10 +916,11 @@ function renderDashboard() {
         dueLabel = 'Final nudge sent — check back in ' + daysLeft + ' day' + (daysLeft !== 1 ? 's' : '');
       }
       html += `<div class="card">
+        <button class="card-delete" onclick="removeProspect('${p.id}')" title="Remove prospect">&times;</button>
         <div class="card-top">
           <div>
             <span class="card-name">${esc(p.name)}</span> <span class="card-company">@ ${esc(p.company)}</span>
-            <div style="margin-top:2px;"><a href="${p.linkedinUrl ? esc(p.linkedinUrl) : 'https://www.linkedin.com/search/results/people/?keywords=' + encodeURIComponent(p.name + ' ' + p.company)}" target="_blank" style="background:#0077B5;color:#fff;text-decoration:none;font-size:11px;padding:3px 8px;border-radius:4px;font-weight:600;display:inline-block;">Open LinkedIn &#x2197;</a></div>
+            <div style="margin-top:2px;"><a href="${p.linkedinUrl ? esc(p.linkedinUrl) : 'https://www.linkedin.com/search/results/people/?keywords=' + encodeURIComponent(p.name + ' ' + p.company)}" target="_blank" style="background:#0077B5;color:#fff;text-decoration:none;font-size:11px;padding:3px 8px;border-radius:4px;font-weight:600;display:inline-block;">Open LinkedIn &#x2197;</a>${getActivityFeedUrl(p.linkedinUrl) ? ` <a href="${getActivityFeedUrl(p.linkedinUrl)}" target="_blank" style="color:#F8901E;text-decoration:none;font-size:11px;padding:3px 8px;font-weight:600;display:inline-block;">Activity Feed &#x2197;</a>` : ''}</div>
           </div>
           <span class="status status-${p.status}">${STATUS_LABELS[p.status]}</span>
         </div>
@@ -934,6 +1019,7 @@ function renderDashboardCard(p, mode) {
       </div>
       <span class="status status-${p.status}">${STATUS_LABELS[p.status]}</span>
     </div>
+    <button class="card-delete" onclick="removeProspect('${p.id}')" title="Remove prospect">&times;</button>
     ${extra}
     ${renderTimeline(p)}
     <div class="btn-group">${buttons}</div>
@@ -1034,16 +1120,22 @@ function selectAllContacts() {
 // ============================================================
 // RENDER — ALL PROSPECTS
 // ============================================================
-function renderProspects() {
-  if (state.prospects.length === 0) {
-    return `<div class="empty"><div class="icon">&#x1F465;</div>No prospects yet. Import a CSV or add manually.</div>`;
-  }
 
+function getActivityFeedUrl(linkedinUrl) {
+  if (!linkedinUrl) return null;
+  const match = linkedinUrl.match(/linkedin\.com\/in\/([^/?#]+)/);
+  if (!match) return null;
+  return 'https://www.linkedin.com/in/' + match[1] + '/recent-activity/all/';
+}
+function handleSearch(value) {
+  state.searchQuery = value;
+  const container = document.getElementById('prospects-list');
+  if (container) container.innerHTML = renderProspectsList();
+}
+
+function renderProspectCard(p) {
   let html = '';
-  const order = ['not_started', 'connection_sent', 'connection_accepted', 'dm_sent', 'follow_up_1', 'follow_up_2', 'replied', 'cold'];
-  const sorted = [...state.prospects].sort((a, b) => order.indexOf(a.status) - order.indexOf(b.status));
 
-  sorted.forEach(p => {
     html += `<div class="card">
       <div class="card-top">
         <div>
@@ -1054,6 +1146,7 @@ function renderProspects() {
               onblur="updateLinkedinUrl('${p.id}', this.value)"
               style="flex:1;max-width:350px;padding:4px 8px;border:1px solid #ddd;border-radius:5px;font-size:11px;font-family:'Poppins',sans-serif;color:#333;" />
             <a href="${p.linkedinUrl ? esc(p.linkedinUrl) : 'https://www.linkedin.com/search/results/people/?keywords=' + encodeURIComponent(p.name + ' ' + p.company)}" target="_blank" style="color:#0077B5;font-size:12px;font-weight:600;text-decoration:none;white-space:nowrap;">Open LinkedIn &#x2197;</a>
+            ${getActivityFeedUrl(p.linkedinUrl) ? `<a href="${getActivityFeedUrl(p.linkedinUrl)}" target="_blank" style="color:#F8901E;font-size:12px;font-weight:600;text-decoration:none;white-space:nowrap;">Activity Feed &#x2197;</a>` : ''}
           </div>
           <div class="card-meta">
             ${p.connectionSentDate ? `<span>Request: ${formatDate(p.connectionSentDate)}</span>` : ''}
@@ -1080,8 +1173,42 @@ function renderProspects() {
         <button class="btn btn-secondary btn-sm" onclick="removeProspect('${p.id}')">Remove</button>
       </div>
     </div>`;
-  });
+  return html;
+}
 
+function renderProspectsList() {
+  const q = (state.searchQuery || '').toLowerCase().trim();
+  const order = ['not_started', 'dm_sent', 'follow_up_1', 'follow_up_2', 'replied', 'cold'];
+  let filtered = [...state.prospects].sort((a, b) => order.indexOf(a.status) - order.indexOf(b.status));
+
+  if (q) {
+    filtered = filtered.filter(p =>
+      (p.name || '').toLowerCase().includes(q) ||
+      (p.company || '').toLowerCase().includes(q) ||
+      (p.title || '').toLowerCase().includes(q)
+    );
+  }
+
+  if (filtered.length === 0) {
+    return `<div class="search-count">No matches for "${esc(state.searchQuery)}"</div>`;
+  }
+
+  let html = q ? `<div class="search-count">${filtered.length} of ${state.prospects.length} prospects</div>` : '';
+  filtered.forEach(p => {
+    html += renderProspectCard(p);
+  });
+  return html;
+}
+
+function renderProspects() {
+  if (state.prospects.length === 0) {
+    return `<div class="empty"><div class="icon">&#x1F465;</div>No prospects yet. Import a CSV or add manually.</div>`;
+  }
+
+  let html = `<input type="text" class="search-bar" placeholder="Search by name, company, or title..." value="${esc(state.searchQuery)}" oninput="handleSearch(this.value)">`;
+  html += `<div id="prospects-list">`;
+  html += renderProspectsList();
+  html += `</div>`;
   return html;
 }
 
