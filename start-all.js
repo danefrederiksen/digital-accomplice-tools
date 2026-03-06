@@ -2,6 +2,7 @@ const { spawn } = require('child_process');
 const path = require('path');
 
 const TOOLS = [
+  { name: 'Hub Dashboard', file: 'hub-serve.js', port: 3849 },
   { name: 'Prospecting Tool #1 — B2B 1st Connections', file: 'b2b-serve.js', port: 3851 },
   { name: 'Prospecting Tool #2 — Cyber 1st Connections', file: 'cyber-serve.js', port: 3852 },
   { name: 'Prospecting Tool #3 — B2B 2nd Connections', file: 'b2b-2nd-serve.js', port: 3853 },
@@ -28,36 +29,38 @@ TOOLS.forEach(tool => {
     env: { ...process.env }
   });
 
+  const tag = tool.port === 3849 ? 'Hub' : `#${tool.port - 3850}`;
   child.stdout.on('data', data => {
     const lines = data.toString().trim().split('\n');
     lines.forEach(line => {
-      if (line.trim()) console.log(`  [#${TOOLS.indexOf(tool) + 1}] ${line.trim()}`);
+      if (line.trim()) console.log(`  [${tag}] ${line.trim()}`);
     });
   });
 
   child.stderr.on('data', data => {
-    console.error(`  [#${TOOLS.indexOf(tool) + 1} ERROR] ${data.toString().trim()}`);
+    console.error(`  [${tag} ERROR] ${data.toString().trim()}`);
   });
 
   child.on('exit', (code) => {
-    console.log(`  [#${TOOLS.indexOf(tool) + 1}] ${tool.name} exited (code ${code})`);
+    console.log(`  [${tag}] ${tool.name} exited (code ${code})`);
   });
 
   children.push(child);
 });
 
 console.log('  All servers starting...\n');
-console.log('  Tool #1 (B2B 1st):   http://localhost:3851');
-console.log('  Tool #2 (Cyber 1st): http://localhost:3852');
-console.log('  Tool #3 (B2B 2nd):   http://localhost:3853');
-console.log('  Tool #4 (Cyber 2nd):     http://localhost:3854');
-console.log('  Tool #5 (Referral 1st):  http://localhost:3855');
-console.log('  Tool #6 (Referral 2nd):  http://localhost:3856');
-console.log('  Tool #7 (B2B Email):     http://localhost:3857');
-console.log('  Tool #8 (Cyber Email):   http://localhost:3858');
-console.log('  Tool #9 (Substack):      http://localhost:3859');
-console.log('  Tool #10 (Customers):    http://localhost:3860');
-console.log('  Tool #11 (Comment Queue):http://localhost:3861');
+console.log('  >>> Hub Dashboard:       http://localhost:3849 <<<');
+console.log('  Tool #1 (B2B 1st):      http://localhost:3851');
+console.log('  Tool #2 (Cyber 1st):    http://localhost:3852');
+console.log('  Tool #3 (B2B 2nd):      http://localhost:3853');
+console.log('  Tool #4 (Cyber 2nd):    http://localhost:3854');
+console.log('  Tool #5 (Referral 1st): http://localhost:3855');
+console.log('  Tool #6 (Referral 2nd): http://localhost:3856');
+console.log('  Tool #7 (B2B Email):    http://localhost:3857');
+console.log('  Tool #8 (Cyber Email):  http://localhost:3858');
+console.log('  Tool #9 (Substack):     http://localhost:3859');
+console.log('  Tool #10 (Customers):   http://localhost:3860');
+console.log('  Tool #11 (Comments):    http://localhost:3861');
 console.log('\n  Press Ctrl+C to stop all servers.\n');
 
 // Graceful shutdown — kill all child servers when this script exits

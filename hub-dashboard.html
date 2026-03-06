@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DA Hub Dashboard</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: Inter, Arial, Helvetica, sans-serif; background: #F5F5F5; color: #1a1a1a; }
+
+  /* ---- Header ---- */
+  .header { background: #000; padding: 16px 24px; display: flex; align-items: center; justify-content: space-between; }
+  .header h1 { color: #F38B1C; font-size: 20px; font-weight: 800; letter-spacing: -0.5px; }
+  .header .subtitle { color: #999; font-size: 12px; margin-left: 12px; }
+  .header .date-badge { color: #fff; font-size: 13px; font-weight: 600; }
+  .header-left { display: flex; align-items: baseline; gap: 12px; }
+  .header .refresh-btn { background: #F38B1C; color: #000; border: none; padding: 6px 14px; border-radius: 4px; font-size: 12px; font-weight: 700; cursor: pointer; }
+  .header .refresh-btn:hover { background: #e07c10; }
+
+  /* ---- Layout ---- */
+  .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+
+  /* ---- Score Cards ---- */
+  .score-row { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; margin-bottom: 20px; }
+  .score-card { background: #fff; border-radius: 8px; padding: 16px; text-align: center; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
+  .score-card .value { font-size: 32px; font-weight: 800; color: #000; }
+  .score-card .value.orange { color: #F38B1C; }
+  .score-card .label { font-size: 11px; color: #5A6B7A; text-transform: uppercase; letter-spacing: 0.5px; margin-top: 4px; }
+  .score-card .sub { font-size: 11px; color: #999; margin-top: 2px; }
+  .score-card .progress-ring { margin: 6px auto 0; }
+
+  /* ---- Progress Bar ---- */
+  .progress-bar-outer { background: #eee; border-radius: 6px; height: 8px; width: 100%; margin-top: 8px; overflow: hidden; }
+  .progress-bar-fill { height: 100%; border-radius: 6px; transition: width 0.5s ease; }
+  .fill-orange { background: #F38B1C; }
+  .fill-green { background: #2e7d32; }
+  .fill-blue { background: #1565c0; }
+  .fill-gray { background: #999; }
+
+  /* ---- Section ---- */
+  .section { margin-bottom: 24px; }
+  .section-title { font-size: 15px; font-weight: 700; color: #000; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+  .section-title .badge { background: #F38B1C; color: #000; font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 10px; }
+
+  /* ---- Alerts ---- */
+  .alert { padding: 10px 14px; border-radius: 6px; margin-bottom: 8px; font-size: 13px; display: flex; align-items: center; gap: 8px; }
+  .alert-warning { background: #fff3e0; border-left: 3px solid #F38B1C; color: #e65100; }
+  .alert-info { background: #e3f2fd; border-left: 3px solid #1565c0; color: #1565c0; }
+  .alert-success { background: #e8f5e9; border-left: 3px solid #2e7d32; color: #2e7d32; }
+  .alert .icon { font-size: 16px; flex-shrink: 0; }
+  .alert .tool-links { margin-left: 8px; }
+  .alert .tool-links a { color: inherit; text-decoration: underline; margin-right: 8px; font-weight: 600; }
+
+  /* ---- Tool Grid ---- */
+  .tool-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 12px; }
+  .tool-card { background: #fff; border-radius: 8px; padding: 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); border-left: 4px solid #eee; transition: transform 0.15s; position: relative; }
+  .tool-card:hover { transform: translateY(-1px); box-shadow: 0 2px 8px rgba(0,0,0,0.12); }
+  .tool-card.dm { border-left-color: #F38B1C; }
+  .tool-card.email { border-left-color: #1565c0; }
+  .tool-card.comment { border-left-color: #2e7d32; }
+  .tool-card.no-data { opacity: 0.5; border-left-color: #ddd; }
+  .tool-card .tool-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+  .tool-card .tool-name { font-size: 13px; font-weight: 700; color: #000; }
+  .tool-card .tool-num { font-size: 11px; font-weight: 700; color: #fff; background: #5A6B7A; padding: 1px 6px; border-radius: 3px; }
+  .tool-card .tool-num.dm { background: #F38B1C; color: #000; }
+  .tool-card .tool-num.email { background: #1565c0; }
+  .tool-card .tool-num.comment { background: #2e7d32; }
+  .tool-card .stat-row { display: flex; justify-content: space-between; font-size: 12px; padding: 3px 0; }
+  .tool-card .stat-row .stat-label { color: #5A6B7A; }
+  .tool-card .stat-row .stat-value { font-weight: 700; }
+  .tool-card .stat-row .stat-value.highlight { color: #F38B1C; }
+  .tool-card .stat-row .stat-value.green { color: #2e7d32; }
+  .tool-card .stat-row .stat-value.red { color: #c62828; }
+  .tool-card .open-link { display: inline-block; margin-top: 10px; font-size: 11px; font-weight: 700; color: #F38B1C; text-decoration: none; }
+  .tool-card .open-link:hover { text-decoration: underline; }
+  .tool-card .empty-msg { font-size: 11px; color: #999; font-style: italic; padding: 8px 0; }
+
+  /* ---- Weekly Summary Table ---- */
+  .weekly-table { width: 100%; border-collapse: collapse; background: #fff; border-radius: 8px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
+  .weekly-table th { background: #000; color: #F38B1C; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; padding: 8px 10px; text-align: left; }
+  .weekly-table td { padding: 8px 10px; font-size: 12px; border-bottom: 1px solid #f0f0f0; }
+  .weekly-table tr:last-child td { border-bottom: none; }
+  .weekly-table .total-row { background: #f5f5f5; font-weight: 700; }
+  .weekly-table .total-row td { border-top: 2px solid #F38B1C; }
+
+  /* ---- Quick Links ---- */
+  .quick-links { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 20px; }
+  .quick-link { padding: 6px 12px; border-radius: 4px; font-size: 11px; font-weight: 700; text-decoration: none; color: #000; background: #fff; border: 1px solid #ddd; transition: all 0.15s; }
+  .quick-link:hover { border-color: #F38B1C; background: #fff8f0; }
+  .quick-link.dm { border-left: 3px solid #F38B1C; }
+  .quick-link.email { border-left: 3px solid #1565c0; }
+  .quick-link.comment { border-left: 3px solid #2e7d32; }
+
+  /* ---- Loading / Error ---- */
+  .loading { text-align: center; padding: 40px; color: #999; font-size: 14px; }
+  .error { text-align: center; padding: 40px; color: #c62828; font-size: 14px; }
+
+  /* ---- Footer ---- */
+  .footer { text-align: center; padding: 20px; color: #999; font-size: 11px; border-top: 1px solid #eee; margin-top: 20px; }
+
+  /* ---- Responsive ---- */
+  @media (max-width: 768px) {
+    .score-row { grid-template-columns: repeat(3, 1fr); }
+    .tool-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-left">
+    <h1>Hub Dashboard</h1>
+    <span class="subtitle">All 11 Prospecting Tools</span>
+  </div>
+  <div style="display:flex; align-items:center; gap:12px;">
+    <span class="date-badge" id="dateDisplay"></span>
+    <button class="refresh-btn" onclick="loadData()">Refresh</button>
+  </div>
+</div>
+
+<div class="container">
+  <div id="content" class="loading">Loading...</div>
+</div>
+
+<div class="footer">Digital Accomplice &mdash; Hub Dashboard &mdash; Auto-refreshes every 30s</div>
+
+<script>
+// ============================================================
+// STATE
+// ============================================================
+let hubData = null;
+
+// ============================================================
+// HELPERS
+// ============================================================
+function esc(str) {
+  if (!str) return '';
+  const d = document.createElement('div');
+  d.textContent = str;
+  return d.innerHTML;
+}
+
+function pct(val, target) {
+  if (!target) return 0;
+  return Math.min(100, Math.round((val / target) * 100));
+}
+
+function progressBar(val, target, colorClass) {
+  const p = pct(val, target);
+  const cls = p >= 100 ? 'fill-green' : colorClass;
+  return `<div class="progress-bar-outer"><div class="progress-bar-fill ${cls}" style="width:${p}%"></div></div>`;
+}
+
+function dayName() {
+  return new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric', year: 'numeric' });
+}
+
+// ============================================================
+// RENDER
+// ============================================================
+function render(data) {
+  const t = data.totals;
+  const today = t.today;
+  const targets = t.targets;
+
+  // Score cards
+  const touchPct = pct(today.touches, targets.dailyTotal);
+  const dmPct = pct(today.dms, targets.dailyDMs);
+  const emailPct = pct(today.emails, targets.dailyEmails);
+  const commentPct = pct(today.comments, targets.dailyComments);
+
+  let html = '';
+
+  // ---- Score Cards ----
+  html += '<div class="score-row">';
+  html += scoreCard(today.touches, targets.dailyTotal, 'Touches Today', `${touchPct}% of target`, 'fill-orange');
+  html += scoreCard(today.dms + today.connections, targets.dailyDMs, 'DMs + Connects', `${today.dms} DMs, ${today.connections} conn`, 'fill-orange');
+  html += scoreCard(today.emails, targets.dailyEmails, 'Emails Sent', `${emailPct}% of target`, 'fill-blue');
+  html += scoreCard(today.comments, targets.dailyComments, 'Comments', `${commentPct}% of target`, 'fill-green');
+  html += scoreCard(today.replies, null, 'Replies Today', today.replies > 0 ? 'Keep it up!' : 'None yet', null, today.replies > 0);
+  html += '</div>';
+
+  // ---- Alerts ----
+  if (data.alerts.length > 0) {
+    html += '<div class="section">';
+    html += '<div class="section-title">Alerts <span class="badge">' + data.alerts.length + '</span></div>';
+    data.alerts.forEach(a => {
+      const icon = a.type === 'warning' ? '!' : a.type === 'success' ? '+' : 'i';
+      let toolLinks = '';
+      if (a.tools) {
+        toolLinks = '<span class="tool-links">' + a.tools.map(t =>
+          `<a href="http://localhost:${t.port}" target="_blank">#${t.id} ${esc(t.label)}${t.count ? ' (' + t.count + ')' : ''}</a>`
+        ).join('') + '</span>';
+      }
+      html += `<div class="alert alert-${esc(a.type)}"><span class="icon">[${icon}]</span>${esc(a.message)}${toolLinks}</div>`;
+    });
+    html += '</div>';
+  }
+
+  // ---- Quick Links ----
+  html += '<div class="section">';
+  html += '<div class="section-title">Quick Links</div>';
+  html += '<div class="quick-links">';
+  data.tools.forEach(t => {
+    const cls = t.type === 'dm' ? 'dm' : 'email';
+    html += `<a class="quick-link ${cls}" href="http://localhost:${t.port}" target="_blank">#${t.id} ${esc(t.label)} (${t.totalProspects})</a>`;
+  });
+  html += `<a class="quick-link comment" href="http://localhost:${data.comments.port}" target="_blank">#11 Comment Queue</a>`;
+  html += '</div></div>';
+
+  // ---- Tool Cards ----
+  html += '<div class="section">';
+  html += '<div class="section-title">Tools &mdash; Today\'s Activity</div>';
+  html += '<div class="tool-grid">';
+
+  // DM tools
+  data.tools.filter(t => t.type === 'dm').forEach(t => {
+    html += renderToolCard(t);
+  });
+
+  // Email tools
+  data.tools.filter(t => t.type === 'email').forEach(t => {
+    html += renderToolCard(t);
+  });
+
+  // Comment queue card
+  html += renderCommentCard(data.comments);
+
+  html += '</div></div>';
+
+  // ---- Weekly Summary ----
+  html += '<div class="section">';
+  html += '<div class="section-title">Weekly Summary (Mon&ndash;Sun)</div>';
+  html += '<table class="weekly-table">';
+  html += '<tr><th>Tool</th><th>DMs</th><th>Connects</th><th>Follow-Ups</th><th>Emails</th><th>Replies</th><th>Touches</th></tr>';
+
+  data.tools.forEach(t => {
+    if (!t.hasData) return;
+    html += '<tr>';
+    html += `<td><strong>#${t.id}</strong> ${esc(t.label)}</td>`;
+    html += `<td>${t.week.dms}</td>`;
+    html += `<td>${t.week.connections}</td>`;
+    html += `<td>${t.week.followUps}</td>`;
+    html += `<td>${t.week.emails}</td>`;
+    html += `<td>${t.week.replies}</td>`;
+    html += `<td><strong>${t.week.touches}</strong></td>`;
+    html += '</tr>';
+  });
+
+  // Comment row
+  html += '<tr>';
+  html += `<td><strong>#11</strong> Comments</td>`;
+  html += `<td colspan="5"></td>`;
+  html += `<td><strong>${data.comments.week.total}</strong></td>`;
+  html += '</tr>';
+
+  // Total row
+  const wk = t.week;
+  html += '<tr class="total-row">';
+  html += `<td>TOTAL</td>`;
+  html += `<td>${wk.dms}</td>`;
+  html += `<td>${wk.connections}</td>`;
+  html += `<td>${wk.followUps}</td>`;
+  html += `<td>${wk.emails}</td>`;
+  html += `<td>${wk.replies}</td>`;
+  html += `<td>${wk.touches + data.comments.week.total} touches</td>`;
+  html += '</tr>';
+
+  html += '</table></div>';
+
+  document.getElementById('content').innerHTML = html;
+}
+
+function scoreCard(value, target, label, sub, fillClass, isGreen) {
+  let bar = '';
+  if (target) {
+    bar = progressBar(value, target, fillClass || 'fill-orange');
+  }
+  const valClass = isGreen ? 'value green' : (value > 0 ? 'value orange' : 'value');
+  return `<div class="score-card"><div class="${valClass}">${value}</div><div class="label">${esc(label)}</div><div class="sub">${esc(sub)}</div>${bar}</div>`;
+}
+
+function renderToolCard(t) {
+  const cls = t.type;
+  if (!t.hasData) {
+    return `<div class="tool-card ${cls} no-data">
+      <div class="tool-header"><span class="tool-name">${esc(t.label)}</span><span class="tool-num ${cls}">#${t.id}</span></div>
+      <div class="empty-msg">No prospects loaded yet</div>
+      <a class="open-link" href="http://localhost:${t.port}" target="_blank">Open Tool &rarr;</a>
+    </div>`;
+  }
+
+  const todayBar = progressBar(t.today.touches, t.target, t.type === 'email' ? 'fill-blue' : 'fill-orange');
+
+  let stats = '';
+  stats += statRow('Total Prospects', t.totalProspects);
+
+  if (t.type === 'dm') {
+    stats += statRow('DMs Sent Today', t.today.dms, t.today.dms > 0 ? 'highlight' : '');
+    stats += statRow('Connections Sent', t.today.connections, t.today.connections > 0 ? 'highlight' : '');
+  } else {
+    stats += statRow('Emails Sent Today', t.today.emails, t.today.emails > 0 ? 'highlight' : '');
+  }
+  stats += statRow('Follow-Ups Today', t.today.followUps, t.today.followUps > 0 ? 'highlight' : '');
+  stats += statRow('Replies Today', t.today.replies, t.today.replies > 0 ? 'green' : '');
+
+  if (t.overdueFollowUps > 0) {
+    stats += statRow('Overdue Follow-Ups', t.overdueFollowUps, 'red');
+  }
+
+  return `<div class="tool-card ${cls}">
+    <div class="tool-header"><span class="tool-name">${esc(t.label)}</span><span class="tool-num ${cls}">#${t.id}</span></div>
+    ${todayBar}
+    <div style="font-size:10px; color:#999; margin:4px 0 8px;">${t.today.touches}/${t.target} touches today</div>
+    ${stats}
+    <a class="open-link" href="http://localhost:${t.port}" target="_blank">Open Tool &rarr;</a>
+  </div>`;
+}
+
+function renderCommentCard(c) {
+  const bar = progressBar(c.today.total, c.today.target, 'fill-green');
+  let segBreakdown = '';
+  if (Object.keys(c.today.bySegment).length > 0) {
+    segBreakdown = Object.entries(c.today.bySegment).map(([seg, cnt]) =>
+      `<div class="stat-row"><span class="stat-label">${esc(seg.replace(/_/g, ' '))}</span><span class="stat-value">${cnt}</span></div>`
+    ).join('');
+  }
+
+  return `<div class="tool-card comment">
+    <div class="tool-header"><span class="tool-name">Comment Queue</span><span class="tool-num comment">#11</span></div>
+    ${bar}
+    <div style="font-size:10px; color:#999; margin:4px 0 8px;">${c.today.total}/${c.today.target} comments today</div>
+    ${statRow('Today', c.today.total, c.today.total >= c.today.target ? 'green' : 'highlight')}
+    ${statRow('This Week', c.week.total + '/' + c.week.target)}
+    ${segBreakdown}
+    <a class="open-link" href="http://localhost:${c.port}" target="_blank">Open Comment Queue &rarr;</a>
+  </div>`;
+}
+
+function statRow(label, value, cls) {
+  return `<div class="stat-row"><span class="stat-label">${esc(label)}</span><span class="stat-value ${cls || ''}">${value}</span></div>`;
+}
+
+// ============================================================
+// LOAD DATA
+// ============================================================
+async function loadData() {
+  try {
+    const res = await fetch('/api/hub-data');
+    if (!res.ok) throw new Error('Server returned ' + res.status);
+    hubData = await res.json();
+    document.getElementById('dateDisplay').textContent = dayName();
+    render(hubData);
+  } catch (err) {
+    document.getElementById('content').innerHTML = `<div class="error">Failed to load hub data: ${esc(err.message)}<br>Make sure hub-serve.js is running on port 3849.</div>`;
+  }
+}
+
+// ============================================================
+// INIT
+// ============================================================
+document.getElementById('dateDisplay').textContent = dayName();
+loadData();
+
+// Auto-refresh every 30 seconds
+setInterval(loadData, 30000);
+</script>
+
+</body>
+</html>
