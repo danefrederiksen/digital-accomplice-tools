@@ -312,6 +312,20 @@ app.get('/api/hub-data', (req, res) => {
   });
 });
 
+// Serve the daily report PDF as a download
+const REPORTS_DIR = '/Users/danefrederiksen/Desktop/Digital Accomplice/4_Operations/4.3_Processes/daily reports';
+app.get('/api/download-report', (req, res) => {
+  const todayStr = getDateStr(new Date());
+  const filename = `Daily_Report_${todayStr}_Claude_Code.pdf`;
+  const filepath = path.join(REPORTS_DIR, filename);
+  if (!fs.existsSync(filepath)) {
+    return res.status(404).json({ error: 'No report found for today' });
+  }
+  res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
+  res.setHeader('Content-Type', 'application/pdf');
+  res.sendFile(filepath);
+});
+
 // ============================================================
 // START
 // ============================================================
