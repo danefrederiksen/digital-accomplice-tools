@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+  @page { margin: 0.6in 0.7in; size: letter; }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Helvetica Neue', Arial, sans-serif; color: #1a1a1a; font-size: 10.5pt; line-height: 1.45; padding: 0.6in 0.7in; }
+
+  .header { border-bottom: 3px solid #F38B1C; padding-bottom: 12px; margin-bottom: 16px; }
+  .header h1 { font-size: 20pt; font-weight: 800; color: #000; margin-bottom: 2px; }
+  .header .subtitle { font-size: 11pt; color: #5A6B7A; }
+  .header .date { font-size: 9pt; color: #999; margin-top: 4px; }
+
+  h2 { font-size: 13pt; font-weight: 700; color: #F38B1C; margin: 18px 0 8px 0; border-bottom: 1px solid #eee; padding-bottom: 4px; }
+  h3 { font-size: 11pt; font-weight: 700; color: #000; margin: 12px 0 6px 0; }
+
+  .priority-banner { display: inline-block; padding: 2px 10px; border-radius: 3px; font-size: 9pt; font-weight: 700; color: #fff; margin-right: 6px; vertical-align: middle; }
+  .p1 { background: #e74c3c; }
+  .p2 { background: #F38B1C; }
+  .p3 { background: #3498db; }
+  .p4 { background: #5A6B7A; }
+
+  table { width: 100%; border-collapse: collapse; margin: 8px 0 14px 0; font-size: 9.5pt; }
+  th { background: #f5f5f5; font-weight: 700; text-align: left; padding: 5px 8px; border: 1px solid #ddd; }
+  td { padding: 5px 8px; border: 1px solid #ddd; vertical-align: top; }
+  tr:nth-child(even) { background: #fafafa; }
+
+  .issue-block { margin: 8px 0 14px 0; padding: 10px 14px; background: #fafafa; border-left: 3px solid #F38B1C; border-radius: 0 4px 4px 0; }
+  .issue-block.critical { border-left-color: #e74c3c; background: #fdf2f2; }
+  .issue-block h4 { font-size: 10.5pt; font-weight: 700; margin-bottom: 4px; }
+  .issue-block p, .issue-block ul { font-size: 10pt; }
+  .issue-block ul { margin-left: 18px; margin-top: 4px; }
+  .issue-block li { margin-bottom: 2px; }
+
+  .data-table td:first-child { font-weight: 600; white-space: nowrap; }
+
+  .status-badge { display: inline-block; padding: 1px 6px; border-radius: 3px; font-size: 8pt; font-weight: 600; }
+  .badge-red { background: #fce4ec; color: #c62828; }
+  .badge-orange { background: #fff3e0; color: #e65100; }
+  .badge-green { background: #e8f5e9; color: #2e7d32; }
+  .badge-blue { background: #e3f2fd; color: #1565c0; }
+  .badge-gray { background: #f5f5f5; color: #616161; }
+
+  .summary-box { background: #000; color: #fff; padding: 14px 18px; border-radius: 6px; margin: 14px 0; }
+  .summary-box h3 { color: #F38B1C; margin: 0 0 6px 0; }
+  .summary-box p { font-size: 10pt; color: #ccc; }
+  .summary-box .stat { font-size: 18pt; font-weight: 800; color: #F38B1C; }
+
+  .checklist { list-style: none; margin: 6px 0 12px 0; }
+  .checklist li { padding: 3px 0 3px 22px; position: relative; font-size: 10pt; }
+  .checklist li:before { content: "☐"; position: absolute; left: 0; color: #999; font-size: 12pt; }
+
+  .footer { margin-top: 24px; padding-top: 10px; border-top: 1px solid #ddd; font-size: 8pt; color: #999; text-align: center; }
+
+  .page-break { page-break-before: always; }
+
+  .flex-row { display: flex; gap: 12px; margin: 8px 0; }
+  .flex-col { flex: 1; }
+
+  .tool-tag { display: inline-block; padding: 1px 5px; border-radius: 2px; font-size: 8pt; font-weight: 600; background: #e3f2fd; color: #1565c0; margin-right: 3px; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>Prospecting Tools: Bug Fix &amp; Testing Plan</h1>
+  <div class="subtitle">Prioritized fixes for Tools #1&ndash;#11 &mdash; Data cleanup, feature parity, and unified tracking</div>
+  <div class="date">March 6, 2026 &bull; Digital Accomplice</div>
+</div>
+
+<div class="summary-box">
+  <h3>Current State</h3>
+  <div style="display: flex; gap: 30px; margin-top: 8px;">
+    <div><div class="stat">409</div><p>Total prospects across 6 tools</p></div>
+    <div><div class="stat">~80</div><p>Junk/duplicate records to clean</p></div>
+    <div><div class="stat">7</div><p>Feature gaps to close</p></div>
+    <div><div class="stat">0</div><p>Unified progress dashboards</p></div>
+  </div>
+</div>
+
+<!-- ============================================ -->
+<!-- PRIORITY 1: DATA INTEGRITY -->
+<!-- ============================================ -->
+
+<h2><span class="priority-banner p1">P1</span> Data Integrity &mdash; Clean the Junk</h2>
+<p style="font-size:10pt; margin-bottom:8px;">Bad data = bad decisions. Fix this first so everything downstream is accurate.</p>
+
+<div class="issue-block critical">
+  <h4>1A. Tool #4 (Cyber 2nd) &mdash; Massive Import Contamination</h4>
+  <p><strong>245 records, ~60&ndash;80 are junk.</strong> This is the worst file.</p>
+  <ul>
+    <li><strong>41 records</strong> with name="ICP" &mdash; real people, but names are in wrong fields</li>
+    <li><strong>17 records</strong> with name="REFERRAL" &mdash; same problem</li>
+    <li><strong>3 records</strong> with name="UNKNOWN" &mdash; same problem</li>
+    <li><strong>5 section headers</strong> imported as records ("HIGH-VALUE...", "SOLID...", "QUESTIONABLE FIT...", "tool 3 batch 2", column header "Name/Title/Company")</li>
+    <li><strong>~18 internal duplicates</strong> with swapped company/title fields</li>
+    <li><strong>3 fake comments</strong> logged against the "Name" header row in comment-log.json</li>
+  </ul>
+  <p style="margin-top:6px;"><strong>Fix:</strong> Delete all junk/header rows. For the 41 ICP + 17 REFERRAL + 3 UNKNOWN records, either fix the field mapping (move real name from company field to name field) or delete and re-import correctly. Remove swapped-field duplicates. Clean comment-log.json of junk entries.</p>
+</div>
+
+<div class="issue-block critical">
+  <h4>1B. Tool #3 (B2B 2nd) &mdash; Wrong Segment + Duplicates</h4>
+  <p><strong>30 records, ~20 need action.</strong></p>
+  <ul>
+    <li><strong>13 cybersecurity people</strong> incorrectly in the B2B list &mdash; they belong in Tool #4 (Cyber 2nd) only</li>
+    <li><strong>6 internal duplicates</strong> with swapped company/title fields</li>
+    <li><strong>7 more records</strong> with swapped fields (not duplicates, just bad import)</li>
+  </ul>
+  <p style="margin-top:6px;"><strong>Fix:</strong> Remove the 13 cyber people (verify they exist in Tool #4 first). Delete the 6 swapped duplicates. Fix the 7 swapped-field records (swap company &harr; title).</p>
+</div>
+
+<div class="issue-block">
+  <h4>1C. Cross-Tool Duplicates</h4>
+  <table>
+    <tr><th>Overlap</th><th>Count</th><th>Decision Needed</th></tr>
+    <tr><td>Tool #1 (B2B 1st) &harr; Tool #5 (Referral 1st)</td><td>27 people</td><td>Are these B2B prospects or referral partners? Pick one tool per person.</td></tr>
+    <tr><td>Tool #2 (Cyber 1st) &harr; Tool #3 (B2B 2nd)</td><td>7 people</td><td>These are cyber people in the wrong B2B list. Remove from Tool #3.</td></tr>
+    <tr><td>Tool #3 (B2B 2nd) &harr; Tool #4 (Cyber 2nd)</td><td>13 people</td><td>Cyber people. Remove from Tool #3 (covered in 1B).</td></tr>
+    <tr><td>Tool #2 (Cyber 1st) &harr; Tool #4 (Cyber 2nd)</td><td>2 people</td><td>Same person in both 1st and 2nd conn tools. Verify connection status, keep in correct tool.</td></tr>
+  </table>
+</div>
+
+<div class="issue-block">
+  <h4>1D. Comment Log Desync</h4>
+  <p>Brian Rucker (Tool #5) has <code>comment_count: 1</code> in his prospect record but <strong>zero matching entries</strong> in <code>comment-log.json</code>. The two data stores have diverged. Need to audit all comment counts against the log and reconcile.</p>
+</div>
+
+<!-- ============================================ -->
+<!-- PRIORITY 2: MISSING FEATURES -->
+<!-- ============================================ -->
+
+<h2 class="page-break"><span class="priority-banner p2">P2</span> Feature Gaps &mdash; What Every Tool Should Have</h2>
+
+<div class="issue-block">
+  <h4>2A. Search Bar &mdash; Missing from ALL 10 Tools</h4>
+  <p>Only Tool #11 (Comment Queue) has search. With 245 records in Tool #4 alone, you can't find anyone without scrolling. Every tool needs an instant search bar in the All Prospects tab and ideally on the Dashboard tab too.</p>
+  <p><strong>Fix:</strong> Add a search input that filters by name, company, or title. Tool #11's implementation can be used as the reference pattern.</p>
+  <p><span class="tool-tag">#1</span><span class="tool-tag">#2</span><span class="tool-tag">#3</span><span class="tool-tag">#4</span><span class="tool-tag">#5</span><span class="tool-tag">#6</span><span class="tool-tag">#7</span><span class="tool-tag">#8</span><span class="tool-tag">#9</span><span class="tool-tag">#10</span></p>
+</div>
+
+<div class="issue-block">
+  <h4>2B. Activity Feed Link &mdash; Missing from Tools #1&ndash;#10</h4>
+  <p>Only Tool #11 has a link to each prospect's LinkedIn recent activity feed (<code>/recent-activity/all/</code>). This is critical for commenting &mdash; you need to see their posts. Every DM and 2nd-connection tool needs this link on each prospect card.</p>
+  <p><strong>Fix:</strong> Add an "Activity" button/link on each prospect card that opens <code>linkedin.com/in/[handle]/recent-activity/all/</code>. Fall back to LinkedIn name search if no URL is saved (Tool #11 already does this).</p>
+  <p><span class="tool-tag">#1</span><span class="tool-tag">#2</span><span class="tool-tag">#3</span><span class="tool-tag">#4</span><span class="tool-tag">#5</span><span class="tool-tag">#6</span><span class="tool-tag">#7</span><span class="tool-tag">#8</span><span class="tool-tag">#9</span><span class="tool-tag">#10</span></p>
+</div>
+
+<div class="issue-block">
+  <h4>2C. Delete Button on Dashboard Cards</h4>
+  <p>All tools have a "Remove" button in the All Prospects view, but <strong>not on Dashboard cards</strong>. When you see junk or wrong-list prospects while working, you should be able to delete them immediately without switching tabs.</p>
+  <p><strong>Fix:</strong> Add a small delete/X button on every dashboard prospect card (with confirmation prompt).</p>
+  <p><span class="tool-tag">#1</span><span class="tool-tag">#2</span><span class="tool-tag">#3</span><span class="tool-tag">#4</span><span class="tool-tag">#5</span><span class="tool-tag">#6</span><span class="tool-tag">#7</span><span class="tool-tag">#8</span><span class="tool-tag">#9</span><span class="tool-tag">#10</span></p>
+</div>
+
+<div class="issue-block">
+  <h4>2D. Message Template / Offer Testing Field</h4>
+  <p>All tools have hardcoded message templates per sequence step. Dane wants the ability to <strong>swap in a new offer message</strong> and have it applied to the daily batch of outreach, so he can A/B test different offers across prospects.</p>
+  <p><strong>Fix:</strong> Add a "Current Offer" section at the top of each tool's Dashboard. Shows the active DM template with an "Edit" button. When edited, the new message gets used for all new outreach in that tool until changed again. Track which offer was used per prospect so you can measure results by offer variant.</p>
+  <p><span class="tool-tag">#1</span><span class="tool-tag">#2</span><span class="tool-tag">#3</span><span class="tool-tag">#4</span><span class="tool-tag">#5</span><span class="tool-tag">#6</span><span class="tool-tag">#7</span><span class="tool-tag">#8</span><span class="tool-tag">#9</span><span class="tool-tag">#10</span></p>
+</div>
+
+<!-- ============================================ -->
+<!-- PRIORITY 3: TOOL #11 VERIFICATION -->
+<!-- ============================================ -->
+
+<h2><span class="priority-banner p3">P3</span> Tool #11 Integration &mdash; Verify Cross-Tool Data Flow</h2>
+
+<div class="issue-block">
+  <h4>3A. Current Integration Status</h4>
+  <table>
+    <tr><th>Check</th><th>Result</th><th>Status</th></tr>
+    <tr><td>Reads from Tool #3 (B2B 2nd)</td><td>Yes &mdash; <code>b2b-2nd-prospects.json</code></td><td><span class="status-badge badge-green">OK</span></td></tr>
+    <tr><td>Reads from Tool #4 (Cyber 2nd)</td><td>Yes &mdash; <code>cyber-2nd-prospects.json</code></td><td><span class="status-badge badge-green">OK</span></td></tr>
+    <tr><td>Reads from Tool #5 (Referral 1st)</td><td>Yes &mdash; <code>referral-1st-prospects.json</code></td><td><span class="status-badge badge-green">OK</span></td></tr>
+    <tr><td>Reads from Tool #6 (Referral 2nd)</td><td>Yes &mdash; <code>referral-2nd-prospects.json</code></td><td><span class="status-badge badge-green">OK</span></td></tr>
+    <tr><td>Writes <code>comment_count</code> back to source files</td><td>Yes, but desynced for 1 record</td><td><span class="status-badge badge-orange">ISSUE</span></td></tr>
+    <tr><td>Writes <code>last_commented</code> back to source files</td><td>Yes</td><td><span class="status-badge badge-green">OK</span></td></tr>
+    <tr><td>Comment log matches source file counts</td><td>Brian Rucker has count=1 in source but 0 in log</td><td><span class="status-badge badge-red">DESYNC</span></td></tr>
+    <tr><td>Junk records filtered from daily targets</td><td>Partially &mdash; filters "Name" but not all junk types</td><td><span class="status-badge badge-orange">ISSUE</span></td></tr>
+    <tr><td>Race condition protection (file locking)</td><td>None &mdash; all 11 servers share JSON files without locks</td><td><span class="status-badge badge-orange">RISK</span></td></tr>
+  </table>
+</div>
+
+<div class="issue-block">
+  <h4>3B. Testing Checklist for Tool #11</h4>
+  <ul class="checklist">
+    <li>Log a comment in Tool #11 for a Tool #3 prospect &rarr; verify <code>comment_count</code> updates in <code>b2b-2nd-prospects.json</code></li>
+    <li>Log a comment in Tool #11 for a Tool #4 prospect &rarr; verify same</li>
+    <li>Log a comment in Tool #11 for a Tool #5 prospect &rarr; verify same</li>
+    <li>Log a comment in Tool #11 for a Tool #6 prospect &rarr; verify same (note: Tool #6 has no data yet, so add a test prospect first)</li>
+    <li>Open Tool #3 and Tool #11 simultaneously. Update a prospect in both at the same time &rarr; check for data loss</li>
+    <li>Verify all 4 source tools appear in Tool #11's All Prospects tab with correct segment badges</li>
+    <li>Verify daily targets exclude junk records</li>
+    <li>Reconcile all <code>comment_count</code> values against <code>comment-log.json</code> entries</li>
+  </ul>
+</div>
+
+<!-- ============================================ -->
+<!-- PRIORITY 4: UNIFIED DASHBOARD -->
+<!-- ============================================ -->
+
+<h2 class="page-break"><span class="priority-banner p4">P4</span> Single Source of Truth &mdash; Unified Progress Dashboard</h2>
+
+<div class="issue-block">
+  <h4>4A. The Problem</h4>
+  <p>Right now each tool tracks its own daily progress independently. There is <strong>no single place</strong> to see how your day is going across all 11 tools. You have to open each tool's tab to check counts, which means you'll miss things.</p>
+</div>
+
+<div class="issue-block">
+  <h4>4B. Proposed Solution: Hub Dashboard</h4>
+  <p>Build a lightweight "Hub" page (port 3849 or similar) that reads all data files and shows:</p>
+  <ul>
+    <li><strong>Today's progress bars</strong> for each tool (DMs sent, emails sent, comments logged, connections requested)</li>
+    <li><strong>Combined daily totals</strong> vs targets (e.g., 45/60 touches today)</li>
+    <li><strong>Weekly totals</strong> for the Friday review (comments, outreach, replies, reply rate)</li>
+    <li><strong>Quick-links</strong> to open each tool</li>
+    <li><strong>Alerts</strong> for overdue follow-ups, stale prospects, tools with no activity today</li>
+  </ul>
+  <p>This is a read-only dashboard &mdash; no writes, no race conditions. Just reads all JSON files and aggregates.</p>
+</div>
+
+<!-- ============================================ -->
+<!-- FEATURE PARITY MATRIX -->
+<!-- ============================================ -->
+
+<h2>Feature Parity Matrix &mdash; Current vs Target</h2>
+
+<table style="font-size: 8.5pt;">
+  <tr>
+    <th style="width:160px;">Feature</th>
+    <th>#1</th><th>#2</th><th>#3</th><th>#4</th><th>#5</th><th>#6</th><th>#7</th><th>#8</th><th>#9</th><th>#10</th><th>#11</th>
+  </tr>
+  <tr>
+    <td>LinkedIn profile link</td>
+    <td><span class="status-badge badge-green">Yes</span></td>
+    <td><span class="status-badge badge-green">Yes</span></td>
+    <td><span class="status-badge badge-green">Yes</span></td>
+    <td><span class="status-badge badge-green">Yes</span></td>
+    <td><span class="status-badge badge-green">Yes</span></td>
+    <td><span class="status-badge badge-green">Yes</span></td>
+    <td><span class="status-badge badge-orange">Partial</span></td>
+    <td><span class="status-badge badge-orange">Partial</span></td>
+    <td><span class="status-badge badge-orange">Partial</span></td>
+    <td><span class="status-badge badge-orange">Partial</span></td>
+    <td><span class="status-badge badge-green">Yes</span></td>
+  </tr>
+  <tr>
+    <td>Activity feed link</td>
+    <td><span class="status-badge badge-red">No</span></td>
+    <td><span class="status-badge badge-red">No</span></td>
+    <td><span class="status-badge badge-red">No</span></td>
+    <td><span class="status-badge badge-red">No</span></td>
+    <td><span class="status-badge badge-red">No</span></td>
+    <td><span class="status-badge badge-red">No</span></td>
+    <td><span class="status-badge badge-red">No</span></td>
+    <td><span class="status-badge badge-red">No</span></td>
+    <td><span class="status-badge badge-red">No</span></td>
+    <td><span class="status-badge badge-red">No</span></td>
+    <td><span class="status-badge badge-green">Yes</span></td>
+  </tr>
+  <tr>
+    <td>Search / filter bar</td>
+    <td><span class="status-badge badge-red">No</span></td>
+    <td><span class="status-badge badge-red">No</span></td>
+    <td><span class="status-badge badge-red">No</span></td>
+    <td><span class="status-badge badge-red">No</span></td>
+    <td><span class="status-badge badge-red">No</span></td>
+    <td><span class="status-badge badge-red">No</span></td>
+    <td><span class="status-badge badge-red">No</span></td>
+    <td><span class="status-badge badge-red">No</span></td>
+    <td><span class="status-badge badge-red">No</span></td>
+    <td><span class="status-badge badge-red">No</span></td>
+    <td><span class="status-badge badge-green">Yes</span></td>
+  </tr>
+  <tr>
+    <td>Delete on dashboard cards</td>
+    <td><span class="status-badge badge-red">No</span></td>
+    <td><span class="status-badge badge-red">No</span></td>
+    <td><span class="status-badge badge-red">No</span></td>
+    <td><span class="status-badge badge-red">No</span></td>
+    <td><span class="status-badge badge-red">No</span></td>
+    <td><span class="status-badge badge-red">No</span></td>
+    <td><span class="status-badge badge-red">No</span></td>
+    <td><span class="status-badge badge-red">No</span></td>
+    <td><span class="status-badge badge-red">No</span></td>
+    <td><span class="status-badge badge-red">No</span></td>
+    <td><span class="status-badge badge-gray">N/A</span></td>
+  </tr>
+  <tr>
+    <td>Message templates</td>
+    <td><span class="status-badge badge-green">Yes</span></td>
+    <td><span class="status-badge badge-green">Yes</span></td>
+    <td><span class="status-badge badge-green">Yes</span></td>
+    <td><span class="status-badge badge-green">Yes</span></td>
+    <td><span class="status-badge badge-green">Yes</span></td>
+    <td><span class="status-badge badge-green">Yes</span></td>
+    <td><span class="status-badge badge-green">Yes</span></td>
+    <td><span class="status-badge badge-green">Yes</span></td>
+    <td><span class="status-badge badge-green">Yes</span></td>
+    <td><span class="status-badge badge-green">Yes</span></td>
+    <td><span class="status-badge badge-green">Yes</span></td>
+  </tr>
+  <tr>
+    <td>Editable offer / A-B test</td>
+    <td><span class="status-badge badge-red">No</span></td>
+    <td><span class="status-badge badge-red">No</span></td>
+    <td><span class="status-badge badge-red">No</span></td>
+    <td><span class="status-badge badge-red">No</span></td>
+    <td><span class="status-badge badge-red">No</span></td>
+    <td><span class="status-badge badge-red">No</span></td>
+    <td><span class="status-badge badge-red">No</span></td>
+    <td><span class="status-badge badge-red">No</span></td>
+    <td><span class="status-badge badge-red">No</span></td>
+    <td><span class="status-badge badge-red">No</span></td>
+    <td><span class="status-badge badge-red">No</span></td>
+  </tr>
+  <tr>
+    <td>Draft reply on replies</td>
+    <td><span class="status-badge badge-red">No</span></td>
+    <td><span class="status-badge badge-green">Yes</span></td>
+    <td><span class="status-badge badge-red">No</span></td>
+    <td><span class="status-badge badge-red">No</span></td>
+    <td><span class="status-badge badge-red">No</span></td>
+    <td><span class="status-badge badge-red">No</span></td>
+    <td><span class="status-badge badge-red">No</span></td>
+    <td><span class="status-badge badge-red">No</span></td>
+    <td><span class="status-badge badge-red">No</span></td>
+    <td><span class="status-badge badge-red">No</span></td>
+    <td><span class="status-badge badge-gray">N/A</span></td>
+  </tr>
+  <tr>
+    <td>Editable LinkedIn URL</td>
+    <td><span class="status-badge badge-red">No</span></td>
+    <td><span class="status-badge badge-red">No</span></td>
+    <td><span class="status-badge badge-red">No</span></td>
+    <td><span class="status-badge badge-red">No</span></td>
+    <td><span class="status-badge badge-red">No</span></td>
+    <td><span class="status-badge badge-green">Yes</span></td>
+    <td><span class="status-badge badge-red">No</span></td>
+    <td><span class="status-badge badge-red">No</span></td>
+    <td><span class="status-badge badge-red">No</span></td>
+    <td><span class="status-badge badge-red">No</span></td>
+    <td><span class="status-badge badge-gray">N/A</span></td>
+  </tr>
+  <tr>
+    <td>Unified progress view</td>
+    <td colspan="11" style="text-align:center;"><span class="status-badge badge-red">Does not exist</span></td>
+  </tr>
+</table>
+
+<!-- ============================================ -->
+<!-- EXECUTION ORDER -->
+<!-- ============================================ -->
+
+<h2>Recommended Execution Order</h2>
+
+<table>
+  <tr><th style="width:40px;">#</th><th>Task</th><th>Tools</th><th>Priority</th><th>Why This Order</th></tr>
+  <tr>
+    <td>1</td>
+    <td><strong>Clean junk data from Tool #4</strong><br>Delete headers, fix ICP/REFERRAL/UNKNOWN records, remove swapped duplicates</td>
+    <td>#4</td>
+    <td><span class="priority-banner p1">P1</span></td>
+    <td>Biggest mess. Blocks everything &mdash; can't trust progress numbers with 80 junk records</td>
+  </tr>
+  <tr>
+    <td>2</td>
+    <td><strong>Clean Tool #3</strong><br>Remove 13 cyber people (wrong segment), delete 6 swapped dupes, fix 7 swapped fields</td>
+    <td>#3</td>
+    <td><span class="priority-banner p1">P1</span></td>
+    <td>Same import issue as #4, smaller scale</td>
+  </tr>
+  <tr>
+    <td>3</td>
+    <td><strong>Reconcile cross-tool duplicates</strong><br>27 people in both #1 and #5 &mdash; Dane decides per person</td>
+    <td>#1, #5</td>
+    <td><span class="priority-banner p1">P1</span></td>
+    <td>Need Dane's input on B2B vs Referral classification</td>
+  </tr>
+  <tr>
+    <td>4</td>
+    <td><strong>Clean comment-log.json</strong><br>Remove entries for junk records, reconcile Brian Rucker desync</td>
+    <td>#11</td>
+    <td><span class="priority-banner p1">P1</span></td>
+    <td>Follows data cleanup &mdash; log needs to match source files</td>
+  </tr>
+  <tr>
+    <td>5</td>
+    <td><strong>Add search bar to all tools</strong><br>Instant filter by name/company/title</td>
+    <td>#1&ndash;#10</td>
+    <td><span class="priority-banner p2">P2</span></td>
+    <td>Most-requested feature. Needed to find prospects quickly</td>
+  </tr>
+  <tr>
+    <td>6</td>
+    <td><strong>Add activity feed link to all tools</strong><br>"Activity" button that opens LinkedIn recent activity</td>
+    <td>#1&ndash;#10</td>
+    <td><span class="priority-banner p2">P2</span></td>
+    <td>Critical for commenting workflow &mdash; you need to see their posts</td>
+  </tr>
+  <tr>
+    <td>7</td>
+    <td><strong>Add delete button on dashboard cards</strong><br>Small X with confirmation</td>
+    <td>#1&ndash;#10</td>
+    <td><span class="priority-banner p2">P2</span></td>
+    <td>Lets you clean junk as you encounter it during daily workflow</td>
+  </tr>
+  <tr>
+    <td>8</td>
+    <td><strong>Verify Tool #11 integration end-to-end</strong><br>Run the testing checklist in section 3B</td>
+    <td>#11, #3&ndash;#6</td>
+    <td><span class="priority-banner p3">P3</span></td>
+    <td>After data is clean, verify the plumbing works correctly</td>
+  </tr>
+  <tr>
+    <td>9</td>
+    <td><strong>Add editable offer / message template</strong><br>"Current Offer" editor on Dashboard, tracks which offer per prospect</td>
+    <td>#1&ndash;#10</td>
+    <td><span class="priority-banner p3">P3</span></td>
+    <td>Enables A/B testing of offers &mdash; important but not blocking daily work</td>
+  </tr>
+  <tr>
+    <td>10</td>
+    <td><strong>Build unified Hub Dashboard</strong><br>Cross-tool progress view, daily/weekly totals, alerts</td>
+    <td>New</td>
+    <td><span class="priority-banner p4">P4</span></td>
+    <td>Biggest lift. Build after individual tools are working correctly</td>
+  </tr>
+</table>
+
+<!-- ============================================ -->
+<!-- BONUS FIXES -->
+<!-- ============================================ -->
+
+<h2>Bonus Fixes (Found During Audit)</h2>
+
+<table style="font-size: 9pt;">
+  <tr><th>Issue</th><th>Tool</th><th>Severity</th></tr>
+  <tr><td>Tool #8 (Cyber Email) message templates are copy-pasted from Tool #7 &mdash; reference "B2B marketing leaders" instead of cybersecurity</td><td>#8</td><td><span class="status-badge badge-orange">Medium</span></td></tr>
+  <tr><td>Tool #1 missing "Open LinkedIn" button on Replied cards (Tool #2 has it)</td><td>#1</td><td><span class="status-badge badge-blue">Low</span></td></tr>
+  <tr><td>Draft reply feature only in Tool #2 &mdash; should be in all tools that handle DM replies</td><td>#1,#3&ndash;#6</td><td><span class="status-badge badge-blue">Low</span></td></tr>
+  <tr><td>Editable LinkedIn URL (inline edit + search fallback) only in Tool #6 &mdash; should be in #3 and #4 too</td><td>#3, #4</td><td><span class="status-badge badge-blue">Low</span></td></tr>
+  <tr><td>No file locking between servers sharing JSON files &mdash; race condition risk</td><td>All</td><td><span class="status-badge badge-blue">Low (single user)</span></td></tr>
+  <tr><td>Memory note says Tool #11 reads from "Tools 3, 4, 6" but it actually reads from 3, 4, 5, AND 6</td><td>Memory</td><td><span class="status-badge badge-gray">Info</span></td></tr>
+</table>
+
+<!-- ============================================ -->
+<!-- DATA FILE REFERENCE -->
+<!-- ============================================ -->
+
+<h2 class="page-break">Quick Reference: Where Everything Lives</h2>
+
+<table class="data-table" style="font-size: 9pt;">
+  <tr><th>Tool</th><th>Prospect Data</th><th>Activity Log</th><th>Port</th></tr>
+  <tr><td>#1 B2B 1st DM</td><td><code>data/b2b-prospects.json</code></td><td><code>data/b2b-activity.json</code></td><td>3851</td></tr>
+  <tr><td>#2 Cyber 1st DM</td><td><code>data/cyber-prospects.json</code></td><td><code>data/cyber-activity.json</code></td><td>3852</td></tr>
+  <tr><td>#3 B2B 2nd DM</td><td><code>data/b2b-2nd-prospects.json</code></td><td><code>data/b2b-2nd-activity.json</code></td><td>3853</td></tr>
+  <tr><td>#4 Cyber 2nd DM</td><td><code>data/cyber-2nd-prospects.json</code></td><td><code>data/cyber-2nd-activity.json</code></td><td>3854</td></tr>
+  <tr><td>#5 Referral 1st</td><td><code>data/referral-1st-prospects.json</code></td><td><code>data/referral-1st-activity.json</code></td><td>3855</td></tr>
+  <tr><td>#6 Referral 2nd</td><td><code>data/referral-2nd-prospects.json</code></td><td><code>data/referral-2nd-activity.json</code></td><td>3856</td></tr>
+  <tr><td>#7 B2B Email</td><td><code>data/b2b-email-prospects.json</code></td><td><code>data/b2b-email-activity.json</code></td><td>3857</td></tr>
+  <tr><td>#8 Cyber Email</td><td><code>data/cyber-email-prospects.json</code></td><td><code>data/cyber-email-activity.json</code></td><td>3858</td></tr>
+  <tr><td>#9 Substack</td><td><code>data/substack-prospects.json</code></td><td><code>data/substack-activity.json</code></td><td>3859</td></tr>
+  <tr><td>#10 Customers</td><td><code>data/customer-prospects.json</code></td><td><code>data/customer-activity.json</code></td><td>3860</td></tr>
+  <tr><td>#11 Comment Queue</td><td><code>data/comment-log.json</code> + reads #3/#4/#5/#6</td><td><code>data/screenshots.json</code></td><td>3861</td></tr>
+</table>
+
+<p style="font-size:9pt; margin-top:8px;">All files in: <code>/Users/danefrederiksen/Desktop/Claude code/data/</code><br>
+Backups auto-saved to: <code>data/backups/</code> (max 5 per tool)<br>
+Start all servers: <code>node start-all.js</code> from <code>/Desktop/Claude code/</code></p>
+
+<div class="footer">
+  Digital Accomplice &bull; Prospecting Tools Fix Plan &bull; March 6, 2026 &bull; Generated by Claude Code
+</div>
+
+</body>
+</html>
