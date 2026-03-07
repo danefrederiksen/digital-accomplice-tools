@@ -253,6 +253,8 @@ app.put('/api/prospects/:id', (req, res) => {
     logActivity(STATUS_ACTIONS[updates.status], prospect.name, prospect.id);
   } else if ('reply' in updates) {
     logActivity('Updated reply', prospect.name, prospect.id);
+  } else if ('draftReply' in updates) {
+    logActivity('Updated draft reply', prospect.name, prospect.id);
   } else if ('nextStep' in updates) {
     logActivity('Updated next step', prospect.name, prospect.id);
   }

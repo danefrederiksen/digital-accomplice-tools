@@ -119,7 +119,7 @@ const VALID_STATUSES = ['not_started', 'dm_sent', 'follow_up_1', 'follow_up_2', 
 const ALLOWED_FIELDS = [
   'name', 'company', 'title', 'linkedinUrl', 'status',
   'dmSentDate', 'followUp1Due', 'followUp2Due', 'lastActionDate',
-  'reply', 'nextStep'
+  'reply', 'nextStep', 'draftReply'
 ];
 
 // Map status changes to activity labels
@@ -244,6 +244,8 @@ app.put('/api/prospects/:id', (req, res) => {
     logActivity(STATUS_ACTIONS[updates.status], prospect.name, prospect.id);
   } else if ('reply' in updates) {
     logActivity('Updated reply', prospect.name, prospect.id);
+  } else if ('draftReply' in updates) {
+    logActivity('Updated draft reply', prospect.name, prospect.id);
   } else if ('nextStep' in updates) {
     logActivity('Updated next step', prospect.name, prospect.id);
   }

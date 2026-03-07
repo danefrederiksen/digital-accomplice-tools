@@ -20,7 +20,8 @@ const TOOLS = [
   { id: 7, key: 'b2b_email',    label: 'B2B Email',         type: 'email', port: 3857, prospectFile: 'b2b-email-prospects.json',    activityFile: 'b2b-email-activity.json',    target: 5 },
   { id: 8, key: 'cyber_email',  label: 'Cyber Email',       type: 'email', port: 3858, prospectFile: 'cyber-email-prospects.json',  activityFile: 'cyber-email-activity.json',  target: 5 },
   { id: 9, key: 'substack',     label: 'Substack',          type: 'email', port: 3859, prospectFile: 'substack-prospects.json',     activityFile: 'substack-activity.json',     target: 4 },
-  { id: 10, key: 'customer',    label: 'Customers',         type: 'email', port: 3860, prospectFile: 'customer-prospects.json',     activityFile: 'customer-activity.json',     target: 3 }
+  { id: 10, key: 'customer',    label: 'Customers',         type: 'email', port: 3860, prospectFile: 'customer-prospects.json',     activityFile: 'customer-activity.json',     target: 3 },
+  { id: 12, key: 'referral_email', label: 'Referral Email', type: 'email', port: 3862, prospectFile: 'referral-email-prospects.json', activityFile: 'referral-email-activity.json', target: 3 }
 ];
 
 const COMMENT_LOG_FILE = path.join(DATA_DIR, 'comment-log.json');

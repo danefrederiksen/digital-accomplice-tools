@@ -4,11 +4,11 @@ const path = require('path');
 const { v4: uuidv4 } = require('uuid');
 
 const app = express();
-const PORT = 3853;
-const HTML_FILE = path.join(__dirname, 'b2b-2nd-outreach.html');
+const PORT = 3862;
+const HTML_FILE = path.join(__dirname, 'referral-email-outreach.html');
 const DATA_DIR = path.join(__dirname, 'data');
-const DATA_FILE = path.join(DATA_DIR, 'b2b-2nd-prospects.json');
-const ACTIVITY_FILE = path.join(DATA_DIR, 'b2b-2nd-activity.json');
+const DATA_FILE = path.join(DATA_DIR, 'referral-email-prospects.json');
+const ACTIVITY_FILE = path.join(DATA_DIR, 'referral-email-activity.json');
 const BACKUP_DIR = path.join(DATA_DIR, 'backups');
 const MAX_BACKUPS = 5;
 const MAX_ACTIVITY = 500;
@@ -58,11 +58,11 @@ function backupData() {
   if (!fs.existsSync(DATA_FILE)) return;
   try {
     const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
-    const backupFile = path.join(BACKUP_DIR, `b2b-2nd-prospects_${timestamp}.json`);
+    const backupFile = path.join(BACKUP_DIR, `referral-email-prospects_${timestamp}.json`);
     fs.copyFileSync(DATA_FILE, backupFile);
     // Prune old backups — keep last MAX_BACKUPS
     const backups = fs.readdirSync(BACKUP_DIR)
-      .filter(f => f.startsWith('b2b-2nd-prospects_'))
+      .filter(f => f.startsWith('referral-email-prospects_'))
       .sort()
       .reverse();
     backups.slice(MAX_BACKUPS).forEach(f => {
@@ -102,8 +102,6 @@ function logActivity(action, prospectName, prospectId) {
 // ============================================================
 function sanitize(str) {
   if (typeof str !== 'string') return str;
-  // Strip control characters and null bytes only.
-  // HTML encoding happens client-side via esc() at render time.
   return str.replace(/[\x00-\x08\x0B\x0C\x0E-\x1F]/g, '');
 }
 
@@ -115,19 +113,16 @@ function sanitizeObj(obj) {
   return clean;
 }
 
-const VALID_STATUSES = ['not_started', 'connection_sent', 'connection_accepted', 'dm_sent', 'follow_up_1', 'follow_up_2', 'replied', 'cold'];
+const VALID_STATUSES = ['not_started', 'email_sent', 'follow_up_1', 'follow_up_2', 'replied', 'cold'];
 const ALLOWED_FIELDS = [
-  'name', 'company', 'title', 'linkedinUrl', 'status',
-  'connectionSentDate', 'connectionCheckDate', 'connectionAcceptedDate',
-  'dmSentDate', 'followUp1Due', 'followUp2Due', 'lastActionDate',
+  'name', 'company', 'title', 'email', 'linkedinUrl', 'source', 'status',
+  'emailSentDate', 'followUp1Due', 'followUp2Due', 'lastActionDate',
   'reply', 'nextStep', 'draftReply'
 ];
 
 // Map status changes to activity labels
 const STATUS_ACTIONS = {
-  connection_sent: 'Sent Connection Request',
-  connection_accepted: 'Connection Accepted',
-  dm_sent: 'Marked DM Sent',
+  email_sent: 'Marked Email Sent',
   follow_up_1: 'Marked Follow-Up Sent',
   follow_up_2: 'Marked Final Nudge Sent',
   replied: 'Got Reply',
@@ -155,33 +150,33 @@ app.post('/api/prospects', (req, res) => {
   }
 
   const prospects = loadProspects();
-  const existingKeys = prospects.map(p => (p.name + p.company).toLowerCase());
+  const existingKeys = prospects.map(p => (p.email || '').toLowerCase());
   let added = 0;
   let skipped = 0;
 
   incoming.forEach(raw => {
     const name = (raw.name || '').trim();
     if (!name) { skipped++; return; }
-    const company = (raw.company || '').trim();
-    const key = (name + company).toLowerCase();
-    if (existingKeys.includes(key)) { skipped++; return; }
+    const email = (raw.email || '').trim();
+    const key = email.toLowerCase();
+    if (!email || existingKeys.includes(key)) { skipped++; return; }
 
     const prospect = sanitizeObj({
       id: uuidv4(),
       name,
-      company,
+      company: (raw.company || '').trim(),
       title: (raw.title || '').trim(),
+      email,
       linkedinUrl: (raw.linkedinUrl || '').trim(),
+      source: (raw.source || '').trim(),
       status: 'not_started',
-      connectionSentDate: null,
-      connectionCheckDate: null,
-      connectionAcceptedDate: null,
-      dmSentDate: null,
+      emailSentDate: null,
       followUp1Due: null,
       followUp2Due: null,
       lastActionDate: null,
       reply: '',
-      nextStep: ''
+      nextStep: '',
+      draftReply: ''
     });
 
     prospects.push(prospect);
@@ -211,17 +206,17 @@ app.post('/api/prospects/migrate', (req, res) => {
     name: (raw.name || '').trim(),
     company: (raw.company || '').trim(),
     title: (raw.title || '').trim(),
+    email: (raw.email || '').trim(),
     linkedinUrl: (raw.linkedinUrl || '').trim(),
+    source: (raw.source || '').trim(),
     status: VALID_STATUSES.includes(raw.status) ? raw.status : 'not_started',
-    connectionSentDate: raw.connectionSentDate || null,
-    connectionCheckDate: raw.connectionCheckDate || null,
-    connectionAcceptedDate: raw.connectionAcceptedDate || null,
-    dmSentDate: raw.dmSentDate || null,
+    emailSentDate: raw.emailSentDate || null,
     followUp1Due: raw.followUp1Due || null,
     followUp2Due: raw.followUp2Due || null,
     lastActionDate: raw.lastActionDate || null,
     reply: (raw.reply || ''),
-    nextStep: (raw.nextStep || '')
+    nextStep: (raw.nextStep || ''),
+    draftReply: (raw.draftReply || '')
   }));
 
   saveProspects(prospects);
@@ -286,7 +281,7 @@ app.get('/api/activity', (req, res) => {
 // ============================================================
 ensureDirs();
 app.listen(PORT, '127.0.0.1', () => {
-  console.log(`\n  DA Prospecting Tool #3 — B2B 2nd Connections running at http://localhost:${PORT}`);
+  console.log(`\n  DA Prospecting Tool #12 — Referral Partner Emails running at http://localhost:${PORT}`);
   console.log(`  Data: ${DATA_FILE}`);
   console.log(`  Backups: ${BACKUP_DIR} (last ${MAX_BACKUPS} kept)\n`);
 });

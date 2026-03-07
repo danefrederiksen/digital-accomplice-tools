@@ -104,6 +104,16 @@ body { font-family: 'Poppins', sans-serif; background: #f5f5f5; color: #1a1a1a; 
 .reply-area textarea { width: 100%; border: 1px solid #ddd; border-radius: 6px; padding: 8px; font-family: 'Poppins', sans-serif; font-size: 13px; resize: vertical; min-height: 60px; }
 .reply-area label { font-size: 12px; font-weight: 600; color: #666; display: block; margin-bottom: 4px; }
 
+/* Draft reply */
+.draft-reply-area { margin-top: 10px; background: #faf6ff; border: 1px solid #e0d0ff; border-radius: 8px; padding: 12px; }
+.draft-reply-area label { font-size: 12px; font-weight: 700; color: #6b21a8; display: flex; align-items: center; gap: 6px; margin-bottom: 6px; }
+.draft-reply-area textarea { width: 100%; border: 1px solid #d4c4f0; border-radius: 6px; padding: 8px; font-family: 'Poppins', sans-serif; font-size: 13px; resize: vertical; min-height: 80px; background: #fff; line-height: 1.5; }
+.draft-reply-area textarea:focus { outline: none; border-color: #6b21a8; box-shadow: 0 0 0 2px rgba(107,33,168,0.1); }
+.draft-reply-header { display: flex; justify-content: space-between; align-items: center; }
+.btn-copy-draft { background: #6b21a8; color: #fff; padding: 5px 12px; border-radius: 5px; font-size: 11px; font-weight: 600; cursor: pointer; border: none; transition: all 0.15s; font-family: 'Poppins', sans-serif; }
+.btn-copy-draft:hover { background: #581c87; }
+.btn-copy-draft.copied { background: #2e7d32; }
+
 /* Next step field */
 .next-step-field { margin-top: 6px; }
 .next-step-field input { width: 100%; border: 1px solid #ddd; border-radius: 6px; padding: 7px 10px; font-family: 'Poppins', sans-serif; font-size: 13px; }
@@ -572,6 +582,40 @@ function updateNextStep(id, text) {
   }, 500);
 }
 
+function getDraftReply(prospect) {
+  if (prospect.draftReply) return prospect.draftReply;
+  const name = firstName(prospect.name);
+  const company = prospect.company ? ` at ${prospect.company}` : '';
+  return `Hey ${name} — thanks for getting back to me! Really glad this resonated.\n\nWould love to set up a quick call to talk through how video could work for${company ? company : ' your team'}. What does your calendar look like this week or next?\n\nDane`;
+}
+
+async function copyDraftReply(prospectId) {
+  const p = state.prospects.find(x => x.id === prospectId);
+  if (!p) return;
+  const el = document.getElementById('draft-reply-' + prospectId);
+  const msg = el ? el.value : getDraftReply(p);
+  try {
+    await navigator.clipboard.writeText(msg);
+    const btn = document.getElementById('copy-draft-btn-' + prospectId);
+    if (btn) {
+      btn.textContent = 'Copied!';
+      btn.classList.add('copied');
+      setTimeout(() => { btn.textContent = 'Copy Draft'; btn.classList.remove('copied'); }, 2000);
+    }
+  } catch (err) { alert('Copy failed — check browser permissions'); }
+}
+
+function updateDraftReply(id, text) {
+  clearTimeout(_debounce['draft_' + id]);
+  _debounce['draft_' + id] = setTimeout(async () => {
+    try {
+      await apiPut('/api/prospects/' + id, { draftReply: text });
+      const p = state.prospects.find(x => x.id === id);
+      if (p) p.draftReply = text;
+    } catch (err) { console.error('Failed to save draft reply:', err); }
+  }, 500);
+}
+
 function updateLinkedinUrl(id, url) {
   clearTimeout(_debounce['linkedin_' + id]);
   _debounce['linkedin_' + id] = setTimeout(async () => {
@@ -610,7 +654,8 @@ async function resetProspect(id) {
       followUp2Due: null,
       lastActionDate: null,
       reply: '',
-      nextStep: ''
+      nextStep: '',
+      draftReply: ''
     });
     const idx = state.prospects.findIndex(x => x.id === id);
     if (idx !== -1) state.prospects[idx] = updated;
@@ -1045,10 +1090,18 @@ function renderDashboardCard(p, mode) {
       `;
     }
   } else if (mode === 'replied') {
+    const draft = getDraftReply(p);
     extra = `
       <div class="reply-area">
         <label>Their reply:</label>
         <textarea placeholder="Paste what they said..." onblur="updateReply('${p.id}', this.value)">${esc(p.reply || '')}</textarea>
+      </div>
+      <div class="draft-reply-area">
+        <div class="draft-reply-header">
+          <label>Your draft reply:</label>
+          <button class="btn-copy-draft" id="copy-draft-btn-${p.id}" onclick="copyDraftReply('${p.id}')">Copy Draft</button>
+        </div>
+        <textarea id="draft-reply-${p.id}" placeholder="Your reply to send back..." onblur="updateDraftReply('${p.id}', this.value)">${esc(draft)}</textarea>
       </div>
       <div class="next-step-field">
         <label style="font-size:12px;font-weight:600;color:#666;display:block;margin-bottom:4px;">Next step:</label>
