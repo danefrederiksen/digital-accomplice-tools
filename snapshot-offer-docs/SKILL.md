@@ -350,6 +350,23 @@ Use the DA report template (ai-visibility-report-template.docx).
 - State: "AI answers are non-deterministic — results may vary by session, location, and date. We document consistency patterns, not guarantees."
 - Offer screenshots on request
 
+### Step 8: Generate Methodology Audit Trail
+
+**Every snapshot MUST include a companion Methodology & Audit Trail PDF.** This document records:
+
+1. **Environment & Tools** — what agent, skill version, tools, and export method were used
+2. **Inputs** — who specified the target, competitors, and mode (with notes on category fit)
+3. **Queries Run** — exact search queries, per-query results, and whether the target was found
+4. **Scoring Methodology** — per-query scores, raw totals, normalization formula, and any adjustments made
+5. **Video Presence Verification** — every video-related claim with the exact search query that verified it
+6. **Known Limitations** — proxy vs direct AI queries, competitor category mismatches, single-run caveats
+7. **Skill Version & Changelog** — what version of SKILL.md was used and any changes made
+8. **Reproduction Steps** — how to re-run the same snapshot to verify results
+
+**File naming:** `[Company]_AI_Snapshot_[YYYY-MM-DD]_Methodology.pdf`
+**Save location:** Same folder as the snapshot PDF.
+**Script:** Use `generate-methodology-pdf.py` as a template. Update inputs, queries, and scores for each new company.
+
 ---
 
 ## Quality Checks Before Sending
