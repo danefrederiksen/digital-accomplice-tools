@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DA Prospecting Tools — Status Report</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Poppins', Arial, sans-serif; background: #fff; color: #1a1a2e; padding: 0; }
+
+  /* Page sizing for PDF */
+  @page { size: letter; margin: 0.5in; }
+  @media print { body { padding: 0; } .page-break { page-break-before: always; } }
+
+  .container { max-width: 850px; margin: 0 auto; padding: 40px 30px; }
+
+  /* Header */
+  .header { text-align: center; margin-bottom: 36px; padding-bottom: 24px; border-bottom: 3px solid #F38B1C; }
+  .header img { height: 40px; margin-bottom: 12px; }
+  .header h1 { font-size: 28px; font-weight: 800; color: #1a1a2e; margin-bottom: 4px; letter-spacing: -0.5px; }
+  .header .subtitle { font-size: 15px; color: #5A6B7A; font-weight: 500; }
+  .header .date { font-size: 13px; color: #999; margin-top: 8px; }
+
+  /* Section headers */
+  h2 { font-size: 18px; font-weight: 700; color: #F38B1C; margin: 32px 0 16px 0; padding-bottom: 8px; border-bottom: 2px solid #f0f0f0; }
+  h3 { font-size: 15px; font-weight: 600; color: #1a1a2e; margin: 20px 0 10px 0; }
+
+  p { font-size: 13px; line-height: 1.7; color: #444; margin-bottom: 12px; }
+
+  /* Score cards */
+  .score-row { display: flex; gap: 12px; margin-bottom: 24px; flex-wrap: wrap; }
+  .score-card { flex: 1; min-width: 140px; background: #f9f9f9; border-radius: 10px; padding: 16px; text-align: center; border: 1px solid #eee; }
+  .score-card .label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; color: #5A6B7A; font-weight: 600; }
+  .score-card .value { font-size: 32px; font-weight: 800; color: #F38B1C; margin: 4px 0; }
+  .score-card .detail { font-size: 11px; color: #888; }
+  .score-card.highlight { background: linear-gradient(135deg, #F38B1C 0%, #e07810 100%); }
+  .score-card.highlight .label, .score-card.highlight .detail { color: rgba(255,255,255,0.85); }
+  .score-card.highlight .value { color: #fff; }
+
+  /* Tables */
+  table { width: 100%; border-collapse: collapse; margin-bottom: 20px; font-size: 12px; }
+  th { background: #1a1a2e; color: #fff; padding: 10px 12px; text-align: left; font-weight: 600; font-size: 11px; text-transform: uppercase; letter-spacing: 0.3px; }
+  td { padding: 9px 12px; border-bottom: 1px solid #eee; color: #333; }
+  tr:hover td { background: #fafafa; }
+  .total-row td { font-weight: 700; background: #f5f0e8; border-top: 2px solid #F38B1C; }
+
+  /* Status badges */
+  .badge { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: 600; text-transform: uppercase; }
+  .badge-active { background: #e8f5e9; color: #2e7d32; }
+  .badge-empty { background: #fff3e0; color: #e65100; }
+  .badge-complete { background: #e3f2fd; color: #1565c0; }
+  .badge-dm { background: #fff3e0; color: #F38B1C; }
+  .badge-email { background: #e3f2fd; color: #1976d2; }
+  .badge-comment { background: #e8f5e9; color: #388e3c; }
+
+  /* Checklist */
+  .checklist { list-style: none; padding: 0; }
+  .checklist li { padding: 8px 0; font-size: 13px; border-bottom: 1px solid #f0f0f0; display: flex; align-items: center; gap: 10px; }
+  .checklist li:last-child { border-bottom: none; }
+  .check { width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; flex-shrink: 0; }
+  .check-done { background: #4caf50; color: #fff; }
+  .check-pending { background: #ff9800; color: #fff; }
+  .check-blocked { background: #f44336; color: #fff; }
+
+  /* Feature grid */
+  .feature-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; }
+  .feature-item { background: #f9f9f9; border-radius: 8px; padding: 12px 16px; border-left: 3px solid #F38B1C; }
+  .feature-item .feature-name { font-size: 13px; font-weight: 600; color: #1a1a2e; }
+  .feature-item .feature-desc { font-size: 11px; color: #666; margin-top: 2px; }
+
+  /* Next steps */
+  .next-step { background: #fff8f0; border: 1px solid #F38B1C; border-radius: 10px; padding: 16px 20px; margin-bottom: 12px; }
+  .next-step .step-title { font-size: 14px; font-weight: 700; color: #1a1a2e; margin-bottom: 4px; }
+  .next-step .step-desc { font-size: 12px; color: #555; line-height: 1.6; }
+  .next-step .step-status { font-size: 11px; color: #F38B1C; font-weight: 600; margin-top: 4px; }
+
+  /* Footer */
+  .footer { margin-top: 40px; padding-top: 16px; border-top: 2px solid #f0f0f0; text-align: center; }
+  .footer p { font-size: 11px; color: #999; }
+  .footer .brand { color: #F38B1C; font-weight: 700; }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <!-- HEADER -->
+  <div class="header">
+    <h1>DA Prospecting Tools</h1>
+    <div class="subtitle">System Status Report</div>
+    <div class="date">March 6, 2026 &nbsp;|&nbsp; Build Plan Complete &nbsp;|&nbsp; 12 Tools Live</div>
+  </div>
+
+  <!-- EXECUTIVE SUMMARY SCORES -->
+  <div class="score-row">
+    <div class="score-card highlight">
+      <div class="label">Tools Built</div>
+      <div class="value">12</div>
+      <div class="detail">All operational</div>
+    </div>
+    <div class="score-card">
+      <div class="label">Total Prospects</div>
+      <div class="value">325</div>
+      <div class="detail">Across 5 active tools</div>
+    </div>
+    <div class="score-card">
+      <div class="label">Activities Logged</div>
+      <div class="value">346</div>
+      <div class="detail">DMs, connections, follow-ups</div>
+    </div>
+    <div class="score-card">
+      <div class="label">Fix Plan Steps</div>
+      <div class="value">10/10</div>
+      <div class="detail">All complete</div>
+    </div>
+  </div>
+
+  <!-- SYSTEM OVERVIEW -->
+  <h2>System Overview</h2>
+  <p>The DA Prospecting Tools system is a suite of 12 purpose-built web applications for managing LinkedIn DM outreach, email campaigns, and engagement tracking. All tools are locally hosted Node.js + Express servers with single-file HTML front-ends, organized by prospect segment and outreach channel. A unified Hub Dashboard aggregates data from all 12 tools into a single view.</p>
+
+  <div class="feature-grid">
+    <div class="feature-item">
+      <div class="feature-name">Hub Dashboard</div>
+      <div class="feature-desc">Unified view of all 12 tools with score cards, alerts, tool cards, weekly summary table, and quick links. Port 3849.</div>
+    </div>
+    <div class="feature-item">
+      <div class="feature-name">A/B Message Testing</div>
+      <div class="feature-desc">Round-robin variant assignment on 5 active DM tools. Tracks sent/replied per variant with dedicated A/B Report tab.</div>
+    </div>
+    <div class="feature-item">
+      <div class="feature-name">Template Editor</div>
+      <div class="feature-desc">Editable message templates per sequence step with {name}/{company} variables and copy-to-clipboard.</div>
+    </div>
+    <div class="feature-item">
+      <div class="feature-name">Follow-Up Engine</div>
+      <div class="feature-desc">Automated follow-up scheduling: offer &rarr; follow-up 1 &rarr; follow-up 2 &rarr; final nudge &rarr; exhausted.</div>
+    </div>
+    <div class="feature-item">
+      <div class="feature-name">Comment Queue</div>
+      <div class="feature-desc">Unified search across 4 tools (B2B 2nd, Cyber 2nd, Referral 1st, Referral 2nd). Logs comments back to source. 8/day target.</div>
+    </div>
+    <div class="feature-item">
+      <div class="feature-name">One-Click Launch</div>
+      <div class="feature-desc"><code>node start-all.js</code> starts all 12 tools + hub dashboard on ports 3849, 3851&ndash;3862.</div>
+    </div>
+  </div>
+
+  <!-- TOOL INVENTORY TABLE -->
+  <h2>Tool Inventory &amp; Data Status</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Tool Name</th>
+        <th>Type</th>
+        <th>Port</th>
+        <th>Prospects</th>
+        <th>Activities</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>1</td>
+        <td>B2B 1st Connections</td>
+        <td><span class="badge badge-dm">DM</span></td>
+        <td>3851</td>
+        <td>7</td>
+        <td>85</td>
+        <td><span class="badge badge-active">Active</span></td>
+      </tr>
+      <tr>
+        <td>2</td>
+        <td>Cyber 1st Connections</td>
+        <td><span class="badge badge-dm">DM</span></td>
+        <td>3852</td>
+        <td>11</td>
+        <td>38</td>
+        <td><span class="badge badge-active">Active</span></td>
+      </tr>
+      <tr>
+        <td>3</td>
+        <td>B2B 2nd Connections</td>
+        <td><span class="badge badge-dm">DM</span></td>
+        <td>3853</td>
+        <td>0</td>
+        <td>0</td>
+        <td><span class="badge badge-empty">No Data</span></td>
+      </tr>
+      <tr>
+        <td>4</td>
+        <td>Cyber 2nd Connections</td>
+        <td><span class="badge badge-dm">DM</span></td>
+        <td>3854</td>
+        <td>229</td>
+        <td>175</td>
+        <td><span class="badge badge-active">Active</span></td>
+      </tr>
+      <tr>
+        <td>5</td>
+        <td>Referral Partner 1st</td>
+        <td><span class="badge badge-dm">DM</span></td>
+        <td>3855</td>
+        <td>48</td>
+        <td>34</td>
+        <td><span class="badge badge-active">Active</span></td>
+      </tr>
+      <tr>
+        <td>6</td>
+        <td>Referral Partner 2nd</td>
+        <td><span class="badge badge-dm">DM</span></td>
+        <td>3856</td>
+        <td>30</td>
+        <td>13</td>
+        <td><span class="badge badge-active">Active</span></td>
+      </tr>
+      <tr>
+        <td>7</td>
+        <td>B2B Leads w/ Emails</td>
+        <td><span class="badge badge-email">Email</span></td>
+        <td>3857</td>
+        <td>0</td>
+        <td>0</td>
+        <td><span class="badge badge-empty">Awaiting Data</span></td>
+      </tr>
+      <tr>
+        <td>8</td>
+        <td>Cyber Leads w/ Emails</td>
+        <td><span class="badge badge-email">Email</span></td>
+        <td>3858</td>
+        <td>0</td>
+        <td>0</td>
+        <td><span class="badge badge-empty">Awaiting Data</span></td>
+      </tr>
+      <tr>
+        <td>9</td>
+        <td>Substack Subscribers</td>
+        <td><span class="badge badge-email">Email</span></td>
+        <td>3859</td>
+        <td>0</td>
+        <td>0</td>
+        <td><span class="badge badge-empty">Awaiting Data</span></td>
+      </tr>
+      <tr>
+        <td>10</td>
+        <td>Customers w/ Emails</td>
+        <td><span class="badge badge-email">Email</span></td>
+        <td>3860</td>
+        <td>0</td>
+        <td>0</td>
+        <td><span class="badge badge-empty">Awaiting Data</span></td>
+      </tr>
+      <tr>
+        <td>11</td>
+        <td>Comment Queue</td>
+        <td><span class="badge badge-comment">Comment</span></td>
+        <td>3861</td>
+        <td colspan="2">10 comments logged</td>
+        <td><span class="badge badge-active">Active</span></td>
+      </tr>
+      <tr>
+        <td>12</td>
+        <td>Referral Partner Emails</td>
+        <td><span class="badge badge-email">Email</span></td>
+        <td>3862</td>
+        <td>0</td>
+        <td>1</td>
+        <td><span class="badge badge-empty">Awaiting Data</span></td>
+      </tr>
+      <tr class="total-row">
+        <td colspan="4">TOTAL</td>
+        <td>325</td>
+        <td>346</td>
+        <td>6 active / 6 awaiting data</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- PIPELINE BREAKDOWN -->
+  <h2>Pipeline Breakdown (Active Tools)</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Tool</th>
+        <th>Not Started</th>
+        <th>Connection Sent</th>
+        <th>DM Sent</th>
+        <th>Follow-Up 1</th>
+        <th>Replied</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>B2B 1st (#1)</td>
+        <td>0</td>
+        <td>0</td>
+        <td>0</td>
+        <td>7</td>
+        <td>0</td>
+      </tr>
+      <tr>
+        <td>Cyber 1st (#2)</td>
+        <td>0</td>
+        <td>0</td>
+        <td>1</td>
+        <td>10</td>
+        <td>0</td>
+      </tr>
+      <tr>
+        <td>Cyber 2nd (#4)</td>
+        <td>221</td>
+        <td>8</td>
+        <td>0</td>
+        <td>0</td>
+        <td>0</td>
+      </tr>
+      <tr>
+        <td>Referral 1st (#5)</td>
+        <td>38</td>
+        <td>0</td>
+        <td>6</td>
+        <td>3</td>
+        <td>1</td>
+      </tr>
+      <tr>
+        <td>Referral 2nd (#6)</td>
+        <td>22</td>
+        <td>8</td>
+        <td>0</td>
+        <td>0</td>
+        <td>0</td>
+      </tr>
+      <tr class="total-row">
+        <td>TOTAL</td>
+        <td>281</td>
+        <td>16</td>
+        <td>7</td>
+        <td>20</td>
+        <td>1</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- FIX PLAN STATUS -->
+  <h2>10-Step Fix Plan &mdash; Complete</h2>
+  <p>The Prospecting Tools Fix Plan was created on March 6, 2026 to address bugs, missing features, and quality issues across all 12 tools. All 10 steps have been completed.</p>
+
+  <ul class="checklist">
+    <li><span class="check check-done">&#10003;</span> <strong>Step 1:</strong> Clean Tool #4 junk data &mdash; removed test/duplicate entries from Cyber 2nd Connections</li>
+    <li><span class="check check-done">&#10003;</span> <strong>Step 2:</strong> UI fixes &mdash; delete buttons, template editors, comment log corrections across all tools</li>
+    <li><span class="check check-done">&#10003;</span> <strong>Step 3:</strong> Cross-tool features &mdash; LinkedIn search bar, remove buttons for Tools 3, 4, 6</li>
+    <li><span class="check check-done">&#10003;</span> <strong>Step 4:</strong> Follow-up template overhaul &mdash; conversational bump style across all 6 DM tools</li>
+    <li><span class="check check-done">&#10003;</span> <strong>Step 5:</strong> Tool #12 build &mdash; Referral Partner Emails tool (port 3862) with templates, draft reply, activity feed</li>
+    <li><span class="check check-done">&#10003;</span> <strong>Step 6:</strong> Draft reply feature &mdash; added to DM tools (#1, #3&ndash;#6) with editable LinkedIn URLs</li>
+    <li><span class="check check-done">&#10003;</span> <strong>Step 7:</strong> Hub Dashboard foundation &mdash; built unified dashboard aggregating all 12 tools</li>
+    <li><span class="check check-done">&#10003;</span> <strong>Step 8:</strong> Hub Dashboard download report button &mdash; added PDF export to hub</li>
+    <li><span class="check check-done">&#10003;</span> <strong>Step 9:</strong> A/B Message Testing &mdash; round-robin variant assignment on 5 active DM tools with A/B Report tab</li>
+    <li><span class="check check-done">&#10003;</span> <strong>Step 10:</strong> Hub Dashboard final fix &mdash; fixed JS crash, updated tool count to 12, aligned Poppins font</li>
+  </ul>
+
+  <!-- A/B TESTING -->
+  <h2>A/B Testing System</h2>
+  <p>A/B message testing is now live on all 5 active DM tools. When a user copies a message, the system assigns variant A or B via round-robin and persists the assignment to the server. Each tool includes an A/B Report tab that shows per-step sent/replied/rate for each variant.</p>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Feature</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td>Variant Assignment</td><td>Round-robin (A, B, A, B...) on first copy per step per prospect</td></tr>
+      <tr><td>Persistence</td><td>Stored in <code>abVariants</code> field on prospect record, saved server-side via PUT</td></tr>
+      <tr><td>Templates</td><td>Each step has _a and _b template variants, editable in Template Editor</td></tr>
+      <tr><td>Reporting</td><td>A/B Report tab shows: step name, variant, sent count, replied count, reply rate %</td></tr>
+      <tr><td>Visual Indicator</td><td>Orange "A" or blue "B" badge on each prospect card after assignment</td></tr>
+      <tr><td>Tools Enabled</td><td>#1 (B2B 1st), #2 (Cyber 1st), #4 (Cyber 2nd), #5 (Referral 1st), #6 (Referral 2nd)</td></tr>
+    </tbody>
+  </table>
+  <p><strong>Current data:</strong> No A/B assignments yet &mdash; testing infrastructure is deployed and ready. First assignments will occur when users copy messages going forward.</p>
+
+  <!-- HUB DASHBOARD -->
+  <h2>Hub Dashboard</h2>
+  <p>The Hub Dashboard at <code>http://localhost:3849</code> provides a unified view of the entire prospecting operation. It reads data from all 12 tools in real-time and auto-refreshes every 30 seconds.</p>
+
+  <div class="feature-grid">
+    <div class="feature-item">
+      <div class="feature-name">Score Cards</div>
+      <div class="feature-desc">Today's touches, DMs, emails, comments, and replies vs. daily targets</div>
+    </div>
+    <div class="feature-item">
+      <div class="feature-name">Tool Cards</div>
+      <div class="feature-desc">12 color-coded cards showing prospect count, today's activity, and status for each tool</div>
+    </div>
+    <div class="feature-item">
+      <div class="feature-name">Alerts</div>
+      <div class="feature-desc">Overdue follow-ups, inactive tools, comment targets, and reply celebrations</div>
+    </div>
+    <div class="feature-item">
+      <div class="feature-name">Weekly Summary</div>
+      <div class="feature-desc">Table with per-tool weekly stats and bold TOTAL row</div>
+    </div>
+    <div class="feature-item">
+      <div class="feature-name">Quick Links</div>
+      <div class="feature-desc">One-click links to open any of the 12 tools</div>
+    </div>
+    <div class="feature-item">
+      <div class="feature-name">Report Download</div>
+      <div class="feature-desc">Download today's daily report PDF directly from the hub</div>
+    </div>
+  </div>
+
+  <!-- DAILY TARGETS -->
+  <h2>Daily Outreach Targets</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Channel</th>
+        <th>Daily Target</th>
+        <th>Weekly Target</th>
+        <th>Tools</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>LinkedIn DMs</td>
+        <td>30/day</td>
+        <td>150/week</td>
+        <td>#1, #2, #3, #4, #5, #6</td>
+      </tr>
+      <tr>
+        <td>Emails</td>
+        <td>20/day</td>
+        <td>100/week</td>
+        <td>#7, #8, #9, #10, #12</td>
+      </tr>
+      <tr>
+        <td>Comments</td>
+        <td>8/day</td>
+        <td>40/week</td>
+        <td>#11</td>
+      </tr>
+      <tr class="total-row">
+        <td>Combined</td>
+        <td>~60/day</td>
+        <td>~300/week</td>
+        <td>All 12 tools</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- WHAT'S NEXT -->
+  <h2>What's Next</h2>
+
+  <div class="next-step">
+    <div class="step-title">1. Import Data for Email Tools (#7, #8, #9, #10, #12)</div>
+    <div class="step-desc">Six tools are built but have no prospect data yet. B2B and Cyber email tools need email harvesting (Apollo.io banned from LinkedIn &mdash; researching alternatives). Substack, Customers, and Referral Email tools need CSV imports from Dane.</div>
+    <div class="step-status">BLOCKED &mdash; Needs CSV files from Dane + email harvesting solution</div>
+  </div>
+
+  <div class="next-step">
+    <div class="step-title">2. Cross-Tool Duplicate Resolution (#1 &harr; #5)</div>
+    <div class="step-desc">Some prospects appear in both B2B 1st Connections and Referral Partner 1st Connections. Need Dane's input to decide which tool each person belongs in.</div>
+    <div class="step-status">BLOCKED &mdash; Needs Dane's per-person decision</div>
+  </div>
+
+  <div class="next-step">
+    <div class="step-title">3. Begin Real A/B Testing</div>
+    <div class="step-desc">A/B testing infrastructure is deployed. Start using the tools for daily outreach to generate variant data. After 50+ messages per variant, the A/B Report will show statistically meaningful reply rate differences.</div>
+    <div class="step-status">READY &mdash; Start sending messages</div>
+  </div>
+
+  <div class="next-step">
+    <div class="step-title">4. Activate Cyber 2nd Prospects</div>
+    <div class="step-desc">221 prospects in Tool #4 are in "not_started" status. Begin sending connection requests in batches of 8&ndash;10/day to stay within LinkedIn limits.</div>
+    <div class="step-status">READY &mdash; 221 prospects queued</div>
+  </div>
+
+  <div class="next-step">
+    <div class="step-title">5. Minor Bonus Fix</div>
+    <div class="step-desc">Tool #1 (B2B 1st) is missing the "Open LinkedIn" button on Replied cards. Quick fix for next session.</div>
+    <div class="step-status">LOW PRIORITY</div>
+  </div>
+
+  <!-- GIT HISTORY -->
+  <h2>Recent Git History</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Commit</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td><code>ae177e5</code></td><td>Fix hub dashboard crash + update to 12 tools (Step 10)</td></tr>
+      <tr><td><code>3be497c</code></td><td>Add A/B testing to 5 active prospecting tools (Step 9)</td></tr>
+      <tr><td><code>ffd1adc</code></td><td>Add next-session pickup instructions for fix plan continuation</td></tr>
+      <tr><td><code>1d9c269</code></td><td>Add Tool #12, draft reply to DM tools, editable LinkedIn URLs</td></tr>
+      <tr><td><code>bfc0963</code></td><td>Add LinkedIn search bar and Remove button to Tools 3, 4, 6</td></tr>
+      <tr><td><code>a2376f5</code></td><td>Update follow-up templates to conversational bump style</td></tr>
+      <tr><td><code>bffdf6e</code></td><td>Add Download Report button to Hub Dashboard</td></tr>
+      <tr><td><code>5e0ed46</code></td><td>Add Unified Hub Dashboard (Step 4/4 of Fix Plan)</td></tr>
+      <tr><td><code>8f70e83</code></td><td>Fix plan Steps 2C, 2D, 3: delete buttons, template editors, comment log fixes</td></tr>
+      <tr><td><code>7c6a93c</code></td><td>Add prospecting tools bug fix and testing plan</td></tr>
+    </tbody>
+  </table>
+
+  <!-- ARCHITECTURE -->
+  <h2>Architecture Summary</h2>
+  <table>
+    <thead>
+      <tr><th>Component</th><th>Details</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Stack</td><td>Node.js + Express servers, single-file HTML front-ends, JSON data files</td></tr>
+      <tr><td>Hosting</td><td>Local (localhost), ports 3849&ndash;3862</td></tr>
+      <tr><td>Launch</td><td><code>node start-all.js</code> from <code>/Desktop/Claude code/</code></td></tr>
+      <tr><td>Data</td><td><code>/Desktop/Claude code/data/</code> &mdash; JSON files per tool (prospects + activity)</td></tr>
+      <tr><td>Backups</td><td>GitHub (private repo) + iCloud Drive</td></tr>
+      <tr><td>Security</td><td>Localhost-only access, CORS restricted, field validation, XSS sanitization</td></tr>
+      <tr><td>Brand</td><td>DA Orange (#F38B1C), Poppins font, white cards with shadows</td></tr>
+      <tr><td>Repo</td><td><code>github.com/danefrederiksen/digital-accomplice-tools</code> (private)</td></tr>
+    </tbody>
+  </table>
+
+  <!-- FOOTER -->
+  <div class="footer">
+    <p><span class="brand">Digital Accomplice</span> &nbsp;|&nbsp; Prospecting Tools Status Report &nbsp;|&nbsp; March 6, 2026</p>
+    <p>Generated by Claude Code &nbsp;|&nbsp; All 10 fix plan steps complete</p>
+  </div>
+
+</div>
+</body>
+</html>
