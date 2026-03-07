@@ -203,7 +203,8 @@ let state = {
   prospects: [],
   importedContacts: [],
   activeTab: 'dashboard',
-  searchQuery: ''
+  searchQuery: '',
+  dashboardSearch: ''
 };
 
 // ============================================================
@@ -401,6 +402,43 @@ function togglePreview(prospectId, step) {
     if (p) el.textContent = getMessage(p, step);
     el.classList.add('show');
   }
+}
+
+// ============================================================
+// LINKEDIN SEARCH HELPERS
+// ============================================================
+function normalizeLinkedInSlug(url) {
+  if (!url) return '';
+  const match = url.match(/linkedin\.com\/in\/([^/?#]+)/i);
+  return match ? match[1].toLowerCase() : '';
+}
+
+function handleDashboardSearch(value) {
+  state.dashboardSearch = value;
+  const container = document.getElementById('dashboard-content');
+  if (container) container.innerHTML = renderDashboardInner();
+}
+
+function renderDashboardSearchResults() {
+  const q = state.dashboardSearch.trim();
+  const qLower = q.toLowerCase();
+  const qSlug = normalizeLinkedInSlug(q);
+
+  let matches = state.prospects.filter(p => {
+    if (qSlug && normalizeLinkedInSlug(p.linkedinUrl) === qSlug) return true;
+    if ((p.name || '').toLowerCase().includes(qLower)) return true;
+    if ((p.company || '').toLowerCase().includes(qLower)) return true;
+    if ((p.linkedinUrl || '').toLowerCase().includes(qLower)) return true;
+    return false;
+  });
+
+  if (matches.length === 0) {
+    return `<div class="empty"><div class="icon">&#x1F50D;</div>No prospects match that search.<br>Try a different name or LinkedIn URL.</div>`;
+  }
+
+  let html = `<div class="search-count">${matches.length} match${matches.length !== 1 ? 'es' : ''}</div>`;
+  matches.forEach(p => { html += renderProspectCard(p); });
+  return html;
 }
 
 // ============================================================
@@ -817,6 +855,23 @@ function renderDailyProgress() {
 // RENDER — DASHBOARD
 // ============================================================
 function renderDashboard() {
+  let html = '';
+
+  // LinkedIn search bar
+  html += `<input type="text" class="search-bar" placeholder="Paste LinkedIn URL or search by name to find a prospect..." value="${esc(state.dashboardSearch)}" oninput="handleDashboardSearch(this.value)">`;
+
+  html += `<div id="dashboard-content">`;
+  html += renderDashboardInner();
+  html += `</div>`;
+  return html;
+}
+
+function renderDashboardInner() {
+  // Search mode — show matching prospects with full action cards
+  if (state.dashboardSearch.trim()) {
+    return renderDashboardSearchResults();
+  }
+
   const connReqList = getConnectionRequestsToday();
   const connCheckList = getConnectionsToCheck();
   const dmList = getDmToday();
@@ -1022,7 +1077,7 @@ function renderDashboardCard(p, mode) {
     <button class="card-delete" onclick="removeProspect('${p.id}')" title="Remove prospect">&times;</button>
     ${extra}
     ${renderTimeline(p)}
-    <div class="btn-group">${buttons}</div>
+    <div class="btn-group">${buttons}<button class="btn btn-danger btn-sm" onclick="removeProspect('${p.id}')">Remove</button></div>
   </div>`;
 }
 
@@ -1182,11 +1237,14 @@ function renderProspectsList() {
   let filtered = [...state.prospects].sort((a, b) => order.indexOf(a.status) - order.indexOf(b.status));
 
   if (q) {
-    filtered = filtered.filter(p =>
-      (p.name || '').toLowerCase().includes(q) ||
-      (p.company || '').toLowerCase().includes(q) ||
-      (p.title || '').toLowerCase().includes(q)
-    );
+    const qSlug = normalizeLinkedInSlug(q);
+    filtered = filtered.filter(p => {
+      if (qSlug && normalizeLinkedInSlug(p.linkedinUrl) === qSlug) return true;
+      return (p.name || '').toLowerCase().includes(q) ||
+        (p.company || '').toLowerCase().includes(q) ||
+        (p.title || '').toLowerCase().includes(q) ||
+        (p.linkedinUrl || '').toLowerCase().includes(q);
+    });
   }
 
   if (filtered.length === 0) {
