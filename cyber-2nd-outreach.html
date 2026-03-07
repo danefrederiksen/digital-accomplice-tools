@@ -171,6 +171,34 @@ body { font-family: 'Poppins', sans-serif; background: #f5f5f5; color: #1a1a1a; 
 .btn-templates { background: transparent; border: 1px solid #F8901E; color: #F8901E; padding: 6px 14px; border-radius: 6px; font-family: 'Poppins', sans-serif; font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.15s; }
 .btn-templates:hover { background: #F8901E; color: #fff; }
 
+/* A/B variant badge on prospect cards */
+.ab-badge { display: inline-block; font-size: 10px; font-weight: 700; padding: 2px 7px; border-radius: 4px; margin-left: 6px; vertical-align: middle; }
+.ab-a { background: #e3f2fd; color: #1565c0; }
+.ab-b { background: #fce4ec; color: #c62828; }
+
+/* Template editor: A/B step sections */
+.tpl-step-section { margin-bottom: 20px; border: 1px solid #eee; border-radius: 8px; padding: 12px 16px; }
+.tpl-step-header { font-size: 14px; font-weight: 700; color: #333; margin-bottom: 8px; }
+.tpl-variant-tabs { display: flex; gap: 0; margin-bottom: 8px; }
+.tpl-vtab { padding: 6px 16px; border: 1px solid #ddd; background: #f5f5f5; font-family: 'Poppins', sans-serif; font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.15s; }
+.tpl-vtab:first-child { border-radius: 6px 0 0 6px; }
+.tpl-vtab:last-child { border-radius: 0 6px 6px 0; border-left: none; }
+.tpl-vtab.active { background: #F8901E; color: #fff; border-color: #F8901E; }
+.tpl-vtab:hover:not(.active) { background: #eee; }
+
+/* A/B Report tab */
+.ab-report { background: #fff; border-radius: 10px; padding: 20px; border: 1px solid #e5e5e5; }
+.ab-report h3 { font-size: 16px; font-weight: 700; margin-bottom: 16px; }
+.ab-report h4 { margin-top: 16px; font-size: 14px; font-weight: 700; color: #333; }
+.ab-report table { width: 100%; border-collapse: collapse; font-size: 13px; margin-top: 6px; }
+.ab-report th { text-align: left; padding: 8px 12px; border-bottom: 2px solid #eee; color: #666; font-weight: 600; font-size: 12px; text-transform: uppercase; }
+.ab-report td { padding: 8px 12px; border-bottom: 1px solid #f0f0f0; }
+.rate-bar { display: inline-block; height: 16px; border-radius: 4px; vertical-align: middle; }
+.rate-bar-a { background: #1565c0; }
+.rate-bar-b { background: #c62828; }
+.ab-winner { font-weight: 700; color: #2e7d32; }
+.sample-warning { font-size: 11px; color: #999; font-style: italic; margin-top: 4px; }
+
 @media (max-width: 700px) {
   .content { padding: 16px; }
   .form-row { flex-direction: column; }
@@ -313,11 +341,17 @@ function todayStr() {
 // MESSAGE TEMPLATES (editable via localStorage)
 // ============================================================
 const TOOL_KEY = 'da_templates_tool4';
+const AB_COUNTER_KEY = 'da_ab_counter_tool4';
+const TEMPLATE_STEPS = ['connection_note', 'dm', 'follow_up_1', 'follow_up_2'];
 const DEFAULT_TEMPLATES = {
-  'connection_note': `Hi {name} — I produce video content for cybersecurity companies like AWS and BreachRx. Connecting with security leaders in the space. — Dane`,
-  'dm': `Hey {name}, thanks for connecting! I'm launching a video series on cybersecurity — how security leaders are navigating the threat landscape as AI changes the game.\n\nI've been producing video for AWS, BreachRx, and other cyber companies, and I want to bring those conversations to LinkedIn.\n\nTakes just 15 min, no prep and I'll post on LinkedIn same day and tag you.\n\nhttps://www.digitalaccomplice.com/video-series\n\nInterested?\n\nDane`,
-  'follow_up_1': `Hey {name} — just floating this back up. Would love to feature you in the series. 15 min, zero prep. Worth a quick chat?`,
-  'follow_up_2': `{name} — last one from me on this. If the timing's off no worries at all. But if you're open to it, I'd love to make it happen. Either way, keep killing it.\n\nDane`
+  'connection_note_a': `Hi {name} — I produce video content for cybersecurity companies like AWS and BreachRx. Connecting with security leaders in the space. — Dane`,
+  'connection_note_b': `{name} — I help cybersecurity companies turn thought leadership into video content that drives pipeline. Would love to connect. — Dane`,
+  'dm_a': `Hey {name}, thanks for connecting! I'm launching a video series on cybersecurity — how security leaders are navigating the threat landscape as AI changes the game.\n\nI've been producing video for AWS, BreachRx, and other cyber companies, and I want to bring those conversations to LinkedIn.\n\nTakes just 15 min, no prep and I'll post on LinkedIn same day and tag you.\n\nhttps://www.digitalaccomplice.com/video-series\n\nInterested?\n\nDane`,
+  'dm_b': `Hey {name}, appreciate the connection! I'm producing a cybersecurity video series — short interviews with security leaders on how they're tackling today's biggest threats.\n\nI've worked with companies like AWS and BreachRx, and I want to spotlight leaders like you.\n\n15 min, zero prep, posted same day on LinkedIn.\n\nhttps://www.digitalaccomplice.com/video-series\n\nWould you be up for it?\n\nDane`,
+  'follow_up_1_a': `Hey {name} — just floating this back up. Would love to feature you in the series. 15 min, zero prep. Worth a quick chat?`,
+  'follow_up_1_b': `{name} — circling back on the video series. Security leaders like you have great stories to tell. 15 min, we handle everything. Interested?`,
+  'follow_up_2_a': `{name} — last one from me on this. If the timing's off no worries at all. But if you're open to it, I'd love to make it happen. Either way, keep killing it.\n\nDane`,
+  'follow_up_2_b': `{name} — final nudge on the video series. I know security leaders are slammed, so no pressure. But if you want to get your perspective out there, the door's open.\n\nDane`
 };
 
 const TEMPLATE_LABELS = {
@@ -339,14 +373,51 @@ function saveTemplates(templates) {
   localStorage.setItem(TOOL_KEY, JSON.stringify(templates));
 }
 
+function getABCounter() {
+  try { return JSON.parse(localStorage.getItem(AB_COUNTER_KEY)) || {}; } catch { return {}; }
+}
+
+function nextABVariant(step) {
+  const counters = getABCounter();
+  const a = (counters[step + '_a'] || 0);
+  const b = (counters[step + '_b'] || 0);
+  return b < a ? 'b' : 'a';
+}
+
+function assignVariant(prospect, step) {
+  const key = 'ab_' + step;
+  if (prospect[key]) return prospect[key];
+  const variant = nextABVariant(step);
+  prospect[key] = variant;
+  const counters = getABCounter();
+  counters[step + '_' + variant] = (counters[step + '_' + variant] || 0) + 1;
+  localStorage.setItem(AB_COUNTER_KEY, JSON.stringify(counters));
+  apiPut('/api/prospects/' + prospect.id, { [key]: variant }).catch(() => {});
+  return variant;
+}
+
+function abBadge(prospect, step) {
+  const key = 'ab_' + step;
+  const v = prospect[key];
+  if (!v) return '';
+  return `<span class="ab-badge ab-${v}">Variant ${v.toUpperCase()}</span>`;
+}
+
 function openTemplateEditor() {
   const templates = loadTemplates();
   const modal = document.getElementById('template-modal-content');
-  let html = `<h2>Edit Message Templates</h2><p class="hint">Use {name} for first name, {company} for company name.</p>`;
-  for (const [key, label] of Object.entries(TEMPLATE_LABELS)) {
-    html += `<label>${label}</label>`;
-    html += `<textarea id="tpl-${key}">${esc(templates[key] || DEFAULT_TEMPLATES[key])}</textarea>`;
-  }
+  let html = `<h2>Edit Message Templates</h2><p class="hint">Use {name} for first name, {company} for company name. Each step has A and B variants for testing.</p>`;
+  TEMPLATE_STEPS.forEach(step => {
+    html += `<div class="tpl-step-section" id="tpl-section-${step}">
+      <div class="tpl-step-header">${TEMPLATE_LABELS[step]}</div>
+      <div class="tpl-variant-tabs">
+        <div class="tpl-vtab active" onclick="switchVariantTab('${step}','a')">Variant A</div>
+        <div class="tpl-vtab" onclick="switchVariantTab('${step}','b')">Variant B</div>
+      </div>
+      <textarea id="tpl-${step}_a" style="display:block">${esc(templates[step + '_a'] || '')}</textarea>
+      <textarea id="tpl-${step}_b" style="display:none">${esc(templates[step + '_b'] || '')}</textarea>
+    </div>`;
+  });
   html += `<div class="modal-actions">
     <button class="btn btn-secondary" onclick="resetTemplates()">Reset to Defaults</button>
     <button class="btn btn-secondary" onclick="closeTemplateEditor()">Cancel</button>
@@ -356,15 +427,28 @@ function openTemplateEditor() {
   document.getElementById('template-modal').classList.add('show');
 }
 
+function switchVariantTab(step, variant) {
+  const section = document.getElementById('tpl-section-' + step);
+  if (!section) return;
+  section.querySelectorAll('.tpl-vtab').forEach((tab, i) => {
+    tab.classList.toggle('active', (i === 0 && variant === 'a') || (i === 1 && variant === 'b'));
+  });
+  const aEl = document.getElementById('tpl-' + step + '_a');
+  const bEl = document.getElementById('tpl-' + step + '_b');
+  if (aEl) aEl.style.display = variant === 'a' ? 'block' : 'none';
+  if (bEl) bEl.style.display = variant === 'b' ? 'block' : 'none';
+}
+
 function closeTemplateEditor() {
   document.getElementById('template-modal').classList.remove('show');
 }
 
 function saveTemplateEditor() {
   const templates = {};
-  for (const key of Object.keys(TEMPLATE_LABELS)) {
-    templates[key] = document.getElementById('tpl-' + key).value;
-  }
+  TEMPLATE_STEPS.forEach(step => {
+    templates[step + '_a'] = document.getElementById('tpl-' + step + '_a').value;
+    templates[step + '_b'] = document.getElementById('tpl-' + step + '_b').value;
+  });
   saveTemplates(templates);
   closeTemplateEditor();
 }
@@ -381,7 +465,8 @@ function firstName(fullName) {
 
 function getMessage(prospect, step) {
   const templates = loadTemplates();
-  const template = templates[step] || '';
+  const variant = assignVariant(prospect, step);
+  const template = templates[step + '_' + variant] || templates[step + '_a'] || '';
   return template
     .replace(/\{name\}/g, firstName(prospect.name))
     .replace(/\{company\}/g, prospect.company || 'your company');
@@ -838,7 +923,8 @@ function render() {
     { id: 'dashboard', label: 'Dashboard' },
     { id: 'import', label: 'Import' },
     { id: 'prospects', label: 'All Prospects' },
-    { id: 'activity', label: 'Activity Log' }
+    { id: 'activity', label: 'Activity Log' },
+    { id: 'ab_report', label: 'A/B Report' }
   ];
   document.getElementById('tabs').innerHTML = tabs.map(t =>
     `<div class="tab ${state.activeTab === t.id ? 'active' : ''}" onclick="switchTab('${t.id}')">${t.label}</div>`
@@ -853,6 +939,7 @@ function render() {
     el.innerHTML = '<div class="empty">Loading activity...</div>';
     loadActivityLog();
   }
+  else if (state.activeTab === 'ab_report') el.innerHTML = renderABReport();
 }
 
 function switchTab(tab) {
@@ -1036,7 +1123,7 @@ function renderDashboardCard(p, mode) {
 
   if (mode === 'connection_request') {
     buttons = `
-      <button class="btn btn-copy btn-sm" id="copy-btn-${p.id}" onclick="copyMessage('${p.id}','connection_note')">Copy Connection Note</button>
+      <button class="btn btn-copy btn-sm" id="copy-btn-${p.id}" onclick="copyMessage('${p.id}','connection_note')">Copy Connection Note</button>${abBadge(p, 'connection_note')}
       <button class="btn btn-secondary btn-sm" onclick="togglePreview('${p.id}','connection_note')">Preview</button>
       <button class="btn btn-primary btn-sm" onclick="markConnectionSent('${p.id}')">Mark Request Sent</button>
     `;
@@ -1052,7 +1139,7 @@ function renderDashboardCard(p, mode) {
     `;
   } else if (mode === 'dm') {
     buttons = `
-      <button class="btn btn-copy btn-sm" id="copy-btn-${p.id}" onclick="copyMessage('${p.id}','dm')">Copy Message</button>
+      <button class="btn btn-copy btn-sm" id="copy-btn-${p.id}" onclick="copyMessage('${p.id}','dm')">Copy Message</button>${abBadge(p, 'dm')}
       <button class="btn btn-secondary btn-sm" onclick="togglePreview('${p.id}','dm')">Preview</button>
       <button class="btn btn-primary btn-sm" onclick="markDmSent('${p.id}')">Mark DM Sent</button>
     `;
@@ -1063,7 +1150,7 @@ function renderDashboardCard(p, mode) {
       const overdueLabel = daysOver > 0 ? `<span class="overdue">${daysOver} day${daysOver > 1 ? 's' : ''} overdue</span>` : '';
       extra = `<div class="due-info">First follow-up ${overdueLabel}</div><div class="msg-preview" id="msg-preview-${p.id}"></div>`;
       buttons = `
-        <button class="btn btn-copy btn-sm" id="copy-btn-${p.id}" onclick="copyMessage('${p.id}','follow_up_1')">Copy Message</button>
+        <button class="btn btn-copy btn-sm" id="copy-btn-${p.id}" onclick="copyMessage('${p.id}','follow_up_1')">Copy Message</button>${abBadge(p, 'follow_up_1')}
         <button class="btn btn-secondary btn-sm" onclick="togglePreview('${p.id}','follow_up_1')">Preview</button>
         <button class="btn btn-primary btn-sm" onclick="markFollowUp1('${p.id}')">Mark Follow-Up Sent</button>
         <button class="btn btn-success btn-sm" onclick="markReplied('${p.id}')">Got Reply</button>
@@ -1073,7 +1160,7 @@ function renderDashboardCard(p, mode) {
       const overdueLabel = daysOver > 0 ? `<span class="overdue">${daysOver} day${daysOver > 1 ? 's' : ''} overdue</span>` : '';
       extra = `<div class="due-info">Final nudge ${overdueLabel}</div><div class="msg-preview" id="msg-preview-${p.id}"></div>`;
       buttons = `
-        <button class="btn btn-copy btn-sm" id="copy-btn-${p.id}" onclick="copyMessage('${p.id}','follow_up_2')">Copy Message</button>
+        <button class="btn btn-copy btn-sm" id="copy-btn-${p.id}" onclick="copyMessage('${p.id}','follow_up_2')">Copy Message</button>${abBadge(p, 'follow_up_2')}
         <button class="btn btn-secondary btn-sm" onclick="togglePreview('${p.id}','follow_up_2')">Preview</button>
         <button class="btn btn-primary btn-sm" onclick="markFollowUp2('${p.id}')">Mark Final Nudge Sent</button>
         <button class="btn btn-success btn-sm" onclick="markReplied('${p.id}')">Got Reply</button>
@@ -1352,6 +1439,79 @@ async function loadActivityLog() {
   } catch (err) {
     document.getElementById('content').innerHTML = '<div class="empty">Failed to load activity log.</div>';
   }
+}
+
+// ============================================================
+// A/B REPORT
+// ============================================================
+function renderABReport() {
+  const reportSteps = TEMPLATE_STEPS.filter(s => s !== 'connection_note');
+  const replied = state.prospects.filter(p => p.status === 'replied');
+  const cold = state.prospects.filter(p => p.status === 'cold');
+  const active = state.prospects.filter(p => !['not_started','replied','cold'].includes(p.status));
+
+  let html = `<div class="ab-report">`;
+  html += `<h3>A/B Test Report</h3>`;
+  html += `<p style="font-size:13px;color:#666;margin-bottom:16px;">Compares Variant A vs B reply rates across message steps. Connection notes are excluded (no reply expected).</p>`;
+
+  reportSteps.forEach(step => {
+    const label = TEMPLATE_LABELS[step];
+    // Find all prospects that have been assigned a variant for this step
+    const withVariant = state.prospects.filter(p => p['ab_' + step]);
+    const aProspects = withVariant.filter(p => p['ab_' + step] === 'a');
+    const bProspects = withVariant.filter(p => p['ab_' + step] === 'b');
+
+    const aReplied = aProspects.filter(p => p.status === 'replied').length;
+    const bReplied = bProspects.filter(p => p.status === 'replied').length;
+    const aTotal = aProspects.length;
+    const bTotal = bProspects.length;
+    const aRate = aTotal > 0 ? Math.round((aReplied / aTotal) * 100) : 0;
+    const bRate = bTotal > 0 ? Math.round((bReplied / bTotal) * 100) : 0;
+
+    const maxRate = Math.max(aRate, bRate, 1);
+    const aBarW = Math.round((aRate / maxRate) * 120);
+    const bBarW = Math.round((bRate / maxRate) * 120);
+    const winner = (aTotal >= 5 && bTotal >= 5) ? (aRate > bRate ? 'A' : bRate > aRate ? 'B' : 'Tie') : '';
+
+    html += `<h4>${label}</h4>`;
+    html += `<table>
+      <thead><tr><th>Variant</th><th>Sent</th><th>Replied</th><th>Rate</th><th></th></tr></thead>
+      <tbody>
+        <tr>
+          <td><span class="ab-badge ab-a">A</span>${winner === 'A' ? ' <span class="ab-winner">WINNER</span>' : ''}</td>
+          <td>${aTotal}</td>
+          <td>${aReplied}</td>
+          <td>${aRate}% <span class="rate-bar rate-bar-a" style="width:${aBarW}px"></span></td>
+          <td></td>
+        </tr>
+        <tr>
+          <td><span class="ab-badge ab-b">B</span>${winner === 'B' ? ' <span class="ab-winner">WINNER</span>' : ''}</td>
+          <td>${bTotal}</td>
+          <td>${bReplied}</td>
+          <td>${bRate}% <span class="rate-bar rate-bar-b" style="width:${bBarW}px"></span></td>
+          <td></td>
+        </tr>
+      </tbody>
+    </table>`;
+    if (aTotal < 5 || bTotal < 5) {
+      html += `<div class="sample-warning">Need at least 5 sends per variant before declaring a winner (A: ${aTotal}, B: ${bTotal})</div>`;
+    }
+  });
+
+  // Summary
+  html += `<h4 style="margin-top:24px;">Overall Summary</h4>`;
+  html += `<table>
+    <thead><tr><th>Metric</th><th>Count</th></tr></thead>
+    <tbody>
+      <tr><td>Total prospects</td><td>${state.prospects.length}</td></tr>
+      <tr><td>Active (in sequence)</td><td>${active.length}</td></tr>
+      <tr><td>Replied</td><td>${replied.length}</td></tr>
+      <tr><td>Cold / exhausted</td><td>${cold.length}</td></tr>
+    </tbody>
+  </table>`;
+
+  html += `</div>`;
+  return html;
 }
 
 // ============================================================

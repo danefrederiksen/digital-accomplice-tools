@@ -171,6 +171,34 @@ body { font-family: 'Poppins', sans-serif; background: #f5f5f5; color: #1a1a1a; 
 .btn-templates { background: transparent; border: 1px solid #F8901E; color: #F8901E; padding: 6px 14px; border-radius: 6px; font-family: 'Poppins', sans-serif; font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.15s; }
 .btn-templates:hover { background: #F8901E; color: #fff; }
 
+/* A/B variant badge on prospect cards */
+.ab-badge { display: inline-block; font-size: 10px; font-weight: 700; padding: 2px 7px; border-radius: 4px; margin-left: 6px; vertical-align: middle; }
+.ab-a { background: #e3f2fd; color: #1565c0; }
+.ab-b { background: #fce4ec; color: #c62828; }
+
+/* Template editor: A/B step sections */
+.tpl-step-section { margin-bottom: 20px; border: 1px solid #eee; border-radius: 8px; padding: 12px 16px; }
+.tpl-step-header { font-size: 14px; font-weight: 700; color: #333; margin-bottom: 8px; }
+.tpl-variant-tabs { display: flex; gap: 0; margin-bottom: 8px; }
+.tpl-vtab { padding: 6px 16px; border: 1px solid #ddd; background: #f5f5f5; font-family: 'Poppins', sans-serif; font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.15s; }
+.tpl-vtab:first-child { border-radius: 6px 0 0 6px; }
+.tpl-vtab:last-child { border-radius: 0 6px 6px 0; border-left: none; }
+.tpl-vtab.active { background: #F8901E; color: #fff; border-color: #F8901E; }
+.tpl-vtab:hover:not(.active) { background: #eee; }
+
+/* A/B Report tab */
+.ab-report { background: #fff; border-radius: 10px; padding: 20px; border: 1px solid #e5e5e5; }
+.ab-report h3 { font-size: 16px; font-weight: 700; margin-bottom: 16px; }
+.ab-report h4 { margin-top: 16px; font-size: 14px; font-weight: 700; color: #333; }
+.ab-report table { width: 100%; border-collapse: collapse; font-size: 13px; margin-top: 6px; }
+.ab-report th { text-align: left; padding: 8px 12px; border-bottom: 2px solid #eee; color: #666; font-weight: 600; font-size: 12px; text-transform: uppercase; }
+.ab-report td { padding: 8px 12px; border-bottom: 1px solid #f0f0f0; }
+.rate-bar { display: inline-block; height: 16px; border-radius: 4px; vertical-align: middle; }
+.rate-bar-a { background: #1565c0; }
+.rate-bar-b { background: #c62828; }
+.ab-winner { font-weight: 700; color: #2e7d32; }
+.sample-warning { font-size: 11px; color: #999; font-style: italic; margin-top: 4px; }
+
 @media (max-width: 700px) {
   .content { padding: 16px; }
   .form-row { flex-direction: column; }
@@ -313,11 +341,17 @@ function todayStr() {
 // MESSAGE TEMPLATES (editable via localStorage)
 // ============================================================
 const TOOL_KEY = 'da_templates_tool6';
+const AB_COUNTER_KEY = 'da_ab_counter_tool6';
+const TEMPLATE_STEPS = ['connection_note', 'dm', 'follow_up_1', 'follow_up_2'];
 const DEFAULT_TEMPLATES = {
-  'connection_note': `Hi {name} — I run a video agency for B2B companies. Looks like we serve a similar audience — always looking to connect with potential referral partners. — Dane`,
-  'dm': `Hey {name}, thanks for connecting! I run Digital Accomplice — video production for B2B companies. I noticed we serve a similar audience and wanted to see if there's an opportunity to send referrals back and forth.\n\nWe do video strategy, production, and LinkedIn content. When your clients need video, we're a natural fit. And if we meet companies that need what you do, happy to send them your way.\n\nWorth a quick chat?\n\nDane`,
-  'follow_up_1': `Hey {name} — just bumping this. Think there's real overlap here. 15 min to see if it makes sense?`,
-  'follow_up_2': `{name} — last one from me on this. If referrals aren't your thing right now, totally get it. But if you ever need a video partner for your clients, door's always open.\n\nDane`
+  'connection_note_a': `Hi {name} — I run a video agency for B2B companies. Looks like we serve a similar audience — always looking to connect with potential referral partners. — Dane`,
+  'dm_a': `Hey {name}, thanks for connecting! I run Digital Accomplice — video production for B2B companies. I noticed we serve a similar audience and wanted to see if there's an opportunity to send referrals back and forth.\n\nWe do video strategy, production, and LinkedIn content. When your clients need video, we're a natural fit. And if we meet companies that need what you do, happy to send them your way.\n\nWorth a quick chat?\n\nDane`,
+  'follow_up_1_a': `Hey {name} — just bumping this. Think there's real overlap here. 15 min to see if it makes sense?`,
+  'connection_note_b': `{name} \u2014 saw your work and think we could be a great mutual referral fit. I do video for B2B companies \u2014 would love to connect. \u2014 Dane`,
+  'dm_b': `Hey {name}, glad we connected! I noticed we both work with B2B companies and thought there might be a natural referral opportunity here.\n\nI run Digital Accomplice \u2014 we help B2B teams with video strategy, production, and distribution. When our clients need services like yours, I'd love to have someone solid to point them to.\n\nOpen to a quick 15-min call to see if it's a fit?\n\nDane`,
+  'follow_up_1_b': `{name} \u2014 circling back on this. I keep running into companies that could use what you do. Would be great to set up a quick referral chat \u2014 worth 15 min?`,
+  'follow_up_2_b': `{name} \u2014 final nudge. No worries if the timing's off. Just know that if your clients ever need video, we'd take great care of them. Feel free to reach out anytime.\n\nDane`,
+  'follow_up_2_a': `{name} — last one from me on this. If referrals aren't your thing right now, totally get it. But if you ever need a video partner for your clients, door's always open.\n\nDane`
 };
 
 const TEMPLATE_LABELS = {
@@ -330,7 +364,21 @@ const TEMPLATE_LABELS = {
 function loadTemplates() {
   try {
     const saved = localStorage.getItem(TOOL_KEY);
-    if (saved) return { ...DEFAULT_TEMPLATES, ...JSON.parse(saved) };
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      // Migration: convert old single-variant keys to A/B format
+      let migrated = false;
+      for (const step of TEMPLATE_STEPS) {
+        if (parsed[step] && !parsed[step + '_a']) {
+          parsed[step + '_a'] = parsed[step];
+          parsed[step + '_b'] = DEFAULT_TEMPLATES[step + '_b'];
+          delete parsed[step];
+          migrated = true;
+        }
+      }
+      if (migrated) saveTemplates(parsed);
+      return { ...DEFAULT_TEMPLATES, ...parsed };
+    }
   } catch {}
   return { ...DEFAULT_TEMPLATES };
 }
@@ -342,10 +390,18 @@ function saveTemplates(templates) {
 function openTemplateEditor() {
   const templates = loadTemplates();
   const modal = document.getElementById('template-modal-content');
-  let html = `<h2>Edit Message Templates</h2><p class="hint">Use {name} for first name, {company} for company name.</p>`;
-  for (const [key, label] of Object.entries(TEMPLATE_LABELS)) {
-    html += `<label>${label}</label>`;
-    html += `<textarea id="tpl-${key}">${esc(templates[key] || DEFAULT_TEMPLATES[key])}</textarea>`;
+  let html = `<h2>Edit Message Templates</h2><p class="hint">Use {name} for first name, {company} for company name. Each step has A and B variants for testing.</p>`;
+  for (const step of TEMPLATE_STEPS) {
+    const label = TEMPLATE_LABELS[step];
+    html += `<div class="tpl-step-section" id="tpl-section-${step}">
+      <div class="tpl-step-header">${label}</div>
+      <div class="tpl-variant-tabs">
+        <button class="tpl-vtab active" id="vtab-${step}-a" onclick="switchVariantTab('${step}','a')">Variant A</button>
+        <button class="tpl-vtab" id="vtab-${step}-b" onclick="switchVariantTab('${step}','b')">Variant B</button>
+      </div>
+      <textarea id="tpl-${step}_a" style="display:block;">${esc(templates[step + '_a'] || DEFAULT_TEMPLATES[step + '_a'])}</textarea>
+      <textarea id="tpl-${step}_b" style="display:none;">${esc(templates[step + '_b'] || DEFAULT_TEMPLATES[step + '_b'])}</textarea>
+    </div>`;
   }
   html += `<div class="modal-actions">
     <button class="btn btn-secondary" onclick="resetTemplates()">Reset to Defaults</button>
@@ -356,14 +412,29 @@ function openTemplateEditor() {
   document.getElementById('template-modal').classList.add('show');
 }
 
+function switchVariantTab(step, variant) {
+  const aTab = document.getElementById('vtab-' + step + '-a');
+  const bTab = document.getElementById('vtab-' + step + '-b');
+  const aArea = document.getElementById('tpl-' + step + '_a');
+  const bArea = document.getElementById('tpl-' + step + '_b');
+  if (variant === 'a') {
+    aTab.classList.add('active'); bTab.classList.remove('active');
+    aArea.style.display = 'block'; bArea.style.display = 'none';
+  } else {
+    bTab.classList.add('active'); aTab.classList.remove('active');
+    bArea.style.display = 'block'; aArea.style.display = 'none';
+  }
+}
+
 function closeTemplateEditor() {
   document.getElementById('template-modal').classList.remove('show');
 }
 
 function saveTemplateEditor() {
   const templates = {};
-  for (const key of Object.keys(TEMPLATE_LABELS)) {
-    templates[key] = document.getElementById('tpl-' + key).value;
+  for (const step of TEMPLATE_STEPS) {
+    templates[step + '_a'] = document.getElementById('tpl-' + step + '_a').value;
+    templates[step + '_b'] = document.getElementById('tpl-' + step + '_b').value;
   }
   saveTemplates(templates);
   closeTemplateEditor();
@@ -379,9 +450,11 @@ function firstName(fullName) {
   return (fullName || '').split(' ')[0];
 }
 
-function getMessage(prospect, step) {
+function getMessage(prospect, step, variant) {
   const templates = loadTemplates();
-  const template = templates[step] || '';
+  const v = variant || (prospect.abVariants && prospect.abVariants[step] ? prospect.abVariants[step].toLowerCase() : 'a');
+  const key = step + '_' + v;
+  const template = templates[key] || DEFAULT_TEMPLATES[key] || '';
   return template
     .replace(/\{name\}/g, firstName(prospect.name))
     .replace(/\{company\}/g, prospect.company || 'your company');
@@ -390,14 +463,35 @@ function getMessage(prospect, step) {
 async function copyMessage(prospectId, step) {
   const p = state.prospects.find(x => x.id === prospectId);
   if (!p) return;
-  const msg = getMessage(p, step);
+
+  let variant;
+  if (p.abVariants && p.abVariants[step]) {
+    variant = p.abVariants[step];
+  } else {
+    let counter = parseInt(localStorage.getItem(AB_COUNTER_KEY) || '0');
+    variant = (counter % 2 === 0) ? 'A' : 'B';
+    localStorage.setItem(AB_COUNTER_KEY, String(counter + 1));
+    const abVariants = { ...(p.abVariants || {}), [step]: variant };
+    try {
+      await apiPut('/api/prospects/' + prospectId, { abVariants });
+      p.abVariants = abVariants;
+    } catch (err) { console.error('Failed to save variant assignment:', err); }
+  }
+
+  const msg = getMessage(p, step, variant.toLowerCase());
   try {
     await navigator.clipboard.writeText(msg);
     const btn = document.getElementById('copy-btn-' + prospectId);
     if (btn) {
-      btn.textContent = 'Copied!';
+      btn.textContent = 'Copied! (' + variant + ')';
       btn.classList.add('copied');
       setTimeout(() => { btn.textContent = step === 'connection_note' ? 'Copy Connection Note' : 'Copy Message'; btn.classList.remove('copied'); }, 2000);
+    }
+    const badge = document.getElementById('ab-badge-' + prospectId + '-' + step);
+    if (badge) {
+      badge.textContent = variant;
+      badge.className = 'ab-badge ab-' + variant.toLowerCase();
+      badge.style.display = '';
     }
   } catch (err) { alert('Copy failed \u2014 check browser permissions'); }
 }
@@ -412,6 +506,12 @@ function togglePreview(prospectId, step) {
     if (p) el.textContent = getMessage(p, step);
     el.classList.add('show');
   }
+}
+
+function abBadge(p, step) {
+  if (!p.abVariants || !p.abVariants[step]) return `<span class="ab-badge" id="ab-badge-${p.id}-${step}" style="display:none;"></span>`;
+  const v = p.abVariants[step];
+  return `<span class="ab-badge ab-${v.toLowerCase()}" id="ab-badge-${p.id}-${step}">${v}</span>`;
 }
 
 // ============================================================
@@ -839,7 +939,8 @@ function render() {
     { id: 'dashboard', label: 'Dashboard' },
     { id: 'import', label: 'Import' },
     { id: 'prospects', label: 'All Prospects' },
-    { id: 'activity', label: 'Activity Log' }
+    { id: 'activity', label: 'Activity Log' },
+    { id: 'ab_report', label: 'A/B Report' }
   ];
   document.getElementById('tabs').innerHTML = tabs.map(t =>
     `<div class="tab ${state.activeTab === t.id ? 'active' : ''}" onclick="switchTab('${t.id}')">${t.label}</div>`
@@ -854,6 +955,7 @@ function render() {
     el.innerHTML = '<div class="empty">Loading activity...</div>';
     loadActivityLog();
   }
+  else if (state.activeTab === 'ab_report') el.innerHTML = renderABReport();
 }
 
 function switchTab(tab) {
@@ -1040,7 +1142,7 @@ function renderDashboardCard(p, mode) {
 
   if (mode === 'connection_request') {
     buttons = `
-      <button class="btn btn-copy btn-sm" id="copy-btn-${p.id}" onclick="copyMessage('${p.id}','connection_note')">Copy Connection Note</button>
+      <button class="btn btn-copy btn-sm" id="copy-btn-${p.id}" onclick="copyMessage('${p.id}','connection_note')">Copy Connection Note</button>${abBadge(p, 'connection_note')}
       <button class="btn btn-secondary btn-sm" onclick="togglePreview('${p.id}','connection_note')">Preview</button>
       <button class="btn btn-primary btn-sm" onclick="markConnectionSent('${p.id}')">Mark Request Sent</button>
     `;
@@ -1056,7 +1158,7 @@ function renderDashboardCard(p, mode) {
     `;
   } else if (mode === 'dm') {
     buttons = `
-      <button class="btn btn-copy btn-sm" id="copy-btn-${p.id}" onclick="copyMessage('${p.id}','dm')">Copy Message</button>
+      <button class="btn btn-copy btn-sm" id="copy-btn-${p.id}" onclick="copyMessage('${p.id}','dm')">Copy Message</button>${abBadge(p, 'dm')}
       <button class="btn btn-secondary btn-sm" onclick="togglePreview('${p.id}','dm')">Preview</button>
       <button class="btn btn-primary btn-sm" onclick="markDmSent('${p.id}')">Mark DM Sent</button>
     `;
@@ -1067,7 +1169,7 @@ function renderDashboardCard(p, mode) {
       const overdueLabel = daysOver > 0 ? `<span class="overdue">${daysOver} day${daysOver > 1 ? 's' : ''} overdue</span>` : '';
       extra = `<div class="due-info">First follow-up ${overdueLabel}</div><div class="msg-preview" id="msg-preview-${p.id}"></div>`;
       buttons = `
-        <button class="btn btn-copy btn-sm" id="copy-btn-${p.id}" onclick="copyMessage('${p.id}','follow_up_1')">Copy Message</button>
+        <button class="btn btn-copy btn-sm" id="copy-btn-${p.id}" onclick="copyMessage('${p.id}','follow_up_1')">Copy Message</button>${abBadge(p, 'follow_up_1')}
         <button class="btn btn-secondary btn-sm" onclick="togglePreview('${p.id}','follow_up_1')">Preview</button>
         <button class="btn btn-primary btn-sm" onclick="markFollowUp1('${p.id}')">Mark Follow-Up Sent</button>
         <button class="btn btn-success btn-sm" onclick="markReplied('${p.id}')">Got Reply</button>
@@ -1077,7 +1179,7 @@ function renderDashboardCard(p, mode) {
       const overdueLabel = daysOver > 0 ? `<span class="overdue">${daysOver} day${daysOver > 1 ? 's' : ''} overdue</span>` : '';
       extra = `<div class="due-info">Final nudge ${overdueLabel}</div><div class="msg-preview" id="msg-preview-${p.id}"></div>`;
       buttons = `
-        <button class="btn btn-copy btn-sm" id="copy-btn-${p.id}" onclick="copyMessage('${p.id}','follow_up_2')">Copy Message</button>
+        <button class="btn btn-copy btn-sm" id="copy-btn-${p.id}" onclick="copyMessage('${p.id}','follow_up_2')">Copy Message</button>${abBadge(p, 'follow_up_2')}
         <button class="btn btn-secondary btn-sm" onclick="togglePreview('${p.id}','follow_up_2')">Preview</button>
         <button class="btn btn-primary btn-sm" onclick="markFollowUp2('${p.id}')">Mark Final Nudge Sent</button>
         <button class="btn btn-success btn-sm" onclick="markReplied('${p.id}')">Got Reply</button>
@@ -1356,6 +1458,60 @@ async function loadActivityLog() {
   } catch (err) {
     document.getElementById('content').innerHTML = '<div class="empty">Failed to load activity log.</div>';
   }
+}
+
+// ============================================================
+// A/B REPORT
+// ============================================================
+function renderABReport() {
+  const reportSteps = TEMPLATE_STEPS.filter(s => s !== 'connection_note');
+  let html = '<div class="ab-report"><h3>A/B Template Performance</h3>';
+  html += '<p style="font-size:12px;color:#888;margin-bottom:16px;">Tracks which message variant (A or B) each prospect received. Reply rates show which version is working better.</p>';
+
+  for (const step of reportSteps) {
+    const label = TEMPLATE_LABELS[step];
+    const withA = state.prospects.filter(p => p.abVariants && p.abVariants[step] === 'A');
+    const withB = state.prospects.filter(p => p.abVariants && p.abVariants[step] === 'B');
+
+    const sentA = withA.length;
+    const sentB = withB.length;
+    const repliedA = withA.filter(p => p.status === 'replied').length;
+    const repliedB = withB.filter(p => p.status === 'replied').length;
+    const rateA = sentA > 0 ? Math.round((repliedA / sentA) * 100) : 0;
+    const rateB = sentB > 0 ? Math.round((repliedB / sentB) * 100) : 0;
+    const totalSent = sentA + sentB;
+
+    const maxRate = Math.max(rateA, rateB, 1);
+    const barWidthA = Math.round((rateA / maxRate) * 120);
+    const barWidthB = Math.round((rateB / maxRate) * 120);
+
+    html += `<h4>${label}</h4>
+      <table>
+        <tr><th>Variant</th><th>Sent</th><th>Replied</th><th>Reply Rate</th><th></th></tr>
+        <tr>
+          <td><span class="ab-badge ab-a">A</span></td>
+          <td>${sentA}</td>
+          <td>${repliedA}</td>
+          <td class="${rateA > rateB && sentA >= 5 ? 'ab-winner' : ''}">${rateA}%</td>
+          <td><span class="rate-bar rate-bar-a" style="width:${barWidthA}px;"></span></td>
+        </tr>
+        <tr>
+          <td><span class="ab-badge ab-b">B</span></td>
+          <td>${sentB}</td>
+          <td>${repliedB}</td>
+          <td class="${rateB > rateA && sentB >= 5 ? 'ab-winner' : ''}">${rateB}%</td>
+          <td><span class="rate-bar rate-bar-b" style="width:${barWidthB}px;"></span></td>
+        </tr>
+      </table>
+      ${totalSent < 10 ? '<div class="sample-warning">Need at least 10 sends per variant for meaningful comparison.</div>' : ''}`;
+  }
+
+  if (state.prospects.filter(p => p.abVariants).length === 0) {
+    html += `<div class="empty" style="margin-top:16px;"><div class="icon">&#x1F4CA;</div>No A/B data yet. Copy a message to start assigning variants.</div>`;
+  }
+
+  html += `</div>`;
+  return html;
 }
 
 // ============================================================

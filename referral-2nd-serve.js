@@ -120,7 +120,7 @@ const ALLOWED_FIELDS = [
   'name', 'company', 'title', 'linkedinUrl', 'status',
   'connectionSentDate', 'connectionCheckDate', 'connectionAcceptedDate',
   'dmSentDate', 'followUp1Due', 'followUp2Due', 'lastActionDate',
-  'reply', 'nextStep', 'draftReply'
+  'reply', 'nextStep', 'draftReply', 'abVariants'
 ];
 
 // Map status changes to activity labels
@@ -243,6 +243,15 @@ app.put('/api/prospects/:id', (req, res) => {
     if (!ALLOWED_FIELDS.includes(key)) continue;
     if (key === 'status' && !VALID_STATUSES.includes(val)) continue;
     prospect[key] = typeof val === 'string' ? sanitize(val) : val;
+  }
+
+  // Sanitize abVariants object values
+  if (prospect.abVariants && typeof prospect.abVariants === 'object') {
+    const clean = {};
+    for (const [k, v] of Object.entries(prospect.abVariants)) {
+      clean[k] = typeof v === 'string' ? sanitize(v) : v;
+    }
+    prospect.abVariants = clean;
   }
 
   prospects[idx] = prospect;
