@@ -12,10 +12,11 @@ Produce a verifiable, CEO-grade competitive report showing how a target company 
 ## Core Principles
 
 1. **Never fabricate data.** Every claim must come from an actual query you ran or a public source you checked. If you can't verify it, don't include it.
-2. **Document everything.** Date, time, model, exact prompt, exact result. No exceptions.
-3. **Be honest about variance.** AI answers change. Report consistency patterns, not cherry-picked results.
-4. **Speed over perfection for cold outreach.** Use Lite mode. Save Full mode for warm prospects.
-5. **The report sells the meeting, not the service.** Recommendations should be specific but the CTA is always a 15-minute call.
+2. **ALWAYS use live web search for verification.** Never rely on training data to determine whether a company has video content, a YouTube channel, website pages, or any other online presence. You MUST perform a real-time web search (e.g., `[Company Name] YouTube channel`, `site:youtube.com [Company Name]`) before making any claim about what a company does or doesn't have. Training data is stale — the web is current.
+3. **Document everything.** Date, time, model, exact prompt, exact result. No exceptions.
+4. **Be honest about variance.** AI answers change. Report consistency patterns, not cherry-picked results.
+5. **Speed over perfection for cold outreach.** Use Lite mode. Save Full mode for warm prospects.
+6. **The report sells the meeting, not the service.** Recommendations should be specific but the CTA is always a 15-minute call.
 
 ---
 
@@ -259,9 +260,16 @@ For each company mentioned by AI, verify:
 
 ## Step 6: Video Presence Research
 
+> **CRITICAL: USE WEB SEARCH FOR EVERY CLAIM IN THIS SECTION.**
+> Before stating that a company has or doesn't have a YouTube channel, videos, or website video content, you MUST run a live web search to verify. Do NOT rely on your training data — it is often wrong or outdated about specific company assets.
+> - Search: `[Company Name] YouTube channel` or `site:youtube.com [Company Name]`
+> - Search: `[Company Name] video` or `[Company Name] demo video`
+> - Visit the actual YouTube channel URL if found
+> - If you cannot verify via web search, state "Unable to verify — manual check required" instead of guessing.
+
 ### YouTube Channel Data (all 4 companies)
 
-Collect from public YouTube channel pages:
+Collect from public YouTube channel pages (verify via live web search first):
 
 | Metric | How to Find |
 |--------|-------------|
@@ -433,7 +441,7 @@ Priority: Automate the query runs first. That's where 60% of the time goes.
 ## Common Edge Cases
 
 **"The company has no YouTube channel"**
-Score video presence as 0. Note it explicitly: "No YouTube channel found." This is a finding, not an error.
+You MUST verify this via live web search before claiming it. Search `[Company Name] YouTube` and `site:youtube.com [Company Name]`. Only if the search returns no results should you score video presence as 0. Note it explicitly: "No YouTube channel found (verified via web search [date])." This is a finding, not an error.
 
 **"AI hallucinates a product that doesn't exist"**
 Document it. Include it in the accuracy section. It's a selling point — the prospect needs to fix their content.
