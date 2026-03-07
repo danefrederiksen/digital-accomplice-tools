@@ -1,0 +1,166 @@
+{
+  "version": "1.0",
+  "mode": "claude-only",
+  "totalQueries": 20,
+  "scoringRubric": {
+    "0": "Absent — not mentioned anywhere in the response",
+    "1": "Cited — URL appears in sources/citations but company not named in text",
+    "2": "Mentioned — named in a list or discussed as one option among several",
+    "3": "Recommended — named as a top choice, leader, or specifically highlighted"
+  },
+  "normalization": {
+    "formula": "(sum of all 20 query scores) / 60 * 10",
+    "maxRawScore": 60,
+    "outputRange": "0-10"
+  },
+  "categories": [
+    {
+      "id": "A",
+      "name": "Solution Discovery",
+      "description": "Generic buyer-intent queries — would this company show up when someone searches for what they do?",
+      "queries": [
+        {
+          "id": 1,
+          "template": "What are the best {industry} agencies for mid-market companies?",
+          "variables": ["industry"]
+        },
+        {
+          "id": 2,
+          "template": "Who should I hire for {industry}?",
+          "variables": ["industry"]
+        },
+        {
+          "id": 3,
+          "template": "Top {industry} firms for B2B companies",
+          "variables": ["industry"]
+        },
+        {
+          "id": 4,
+          "template": "Best {industry} companies 2026",
+          "variables": ["industry"]
+        },
+        {
+          "id": 5,
+          "template": "{industry} agencies that specialize in B2B",
+          "variables": ["industry"]
+        }
+      ]
+    },
+    {
+      "id": "B",
+      "name": "Company-Specific",
+      "description": "Direct brand queries — what does AI say about this company specifically?",
+      "queries": [
+        {
+          "id": 6,
+          "template": "What does {company} do?",
+          "variables": ["company"]
+        },
+        {
+          "id": 7,
+          "template": "Is {company} any good?",
+          "variables": ["company"]
+        },
+        {
+          "id": 8,
+          "template": "{company} reviews and reputation",
+          "variables": ["company"]
+        },
+        {
+          "id": 9,
+          "template": "{company} vs {competitor1}",
+          "variables": ["company", "competitor1"]
+        },
+        {
+          "id": 10,
+          "template": "Alternatives to {company}",
+          "variables": ["company"]
+        }
+      ]
+    },
+    {
+      "id": "C",
+      "name": "Problem-Aware",
+      "description": "Buyers who know the problem but not the solution — would this company come up?",
+      "queries": [
+        {
+          "id": 11,
+          "template": "How do companies improve their {industry_problem}?",
+          "variables": ["industry_problem"]
+        },
+        {
+          "id": 12,
+          "template": "Do I need a {industry} agency or can I do it in-house?",
+          "variables": ["industry"]
+        },
+        {
+          "id": 13,
+          "template": "What should I look for in a {industry} provider?",
+          "variables": ["industry"]
+        },
+        {
+          "id": 14,
+          "template": "How much does {industry} cost?",
+          "variables": ["industry"]
+        },
+        {
+          "id": 15,
+          "template": "Is {industry} worth the investment for a growing company?",
+          "variables": ["industry"]
+        }
+      ]
+    },
+    {
+      "id": "D",
+      "name": "Video & Content",
+      "description": "Content and video discovery queries — does their content appear in AI answers?",
+      "queries": [
+        {
+          "id": 16,
+          "template": "Best YouTube channels about {industry}",
+          "variables": ["industry"]
+        },
+        {
+          "id": 17,
+          "template": "{company} videos and demos",
+          "variables": ["company"]
+        },
+        {
+          "id": 18,
+          "template": "Video marketing for {industry}",
+          "variables": ["industry"]
+        },
+        {
+          "id": 19,
+          "template": "Who is creating good content about {industry}?",
+          "variables": ["industry"]
+        },
+        {
+          "id": 20,
+          "template": "Expert thought leadership in {industry_topic}",
+          "variables": ["industry_topic"]
+        }
+      ]
+    }
+  ],
+  "videoScoring": {
+    "description": "YouTube/video presence score (0-10), assessed per company",
+    "rubric": {
+      "0": "No YouTube channel found",
+      "1-2": "Channel exists but dormant (fewer than 5 videos/year, no recent uploads)",
+      "3-4": "Active but low traction (regular uploads, minimal views/engagement)",
+      "5-6": "Regular uploads, moderate views, some variety in content types",
+      "7-8": "Consistent publishing, good engagement, multiple content formats",
+      "9-10": "Strong channel — high engagement, frequent uploads, diverse formats, growing subscriber base"
+    },
+    "dataToCollect": [
+      "Channel URL",
+      "Subscriber count",
+      "Total video count",
+      "Last upload date",
+      "Upload frequency (videos per month in last 90 days)",
+      "Average view count (last 10 videos)",
+      "Content types (Demo, Thought Leadership, Tutorial, Customer Story, Podcast, Short)"
+    ]
+  }
+}

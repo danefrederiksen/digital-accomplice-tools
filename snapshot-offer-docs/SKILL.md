@@ -3,471 +3,324 @@ name: ai-snapshot-agent
 description: "Agent instructions for producing an AI Visibility & Video Competitive Snapshot for a B2B company. Use this skill whenever Dane asks to run a snapshot, build a competitive report, research a prospect's AI visibility, check how a company ranks in AI search, or prepare a snapshot for outreach. Also trigger when Dane names a company and says 'run it,' 'check them,' 'snapshot,' 'how do they show up in AI,' or 'build a report for [company].' This skill covers the full research workflow: prompt generation, multi-model querying, scoring, video analysis, cross-model validation, and report assembly."
 ---
 
-# AI Visibility & Video Competitive Snapshot — Agent Instructions
+# AI Visibility Snapshot — Automated Agent (Claude-Only Mode)
 
-## Purpose
+## What This Does
 
-Produce a verifiable, CEO-grade competitive report showing how a target company ranks against 3 competitors in AI search results and video presence. The output must pass the 60-second busy-person test and withstand executive scrutiny.
+Produces two deliverables from minimal input:
+1. **AI Visibility Snapshot PDF** — One-page branded report for the prospect
+2. **Research Methodology PDF** — Internal doc showing every query, score, and source
+
+**Input:** Company name + 3 competitors (that's it)
+**Output:** Two PDFs saved to the daily reports folder
+**Time:** ~10-15 minutes of Claude working, zero effort from Dane
+
+---
 
 ## Core Principles
 
-1. **Never fabricate data.** Every claim must come from an actual query you ran or a public source you checked. If you can't verify it, don't include it.
-2. **ALWAYS use live web search for verification.** Never rely on training data to determine whether a company has video content, a YouTube channel, website pages, or any other online presence. You MUST perform a real-time web search (e.g., `[Company Name] YouTube channel`, `site:youtube.com [Company Name]`) before making any claim about what a company does or doesn't have. Training data is stale — the web is current.
-3. **Document everything.** Date, time, model, exact prompt, exact result. No exceptions.
-4. **Be honest about variance.** AI answers change. Report consistency patterns, not cherry-picked results.
-5. **Speed over perfection for cold outreach.** Use Lite mode. Save Full mode for warm prospects.
-6. **The report sells the meeting, not the service.** Recommendations should be specific but the CTA is always a 15-minute call.
+1. **Never fabricate data.** Every claim must come from an actual web search or verified source.
+2. **ALWAYS use live web search.** Never rely on training data for company-specific claims (YouTube channels, website content, products, etc.).
+3. **Document everything.** Every query, every score, every source URL.
+4. **Be honest about variance.** AI answers change. Report patterns, not guarantees.
+5. **The report sells the meeting, not the service.** CTA is always a 15-minute call.
 
 ---
 
-## Before You Start: Gather Inputs
+## TRIGGER & INPUT PARSING
 
-Ask Dane for (or extract from conversation):
+When Dane says something like:
+- "snapshot [Company], competitors: [A], [B], [C]"
+- "run a snapshot on [Company]"
+- "check how [Company] shows up in AI"
+- "build a report for [Company]"
 
-| Input | Required? | Example |
-|-------|-----------|---------|
-| Target company name | YES | "BreachRX" |
-| Target company website | YES | "breachrx.com" |
-| Industry vertical | YES | "Cybersecurity" or "Professional Services" |
-| 3 competitors | YES — confirm with Dane, never assume | "Resilience, Cobalt, Coalition" |
-| Mode | YES — ask if not stated | "Lite" (cold outreach) or "Full" (warm prospect) |
-| Contact name + title | NICE TO HAVE | "Young Sae Song, CEO" |
+**Parse these inputs:**
 
-**If Dane says "run a snapshot on [Company]" without specifying competitors**, research the company first, propose 3 competitors, and get confirmation before proceeding.
+| Input | Required | How to Get |
+|-------|----------|------------|
+| Company name | YES | From Dane's message |
+| 3 competitors | YES | From Dane's message, or research + propose 3 for confirmation |
+| Industry | AUTO | Determine from company research (Step 1) |
 
----
-
-## Mode Definitions
-
-### Lite Mode (Cold Outreach)
-- 1 query run (not 3)
-- 2 models: ChatGPT + Perplexity
-- 10 prompts (Categories 1-4 only, 2-3 per category)
-- No video-specific prompts
-- Target time: **60 minutes total**
-- Note in report: "Single-run snapshot — full validation available on request"
-
-### Full Mode (Warm Prospect / Referral Partner)
-- 3 query runs over 3 days
-- 4 models: ChatGPT, Perplexity, Gemini, Claude
-- 15 prompts (all 5 categories)
-- 5 additional video-specific prompts
-- Target time: **3.5 hours spread over 3 days**
-- Includes cross-model agreement analysis and consistency scoring
+**If competitors are not specified:** Research the company first via web search, identify their competitive space, propose 3 competitors, and get Dane's confirmation before proceeding.
 
 ---
 
-## Step 1: Generate the Prompt Set
+## STEP 1: Company Research (2-3 minutes)
 
-Build prompts from these 5 categories. Customize [bracketed terms] for the target company's industry.
+Run these web searches to understand the prospect:
 
-### Category 1: Solution Discovery (3 prompts)
 ```
-1. "What are the best [CATEGORY] solutions for mid-market companies?"
-2. "What [CATEGORY] tools do companies with 200-500 employees use?"
-3. "Recommend a [CATEGORY] vendor for a growing company"
+Search 1: "{company name}"
+Search 2: "{company name} company"
 ```
 
-### Category 2: Comparison / Evaluation (3 prompts)
-```
-4. "[TARGET COMPANY] vs [COMPETITOR A] — which is better?"
-5. "What are the pros and cons of [TARGET COMPANY]?"
-6. "Alternatives to [MOST WELL-KNOWN COMPETITOR]"
-```
+From the results, determine:
+- **Industry category** (e.g., "Professional Services Marketing", "Cybersecurity Incident Management")
+- **What they do** in plain language
+- **Industry problem** they solve (for query templates)
+- **Industry topic** for thought leadership queries
 
-### Category 3: Problem-Aware (3 prompts)
-```
-7. "How do mid-size companies solve [CORE PROBLEM THE CATEGORY ADDRESSES]?"
-8. "What should I look for in a [CATEGORY] provider?"
-9. "Is it worth hiring a [CATEGORY] agency or building in-house?"
-```
-
-### Category 4: Brand-Specific (3 prompts)
-```
-10. "What does [TARGET COMPANY] do?"
-11. "Is [TARGET COMPANY] any good?"
-12. "Tell me about [TARGET COMPANY]'s services"
-```
-
-### Category 5: Thought Leadership (3 prompts) — FULL MODE ONLY
-```
-13. "Who are the leading experts in [INDUSTRY TOPIC]?"
-14. "What companies are doing innovative work in [CATEGORY]?"
-15. "What YouTube channels cover [INDUSTRY TOPIC]?"
-```
-
-### Video-Specific Prompts (5 additional) — FULL MODE ONLY
-```
-V1. "What YouTube channels cover [INDUSTRY TOPIC]?"
-V2. "Best video content about [CATEGORY]?"
-V3. "Where can I watch demos of [CATEGORY] tools?"
-V4. "[TARGET COMPANY] demo video"
-V5. "[TARGET COMPANY] YouTube"
-```
-
-### Prompt Rules
-- Use natural buyer language, not keyword stuffing
-- No leading questions
-- Write them how an actual marketing manager would type into ChatGPT
-- Save the final prompt list — you'll reuse it for every run
+Store these for variable substitution in queries.
 
 ---
 
-## Step 2: Run the Queries
+## STEP 2: Run 20 AI Visibility Queries (5-8 minutes)
 
-### For Each Query, Open a NEW Conversation in Each AI Model
+Load query templates from `/Users/danefrederiksen/Desktop/Claude code/snapshot-generator/queries.json`.
 
-Do NOT continue an existing conversation. Each prompt gets a fresh session.
+For each of the 20 queries:
 
-### Models & Access
+### 2a. Substitute Variables
+Replace template variables with actual values:
+- `{company}` → target company name
+- `{industry}` → industry category from Step 1
+- `{competitor1}` → first competitor name
+- `{industry_problem}` → core problem they solve
+- `{industry_topic}` → specific topic for thought leadership
 
-| Model | URL | Notes |
-|-------|-----|-------|
-| ChatGPT (GPT-4o) | chat.openai.com | Use default model, no custom instructions |
-| Perplexity | perplexity.ai | Best for citation tracking — note all source URLs |
-| Google Gemini | gemini.google.com | FULL MODE ONLY |
-| Claude | claude.ai | FULL MODE ONLY — use a separate session, not this one |
+### 2b. Run the Query
+Use **WebSearch** to search for each query. Read the results carefully.
 
-### Recording Protocol
+### 2c. Score Each Company (0-3)
 
-For EVERY query, record in the tracking sheet:
-
-```
-Run ID:          [1, 2, or 3]
-Date:            [YYYY-MM-DD]
-Time:            [HH:MM PT]
-Model:           [ChatGPT / Perplexity / Gemini / Claude]
-Prompt ID:       [1-15 or V1-V5]
-Prompt Text:     [exact text entered]
----
-Target Company:  [Mentioned? Y/N] [Type: Recommended / Mentioned / Cited / Absent]
-Competitor A:    [Mentioned? Y/N] [Type]
-Competitor B:    [Mentioned? Y/N] [Type]
-Competitor C:    [Mentioned? Y/N] [Type]
----
-Position:        [1st, 2nd, 3rd mentioned, or N/A]
-Sentiment:       [Positive / Neutral / Negative / N/A]
-Sources Cited:   [URLs if any]
-Video Cited?:    [Y/N — note if YouTube or video content referenced]
-Factually Accurate?: [Y/N/Partial — does AI describe the company correctly?]
----
-Screenshot:      [filename.png]
-Notes:           [anything unusual, hallucinations, outdated info]
-```
-
-### Screenshot Protocol
-- Full-page screenshot of every response
-- Filename format: `Run[X]_[Model]_P[PromptID]_[YYYY-MM-DD].png`
-- Store in Google Drive folder: `DA Snapshots / [Company Name] / Screenshots`
-
-### Run Timing (Full Mode Only)
-- Run 1: Day 1
-- Run 2: Day 2 (at least 24 hours later)
-- Run 3: Day 3 (at least 24 hours after Run 2)
-- Same device, same location, same accounts each time
-
----
-
-## Step 3: Score the Results
-
-### Per-Query Score
+For EACH of the 4 companies (target + 3 competitors), assign a score:
 
 | Score | Meaning | Definition |
 |-------|---------|------------|
-| 3 | **Recommended** | Named as a top choice, explicitly suggested, or positioned as a leader |
-| 2 | **Mentioned** | Included in a list or discussed as an option |
-| 1 | **Cited** | Source URL appeared in citations but company not named in answer text |
-| 0 | **Absent** | Not mentioned at all |
+| **3** | Recommended | Named as a top choice, explicitly suggested, or highlighted as a leader |
+| **2** | Mentioned | Named in a list or discussed as one option among several |
+| **1** | Cited | URL appears in results but company not named prominently in text |
+| **0** | Absent | Not mentioned anywhere in the results |
 
-### Per-Model Score (per company)
-
+### 2d. Record the Result
+For each query, store:
 ```
-Raw score = sum of all prompt scores (0-45 for 15 prompts, 0-30 for 10 prompts)
-Normalized score = (raw / max possible) × 10, rounded to 1 decimal
-```
-
-Example: Company gets scores of 0,0,2,0,0,3,0,0,0,2 on 10 prompts = 7 raw → (7/30) × 10 = **2.3/10**
-
-### Overall AI Visibility Score
-
-```
-Average of all model scores = final score (0-10)
+{
+  "id": [1-20],
+  "query": "[the actual query text after substitution]",
+  "scores": [company_score, comp1_score, comp2_score, comp3_score],
+  "notes": "[brief note about what was found]"
+}
 ```
 
-Lite mode: average of 2 models. Full mode: average of 4 models.
-
-### Consistency Score (Full Mode Only)
-
-For each prompt × model combination, compare across 3 runs:
-- **Consistent** = same mention type (Recommended/Mentioned/Cited/Absent) all 3 runs
-- **Variable** = different results across runs
-
-```
-Consistency % = (consistent combos / total combos) × 100
-```
-
-Report this number. It IS the credibility metric.
-
-- **80%+ consistent**: High confidence. Lead with these findings.
-- **60-79% consistent**: Moderate confidence. Report findings but note variance.
-- **Below 60%**: AI hasn't formed a strong opinion. Frame as: "This is your window — the market position is still being written."
+### 2e. Track Mentions and Recommendations
+Count across all 20 queries:
+- **mentions**: How many queries included the target company in results (score >= 1)
+- **recommended**: How many queries recommended the target company by name (score = 3)
 
 ---
 
-## Step 4: Cross-Model Agreement (Full Mode Only)
+## STEP 3: YouTube / Video Audit (3-5 minutes)
 
-For each prompt, check how many models agree:
+For EACH of the 4 companies, run these web searches:
 
-| Level | Definition | How to Use |
-|-------|-----------|------------|
-| **Strong** (4/4) | All models same result | Lead with this. Highest confidence. |
-| **Moderate** (3/4) | Three agree, one outlier | Solid finding. Note the outlier model. |
-| **Split** (2/2) | Even split | Inconclusive. Report both sides honestly. |
-| **Weak** (1/4) | Only one model shows it | Do NOT lead with this. Mention as secondary. |
+```
+Search: "{company name} YouTube channel"
+Search: "{company name} site:youtube.com"
+Search: "{company name} video"
+```
 
-### What to Write in the Report
+### Collect This Data Per Company:
 
-Use this language pattern:
-- Strong: "[Company] was absent from AI results with strong cross-model agreement (4/4 platforms) on X of 15 buyer queries."
-- Moderate: "3 of 4 AI platforms recommend [Competitor B] when buyers ask about [topic]."
-- Split: "AI platforms disagree on [topic] — ChatGPT favors [A], Perplexity favors [B]. This category is still contested."
-
----
-
-## Step 5: Accuracy Verification
-
-For each company mentioned by AI, verify:
-
-### Factual Check
-| Check | Pass/Fail |
-|-------|-----------|
-| Correctly describes what the company does | |
-| Products/services mentioned are real and current | |
-| Pricing (if mentioned) is accurate | |
-| Company size/stage described correctly | |
-| No hallucinated acquisitions, partnerships, or awards | |
-
-### Citation Check (Perplexity primarily)
-| Check | Pass/Fail |
-|-------|-----------|
-| Cited URLs actually exist (not 404) | |
-| Cited pages actually support the claim | |
-| Sources are recent (within 12 months) | |
-
-**If AI gets facts wrong about the target company, flag this prominently.** It's a selling point — they need to fix their content so AI represents them accurately.
-
----
-
-## Step 6: Video Presence Research
-
-> **CRITICAL: USE WEB SEARCH FOR EVERY CLAIM IN THIS SECTION.**
-> Before stating that a company has or doesn't have a YouTube channel, videos, or website video content, you MUST run a live web search to verify. Do NOT rely on your training data — it is often wrong or outdated about specific company assets.
-> - Search: `[Company Name] YouTube channel` or `site:youtube.com [Company Name]`
-> - Search: `[Company Name] video` or `[Company Name] demo video`
-> - Visit the actual YouTube channel URL if found
-> - If you cannot verify via web search, state "Unable to verify — manual check required" instead of guessing.
-
-### YouTube Channel Data (all 4 companies)
-
-Collect from public YouTube channel pages (verify via live web search first):
-
-| Metric | How to Find |
-|--------|-------------|
-| Subscribers | Channel main page |
-| Total videos | Channel > Videos tab |
-| Videos last 90 days | Count videos uploaded in last 90 days |
-| Avg views (last 10 videos) | Add views of 10 most recent, divide by 10 |
-| Most viewed video | Channel > Videos > Sort by Popular |
+| Field | How to Find |
+|-------|-------------|
+| Channel URL | From YouTube search results |
+| Subscribers | Channel page (or search snippet) |
+| Total videos | Channel page or search snippet |
 | Last upload date | Most recent video date |
-| Content types | Categorize last 20 titles: Demo, Thought Leadership, Customer Story, Tutorial, Event, Other |
-| Avg video length | Short (<2min), Medium (2-10min), Long (>10min) — based on last 10 |
+| Upload frequency | Approximate videos per month in last 90 days |
+| Status | "active" (uploaded in last 3 months), "dormant" (3+ months ago), "none" (no channel) |
+| Videos in AI | Cross-reference with Step 2 — did any videos appear in query results? |
 
-### Website Video Check (all 4 companies)
+### Assign Video Score (0-10)
 
-Visit each page and note:
+| Score | Criteria |
+|-------|----------|
+| 0 | No YouTube channel found |
+| 1-2 | Channel exists but dormant (<5 videos/year, no recent uploads) |
+| 3-4 | Active but low traction (regular uploads, minimal views) |
+| 5-6 | Regular uploads, moderate views, some content variety |
+| 7-8 | Consistent publishing, good engagement, multiple formats |
+| 9-10 | Strong channel — high engagement, frequent uploads, diverse formats |
 
-| Page | Has Video? | Type | Quality |
-|------|-----------|------|---------|
-| Homepage | Y/N | Explainer / Hero / Testimonial / None | Pro / DIY / Stock |
-| Product/Service pages | Y/N | Demo / Overview / None | |
-| About page | Y/N | Culture / Founder / None | |
-| Blog/Resources | Y/N | Embedded / Standalone / None | |
-| Case Studies | Y/N | Customer story / Results / None | |
-
-### Video in AI Citations
-
-From your Step 2 data, extract:
-- How many AI responses cited YouTube or video content from any company?
-- Which company's video content appeared most?
-- Which AI model cited video most frequently?
+**IMPORTANT:** If you cannot find a YouTube channel via web search, score as 0 and note "No channel found (verified via web search)". Do NOT guess based on training data.
 
 ---
 
-## Step 7: Assemble the Report
+## STEP 4: Calculate Final Scores
 
-Use the DA report template (ai-visibility-report-template.docx).
+### AI Visibility Score (per company)
+```
+raw_score = sum of all 20 query scores (max 60)
+ai_score = (raw_score / 60) × 10, rounded to 1 decimal
+```
 
-### Section-by-Section Instructions
+### Mentions Count
+```
+mentions = count of queries where target scored >= 1 (max 20)
+recommended = count of queries where target scored = 3 (max 20)
+```
 
-**Cover Page**
-- Company name, date, 3 competitors listed
-- Dane Frederiksen / Digital Accomplice branding
-
-**Executive Summary**
-- Write "The Bottom Line" — 1-2 sentences, plain language, the verdict
-- Fill in the scorecard table with actual normalized scores
-- Color code: 0-3 = red, 4-6 = yellow, 7-10 = green
-
-**AI Search Visibility Analysis**
-- State methodology: X prompts, X models, X runs, date range
-- Fill in per-platform results tables
-- Write "Key Finding" — what does AI say about this company? What does it get wrong?
-
-**Video Presence Analysis**
-- Fill YouTube comparison table with actual numbers
-- Fill website video usage table
-- State video citation findings
-
-**Gap Analysis**
-- Identify the 3 biggest gaps between target company and best-performing competitor
-- Each gap must be: specific, evidence-backed, and tied to business impact
-- Bad: "You need more videos." 
-- Good: "You have 4 YouTube videos, last posted 8 months ago. Competitor B has 47 and posts weekly. Their content was cited in 6 of 15 AI queries we tested. Yours was cited in zero."
-
-**Recommendations**
-- 3 specific actions ranked by speed-to-results
-- Each must include: what to do, what gap it closes, timeline (30/60/90 days), investment range
-- At least 1 recommendation should naturally lead to DA's video production services
-- But never make the rec feel forced — if video isn't the answer, say so
-
-**Next Step**
-- 15-minute strategy call
-- Calendly link: [INSERT DANE'S CALENDLY]
-- "No pitch. No pressure. If the data doesn't warrant a conversation, we'll tell you."
-
-**Appendix**
-- List all data sources
-- State: "AI answers are non-deterministic — results may vary by session, location, and date. We document consistency patterns, not guarantees."
-- Offer screenshots on request
-
-### Step 8: Generate Methodology Audit Trail
-
-**Every snapshot MUST include a companion Methodology & Audit Trail PDF.** This document records:
-
-1. **Environment & Tools** — what agent, skill version, tools, and export method were used
-2. **Inputs** — who specified the target, competitors, and mode (with notes on category fit)
-3. **Queries Run** — exact search queries, per-query results, and whether the target was found
-4. **Scoring Methodology** — per-query scores, raw totals, normalization formula, and any adjustments made
-5. **Video Presence Verification** — every video-related claim with the exact search query that verified it
-6. **Known Limitations** — proxy vs direct AI queries, competitor category mismatches, single-run caveats
-7. **Skill Version & Changelog** — what version of SKILL.md was used and any changes made
-8. **Reproduction Steps** — how to re-run the same snapshot to verify results
-
-**File naming:** `[Company]_AI_Snapshot_[YYYY-MM-DD]_Methodology.pdf`
-**Save location:** Same folder as the snapshot PDF.
-**Script:** Use `generate-methodology-pdf.py` as a template. Update inputs, queries, and scores for each new company.
+### Video Count
+```
+videoCount = target company's total YouTube videos
+videosInAI = how many of those videos appeared in AI query results
+```
 
 ---
 
-## Quality Checks Before Sending
+## STEP 5: Generate Key Findings
 
-Run these before every report goes out:
+Write 3-5 bullet-point findings based on the data. Each should be:
+- **Specific** — cite actual numbers
+- **Evidence-backed** — reference query results or YouTube data
+- **Business-relevant** — connect to buyer behavior
 
-### The 60-Second Test
-Hand the report to someone unfamiliar with it. Can they tell you in 60 seconds:
-1. Who wins and who loses?
-2. What's the single biggest finding?
-3. What the next step is?
-
-If no → rewrite the executive summary.
-
-### The CEO Scrutiny Checklist
-- [ ] Every score is backed by documented data
-- [ ] Screenshots exist for all claims
-- [ ] Competitors were confirmed (not assumed)
-- [ ] Methodology section is clear and reproducible
-- [ ] Non-determinism is acknowledged
-- [ ] Recommendations are specific, not generic
-- [ ] Investment ranges are included (don't dodge cost)
-- [ ] The report is forwardable — would a marketing manager send this to their boss?
-- [ ] No made-up statistics or unverified claims
-- [ ] Calendly link works
-
-### The Honesty Check
-- [ ] If the target company is actually doing well, does the report say so?
-- [ ] If a competitor is weak, is the language fair (not trash-talking)?
-- [ ] If results are inconsistent, is that transparently stated?
-- [ ] Does anything in this report require information we don't actually have?
+Example findings:
+- "<strong>Hinge leads AI visibility at 7.0/10</strong> — mentioned in 16 of 20 queries, recommended by name in 13. Nearest competitor (Rattleback) scores just 1.8."
+- "<strong>Zero video content appears in AI answers</strong> — despite Hinge having 332 YouTube videos, not a single one was cited in any AI response. This is an optimization gap, not a content gap."
+- "<strong>Competitors are invisible</strong> — Jumpfactor (0.0) and Edge Marketing (0.3) have virtually no AI presence. First mover advantage is available now."
 
 ---
 
-## Tracking Sheet Template
+## STEP 6: Build the Data Object and Generate PDFs
 
-Create a Google Sheet with these tabs:
+### 6a. Assemble the Data Object
 
-### Tab 1: Prompts
-| Prompt ID | Category | Prompt Text | Vertical |
+Build a JSON object with ALL research data:
 
-### Tab 2: Raw Data
-| Run ID | Date | Time | Model | Prompt ID | Target Mentioned | Target Type | Comp A Mentioned | Comp A Type | Comp B Mentioned | Comp B Type | Comp C Mentioned | Comp C Type | Position | Sentiment | Sources | Video Cited | Accurate | Screenshot | Notes |
+```json
+{
+  "companyName": "Hinge Marketing",
+  "industry": "Professional Services Marketing",
+  "reportDate": "March 2026",
+  "comp1": "Rattleback",
+  "comp2": "Jumpfactor",
+  "comp3": "Edge Marketing",
+  "ai0": 7.0, "ai1": 1.8, "ai2": 0.0, "ai3": 0.3,
+  "vid0": 0, "vid1": 0, "vid2": 0, "vid3": 0,
+  "videoCount": 332,
+  "videosInAI": 0,
+  "mentions": 16,
+  "recommended": 13,
+  "h1Override": "",
+  "h2Override": "",
+  "vidDetail0": "332 videos, 1.5K subs, very active",
+  "vidDetail1": "19 videos, 15 subs, dormant",
+  "vidDetail2": "18 videos, 158 subs, dormant",
+  "vidDetail3": "28 videos, 2 subs, active but no traction",
+  "queries": [
+    {"id": 1, "query": "What are the best...", "scores": [3, 1, 0, 0], "notes": "Hinge recommended first"},
+    ...all 20 queries...
+  ],
+  "youtube": [
+    {"company": "Hinge Marketing", "channelUrl": "youtube.com/...", "subscribers": "1,530", "videos": 332, "lastUpload": "Feb 27, 2026", "freqPerMonth": 12, "status": "active", "inAI": 0},
+    ...all 4 companies...
+  ],
+  "findings": [
+    "<strong>Finding 1 text</strong> — with supporting evidence",
+    ...3-5 findings...
+  ],
+  "sources": [
+    "https://example.com/source1",
+    ...all URLs visited during research...
+  ]
+}
+```
 
-### Tab 3: Scores
-| Company | ChatGPT Raw | ChatGPT /10 | Perplexity Raw | Perplexity /10 | Gemini Raw | Gemini /10 | Claude Raw | Claude /10 | Overall /10 |
+### 6b. Start the Server (if not running)
 
-### Tab 4: Consistency (Full Mode)
-| Prompt ID | Model | Run 1 Result | Run 2 Result | Run 3 Result | Consistent? |
+```bash
+cd "/Users/danefrederiksen/Desktop/Claude code/snapshot-generator" && node server.js &
+```
 
-### Tab 5: Cross-Model Agreement (Full Mode)
-| Prompt ID | ChatGPT | Perplexity | Gemini | Claude | Agreement Level |
+Wait for "Snapshot Generator running at http://localhost:3850"
 
-### Tab 6: Video Data
-| Company | Subscribers | Total Videos | Last 90 Days | Avg Views | Last Upload | Homepage Video | Product Video | About Video | Blog Video | Case Study Video |
+### 6c. Generate Both PDFs
+
+Call the auto-full endpoint:
+
+```bash
+curl -X POST http://localhost:3850/api/auto-full \
+  -H "Content-Type: application/json" \
+  -d '{...the full data object...}'
+```
+
+This generates:
+1. `{Company}_AI_Snapshot_{date}.pdf` → saved to daily reports folder
+2. `{Company}_Snapshot_Methodology_{date}.pdf` → saved to daily reports folder
+
+### 6d. Report Success
+
+Tell Dane:
+- Both PDFs are saved
+- Show the file paths
+- Summarize the key scores (AI score, video score, top finding)
+- Note how long it took
+
+---
+
+## STEP 7: Quality Checks
+
+Before reporting done, verify:
+
+- [ ] All 4 companies have AI scores calculated from actual query data
+- [ ] YouTube data was verified via web search (not training data)
+- [ ] Mentions and recommended counts match the query log
+- [ ] Key findings reference actual numbers from the research
+- [ ] No fabricated statistics or unverified claims
 
 ---
 
 ## Verified Stats for Reports
 
-Use these in the "Why This Matters Now" section. All previously verified:
+Use these in the snapshot. All previously verified:
 
 - AI search traffic converts **5-6x** higher than Google organic
 - YouTube is the **#1 LLM social citation source** (16% of AI answers)
 - **73%** of YouTube AI citations come from third-party content
 - AI Overviews YouTube citations up **25%** since January 2026 (BrightEdge Q1 2026)
-- Wyzowl 2026: **87%** of marketers say video increased sales (NOT 83% — that's the old number)
-
-**Do NOT use:**
-- "60% of AI citations come from YouTube" — this is debunked
-- Any stat you can't trace to a named source
+- **87%** of marketers say video increased sales (Wyzowl 2026)
 
 ---
 
-## Automation Opportunities (Future)
-
-These are manual today but could be automated:
-
-1. **Perplexity API** — batch-run prompts and capture citations programmatically
-2. **Claude API** — same, with structured output for scoring
-3. **YouTube Data API** — pull channel stats automatically
-4. **Google Sheets API** — auto-populate tracking sheet from API results
-5. **Report generation script** — fill template from tracking sheet data
-
-Priority: Automate the query runs first. That's where 60% of the time goes.
-
----
-
-## Common Edge Cases
+## Edge Cases
 
 **"The company has no YouTube channel"**
-You MUST verify this via live web search before claiming it. Search `[Company Name] YouTube` and `site:youtube.com [Company Name]`. Only if the search returns no results should you score video presence as 0. Note it explicitly: "No YouTube channel found (verified via web search [date])." This is a finding, not an error.
+Verify via web search first. Score as 0. Note: "No YouTube channel found (verified via web search)."
 
-**"AI hallucinates a product that doesn't exist"**
-Document it. Include it in the accuracy section. It's a selling point — the prospect needs to fix their content.
-
-**"All 4 companies are invisible in AI search"**
-This happens in niche categories. Frame it as opportunity: "The first company to build AI-visible content in this category will own the space."
+**"All 4 companies are invisible in AI"**
+Frame as opportunity: "The first company to build AI-visible content in this category will own the space."
 
 **"The prospect is actually winning"**
-Say so. Recommend they protect their position. Suggest competitive monitoring as an ongoing service. Honesty builds more trust than forced bad news.
+Say so honestly. Recommend they protect their position.
 
-**"Dane says 'just run a quick one'"**
-That's Lite mode. Don't over-engineer it. 60 minutes, 2 models, 10 prompts, ship it.
+**"AI gets facts wrong about the target"**
+Document it. It's a selling point — they need to fix their content.
+
+**"Competitors are in different sub-categories"**
+Note this in methodology. Score what you find, but flag category mismatch.
+
+---
+
+## File Locations
+
+- **Query config:** `/Users/danefrederiksen/Desktop/Claude code/snapshot-generator/queries.json`
+- **Methodology template:** `/Users/danefrederiksen/Desktop/Claude code/snapshot-generator/public/methodology-template.html`
+- **Server:** `/Users/danefrederiksen/Desktop/Claude code/snapshot-generator/server.js` (port 3850)
+- **PDF output:** `/Users/danefrederiksen/Desktop/Digital Accomplice/4_Operations/4.3_Processes/daily reports/`
+- **Snapshot form (manual):** `http://localhost:3850/snapshot-generator.html`
+
+---
+
+## API Endpoints (Automation)
+
+| Endpoint | Method | What It Does |
+|----------|--------|-------------|
+| `/api/auto-snapshot` | POST | Generate snapshot PDF from JSON data |
+| `/api/auto-methodology` | POST | Generate methodology PDF from JSON data |
+| `/api/auto-full` | POST | Generate BOTH PDFs in one call |
+
+All accept `{ data: {...}, outputDir: "optional/path" }` and return `{ success: true, files: {...} }`.
