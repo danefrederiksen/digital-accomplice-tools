@@ -17,10 +17,69 @@ The template structure and output format for the one-page AI Visibility Snapshot
 
 ## DA Brand Standards
 
-- **Colors:** DA Orange #F38B1C, Black #000000, Blue-Gray #5A6B7A, Gray #CBCBCB, White #FFFFFF, Light Gray #F5F5F5
-- **Fonts:** Poppins (headlines), Space Mono (labels), Inter/Arial (body)
+- **Colors:** DA Orange #F8901E, Black #000000, Blue-Gray #5A6B7A, Gray #CBCBCB, White #FFFFFF, Light Gray #F5F5F5
+- **Fonts:** Poppins (all content — headlines, body, documents), Space Mono (tags/code/metadata labels only)
+- **BANNED fonts:** Inter — do not use anywhere
+- **BANNED colors:** #F5A623, #F38B1C, #AAAAAA, #F0F0F0 — appeared in older files, deprecated
 - **Voice:** Direct, data-first, no-BS, short sentences
-- **Wrong colors (never use):** #F5A623, #AAAAAA, #F0F0F0
+
+---
+
+## How We Know No Videos Are Cited (Video Citation Methodology)
+
+**This is the evidentiary basis for the "0 videos cited" claim. Every snapshot must follow this process.**
+
+### What we do:
+We run 20 buyer-intent queries across 4 AI platforms (ChatGPT, Perplexity, Claude, Google AI). For each of the 80 data points (20 queries × 4 platforms), we check whether the AI-generated answer links to, embeds, or cites any video content — specifically YouTube URLs, Vimeo URLs, or video embeds — from the target company or any competitor.
+
+### What the claim means:
+"0/[N] videos cited" means: across all 80 data points in this sample, none of the AI answers surfaced a video from that company. The [N] is the company's public YouTube video count, included for contrast to show the gap between what they've produced and what AI models actually surface.
+
+### What the claim does NOT mean:
+- It does not mean no AI model has *ever* cited any of their videos in any query.
+- It does not mean their videos are invisible to AI models permanently.
+- A different set of queries — especially brand-name searches like "[Company] explainer video" — might surface video results.
+
+### Why this is defensible:
+- We test **buyer-intent** queries, not brand-name searches. These are the queries that drive pipeline.
+- 20 queries × 4 platforms = 80 data points. This is a meaningful sample of the buyer-intent query space.
+- We check ALL content formats in AI responses — text, URLs, video embeds, citations — not just the main text.
+
+### Required disclosure in every snapshot:
+The methodology footnote must state: "[X] buyer-intent queries across [platforms]. Each answer evaluated for company mention, recommendation strength, content format cited, and video presence. AI answers change; we document the pattern, not a guarantee."
+
+### Strengthening the claim (optional but recommended):
+If space allows, add the qualifier "across 20 buyer-intent queries" directly next to the 0/[N] stat (not just in the footnote). This makes the claim more visible and more defensible.
+
+---
+
+## 6 Actions That Drive Video Citation in AI (Recommendation Framework)
+
+**This is the underlying logic behind every recommendation we make. All snapshot recommendations must map to one or more of these 6 actions.**
+
+### Action 1: Answer the exact buyer question in the first 30 seconds
+**Why it works:** AI models match content to query phrasing. If a buyer asks "What do high-growth professional services firms do differently?" the video title, description, and opening sentence need to mirror that language nearly verbatim. AI pulls from direct-match content. Most company videos have editorial titles and meandering intros that AI can't match to buyer queries.
+
+### Action 2: Publish full transcripts on the company website alongside every video
+**Why it works:** AI models can't watch video — they read text. YouTube auto-captions aren't indexed the same way a structured transcript on a webpage is. A clean, keyword-rich transcript published on the same page as the embedded video gives AI models readable text tied to a video URL. This is the single highest-ROI fix for any company with existing video.
+
+### Action 3: Restructure content around buyer questions, not brand topics
+**Why it works:** Companies that dominate AI text citations do so because their written content directly answers buyer questions. Their videos usually don't — they're organized by internal topic, not by what a buyer would type into ChatGPT. Reframing existing video topics as direct answers to specific buyer questions is the fastest unlock.
+
+### Action 4: Use YouTube descriptions as 300–500 word mini-articles
+**Why it works:** Most companies waste the YouTube description field. A structured summary with exact query language, key takeaways, and links to related content gives AI models indexable text tied to that video URL. Costs nothing. Takes 15 minutes per video.
+
+### Action 5: Record short videos mapped to query gaps
+**Why it works:** The snapshot identifies specific queries where the prospect isn't cited. Recording 2–3 minute videos that directly answer those specific questions — titled as questions, published with transcripts — fills gaps in category coverage with minimal effort.
+
+### Action 6: Cross-link from high-authority pages
+**Why it works:** If a company's research pages or blog posts already get cited by AI, embedding and linking related YouTube videos on those pages transfers authority. AI models follow link graphs — if a high-authority page links to a video, that video inherits credibility for the same topic.
+
+### What won't work:
+SEO tricks, keyword stuffing descriptions, or bulk uploading. AI models weight authority, directness, and structured content — not volume. Never recommend volume plays.
+
+### How to use this framework in recommendations:
+Every Quick Win, Next Move, and Full Play must map to at least one of these 6 actions. When writing the recommendation, internally verify: "Which of the 6 actions does this map to?" If it doesn't map to any, it's not a valid recommendation.
 
 ---
 
@@ -166,7 +225,7 @@ AI search adoption doubled in 2025. Companies building visibility now will own t
 ---
 
 ### Section 8: RECOMMENDATION (3-Tier)
-**Purpose:** Specific, actionable next steps at three time horizons. Replace the old single "Quick Win."
+**Purpose:** Specific, actionable next steps at three time horizons. Each tier must map to one or more of the 6 Actions and include a clear rationale.
 
 ```
 TEMPLATE:
@@ -181,12 +240,27 @@ Full Play (this quarter):
 ```
 
 **Instructions:**
-- Each tier = ONE sentence. No exceptions.
-- Quick Win: Lowest effort, highest signal. Examples: "Record a 3-minute expert video answering your #1 buyer question and publish to YouTube with a full transcript."
-- Next Move: Builds on quick win. Example: "Create a 4-video FAQ series from your top support queries and optimize descriptions for AI citation."
-- Full Play: Strategic. Example: "Build a monthly video program that positions [Company] as the go-to expert AI models cite in your category."
-- Full Play should naturally point toward DA services — but never explicitly pitch. If video isn't the answer, say so.
-- Lite mode still uses 3 tiers — keep them short.
+- Each tier = ONE sentence on the snapshot. No exceptions.
+- Every recommendation MUST map to at least one of the 6 Actions (see framework above).
+- Each tier must have an internal rationale — you don't print it on the snapshot, but you must be able to explain it to Dane or the prospect on a call.
+
+#### Quick Win — Rationale Framework:
+- **What it maps to:** Action 1 (answer the exact question) + Action 2 (publish transcript)
+- **Why this specific topic:** Choose the prospect's most-cited research or most authoritative content area. If AI already cites their text on this topic, a video answering the same question gives AI models a video URL to attach to existing authority. It's the lowest-effort path to a first video citation because the authority already exists — you're just giving it a video format.
+- **Expected impact (testable theory):** If AI models already cite a company's text content on a topic, adding a video + transcript answering the same query should result in that video appearing in AI answers within 30-90 days. Track by re-running the same 20 queries after 60 days.
+
+#### Next Move — Rationale Framework:
+- **What it maps to:** Action 3 (restructure around buyer questions) + Action 4 (YouTube descriptions as mini-articles) + Action 5 (videos mapped to query gaps)
+- **Why a series:** The snapshot data shows which queries the prospect IS cited on. Those citations are driven by a handful of cornerstone content pieces. Videos that directly present the same findings inherit that trust. A 4-video series covers the major content pillars. "Optimized for AI citation" means: question-as-title, answer in first 30 seconds, full transcript, structured YouTube description. This is not about views — it's about giving AI models more company video URLs to pull from across different query categories.
+- **Expected impact (testable theory):** A structured 4-video series covering the prospect's top-cited content pillars should expand video citation coverage from 0 queries to 3-6 queries within 90 days. Track by re-running the snapshot and comparing video citation counts.
+
+#### Full Play — Rationale Framework:
+- **What it maps to:** All 6 Actions sustained over time + Action 6 (cross-linking from authority pages)
+- **Why monthly cadence:** The snapshot data shows no competitor has video cited either. Whoever builds a consistent library of structured, research-backed video content first becomes the default video source AI models cite in this category. Monthly cadence keeps the prospect ahead as competitors eventually catch on. The 2-3 year window claim comes from how AI training data and citation patterns compound — early movers get reinforced in model weights over time.
+- **Expected impact (testable theory):** A sustained monthly video program should result in video citations appearing in 25-50% of the 20 buyer-intent queries within 6-12 months. First-mover advantage in a category with zero video citation from any competitor should compound over time. Track with quarterly snapshot re-runs.
+
+#### Honest limitation (know this, don't print it):
+We don't have proof that doing these things *will* result in video citations. No one has a guaranteed playbook for AI citation yet. The recommendations are based on what we know about how AI models index and surface content — structured text, direct query matching, authority signals. It's the best available strategy, not a certainty. Sell the logic, not a guarantee.
 
 ---
 
@@ -244,12 +318,15 @@ How we did this: [X] buyer-intent queries across [platforms]. Each answer evalua
 Before any snapshot ships, verify ALL of these:
 
 - [ ] Every video claim backed by live search (not training data)
+- [ ] Video citation claim follows the methodology in "How We Know No Videos Are Cited" section
 - [ ] Real competitor names (not generic)
 - [ ] Score justified by actual findings
 - [ ] WHAT AI SAYS includes 2+ verbatim quotes with source model noted
 - [ ] Competitor comparison grid complete for all platforms tested
 - [ ] Video status line (Active/Sporadic/Absent) for all companies
 - [ ] 3-tier recommendation: Quick Win + Next Move + Full Play
+- [ ] Each recommendation maps to at least one of the 6 Actions
+- [ ] Internal rationale documented for each tier (not printed, but available for calls)
 - [ ] Revenue math explicit in WHY IT MATTERS
 - [ ] Urgency window framing included
 - [ ] Effort level present and honest

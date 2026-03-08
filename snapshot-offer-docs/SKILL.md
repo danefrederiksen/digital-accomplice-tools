@@ -24,6 +24,8 @@ Produces two deliverables from minimal input:
 3. **Document everything.** Every query, every score, every source URL.
 4. **Be honest about variance.** AI answers change. Report patterns, not guarantees.
 5. **The report sells the meeting, not the service.** CTA is always a 15-minute call.
+6. **Every claim must be defensible.** If Dane is asked "how do you know that?" on a call, the methodology must provide a clear answer. See "Video Citation Verification" in Step 3.
+7. **Every recommendation must have a rationale.** If Dane is asked "why did you recommend that?" the internal reasoning must be documented. See "Recommendation Reasoning Framework" in Step 7.
 
 ---
 
@@ -61,6 +63,7 @@ From the results, determine:
 - **What they do** in plain language
 - **Industry problem** they solve (for query templates)
 - **Industry topic** for thought leadership queries
+- **Most-cited content** — identify the prospect's strongest published research, reports, or thought leadership (this feeds the Quick Win recommendation)
 
 Store these for variable substitution in queries.
 
@@ -102,6 +105,7 @@ For each query, store:
   "query": "[the actual query text after substitution]",
   "scores": [company_score, comp1_score, comp2_score, comp3_score],
   "notes": "[brief note about what was found]",
+  "video_cited": "[REQUIRED: for each company, note whether any video URL (YouTube, Vimeo, etc.) appeared in the AI response. Format: {company: false, comp1: false, comp2: false, comp3: false}]",
   "verbatim_response": "[REQUIRED for top 3 buyer-intent queries: save the FULL verbatim response text from the AI model. This feeds the WHAT AI SAYS section of the snapshot.]"
 }
 ```
@@ -167,6 +171,29 @@ Search: "{company name} video"
 | Status | "active" (uploaded in last 3 months), "dormant" (3+ months ago), "none" (no channel) |
 | Videos in AI | Cross-reference with Step 2 — did any videos appear in query results? |
 
+### Video Citation Verification (REQUIRED — this is how we defend the "0 videos cited" claim)
+
+**Process:**
+1. During Step 2, for every query result, check whether ANY video URL (YouTube, Vimeo, Wistia, etc.) appears in the AI response — in citations, links, embeds, or source lists.
+2. Cross-reference: For each company, compare the video URLs found in Step 2 against their known YouTube channel URL from this step.
+3. Count: `videosInAI` = the number of unique video URLs from the target company that appeared in any AI response across all 20 queries and all 4 platforms.
+
+**What "0/[N] videos cited" means:**
+- Across all 80 data points (20 queries × 4 platforms), zero AI answers linked to, embedded, or cited any video from that company.
+- The [N] is the company's public YouTube video count, included to show the gap between production and AI visibility.
+
+**What it does NOT mean:**
+- It does NOT mean AI has never cited their videos in any query ever.
+- It does NOT mean their videos are permanently invisible to AI models.
+- Brand-name searches (e.g., "[Company] explainer video") might surface video results — but we test buyer-intent queries because those drive pipeline.
+
+**Why this methodology is defensible:**
+- 20 queries × 4 platforms = 80 data points — a meaningful sample of buyer-intent query space.
+- We check ALL content formats in responses, not just main text.
+- The methodology footnote on every snapshot discloses the scope: "AI answers change; we document the pattern, not a guarantee."
+
+**Strengthening the claim:** When possible, add "across 20 buyer-intent queries" directly next to the 0/[N] stat in the snapshot body, not just in the footnote.
+
 ### Assign Video Score (0-10)
 
 | Score | Criteria |
@@ -217,7 +244,7 @@ recommended = count of queries where target scored = 3 (max 20)
 ### Video Count
 ```
 videoCount = target company's total YouTube videos
-videosInAI = how many of those videos appeared in AI query results
+videosInAI = how many of those videos appeared in AI query results (from Step 3 verification)
 ```
 
 ---
@@ -301,14 +328,20 @@ Build a JSON object with ALL research data. **New fields marked with [NEW]:**
 
   "[NEW] recommendation": {
     "quickWin": "Record a 3-minute expert video answering your #1 buyer question and publish to YouTube with full transcript.",
-    "nextMove": "Create a 4-video FAQ series from your top support queries and optimize descriptions for AI citation.",
-    "fullPlay": "Build a monthly video program that positions [Company] as the go-to expert AI models cite in your category."
+    "quickWinRationale": "Maps to Actions 1+2. [Company]'s [specific research/content] already gets cited as text. A video answering the same query gives AI a video URL to attach to existing authority.",
+    "quickWinTheory": "If AI already cites text on this topic, adding video+transcript should produce video citation within 30-90 days.",
+    "nextMove": "Create a 4-video series from your top support queries and optimize descriptions for AI citation.",
+    "nextMoveRationale": "Maps to Actions 3+4+5. Citations driven by cornerstone content. Videos presenting same findings inherit trust. Covers major pillars.",
+    "nextMoveTheory": "Should expand video citation from 0 queries to 3-6 queries within 90 days.",
+    "fullPlay": "Build a monthly video program that positions [Company] as the go-to expert AI models cite in your category.",
+    "fullPlayRationale": "Maps to all 6 Actions. No competitor has video cited. First mover locks category. Monthly cadence compounds in model weights.",
+    "fullPlayTheory": "Should produce video citations in 25-50% of buyer queries within 6-12 months."
   },
 
   "[NEW] effortLevel": "Low — one 3-minute video + transcript, no production required.",
 
   "queries": [
-    {"id": 1, "query": "What are the best...", "scores": [3, 1, 0, 0], "notes": "Hinge recommended first", "verbatim_response": "[full text for top 3 queries]"},
+    {"id": 1, "query": "What are the best...", "scores": [3, 1, 0, 0], "notes": "Hinge recommended first", "video_cited": {"target": false, "comp1": false, "comp2": false, "comp3": false}, "verbatim_response": "[full text for top 3 queries]"},
     ...all 20 queries...
   ],
   "youtube": [
@@ -370,9 +403,39 @@ Build the snapshot following this exact section order (matches snapshot-generato
 5. **COMPETITOR COMPARISON** — Grid from Step 2g data. Rows = platforms, columns = prospect + 2 competitors. Cells = ✓ Cited / ✗ Not Cited / ~ Partial.
 6. **THE GAP** — Dark callout box. Specific to this company. End with punch line in DA Orange.
 7. **WHY IT MATTERS** — MUST include revenue stat (5-6x or 27-32% SQLs) AND urgency window (adoption doubled, 2-3 year window closing). 3-4 sentences max.
-8. **RECOMMENDATION** — 3-tier: Quick Win (this week, one sentence, doable Monday morning), Next Move (this month, one sentence), Full Play (this quarter, one sentence, naturally points toward DA without being pushy). Lite mode still uses 3 tiers — keep them short.
+8. **RECOMMENDATION** — 3-tier: Quick Win (this week), Next Move (this month), Full Play (this quarter). Each MUST map to at least one of the 6 Actions from the snapshot-generator framework. Internal rationale and testable theory MUST be documented in the data object even though they don't appear on the one-pager.
 9. **EFFORT LEVEL** — One line: Low/Medium/High + brief context. Match to Quick Win. Never quote prices.
 10. **NEXT STEP** — 15-minute call CTA. No pitch. Calendly link.
+
+### Recommendation Reasoning Framework
+
+When building the 3-tier recommendation, follow this process:
+
+**For the Quick Win:**
+1. Identify the prospect's most-cited content from the query data (which topics scored highest?)
+2. Check if they have existing videos on those topics (from Step 3)
+3. If yes → recommend optimizing those videos (Actions 2, 4)
+4. If no → recommend recording a new video on their #1 cited topic (Actions 1, 2)
+5. Title the Quick Win as the exact buyer question from the query data
+6. **Rationale:** The authority already exists in text form. Adding video gives AI models a video URL to attach to existing authority. This is the lowest-effort path to a first video citation.
+7. **Testable theory:** Re-run the same 20 queries after 60 days. If video+transcript is published, the video should appear in at least 1-3 AI answers.
+
+**For the Next Move:**
+1. Identify the prospect's top 3-5 content pillars from the query data
+2. Map each pillar to a video topic, titled as a buyer question
+3. Recommend a series covering these pillars
+4. **Rationale:** Citations are driven by cornerstone content. Videos presenting the same findings inherit trust. "Optimized for AI citation" = question-as-title, answer in first 30 seconds, full transcript, structured YouTube description.
+5. **Testable theory:** A structured series should expand video citation from 0 to 3-6 queries within 90 days.
+
+**For the Full Play:**
+1. Check competitor video status from Step 3
+2. If no competitor has video cited → frame as first-mover opportunity
+3. If a competitor does → frame as catch-up urgency
+4. **Rationale:** Monthly cadence builds a compound library. AI training data reinforces early movers over time. First to build structured video content in a category locks it for 2-3 years.
+5. **Testable theory:** Video citations in 25-50% of buyer queries within 6-12 months. Track with quarterly re-runs.
+
+**Honest limitation (document internally, don't print):**
+No guaranteed playbook for AI citation exists. These recommendations are based on how AI models index content: structured text, direct query matching, authority signals. It's the best available strategy, not a certainty.
 
 ---
 
@@ -382,6 +445,8 @@ Before reporting done, verify:
 
 - [ ] All 4 companies have AI scores calculated from actual query data
 - [ ] YouTube data was verified via web search (not training data)
+- [ ] Video citation verification completed per Step 3 methodology
+- [ ] "0 videos cited" claim is defensible per the documented methodology
 - [ ] Mentions and recommended counts match the query log
 - [ ] Key findings reference actual numbers from the research
 - [ ] No fabricated statistics or unverified claims
@@ -389,6 +454,8 @@ Before reporting done, verify:
 - [ ] Competitor comparison grid complete for all platforms tested
 - [ ] Video status line (Active/Sporadic/Absent) for all companies
 - [ ] 3-tier recommendation: Quick Win + Next Move + Full Play
+- [ ] Each recommendation maps to at least one of the 6 Actions
+- [ ] Internal rationale and testable theory documented for each tier
 - [ ] Revenue math explicit in WHY IT MATTERS
 - [ ] Urgency window framing included
 - [ ] Effort level present and honest
@@ -430,6 +497,9 @@ Document it. It's a selling point — they need to fix their content.
 
 **"Competitors are in different sub-categories"**
 Note this in methodology. Score what you find, but flag category mismatch.
+
+**"A competitor DOES have video cited"**
+Document which videos, on which queries, from which platform. This changes the Full Play framing from "first mover" to "catch up" — and makes urgency even higher.
 
 ---
 
