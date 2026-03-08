@@ -4,11 +4,11 @@ const path = require('path');
 const { v4: uuidv4 } = require('uuid');
 
 const app = express();
-const PORT = 3852;
-const HTML_FILE = path.join(__dirname, 'cyber-outreach.html');
-const DATA_DIR = path.join(__dirname, 'data');
-const DATA_FILE = path.join(DATA_DIR, 'cyber-prospects.json');
-const ACTIVITY_FILE = path.join(DATA_DIR, 'cyber-activity.json');
+const PORT = 3857;
+const HTML_FILE = path.join(__dirname, 'b2b-email-outreach.html');
+const DATA_DIR = path.join(__dirname, '..', 'data');
+const DATA_FILE = path.join(DATA_DIR, 'b2b-email-prospects.json');
+const ACTIVITY_FILE = path.join(DATA_DIR, 'b2b-email-activity.json');
 const BACKUP_DIR = path.join(DATA_DIR, 'backups');
 const MAX_BACKUPS = 5;
 const MAX_ACTIVITY = 500;
@@ -58,11 +58,11 @@ function backupData() {
   if (!fs.existsSync(DATA_FILE)) return;
   try {
     const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
-    const backupFile = path.join(BACKUP_DIR, `cyber-prospects_${timestamp}.json`);
+    const backupFile = path.join(BACKUP_DIR, `b2b-email-prospects_${timestamp}.json`);
     fs.copyFileSync(DATA_FILE, backupFile);
     // Prune old backups — keep last MAX_BACKUPS
     const backups = fs.readdirSync(BACKUP_DIR)
-      .filter(f => f.startsWith('cyber-prospects_'))
+      .filter(f => f.startsWith('b2b-email-prospects_'))
       .sort()
       .reverse();
     backups.slice(MAX_BACKUPS).forEach(f => {
@@ -115,16 +115,16 @@ function sanitizeObj(obj) {
   return clean;
 }
 
-const VALID_STATUSES = ['not_started', 'dm_sent', 'follow_up_1', 'follow_up_2', 'replied', 'cold'];
+const VALID_STATUSES = ['not_started', 'email_sent', 'follow_up_1', 'follow_up_2', 'replied', 'cold'];
 const ALLOWED_FIELDS = [
-  'name', 'company', 'title', 'linkedinUrl', 'status',
-  'dmSentDate', 'followUp1Due', 'followUp2Due', 'lastActionDate',
-  'reply', 'nextStep', 'draftReply', 'abVariants'
+  'name', 'company', 'title', 'email', 'linkedinUrl', 'source', 'status',
+  'emailSentDate', 'followUp1Due', 'followUp2Due', 'lastActionDate',
+  'reply', 'nextStep'
 ];
 
 // Map status changes to activity labels
 const STATUS_ACTIONS = {
-  dm_sent: 'Marked DM Sent',
+  email_sent: 'Marked Email Sent',
   follow_up_1: 'Marked Follow-Up Sent',
   follow_up_2: 'Marked Final Nudge Sent',
   replied: 'Got Reply',
@@ -152,25 +152,27 @@ app.post('/api/prospects', (req, res) => {
   }
 
   const prospects = loadProspects();
-  const existingKeys = prospects.map(p => (p.name + p.company).toLowerCase());
+  const existingKeys = prospects.map(p => (p.email || '').toLowerCase());
   let added = 0;
   let skipped = 0;
 
   incoming.forEach(raw => {
     const name = (raw.name || '').trim();
     if (!name) { skipped++; return; }
-    const company = (raw.company || '').trim();
-    const key = (name + company).toLowerCase();
-    if (existingKeys.includes(key)) { skipped++; return; }
+    const email = (raw.email || '').trim();
+    const key = email.toLowerCase();
+    if (!email || existingKeys.includes(key)) { skipped++; return; }
 
     const prospect = sanitizeObj({
       id: uuidv4(),
       name,
-      company,
+      company: (raw.company || '').trim(),
       title: (raw.title || '').trim(),
+      email,
       linkedinUrl: (raw.linkedinUrl || '').trim(),
+      source: (raw.source || '').trim(),
       status: 'not_started',
-      dmSentDate: null,
+      emailSentDate: null,
       followUp1Due: null,
       followUp2Due: null,
       lastActionDate: null,
@@ -205,9 +207,11 @@ app.post('/api/prospects/migrate', (req, res) => {
     name: (raw.name || '').trim(),
     company: (raw.company || '').trim(),
     title: (raw.title || '').trim(),
+    email: (raw.email || '').trim(),
     linkedinUrl: (raw.linkedinUrl || '').trim(),
+    source: (raw.source || '').trim(),
     status: VALID_STATUSES.includes(raw.status) ? raw.status : 'not_started',
-    dmSentDate: raw.dmSentDate || null,
+    emailSentDate: raw.emailSentDate || null,
     followUp1Due: raw.followUp1Due || null,
     followUp2Due: raw.followUp2Due || null,
     lastActionDate: raw.lastActionDate || null,
@@ -236,15 +240,6 @@ app.put('/api/prospects/:id', (req, res) => {
     prospect[key] = typeof val === 'string' ? sanitize(val) : val;
   }
 
-  // Sanitize abVariants object values
-  if (prospect.abVariants && typeof prospect.abVariants === 'object') {
-    const clean = {};
-    for (const [k, v] of Object.entries(prospect.abVariants)) {
-      clean[k] = typeof v === 'string' ? sanitize(v) : v;
-    }
-    prospect.abVariants = clean;
-  }
-
   prospects[idx] = prospect;
   saveProspects(prospects);
 
@@ -253,8 +248,6 @@ app.put('/api/prospects/:id', (req, res) => {
     logActivity(STATUS_ACTIONS[updates.status], prospect.name, prospect.id);
   } else if ('reply' in updates) {
     logActivity('Updated reply', prospect.name, prospect.id);
-  } else if ('draftReply' in updates) {
-    logActivity('Updated draft reply', prospect.name, prospect.id);
   } else if ('nextStep' in updates) {
     logActivity('Updated next step', prospect.name, prospect.id);
   }
@@ -286,7 +279,7 @@ app.get('/api/activity', (req, res) => {
 // ============================================================
 ensureDirs();
 app.listen(PORT, '127.0.0.1', () => {
-  console.log(`\n  DA Prospecting Tool #2 — Cyber 1st Connections running at http://localhost:${PORT}`);
+  console.log(`\n  DA Prospecting Tool #7 — B2B Leads w/ Emails running at http://localhost:${PORT}`);
   console.log(`  Data: ${DATA_FILE}`);
   console.log(`  Backups: ${BACKUP_DIR} (last ${MAX_BACKUPS} kept)\n`);
 });

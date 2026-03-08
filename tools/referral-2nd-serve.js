@@ -4,11 +4,11 @@ const path = require('path');
 const { v4: uuidv4 } = require('uuid');
 
 const app = express();
-const PORT = 3854;
-const HTML_FILE = path.join(__dirname, 'cyber-2nd-outreach.html');
-const DATA_DIR = path.join(__dirname, 'data');
-const DATA_FILE = path.join(DATA_DIR, 'cyber-2nd-prospects.json');
-const ACTIVITY_FILE = path.join(DATA_DIR, 'cyber-2nd-activity.json');
+const PORT = 3856;
+const HTML_FILE = path.join(__dirname, 'referral-2nd-outreach.html');
+const DATA_DIR = path.join(__dirname, '..', 'data');
+const DATA_FILE = path.join(DATA_DIR, 'referral-2nd-prospects.json');
+const ACTIVITY_FILE = path.join(DATA_DIR, 'referral-2nd-activity.json');
 const BACKUP_DIR = path.join(DATA_DIR, 'backups');
 const MAX_BACKUPS = 5;
 const MAX_ACTIVITY = 500;
@@ -58,11 +58,11 @@ function backupData() {
   if (!fs.existsSync(DATA_FILE)) return;
   try {
     const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
-    const backupFile = path.join(BACKUP_DIR, `cyber-2nd-prospects_${timestamp}.json`);
+    const backupFile = path.join(BACKUP_DIR, `referral-2nd-prospects_${timestamp}.json`);
     fs.copyFileSync(DATA_FILE, backupFile);
     // Prune old backups — keep last MAX_BACKUPS
     const backups = fs.readdirSync(BACKUP_DIR)
-      .filter(f => f.startsWith('cyber-2nd-prospects_'))
+      .filter(f => f.startsWith('referral-2nd-prospects_'))
       .sort()
       .reverse();
     backups.slice(MAX_BACKUPS).forEach(f => {
@@ -120,7 +120,7 @@ const ALLOWED_FIELDS = [
   'name', 'company', 'title', 'linkedinUrl', 'status',
   'connectionSentDate', 'connectionCheckDate', 'connectionAcceptedDate',
   'dmSentDate', 'followUp1Due', 'followUp2Due', 'lastActionDate',
-  'reply', 'nextStep', 'abVariants'
+  'reply', 'nextStep', 'draftReply', 'abVariants'
 ];
 
 // Map status changes to activity labels
@@ -295,7 +295,7 @@ app.get('/api/activity', (req, res) => {
 // ============================================================
 ensureDirs();
 app.listen(PORT, '127.0.0.1', () => {
-  console.log(`\n  DA Prospecting Tool #4 — Cyber 2nd Connections running at http://localhost:${PORT}`);
+  console.log(`\n  DA Prospecting Tool #6 — Referral Partner 2nd Connections running at http://localhost:${PORT}`);
   console.log(`  Data: ${DATA_FILE}`);
   console.log(`  Backups: ${BACKUP_DIR} (last ${MAX_BACKUPS} kept)\n`);
 });

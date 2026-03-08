@@ -10,7 +10,7 @@ app.use(express.json({ limit: '10mb' }));
 app.use(express.static(path.join(__dirname, 'public')));
 
 const CHROME = '/Applications/Google\\ Chrome.app/Contents/MacOS/Google\\ Chrome';
-const OUTPUT_DIR = path.resolve(__dirname, '..');
+const OUTPUT_DIR = path.resolve(__dirname, '..', 'reports');
 
 // Export snapshot as PDF (letter-size, one-page) — POST with full HTML body
 app.post('/api/export-pdf', (req, res) => {

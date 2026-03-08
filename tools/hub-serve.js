@@ -5,7 +5,7 @@ const path = require('path');
 const app = express();
 const PORT = 3849;
 const HTML_FILE = path.join(__dirname, 'hub-dashboard.html');
-const DATA_DIR = path.join(__dirname, 'data');
+const DATA_DIR = path.join(__dirname, '..', 'data');
 
 // ============================================================
 // TOOL DEFINITIONS — all 10 prospect tools + comment queue

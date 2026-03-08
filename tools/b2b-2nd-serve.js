@@ -4,11 +4,11 @@ const path = require('path');
 const { v4: uuidv4 } = require('uuid');
 
 const app = express();
-const PORT = 3856;
-const HTML_FILE = path.join(__dirname, 'referral-2nd-outreach.html');
-const DATA_DIR = path.join(__dirname, 'data');
-const DATA_FILE = path.join(DATA_DIR, 'referral-2nd-prospects.json');
-const ACTIVITY_FILE = path.join(DATA_DIR, 'referral-2nd-activity.json');
+const PORT = 3853;
+const HTML_FILE = path.join(__dirname, 'b2b-2nd-outreach.html');
+const DATA_DIR = path.join(__dirname, '..', 'data');
+const DATA_FILE = path.join(DATA_DIR, 'b2b-2nd-prospects.json');
+const ACTIVITY_FILE = path.join(DATA_DIR, 'b2b-2nd-activity.json');
 const BACKUP_DIR = path.join(DATA_DIR, 'backups');
 const MAX_BACKUPS = 5;
 const MAX_ACTIVITY = 500;
@@ -58,11 +58,11 @@ function backupData() {
   if (!fs.existsSync(DATA_FILE)) return;
   try {
     const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
-    const backupFile = path.join(BACKUP_DIR, `referral-2nd-prospects_${timestamp}.json`);
+    const backupFile = path.join(BACKUP_DIR, `b2b-2nd-prospects_${timestamp}.json`);
     fs.copyFileSync(DATA_FILE, backupFile);
     // Prune old backups — keep last MAX_BACKUPS
     const backups = fs.readdirSync(BACKUP_DIR)
-      .filter(f => f.startsWith('referral-2nd-prospects_'))
+      .filter(f => f.startsWith('b2b-2nd-prospects_'))
       .sort()
       .reverse();
     backups.slice(MAX_BACKUPS).forEach(f => {
@@ -120,7 +120,7 @@ const ALLOWED_FIELDS = [
   'name', 'company', 'title', 'linkedinUrl', 'status',
   'connectionSentDate', 'connectionCheckDate', 'connectionAcceptedDate',
   'dmSentDate', 'followUp1Due', 'followUp2Due', 'lastActionDate',
-  'reply', 'nextStep', 'draftReply', 'abVariants'
+  'reply', 'nextStep', 'draftReply'
 ];
 
 // Map status changes to activity labels
@@ -245,15 +245,6 @@ app.put('/api/prospects/:id', (req, res) => {
     prospect[key] = typeof val === 'string' ? sanitize(val) : val;
   }
 
-  // Sanitize abVariants object values
-  if (prospect.abVariants && typeof prospect.abVariants === 'object') {
-    const clean = {};
-    for (const [k, v] of Object.entries(prospect.abVariants)) {
-      clean[k] = typeof v === 'string' ? sanitize(v) : v;
-    }
-    prospect.abVariants = clean;
-  }
-
   prospects[idx] = prospect;
   saveProspects(prospects);
 
@@ -295,7 +286,7 @@ app.get('/api/activity', (req, res) => {
 // ============================================================
 ensureDirs();
 app.listen(PORT, '127.0.0.1', () => {
-  console.log(`\n  DA Prospecting Tool #6 — Referral Partner 2nd Connections running at http://localhost:${PORT}`);
+  console.log(`\n  DA Prospecting Tool #3 — B2B 2nd Connections running at http://localhost:${PORT}`);
   console.log(`  Data: ${DATA_FILE}`);
   console.log(`  Backups: ${BACKUP_DIR} (last ${MAX_BACKUPS} kept)\n`);
 });

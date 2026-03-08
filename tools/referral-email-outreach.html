@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Prospecting Tool #10 — Customers w/ Emails</title>
+<title>Prospecting Tool #12 — Referral Partner Emails</title>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
 <style>
@@ -36,20 +36,19 @@ body { font-family: 'Poppins', sans-serif; background: #f5f5f5; color: #1a1a1a; 
 .section { margin-bottom: 32px; }
 
 /* Cards */
-.card { background: #fff; border-radius: 10px; padding: 16px; margin-bottom: 10px; border: 1px solid #e5e5e5; transition: box-shadow 0.2s; }
+.card { background: #fff; border-radius: 10px; padding: 16px; margin-bottom: 10px; border: 1px solid #e5e5e5; transition: box-shadow 0.2s; position: relative; }
 .card:hover { box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
 .card-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; }
 .card-name { font-weight: 700; font-size: 15px; }
 .card-company { font-size: 13px; color: #666; }
 .card-title { font-size: 12px; color: #999; margin-top: 2px; }
-.card-meta { display: flex; gap: 12px; font-size: 12px; color: #888; margin-top: 6px; flex-wrap: wrap; align-items: center; }
+.card-meta { display: flex; gap: 12px; font-size: 12px; color: #888; margin-top: 6px; flex-wrap: wrap; }
 .card-meta a { color: #F8901E; text-decoration: none; font-weight: 500; }
 .card-meta a:hover { text-decoration: underline; }
 
-/* Status badge */
+/* Delete button */
 .card-delete { position: absolute; top: 8px; right: 8px; background: none; border: none; color: #ccc; font-size: 16px; cursor: pointer; padding: 2px 6px; border-radius: 4px; line-height: 1; }
 .card-delete:hover { color: #c62828; background: #fee; }
-.card { position: relative; }
 
 /* Search bar */
 .search-bar { width: 100%; padding: 12px 16px; font-size: 15px; font-family: 'Poppins', sans-serif; border: 2px solid #ddd; border-radius: 10px; outline: none; transition: border-color 0.15s; background: #fff; margin-bottom: 16px; }
@@ -57,13 +56,14 @@ body { font-family: 'Poppins', sans-serif; background: #f5f5f5; color: #1a1a1a; 
 .search-bar::placeholder { color: #bbb; }
 .search-count { font-size: 12px; color: #999; margin-bottom: 12px; }
 
+/* Status badge */
 .status { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
 .status-not_started { background: #e8e8e8; color: #666; }
-.status-check_in_sent { background: #fff3e0; color: #e65100; }
-.status-follow_up_sent { background: #e3f2fd; color: #1565c0; }
-.status-ask_sent { background: #fce4ec; color: #c62828; }
+.status-email_sent { background: #fff3e0; color: #e65100; }
+.status-follow_up_1 { background: #e3f2fd; color: #1565c0; }
+.status-follow_up_2 { background: #fce4ec; color: #c62828; }
 .status-replied { background: #e8f5e9; color: #2e7d32; }
-.status-nurture { background: #f3e5f5; color: #6a1b9a; }
+.status-cold { background: #f5f5f5; color: #999; }
 
 /* Buttons */
 .btn { padding: 7px 14px; border-radius: 6px; font-family: 'Poppins', sans-serif; font-size: 12px; font-weight: 600; cursor: pointer; border: none; transition: all 0.15s; }
@@ -75,10 +75,13 @@ body { font-family: 'Poppins', sans-serif; background: #f5f5f5; color: #1a1a1a; 
 .btn-danger:hover { background: #fdd; }
 .btn-success { background: #e8f5e9; color: #2e7d32; }
 .btn-success:hover { background: #c8e6c9; }
-.btn-nurture { background: #f3e5f5; color: #6a1b9a; }
-.btn-nurture:hover { background: #e1bee7; }
 .btn-sm { padding: 4px 10px; font-size: 11px; }
 .btn-group { display: flex; gap: 6px; margin-top: 10px; flex-wrap: wrap; }
+.btn-copy { background: #e3f2fd; color: #1565c0; }
+.btn-copy:hover { background: #bbdefb; }
+.btn-copy.copied { background: #e8f5e9; color: #2e7d32; }
+.btn-templates { background: transparent; border: 1px solid #F8901E; color: #F8901E; padding: 6px 14px; border-radius: 6px; font-family: 'Poppins', sans-serif; font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.15s; }
+.btn-templates:hover { background: #F8901E; color: #fff; }
 
 /* Import */
 .import-zone { border: 2px dashed #ccc; border-radius: 10px; padding: 40px; text-align: center; background: #fff; cursor: pointer; transition: border-color 0.2s; margin-bottom: 20px; }
@@ -97,78 +100,68 @@ body { font-family: 'Poppins', sans-serif; background: #f5f5f5; color: #1a1a1a; 
 .selected-count { margin: 12px 0; font-size: 14px; font-weight: 500; }
 .selected-count span { color: #F8901E; font-weight: 700; }
 
-/* Reply field */
+/* Reply & draft reply */
 .reply-area { margin-top: 8px; }
 .reply-area textarea { width: 100%; border: 1px solid #ddd; border-radius: 6px; padding: 8px; font-family: 'Poppins', sans-serif; font-size: 13px; resize: vertical; min-height: 60px; }
-.reply-area label { font-size: 12px; font-weight: 600; color: #666; display: block; margin-bottom: 4px; }
+.reply-area label { font-size: 12px; font-weight: 700; color: #333; display: block; margin-bottom: 4px; }
+
+.draft-reply-area { margin-top: 10px; background: #faf6ff; border: 1px solid #e0d0ff; border-radius: 8px; padding: 12px; }
+.draft-reply-area label { font-size: 12px; font-weight: 700; color: #6b21a8; display: flex; align-items: center; gap: 6px; margin-bottom: 6px; }
+.draft-reply-area textarea { width: 100%; border: 1px solid #d4c4f0; border-radius: 6px; padding: 8px; font-family: 'Poppins', sans-serif; font-size: 13px; resize: vertical; min-height: 80px; background: #fff; line-height: 1.5; }
+.draft-reply-area textarea:focus { outline: none; border-color: #6b21a8; box-shadow: 0 0 0 2px rgba(107,33,168,0.1); }
+.draft-reply-header { display: flex; justify-content: space-between; align-items: center; }
+.btn-copy-draft { background: #6b21a8; color: #fff; padding: 5px 12px; border-radius: 5px; font-size: 11px; font-weight: 600; cursor: pointer; border: none; transition: all 0.15s; font-family: 'Poppins', sans-serif; }
+.btn-copy-draft:hover { background: #581c87; }
+.btn-copy-draft.copied { background: #2e7d32; }
 
 /* Next step field */
-.next-step-field { margin-top: 6px; }
-.next-step-field input { width: 100%; border: 1px solid #ddd; border-radius: 6px; padding: 7px 10px; font-family: 'Poppins', sans-serif; font-size: 13px; }
+.next-step-field { margin-top: 8px; }
+.next-step-field input { width: 100%; border: 1px solid #ddd; border-radius: 6px; padding: 8px; font-family: 'Poppins', sans-serif; font-size: 13px; }
 
-/* Empty state */
-.empty { text-align: center; padding: 40px; color: #aaa; font-size: 14px; }
-.empty .icon { font-size: 32px; margin-bottom: 8px; }
+/* Message preview */
+.msg-preview { white-space: pre-wrap; font-size: 12px; background: #fafafa; border: 1px solid #eee; border-radius: 6px; padding: 10px; margin-top: 6px; max-height: 0; overflow: hidden; transition: max-height 0.3s; }
+.msg-preview.show { max-height: 400px; overflow-y: auto; }
 
-/* Sequence timeline */
-.timeline { display: flex; gap: 0; margin-top: 8px; font-size: 11px; }
-.timeline-step { flex: 1; text-align: center; padding: 6px 4px; background: #f5f5f5; border-right: 1px solid #e5e5e5; color: #999; }
-.timeline-step:first-child { border-radius: 6px 0 0 6px; }
-.timeline-step:last-child { border-radius: 0 6px 6px 0; border-right: none; }
+/* Timeline */
+.timeline { display: flex; gap: 4px; margin: 8px 0; }
+.timeline-step { font-size: 11px; font-weight: 600; padding: 3px 10px; border-radius: 4px; background: #f0f0f0; color: #999; }
 .timeline-step.done { background: #e8f5e9; color: #2e7d32; }
-.timeline-step.current { background: #fff3e0; color: #e65100; font-weight: 600; }
-.timeline-step.upcoming { background: #f5f5f5; color: #bbb; }
+.timeline-step.current { background: #fff3e0; color: #e65100; }
 
-/* Copy message button */
-.btn-copy { background: #f0e6ff; color: #6b21a8; }
-.btn-copy:hover { background: #e0d0ff; }
-.btn-copy.copied { background: #e8f5e9; color: #2e7d32; }
-.msg-preview { background: #fafafa; border: 1px solid #eee; border-radius: 6px; padding: 10px 12px; margin-top: 8px; font-size: 12px; color: #555; line-height: 1.5; white-space: pre-wrap; display: none; }
-.msg-preview.show { display: block; }
+/* Overdue */
+.overdue { color: #c62828; font-weight: 700; }
+.due-info { font-size: 12px; color: #888; margin-top: 4px; }
+
+/* LinkedIn link */
+.linkedin-link { color: #F8901E !important; text-decoration: none; font-weight: 500; }
+.linkedin-link:hover { text-decoration: underline !important; }
+
+/* Empty states */
+.empty { text-align: center; padding: 40px; color: #999; }
+.empty .icon { font-size: 36px; margin-bottom: 8px; }
 
 /* Manual add form */
 .add-form { background: #fff; border-radius: 10px; padding: 20px; border: 1px solid #e5e5e5; margin-bottom: 20px; }
-.add-form h3 { font-size: 14px; margin-bottom: 12px; }
-.form-row { display: flex; gap: 10px; margin-bottom: 10px; }
-.form-row input { flex: 1; padding: 8px 10px; border: 1px solid #ddd; border-radius: 6px; font-family: 'Poppins', sans-serif; font-size: 13px; }
-
-/* Overdue indicator */
-.overdue { color: #c62828; font-weight: 600; font-size: 11px; }
-
-/* Due date info */
-.due-info { font-size: 12px; color: #666; margin-top: 4px; }
-.due-info strong { color: #F8901E; }
-
-/* LinkedIn URL in card */
-.linkedin-link { color: #F8901E; text-decoration: none; font-size: 12px; font-weight: 500; }
-.linkedin-link:hover { text-decoration: underline; }
+.add-form h3 { font-size: 14px; font-weight: 700; margin-bottom: 12px; }
+.form-row { display: flex; gap: 12px; margin-bottom: 8px; }
+.form-row input { flex: 1; padding: 8px; border: 1px solid #ddd; border-radius: 6px; font-family: 'Poppins', sans-serif; font-size: 13px; }
 
 /* Template editor modal */
-.modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center; }
+.modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: none; justify-content: center; align-items: flex-start; padding: 40px; z-index: 1000; overflow-y: auto; }
 .modal-overlay.show { display: flex; }
-.modal { background: #fff; border-radius: 12px; padding: 24px; max-width: 700px; width: 95%; max-height: 85vh; overflow-y: auto; box-shadow: 0 8px 32px rgba(0,0,0,0.2); }
-.modal h2 { font-size: 18px; font-weight: 700; margin-bottom: 16px; }
-.modal label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 4px; color: #333; }
-.modal textarea { width: 100%; min-height: 100px; padding: 10px; font-family: 'Poppins', sans-serif; font-size: 13px; border: 2px solid #ddd; border-radius: 8px; resize: vertical; margin-bottom: 16px; outline: none; transition: border-color 0.15s; }
-.modal textarea:focus { border-color: #F8901E; }
-.modal input.tpl-subject { width: 100%; padding: 8px 10px; font-family: 'Poppins', sans-serif; font-size: 13px; border: 2px solid #ddd; border-radius: 8px; margin-bottom: 8px; outline: none; transition: border-color 0.15s; }
-.modal input.tpl-subject:focus { border-color: #F8901E; }
-.modal .hint { font-size: 11px; color: #999; margin: -12px 0 16px; }
-.modal .step-group { border: 1px solid #eee; border-radius: 8px; padding: 12px; margin-bottom: 16px; }
-.modal .step-label { font-size: 14px; font-weight: 700; margin-bottom: 8px; color: #F8901E; }
-.modal-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 8px; }
-.btn-templates { background: transparent; border: 1px solid #F8901E; color: #F8901E; padding: 6px 14px; border-radius: 6px; font-family: 'Poppins', sans-serif; font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.15s; }
-.btn-templates:hover { background: #F8901E; color: #fff; }
-
-@media (max-width: 700px) {
-  .content { padding: 16px; }
-  .form-row { flex-direction: column; }
-  .card-top { flex-direction: column; gap: 6px; }
-}
+.modal { background: #fff; border-radius: 12px; padding: 24px; max-width: 700px; width: 100%; max-height: 90vh; overflow-y: auto; }
+.modal h2 { font-size: 18px; margin-bottom: 8px; }
+.modal .hint { font-size: 12px; color: #888; margin-bottom: 16px; }
+.modal .step-group { margin-bottom: 20px; border: 1px solid #eee; border-radius: 8px; padding: 16px; }
+.modal .step-label { font-size: 14px; font-weight: 700; color: #F8901E; margin-bottom: 8px; }
+.modal label { font-size: 12px; font-weight: 600; color: #666; display: block; margin-bottom: 4px; margin-top: 8px; }
+.modal input[type="text"] { width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 6px; font-family: 'Poppins', sans-serif; font-size: 13px; }
+.modal textarea { width: 100%; min-height: 120px; padding: 8px; border: 1px solid #ddd; border-radius: 6px; font-family: 'Poppins', sans-serif; font-size: 13px; resize: vertical; }
+.modal-actions { display: flex; gap: 8px; margin-top: 16px; justify-content: flex-end; }
 
 /* Daily progress */
-.daily-progress { background: #fff; border-radius: 10px; padding: 14px 20px; border: 1px solid #e5e5e5; margin-bottom: 20px; }
-.daily-progress h3 { font-size: 13px; font-weight: 700; margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
+.daily-progress { background: #fff; border-radius: 10px; padding: 16px 20px; border: 1px solid #e5e5e5; margin-bottom: 24px; }
+.daily-progress h3 { font-size: 14px; font-weight: 700; margin-bottom: 10px; }
 .daily-progress .lbl { color: #999; font-weight: 400; font-size: 11px; }
 .progress-row { display: flex; align-items: center; gap: 12px; margin-bottom: 6px; }
 .progress-row:last-child { margin-bottom: 0; }
@@ -183,7 +176,7 @@ body { font-family: 'Poppins', sans-serif; background: #f5f5f5; color: #1a1a1a; 
 </head>
 <body>
 <div class="header">
-  <h1><span>DA</span> Prospecting Tool #10 — Customers w/ Emails</h1>
+  <h1><span>DA</span> Prospecting Tool #12 — Referral Partner Emails</h1>
   <div class="header-right"><button class="btn-templates" onclick="openTemplateEditor()">Edit Templates</button> <span id="prospect-count" style="margin-left:8px;"></span></div>
 </div>
 <div class="tabs" id="tabs"></div>
@@ -196,13 +189,14 @@ body { font-family: 'Poppins', sans-serif; background: #f5f5f5; color: #1a1a1a; 
 // ============================================================
 // STATE
 // ============================================================
-const TITLE_KEYWORDS = [];
+const TITLE_KEYWORDS = ['founder','ceo','cmo','vp marketing','head of marketing','creative director','chief marketing','marketing director','co-founder','owner','president','managing director','partner','agency'];
 
 let state = {
   prospects: [],
   importedContacts: [],
   activeTab: 'dashboard',
-  searchQuery: ''
+  searchQuery: '',
+  dashboardSearch: ''
 };
 
 // ============================================================
@@ -248,20 +242,19 @@ async function loadFromServer() {
     // One-time migration: if server is empty but localStorage has data
     if (state.prospects.length === 0) {
       try {
-        const local = JSON.parse(localStorage.getItem('da-customer-outreach')) || [];
-        if (local.length > 0 && confirm(`Found ${local.length} customers in browser storage. Migrate to server?`)) {
+        const local = JSON.parse(localStorage.getItem('da-referral-email-outreach')) || [];
+        if (local.length > 0 && confirm(`Found ${local.length} prospects in browser storage. Migrate to server?`)) {
           await apiPost('/api/prospects/migrate', { prospects: local });
           const refreshed = await apiGet('/api/prospects');
           state.prospects = refreshed.prospects || [];
-          localStorage.removeItem('da-customer-outreach');
+          localStorage.removeItem('da-referral-email-outreach');
           alert('Migration complete! Your data is now saved on the server.');
         }
       } catch (e) { /* localStorage empty or parse error */ }
     }
   } catch (err) {
     console.error('Failed to load from server:', err);
-    // Fallback to localStorage if server is down
-    try { state.prospects = JSON.parse(localStorage.getItem('da-customer-outreach')) || []; }
+    try { state.prospects = JSON.parse(localStorage.getItem('da-referral-email-outreach')) || []; }
     catch { state.prospects = []; }
   }
   render();
@@ -270,20 +263,17 @@ async function loadFromServer() {
 // ============================================================
 // DATE HELPERS
 // ============================================================
-function today() {
-  const d = new Date();
-  return new Date(d.getFullYear(), d.getMonth(), d.getDate());
-}
+function today() { return new Date(); }
 
 function addDays(dateStr, days) {
-  const d = new Date(dateStr);
+  const d = new Date(dateStr + 'T00:00:00');
   d.setDate(d.getDate() + days);
   return d.toISOString().split('T')[0];
 }
 
 function daysBetween(dateStr1, dateStr2) {
-  const d1 = new Date(dateStr1);
-  const d2 = new Date(dateStr2);
+  const d1 = new Date(dateStr1 + 'T00:00:00');
+  const d2 = new Date(dateStr2 + 'T00:00:00');
   return Math.floor((d2 - d1) / (1000 * 60 * 60 * 24));
 }
 
@@ -300,22 +290,22 @@ function todayStr() {
 // ============================================================
 // MESSAGE TEMPLATES (editable via localStorage)
 // ============================================================
-const TOOL_KEY = 'da_templates_tool10';
+const TOOL_KEY = 'da_templates_tool12';
 const DEFAULT_SUBJECTS = {
-  'check_in': `Checking in, {name}`,
-  'value_add': `Re: Checking in, {name}`,
-  'ask': `Re: Checking in, {name}`
+  'email': `Referral partnership — {name}`,
+  'follow_up_1': `Re: Referral partnership — {name}`,
+  'follow_up_2': `Re: Referral partnership — {name}`
 };
 const DEFAULT_BODIES = {
-  'check_in': `Hey {name},\n\nHope things are going well! It's been a while since we worked together and I wanted to check in.\n\nWe've been doing a lot more LinkedIn video content for B2B companies — short-form thought leadership pieces that are getting solid traction. Thought of you because it'd be a great fit for what {company} is doing.\n\nWould love to catch up for 15 min if you're open to it.\n\nDane`,
-  'value_add': `Hey {name} — wanted to share something quick. We recently launched a video series on LinkedIn featuring B2B leaders. The format is simple: 15-min conversation, we handle everything, and you get free content tagged to your profile.\n\nHere's what it looks like: https://www.digitalaccomplice.com/video-series\n\nIf you or anyone on your team would be a good fit, I'd love to set it up.\n\nDane`,
-  'ask': `{name} — one more thing. If video isn't on the radar right now, totally understand. But if you know anyone who could use help with B2B video content or LinkedIn strategy, I'd really appreciate a referral.\n\nEither way, glad to be in your network.\n\nDane`
+  'email': `Hi {name},\n\nI run Digital Accomplice — we produce video content for B2B and cybersecurity companies. I've been looking at what {company} does, and I think there's real overlap between our clients.\n\nA lot of the companies we work with need exactly what you offer, and vice versa. I'd love to explore whether a referral partnership makes sense.\n\nWould you be open to a 15-minute call to see if there's a fit?\n\nBest,\nDane Frederiksen\nDigital Accomplice`,
+  'follow_up_1': `Hey {name} — just bumping this. Think there's real overlap here. 15 min to see if it makes sense?`,
+  'follow_up_2': `Hey {name} — last one from me on this. If referrals aren't your thing right now, totally get it. But if you ever need a video partner for your clients, door's always open.\n\n— Dane`
 };
 
 const TEMPLATE_LABELS = {
-  'check_in': 'Check-In Email',
-  'value_add': 'Value-Add Follow-Up',
-  'ask': 'The Ask'
+  'email': 'Initial Email',
+  'follow_up_1': 'Follow-Up #1',
+  'follow_up_2': 'Follow-Up #2'
 };
 
 function loadTemplates() {
@@ -401,7 +391,7 @@ async function copySubject(prospectId, step) {
       btn.classList.add('copied');
       setTimeout(() => { btn.textContent = 'Copy Subject'; btn.classList.remove('copied'); }, 2000);
     }
-  } catch (err) { alert('Copy failed \u2014 check browser permissions'); }
+  } catch (err) { alert('Copy failed — check browser permissions'); }
 }
 
 async function copyBody(prospectId, step) {
@@ -416,7 +406,7 @@ async function copyBody(prospectId, step) {
       btn.classList.add('copied');
       setTimeout(() => { btn.textContent = 'Copy Email'; btn.classList.remove('copied'); }, 2000);
     }
-  } catch (err) { alert('Copy failed \u2014 check browser permissions'); }
+  } catch (err) { alert('Copy failed — check browser permissions'); }
 }
 
 function togglePreview(prospectId, step) {
@@ -435,17 +425,83 @@ function togglePreview(prospectId, step) {
 }
 
 // ============================================================
+// DRAFT REPLY
+// ============================================================
+function getDraftReply(prospect) {
+  if (prospect.draftReply) return prospect.draftReply;
+
+  const name = firstName(prospect.name);
+  const company = prospect.company ? ` at ${prospect.company}` : '';
+  return `Hey ${name} — thanks for getting back to me! Really glad this resonated.\n\nWould love to set up a quick call to talk through how we might refer clients to each other. What does your calendar look like this week or next?\n\nDane`;
+}
+
+async function copyDraftReply(prospectId) {
+  const p = state.prospects.find(x => x.id === prospectId);
+  if (!p) return;
+  const el = document.getElementById('draft-reply-' + prospectId);
+  const msg = el ? el.value : getDraftReply(p);
+  try {
+    await navigator.clipboard.writeText(msg);
+    const btn = document.getElementById('copy-draft-btn-' + prospectId);
+    if (btn) {
+      btn.textContent = 'Copied!';
+      btn.classList.add('copied');
+      setTimeout(() => { btn.textContent = 'Copy Draft'; btn.classList.remove('copied'); }, 2000);
+    }
+  } catch (err) { alert('Copy failed — check browser permissions'); }
+}
+
+function updateDraftReply(id, text) {
+  clearTimeout(_debounce['draft_' + id]);
+  _debounce['draft_' + id] = setTimeout(async () => {
+    try {
+      await apiPut('/api/prospects/' + id, { draftReply: text });
+      const p = state.prospects.find(x => x.id === id);
+      if (p) p.draftReply = text;
+    } catch (err) { console.error('Failed to save draft reply:', err); }
+  }, 500);
+}
+
+// ============================================================
+// DASHBOARD SEARCH
+// ============================================================
+function handleDashboardSearch(value) {
+  state.dashboardSearch = value;
+  const container = document.getElementById('dashboard-content');
+  if (container) container.innerHTML = renderDashboardInner();
+}
+
+function renderDashboardSearchResults() {
+  const q = state.dashboardSearch.trim().toLowerCase();
+  let matches = state.prospects.filter(p => {
+    if ((p.name || '').toLowerCase().includes(q)) return true;
+    if ((p.company || '').toLowerCase().includes(q)) return true;
+    if ((p.title || '').toLowerCase().includes(q)) return true;
+    if ((p.email || '').toLowerCase().includes(q)) return true;
+    return false;
+  });
+
+  if (matches.length === 0) {
+    return `<div class="empty"><div class="icon">&#x1F50D;</div>No prospects match that search.<br>Try a different name or company.</div>`;
+  }
+
+  let html = `<div class="search-count">${matches.length} match${matches.length !== 1 ? 'es' : ''}</div>`;
+  matches.forEach(p => { html += renderProspectCard(p); });
+  return html;
+}
+
+// ============================================================
 // PROSPECT ACTIONS (async — saved to server)
 // ============================================================
-async function markCheckInSent(id) {
+async function markEmailSent(id) {
   const t = todayStr();
   try {
     const updated = await apiPut('/api/prospects/' + id, {
-      status: 'check_in_sent',
+      status: 'email_sent',
       emailSentDate: t,
       lastActionDate: t,
-      followUp1Due: addDays(t, 7),
-      followUp2Due: addDays(t, 17)
+      followUp1Due: addDays(t, 4),
+      followUp2Due: addDays(t, 9)
     });
     const idx = state.prospects.findIndex(x => x.id === id);
     if (idx !== -1) state.prospects[idx] = updated;
@@ -453,10 +509,10 @@ async function markCheckInSent(id) {
   } catch (err) { alert('Failed to save: ' + err.message); }
 }
 
-async function markFollowUpSent(id) {
+async function markFollowUp1(id) {
   try {
     const updated = await apiPut('/api/prospects/' + id, {
-      status: 'follow_up_sent',
+      status: 'follow_up_1',
       lastActionDate: todayStr()
     });
     const idx = state.prospects.findIndex(x => x.id === id);
@@ -465,22 +521,10 @@ async function markFollowUpSent(id) {
   } catch (err) { alert('Failed to save: ' + err.message); }
 }
 
-async function markAskSent(id) {
+async function markFollowUp2(id) {
   try {
     const updated = await apiPut('/api/prospects/' + id, {
-      status: 'ask_sent',
-      lastActionDate: todayStr()
-    });
-    const idx = state.prospects.findIndex(x => x.id === id);
-    if (idx !== -1) state.prospects[idx] = updated;
-    render();
-  } catch (err) { alert('Failed to save: ' + err.message); }
-}
-
-async function markNurture(id) {
-  try {
-    const updated = await apiPut('/api/prospects/' + id, {
-      status: 'nurture',
+      status: 'follow_up_2',
       lastActionDate: todayStr()
     });
     const idx = state.prospects.findIndex(x => x.id === id);
@@ -501,18 +545,11 @@ async function markReplied(id) {
   } catch (err) { alert('Failed to save: ' + err.message); }
 }
 
-async function reEngage(id) {
-  const p = state.prospects.find(x => x.id === id);
-  if (!p || !confirm('Re-engage this customer? This will restart the outreach sequence.')) return;
+async function markCold(id) {
   try {
     const updated = await apiPut('/api/prospects/' + id, {
-      status: 'not_started',
-      emailSentDate: null,
-      followUp1Due: null,
-      followUp2Due: null,
-      lastActionDate: null
-      // NOTE: reply and nextStep are PRESERVED (history matters for customers)
-      // NOTE: lastProject, lastProjectDate, customerSince are PRESERVED
+      status: 'cold',
+      lastActionDate: todayStr()
     });
     const idx = state.prospects.findIndex(x => x.id === id);
     if (idx !== -1) state.prospects[idx] = updated;
@@ -544,7 +581,7 @@ function updateNextStep(id, text) {
 }
 
 async function removeProspect(id) {
-  if (!confirm('Remove this customer?')) return;
+  if (!confirm('Remove this prospect?')) return;
   try {
     await apiDelete('/api/prospects/' + id);
     state.prospects = state.prospects.filter(x => x.id !== id);
@@ -554,7 +591,7 @@ async function removeProspect(id) {
 
 async function resetProspect(id) {
   const p = state.prospects.find(x => x.id === id);
-  if (!p || !confirm('Reset this customer to Not Started? Customer info (last project, customer since) will be preserved.')) return;
+  if (!p || !confirm('Reset this prospect to Not Started?')) return;
   try {
     const updated = await apiPut('/api/prospects/' + id, {
       status: 'not_started',
@@ -563,8 +600,8 @@ async function resetProspect(id) {
       followUp2Due: null,
       lastActionDate: null,
       reply: '',
-      nextStep: ''
-      // lastProject, lastProjectDate, customerSince are PRESERVED
+      nextStep: '',
+      draftReply: ''
     });
     const idx = state.prospects.findIndex(x => x.id === id);
     if (idx !== -1) state.prospects[idx] = updated;
@@ -577,11 +614,11 @@ async function resetProspect(id) {
 // ============================================================
 const STATUS_LABELS = {
   not_started: 'Not Started',
-  check_in_sent: 'Check-In Sent',
-  follow_up_sent: 'Value Add Sent',
-  ask_sent: 'Ask Sent',
+  email_sent: 'Email Sent',
+  follow_up_1: 'Follow-Up Sent',
+  follow_up_2: 'Final Nudge Sent',
   replied: 'Replied',
-  nurture: 'Nurture'
+  cold: 'Cold'
 };
 
 // ============================================================
@@ -596,7 +633,7 @@ function handleCSV(file) {
       if (!raw.length) { alert('CSV appears empty.'); return; }
 
       const first = raw[0].map(c => (c || '').toLowerCase().trim());
-      const hasHeaders = first.includes('email') || first.includes('email address') || first.includes('first name') || first.includes('name');
+      const hasHeaders = first.includes('email') || first.includes('email address') || first.includes('first name');
 
       let rows;
       if (hasHeaders) {
@@ -612,10 +649,7 @@ function handleCSV(file) {
           const position = obj['Position'] || obj['position'] || obj['Title'] || obj['title'] || obj['Job Title'] || '';
           const url = obj['URL'] || obj['url'] || obj['LinkedIn URL'] || obj['Profile URL'] || '';
           const source = obj['Source'] || obj['source'] || '';
-          const lastProject = obj['Last Project'] || obj['last_project'] || '';
-          const lastProjectDate = obj['Last Project Date'] || obj['last_project_date'] || '';
-          const customerSince = obj['Customer Since'] || obj['customer_since'] || '';
-          return { firstName: fn, lastName: ln, email, company, position, url, source, lastProject, lastProjectDate, customerSince, selected: false };
+          return { firstName: fn, lastName: ln, email, company, position, url, source, selected: false };
         });
       } else {
         rows = raw.map(cols => {
@@ -629,7 +663,7 @@ function handleCSV(file) {
             if ((cols[i] || '').includes('linkedin.com/in/')) { url = cols[i].trim(); }
           }
           if (company.includes('|')) { company = ''; }
-          return { firstName: name, lastName: '', email, company, position: title, url, source: '', lastProject: '', lastProjectDate: '', customerSince: '', selected: false };
+          return { firstName: name, lastName: '', email, company, position: title, url, source: '', selected: false };
         });
       }
 
@@ -645,6 +679,7 @@ function handleCSV(file) {
 }
 
 function finishImport(rows) {
+  // For referral partners, skip title filtering — show all rows
   state.importedContacts = rows;
   render();
 }
@@ -659,10 +694,7 @@ async function activateSelected() {
     title: c.position,
     email: c.email,
     linkedinUrl: c.url,
-    source: c.source || 'Customer',
-    lastProject: c.lastProject,
-    lastProjectDate: c.lastProjectDate,
-    customerSince: c.customerSince
+    source: c.source
   }));
 
   try {
@@ -670,10 +702,10 @@ async function activateSelected() {
     const data = await apiGet('/api/prospects');
     state.prospects = data.prospects || [];
     state.importedContacts = [];
-    alert(result.added + ' customer(s) added.' + (result.skipped ? ' ' + result.skipped + ' skipped (duplicates).' : ''));
+    alert(result.added + ' prospect(s) added.' + (result.skipped ? ' ' + result.skipped + ' skipped (duplicates).' : ''));
     state.activeTab = 'dashboard';
     render();
-  } catch (err) { alert('Failed to add customers: ' + err.message); }
+  } catch (err) { alert('Failed to add prospects: ' + err.message); }
 }
 
 async function addManualProspect() {
@@ -681,43 +713,39 @@ async function addManualProspect() {
   const email = document.getElementById('manual-email').value.trim();
   const company = document.getElementById('manual-company').value.trim();
   const title = document.getElementById('manual-title').value.trim();
-  const lastProject = document.getElementById('manual-project').value.trim();
-  const lastProjectDate = document.getElementById('manual-project-date').value.trim();
-  const customerSince = document.getElementById('manual-since').value.trim();
+  const source = document.getElementById('manual-source').value.trim();
   const url = document.getElementById('manual-url').value.trim();
 
   if (!name) { alert('Name is required.'); return; }
   if (!email || !email.includes('@')) { alert('Valid email is required.'); return; }
 
   try {
-    await apiPost('/api/prospects', { prospects: [{ name, company, title, email, linkedinUrl: url, source: 'Customer', lastProject, lastProjectDate, customerSince }] });
+    await apiPost('/api/prospects', { prospects: [{ name, company, title, email, linkedinUrl: url, source }] });
     const data = await apiGet('/api/prospects');
     state.prospects = data.prospects || [];
     document.getElementById('manual-name').value = '';
     document.getElementById('manual-email').value = '';
     document.getElementById('manual-company').value = '';
     document.getElementById('manual-title').value = '';
-    document.getElementById('manual-project').value = '';
-    document.getElementById('manual-project-date').value = '';
-    document.getElementById('manual-since').value = '';
+    document.getElementById('manual-source').value = '';
     document.getElementById('manual-url').value = '';
     render();
-  } catch (err) { alert('Failed to add customer: ' + err.message); }
+  } catch (err) { alert('Failed to add prospect: ' + err.message); }
 }
 
 // ============================================================
 // DASHBOARD LOGIC
 // ============================================================
-function getDmToday() {
+function getEmailToday() {
   return state.prospects.filter(p => p.status === 'not_started');
 }
 
 function getFollowUpToday() {
   const t = todayStr();
   return state.prospects.filter(p => {
-    if (p.status === 'check_in_sent' && p.followUp1Due && p.followUp1Due <= t) return true;
-    if (p.status === 'follow_up_sent' && p.followUp2Due && p.followUp2Due <= t) return true;
-    if (p.status === 'ask_sent' && p.lastActionDate && daysBetween(p.lastActionDate, t) >= 10) return true;
+    if (p.status === 'email_sent' && p.followUp1Due && p.followUp1Due <= t) return true;
+    if (p.status === 'follow_up_1' && p.followUp2Due && p.followUp2Due <= t) return true;
+    if (p.status === 'follow_up_2' && p.lastActionDate && daysBetween(p.lastActionDate, t) >= 5) return true;
     return false;
   });
 }
@@ -726,15 +754,11 @@ function getReplied() {
   return state.prospects.filter(p => p.status === 'replied');
 }
 
-function getNurture() {
-  return state.prospects.filter(p => p.status === 'nurture');
-}
-
 function getWaiting() {
   const t = todayStr();
   return state.prospects.filter(p => {
-    if (p.status === 'check_in_sent' && p.followUp1Due && p.followUp1Due > t) return true;
-    if (p.status === 'follow_up_sent' && p.followUp2Due && p.followUp2Due > t) return true;
+    if (p.status === 'email_sent' && p.followUp1Due && p.followUp1Due > t) return true;
+    if (p.status === 'follow_up_1' && p.followUp2Due && p.followUp2Due > t) return true;
     return false;
   });
 }
@@ -744,7 +768,7 @@ function getWaiting() {
 // ============================================================
 function render() {
   // Prospect count
-  document.getElementById('prospect-count').textContent = state.prospects.length + ' customer' + (state.prospects.length !== 1 ? 's' : '');
+  document.getElementById('prospect-count').textContent = state.prospects.length + ' prospect' + (state.prospects.length !== 1 ? 's' : '');
 
   // Tabs
   const tabs = [
@@ -776,27 +800,27 @@ function switchTab(tab) {
 // ============================================================
 // DAILY PROGRESS
 // ============================================================
-const DAILY_TARGETS = { touches: 3 };
+const DAILY_TARGETS = { newEmails: 3 };
 
 function getDailyProgress() {
   const t = todayStr();
-  const newCheckins = state.prospects.filter(p => p.emailSentDate === t).length;
-  const followUps = state.prospects.filter(p => p.lastActionDate === t && (p.status === 'follow_up_sent' || p.status === 'ask_sent')).length;
-  return { newCheckins, followUps, total: newCheckins + followUps };
+  const newEmails = state.prospects.filter(p => p.emailSentDate === t).length;
+  const followUps = state.prospects.filter(p => p.lastActionDate === t && (p.status === 'follow_up_1' || p.status === 'follow_up_2')).length;
+  return { newEmails, followUps, total: newEmails + followUps };
 }
 
 function renderDailyProgress() {
-  const { newCheckins, followUps, total } = getDailyProgress();
-  const pct = Math.min(100, Math.round((total / DAILY_TARGETS.touches) * 100));
-  const isDone = total >= DAILY_TARGETS.touches;
+  const { newEmails, followUps, total } = getDailyProgress();
+  const pct = Math.min(100, Math.round((newEmails / DAILY_TARGETS.newEmails) * 100));
+  const emailDone = newEmails >= DAILY_TARGETS.newEmails;
   return `<div class="daily-progress">
-    <h3>Daily Target <span class="lbl">Customer emails — no cap</span></h3>
+    <h3>Daily Target <span class="lbl">Referral Partner Emails</span></h3>
     <div class="progress-row">
-      <span class="progress-label">Total touches</span>
-      <div class="progress-track"><div class="progress-fill ${isDone ? 'green' : 'orange'}" style="width:${pct}%"></div></div>
-      <span class="progress-nums ${isDone ? 'done' : ''}">${total} / ${DAILY_TARGETS.touches}</span>
+      <span class="progress-label">New emails</span>
+      <div class="progress-track"><div class="progress-fill ${emailDone ? 'green' : 'orange'}" style="width:${pct}%"></div></div>
+      <span class="progress-nums ${emailDone ? 'done' : ''}">${newEmails} / ${DAILY_TARGETS.newEmails}</span>
     </div>
-    ${newCheckins > 0 ? `<div style="font-size:11px;color:#888;margin-top:4px;">${newCheckins} new check-in${newCheckins !== 1 ? 's' : ''} + ${followUps} follow-up${followUps !== 1 ? 's' : ''}</div>` : ''}
+    ${followUps > 0 ? `<div class="progress-row"><span class="progress-label">Follow-ups done</span><div class="progress-track"><div class="progress-fill green" style="width:100%"></div></div><span class="progress-nums done">${followUps}</span></div>` : ''}
   </div>`;
 }
 
@@ -804,35 +828,37 @@ function renderDailyProgress() {
 // RENDER — DASHBOARD
 // ============================================================
 function renderDashboard() {
-  const dmList = getDmToday();
+  const emailList = getEmailToday();
   const fuList = getFollowUpToday();
   const reList = getReplied();
-  const nurList = getNurture();
   const waitList = getWaiting();
+
+  const totalActive = state.prospects.filter(p => p.status !== 'cold').length;
+  const totalCold = state.prospects.filter(p => p.status === 'cold').length;
 
   let html = '';
 
   // Summary banner
   if (state.prospects.length > 0) {
     html += `<div class="alert-banner">
-      <strong>Customer Touchpoints</strong>
-      <span class="alert-stat">${dmList.length} check-in${dmList.length !== 1 ? 's' : ''} to send</span>
+      <strong>Today's Referral Partner Outreach</strong>
+      <span class="alert-stat">${emailList.length} email${emailList.length !== 1 ? 's' : ''} to send</span>
       <span class="alert-stat">${fuList.length} follow-up${fuList.length !== 1 ? 's' : ''} due</span>
       <span class="alert-stat">${reList.length} repl${reList.length !== 1 ? 'ies' : 'y'} to handle</span>
-      <span class="alert-stat">${nurList.length} in nurture</span>
+      <span class="alert-stat">${waitList.length} waiting</span>
     </div>`;
   }
 
   html += renderDailyProgress();
 
-  // Re-Engage Today (was "Email Today")
+  // Email Today
   html += `<div class="section">
-    <div class="section-header">Re-Engage Today <span class="count">${dmList.length}</span></div>`;
-  if (dmList.length === 0) {
-    html += `<div class="empty"><div class="icon">&#x2713;</div>No check-ins to send today</div>`;
+    <div class="section-header">Email Today <span class="count">${emailList.length}</span></div>`;
+  if (emailList.length === 0) {
+    html += `<div class="empty"><div class="icon">&#x2713;</div>No emails to send today</div>`;
   } else {
-    dmList.forEach(p => {
-      html += renderDashboardCard(p, 'checkin');
+    emailList.forEach(p => {
+      html += renderDashboardCard(p, 'email');
     });
   }
   html += `</div>`;
@@ -853,7 +879,7 @@ function renderDashboard() {
   html += `<div class="section">
     <div class="section-header">Replied <span class="count">${reList.length}</span></div>`;
   if (reList.length === 0) {
-    html += `<div class="empty"><div class="icon">&#x1F4AC;</div>No replies yet</div>`;
+    html += `<div class="empty"><div class="icon">&#x1F4AC;</div>No replies yet — keep going</div>`;
   } else {
     reList.forEach(p => {
       html += renderDashboardCard(p, 'replied');
@@ -861,43 +887,15 @@ function renderDashboard() {
   }
   html += `</div>`;
 
-  // In Nurture
-  html += `<div class="section">
-    <div class="section-header">In Nurture <span class="count">${nurList.length}</span></div>`;
-  if (nurList.length === 0) {
-    html += `<div class="empty"><div class="icon">&#x1F331;</div>No customers in nurture</div>`;
-  } else {
-    nurList.forEach(p => {
-      const t = todayStr();
-      const daysSince = p.lastActionDate ? daysBetween(p.lastActionDate, t) : 0;
-      html += `<div class="card">
-        <div class="card-top">
-          <div>
-            <span class="card-name">${esc(p.name)}</span> <span class="card-company">@ ${esc(p.company)}</span>
-            <div class="card-meta">
-              <span>${esc(p.email)}</span>
-              ${p.lastProject ? `<span style="background:#e3f2fd;padding:2px 8px;border-radius:4px;font-size:11px;color:#1565c0;">Last: ${esc(p.lastProject)}</span>` : ''}
-              ${daysSince > 0 ? `<span>${daysSince} day${daysSince !== 1 ? 's' : ''} since last action</span>` : ''}
-            </div>
-          </div>
-          <span class="status status-nurture">${STATUS_LABELS.nurture}</span>
-        </div>
-        <div class="btn-group">
-          <button class="btn btn-primary btn-sm" onclick="reEngage('${p.id}')">Re-Engage</button>
-        </div>
-      </div>`;
-    });
-  }
-  html += `</div>`;
-
-  // Waiting (check_in_sent and follow_up_sent with future dates)
+  // Waiting (collapsed info)
   if (waitList.length > 0) {
     html += `<div class="section">
       <div class="section-header">Waiting for Response</div>`;
     waitList.forEach(p => {
+      const t = todayStr();
       let dueLabel = '';
-      if (p.status === 'check_in_sent') dueLabel = 'Value add due ' + formatDate(p.followUp1Due);
-      else if (p.status === 'follow_up_sent') dueLabel = 'Ask due ' + formatDate(p.followUp2Due);
+      if (p.status === 'email_sent') dueLabel = 'Follow-up due ' + formatDate(p.followUp1Due);
+      else if (p.status === 'follow_up_1') dueLabel = 'Final nudge due ' + formatDate(p.followUp2Due);
       html += `<div class="card">
         <button class="card-delete" onclick="removeProspect('${p.id}')" title="Remove prospect">&times;</button>
         <div class="card-top">
@@ -905,7 +903,6 @@ function renderDashboard() {
             <span class="card-name">${esc(p.name)}</span> <span class="card-company">@ ${esc(p.company)}</span>
             <div class="card-meta">
               <span>${esc(p.email)}</span>
-              ${p.lastProject ? `<span style="background:#e3f2fd;padding:2px 8px;border-radius:4px;font-size:11px;color:#1565c0;">Last: ${esc(p.lastProject)}</span>` : ''}
             </div>
           </div>
           <span class="status status-${p.status}">${STATUS_LABELS[p.status]}</span>
@@ -924,49 +921,57 @@ function renderDashboardCard(p, mode) {
   let extra = '';
   const t = todayStr();
 
-  if (mode === 'checkin') {
+  if (mode === 'email') {
     buttons = `
-      <button class="btn btn-copy btn-sm" id="subj-btn-${p.id}" onclick="copySubject('${p.id}','check_in')">Copy Subject</button>
-      <button class="btn btn-copy btn-sm" id="body-btn-${p.id}" onclick="copyBody('${p.id}','check_in')">Copy Email</button>
-      <button class="btn btn-secondary btn-sm" onclick="togglePreview('${p.id}','check_in')">Preview</button>
-      <button class="btn btn-primary btn-sm" onclick="markCheckInSent('${p.id}')">Mark Check-In Sent</button>
+      <button class="btn btn-copy btn-sm" id="subj-btn-${p.id}" onclick="copySubject('${p.id}','email')">Copy Subject</button>
+      <button class="btn btn-copy btn-sm" id="body-btn-${p.id}" onclick="copyBody('${p.id}','email')">Copy Email</button>
+      <button class="btn btn-secondary btn-sm" onclick="togglePreview('${p.id}','email')">Preview</button>
+      <button class="btn btn-primary btn-sm" onclick="markEmailSent('${p.id}')">Mark Email Sent</button>
     `;
     extra = `<div class="msg-preview" id="msg-preview-${p.id}"></div>`;
   } else if (mode === 'followup') {
-    if (p.status === 'check_in_sent') {
+    if (p.status === 'email_sent') {
       const daysOver = daysBetween(p.followUp1Due, t);
       const overdueLabel = daysOver > 0 ? `<span class="overdue">${daysOver} day${daysOver > 1 ? 's' : ''} overdue</span>` : '';
-      extra = `<div class="due-info">Value add follow-up ${overdueLabel}</div><div class="msg-preview" id="msg-preview-${p.id}"></div>`;
+      extra = `<div class="due-info">First follow-up ${overdueLabel}</div><div class="msg-preview" id="msg-preview-${p.id}"></div>`;
       buttons = `
-        <button class="btn btn-copy btn-sm" id="subj-btn-${p.id}" onclick="copySubject('${p.id}','value_add')">Copy Subject</button>
-        <button class="btn btn-copy btn-sm" id="body-btn-${p.id}" onclick="copyBody('${p.id}','value_add')">Copy Email</button>
-        <button class="btn btn-secondary btn-sm" onclick="togglePreview('${p.id}','value_add')">Preview</button>
-        <button class="btn btn-primary btn-sm" onclick="markFollowUpSent('${p.id}')">Mark Value Add Sent</button>
+        <button class="btn btn-copy btn-sm" id="subj-btn-${p.id}" onclick="copySubject('${p.id}','follow_up_1')">Copy Subject</button>
+        <button class="btn btn-copy btn-sm" id="body-btn-${p.id}" onclick="copyBody('${p.id}','follow_up_1')">Copy Email</button>
+        <button class="btn btn-secondary btn-sm" onclick="togglePreview('${p.id}','follow_up_1')">Preview</button>
+        <button class="btn btn-primary btn-sm" onclick="markFollowUp1('${p.id}')">Mark Follow-Up Sent</button>
         <button class="btn btn-success btn-sm" onclick="markReplied('${p.id}')">Got Reply</button>
       `;
-    } else if (p.status === 'follow_up_sent') {
+    } else if (p.status === 'follow_up_1') {
       const daysOver = daysBetween(p.followUp2Due, t);
       const overdueLabel = daysOver > 0 ? `<span class="overdue">${daysOver} day${daysOver > 1 ? 's' : ''} overdue</span>` : '';
-      extra = `<div class="due-info">Ask follow-up ${overdueLabel}</div><div class="msg-preview" id="msg-preview-${p.id}"></div>`;
+      extra = `<div class="due-info">Final nudge ${overdueLabel}</div><div class="msg-preview" id="msg-preview-${p.id}"></div>`;
       buttons = `
-        <button class="btn btn-copy btn-sm" id="subj-btn-${p.id}" onclick="copySubject('${p.id}','ask')">Copy Subject</button>
-        <button class="btn btn-copy btn-sm" id="body-btn-${p.id}" onclick="copyBody('${p.id}','ask')">Copy Email</button>
-        <button class="btn btn-secondary btn-sm" onclick="togglePreview('${p.id}','ask')">Preview</button>
-        <button class="btn btn-primary btn-sm" onclick="markAskSent('${p.id}')">Mark Ask Sent</button>
+        <button class="btn btn-copy btn-sm" id="subj-btn-${p.id}" onclick="copySubject('${p.id}','follow_up_2')">Copy Subject</button>
+        <button class="btn btn-copy btn-sm" id="body-btn-${p.id}" onclick="copyBody('${p.id}','follow_up_2')">Copy Email</button>
+        <button class="btn btn-secondary btn-sm" onclick="togglePreview('${p.id}','follow_up_2')">Preview</button>
+        <button class="btn btn-primary btn-sm" onclick="markFollowUp2('${p.id}')">Mark Final Nudge Sent</button>
         <button class="btn btn-success btn-sm" onclick="markReplied('${p.id}')">Got Reply</button>
       `;
-    } else if (p.status === 'ask_sent') {
-      extra = `<div class="due-info">No reply after ask \u2014 move to nurture?</div>`;
+    } else if (p.status === 'follow_up_2') {
+      extra = `<div class="due-info">No reply after final nudge — time to close?</div>`;
       buttons = `
-        <button class="btn btn-nurture btn-sm" onclick="markNurture('${p.id}')">Move to Nurture</button>
+        <button class="btn btn-danger btn-sm" onclick="markCold('${p.id}')">Mark Cold</button>
         <button class="btn btn-success btn-sm" onclick="markReplied('${p.id}')">Got Reply</button>
       `;
     }
   } else if (mode === 'replied') {
+    const draft = getDraftReply(p);
     extra = `
       <div class="reply-area">
         <label>Their reply:</label>
         <textarea placeholder="Paste what they said..." onblur="updateReply('${p.id}', this.value)">${esc(p.reply || '')}</textarea>
+      </div>
+      <div class="draft-reply-area">
+        <div class="draft-reply-header">
+          <label>Your draft reply:</label>
+          <button class="btn-copy-draft" id="copy-draft-btn-${p.id}" onclick="copyDraftReply('${p.id}')">Copy Draft</button>
+        </div>
+        <textarea id="draft-reply-${p.id}" placeholder="Your reply to send back..." onblur="updateDraftReply('${p.id}', this.value)">${esc(draft)}</textarea>
       </div>
       <div class="next-step-field">
         <label style="font-size:12px;font-weight:600;color:#666;display:block;margin-bottom:4px;">Next step:</label>
@@ -982,9 +987,7 @@ function renderDashboardCard(p, mode) {
         <div class="card-title">${esc(p.title)}</div>
         <div class="card-meta">
           <span>${esc(p.email)}</span>
-          ${p.lastProject ? `<span style="background:#e3f2fd;padding:2px 8px;border-radius:4px;font-size:11px;color:#1565c0;">Last: ${esc(p.lastProject)}</span>` : ''}
-          ${p.lastProjectDate ? `<span>${formatDate(p.lastProjectDate)}</span>` : ''}
-          ${p.customerSince ? `<span>Customer since ${formatDate(p.customerSince)}</span>` : ''}
+          ${p.source ? `<span style="background:#f0f0f0;padding:2px 8px;border-radius:4px;font-size:11px;">${esc(p.source)}</span>` : ''}
           ${p.linkedinUrl ? `<a href="${esc(p.linkedinUrl)}" target="_blank" class="linkedin-link">LinkedIn</a>` : ''}
             ${getActivityFeedUrl(p.linkedinUrl) ? `<a href="${getActivityFeedUrl(p.linkedinUrl)}" target="_blank" class="linkedin-link">Activity Feed</a>` : ''}
         </div>
@@ -1000,14 +1003,14 @@ function renderDashboardCard(p, mode) {
 
 function renderTimeline(p) {
   const steps = [
-    { label: 'Check-In', key: 'check_in_sent' },
-    { label: 'Value Add', key: 'follow_up_sent' },
-    { label: 'Ask', key: 'ask_sent' }
+    { label: 'Email', key: 'email_sent' },
+    { label: 'Follow-Up', key: 'follow_up_1' },
+    { label: 'Final Nudge', key: 'follow_up_2' }
   ];
-  const statusOrder = ['not_started', 'check_in_sent', 'follow_up_sent', 'ask_sent'];
+  const statusOrder = ['not_started', 'email_sent', 'follow_up_1', 'follow_up_2'];
   const currentIdx = statusOrder.indexOf(p.status);
 
-  if (p.status === 'not_started' || p.status === 'replied' || p.status === 'nurture') return '';
+  if (p.status === 'not_started' || p.status === 'replied' || p.status === 'cold') return '';
 
   return `<div class="timeline">${steps.map((s, i) => {
     const stepIdx = i + 1;
@@ -1025,8 +1028,8 @@ function renderImport() {
   let html = `
     <div class="import-zone" onclick="document.getElementById('csv-input').click()">
       <div class="icon">&#x1F4C4;</div>
-      <strong>Upload Customer CSV</strong>
-      <p>CSV should include name and email columns. Optional: Last Project, Customer Since.</p>
+      <strong>Upload CSV with Referral Partner Contacts</strong>
+      <p>CSV should include name and email columns</p>
       <input type="file" id="csv-input" accept=".csv" onchange="if(this.files[0]){handleCSV(this.files[0]);this.value='';}" />
     </div>
   `;
@@ -1040,18 +1043,14 @@ function renderImport() {
         <input id="manual-email" placeholder="Email *" />
       </div>
       <div class="form-row">
-        <input id="manual-company" placeholder="Company" />
+        <input id="manual-company" placeholder="Company / Agency" />
         <input id="manual-title" placeholder="Title" />
       </div>
       <div class="form-row">
-        <input id="manual-project" placeholder="Last project (e.g. Brand video, 2024)" />
-        <input id="manual-project-date" placeholder="Last project date (YYYY-MM-DD)" />
-      </div>
-      <div class="form-row">
-        <input id="manual-since" placeholder="Customer since (YYYY-MM-DD)" />
+        <input id="manual-source" placeholder="Source (e.g. Intro, Conference)" />
         <input id="manual-url" placeholder="LinkedIn URL (optional)" />
       </div>
-      <button class="btn btn-primary" onclick="addManualProspect()">Add Customer</button>
+      <button class="btn btn-primary" onclick="addManualProspect()">Add Referral Partner</button>
     </div>
   `;
 
@@ -1061,7 +1060,7 @@ function renderImport() {
     html += `<div class="selected-count">Selected: <span>${selectedCount}</span> of ${state.importedContacts.length}</div>`;
     html += `<table class="filter-table">
       <thead><tr>
-        <th></th><th>Name</th><th>Email</th><th>Company</th><th>Last Project</th>
+        <th></th><th>Name</th><th>Email</th><th>Company</th><th>Title</th>
       </tr></thead><tbody>`;
 
     state.importedContacts.forEach((c, i) => {
@@ -1071,14 +1070,14 @@ function renderImport() {
         <td>${esc(name)}</td>
         <td>${esc(c.email)}</td>
         <td>${esc(c.company)}</td>
-        <td>${esc(c.lastProject)}</td>
+        <td>${esc(c.position)}</td>
       </tr>`;
     });
 
     html += `</tbody></table>`;
     html += `<div style="margin-top:12px; display:flex; gap:8px; align-items:center;">
       <button class="btn btn-primary" onclick="selectAllContacts()">Select All</button>
-      <button class="btn btn-primary" onclick="activateSelected()" ${selectedCount === 0 ? 'disabled' : ''}>Activate ${selectedCount} Customer${selectedCount !== 1 ? 's' : ''}</button>
+      <button class="btn btn-primary" onclick="activateSelected()" ${selectedCount === 0 ? 'disabled' : ''}>Activate ${selectedCount} Partner${selectedCount !== 1 ? 's' : ''}</button>
     </div>`;
   }
 
@@ -1122,12 +1121,10 @@ function renderProspectCard(p) {
           <div class="card-title">${esc(p.title)}</div>
           <div class="card-meta">
             <span>${esc(p.email)}</span>
-            ${p.lastProject ? `<span style="background:#e3f2fd;padding:2px 8px;border-radius:4px;font-size:11px;color:#1565c0;">Last: ${esc(p.lastProject)}</span>` : ''}
-            ${p.lastProjectDate ? `<span>${formatDate(p.lastProjectDate)}</span>` : ''}
-            ${p.customerSince ? `<span>Customer since ${formatDate(p.customerSince)}</span>` : ''}
+            ${p.source ? `<span style="background:#f0f0f0;padding:2px 8px;border-radius:4px;font-size:11px;">${esc(p.source)}</span>` : ''}
             ${p.linkedinUrl ? `<a href="${esc(p.linkedinUrl)}" target="_blank" class="linkedin-link">LinkedIn</a>` : ''}
             ${getActivityFeedUrl(p.linkedinUrl) ? `<a href="${getActivityFeedUrl(p.linkedinUrl)}" target="_blank" class="linkedin-link">Activity Feed</a>` : ''}
-            ${p.emailSentDate ? `<span>Check-in: ${formatDate(p.emailSentDate)}</span>` : ''}
+            ${p.emailSentDate ? `<span>Email: ${formatDate(p.emailSentDate)}</span>` : ''}
             ${p.lastActionDate ? `<span>Last action: ${formatDate(p.lastActionDate)}</span>` : ''}
           </div>
         </div>
@@ -1137,12 +1134,11 @@ function renderProspectCard(p) {
       ${p.reply ? `<div style="margin-top:8px;font-size:13px;"><strong>Reply:</strong> ${esc(p.reply)}</div>` : ''}
       ${p.nextStep ? `<div style="margin-top:4px;font-size:13px;"><strong>Next:</strong> ${esc(p.nextStep)}</div>` : ''}
       <div class="btn-group">
-        ${p.status === 'not_started' ? `<button class="btn btn-primary btn-sm" onclick="markCheckInSent('${p.id}')">Mark Check-In Sent</button>` : ''}
-        ${p.status === 'check_in_sent' ? `<button class="btn btn-primary btn-sm" onclick="markFollowUpSent('${p.id}')">Mark Value Add Sent</button>` : ''}
-        ${p.status === 'follow_up_sent' ? `<button class="btn btn-primary btn-sm" onclick="markAskSent('${p.id}')">Mark Ask Sent</button>` : ''}
-        ${p.status !== 'replied' && p.status !== 'nurture' ? `<button class="btn btn-success btn-sm" onclick="markReplied('${p.id}')">Got Reply</button>` : ''}
-        ${p.status !== 'nurture' ? `<button class="btn btn-nurture btn-sm" onclick="markNurture('${p.id}')">Move to Nurture</button>` : ''}
-        ${p.status === 'nurture' ? `<button class="btn btn-primary btn-sm" onclick="reEngage('${p.id}')">Re-Engage</button>` : ''}
+        ${p.status === 'not_started' ? `<button class="btn btn-primary btn-sm" onclick="markEmailSent('${p.id}')">Mark Email Sent</button>` : ''}
+        ${p.status === 'email_sent' ? `<button class="btn btn-primary btn-sm" onclick="markFollowUp1('${p.id}')">Mark Follow-Up Sent</button>` : ''}
+        ${p.status === 'follow_up_1' ? `<button class="btn btn-primary btn-sm" onclick="markFollowUp2('${p.id}')">Mark Final Nudge Sent</button>` : ''}
+        ${p.status !== 'replied' && p.status !== 'cold' ? `<button class="btn btn-success btn-sm" onclick="markReplied('${p.id}')">Got Reply</button>` : ''}
+        ${p.status !== 'cold' ? `<button class="btn btn-danger btn-sm" onclick="markCold('${p.id}')">Mark Cold</button>` : ''}
         <button class="btn btn-secondary btn-sm" onclick="resetProspect('${p.id}')">Reset</button>
         <button class="btn btn-secondary btn-sm" onclick="removeProspect('${p.id}')">Remove</button>
       </div>
@@ -1152,7 +1148,7 @@ function renderProspectCard(p) {
 
 function renderProspectsList() {
   const q = (state.searchQuery || '').toLowerCase().trim();
-  const order = ['not_started', 'dm_sent', 'follow_up_1', 'follow_up_2', 'replied', 'cold'];
+  const order = ['not_started', 'email_sent', 'follow_up_1', 'follow_up_2', 'replied', 'cold'];
   let filtered = [...state.prospects].sort((a, b) => order.indexOf(a.status) - order.indexOf(b.status));
 
   if (q) {
@@ -1176,7 +1172,7 @@ function renderProspectsList() {
 
 function renderProspects() {
   if (state.prospects.length === 0) {
-    return `<div class="empty"><div class="icon">&#x1F465;</div>No prospects yet. Import a CSV or add manually.</div>`;
+    return `<div class="empty"><div class="icon">&#x1F465;</div>No referral partners yet. Import a CSV or add manually.</div>`;
   }
 
   let html = `<input type="text" class="search-bar" placeholder="Search by name, company, or title..." value="${esc(state.searchQuery)}" oninput="handleSearch(this.value)">`;
@@ -1211,7 +1207,7 @@ async function loadActivityLog() {
       }
       html += `<div class="card" style="padding:10px 16px;">
         <span style="font-size:12px;color:#888;min-width:70px;display:inline-block;">${timeStr}</span>
-        <span style="font-size:13px;margin-left:8px;"><strong>${esc(a.action)}</strong>${a.prospectName ? ' \u2014 ' + esc(a.prospectName) : ''}</span>
+        <span style="font-size:13px;margin-left:8px;"><strong>${esc(a.action)}</strong>${a.prospectName ? ' — ' + esc(a.prospectName) : ''}</span>
       </div>`;
     });
     html += '</div>';

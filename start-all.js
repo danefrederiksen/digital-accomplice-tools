@@ -2,19 +2,19 @@ const { spawn } = require('child_process');
 const path = require('path');
 
 const TOOLS = [
-  { name: 'Hub Dashboard', file: 'hub-serve.js', port: 3849 },
-  { name: 'Prospecting Tool #1 — B2B 1st Connections', file: 'b2b-serve.js', port: 3851 },
-  { name: 'Prospecting Tool #2 — Cyber 1st Connections', file: 'cyber-serve.js', port: 3852 },
-  { name: 'Prospecting Tool #3 — B2B 2nd Connections', file: 'b2b-2nd-serve.js', port: 3853 },
-  { name: 'Prospecting Tool #4 — Cyber 2nd Connections', file: 'cyber-2nd-serve.js', port: 3854 },
-  { name: 'Prospecting Tool #5 — Referral Partner 1st Connections', file: 'referral-1st-serve.js', port: 3855 },
-  { name: 'Prospecting Tool #6 — Referral Partner 2nd Connections', file: 'referral-2nd-serve.js', port: 3856 },
-  { name: 'Prospecting Tool #7 — B2B Leads w/ Emails', file: 'b2b-email-serve.js', port: 3857 },
-  { name: 'Prospecting Tool #8 — Cyber Leads w/ Emails', file: 'cyber-email-serve.js', port: 3858 },
-  { name: 'Prospecting Tool #9 — Substack Subscriber Emails', file: 'substack-serve.js', port: 3859 },
-  { name: 'Prospecting Tool #10 — Customers w/ Emails', file: 'customer-serve.js', port: 3860 },
-  { name: 'Prospecting Tool #11 — Comment Queue', file: 'comment-queue-serve.js', port: 3861 },
-  { name: 'Prospecting Tool #12 — Referral Partner Emails', file: 'referral-email-serve.js', port: 3862 }
+  { name: 'Hub Dashboard', file: 'tools/hub-serve.js', port: 3849 },
+  { name: 'Prospecting Tool #1 — B2B 1st Connections', file: 'tools/b2b-serve.js', port: 3851 },
+  { name: 'Prospecting Tool #2 — Cyber 1st Connections', file: 'tools/cyber-serve.js', port: 3852 },
+  { name: 'Prospecting Tool #3 — B2B 2nd Connections', file: 'tools/b2b-2nd-serve.js', port: 3853 },
+  { name: 'Prospecting Tool #4 — Cyber 2nd Connections', file: 'tools/cyber-2nd-serve.js', port: 3854 },
+  { name: 'Prospecting Tool #5 — Referral Partner 1st Connections', file: 'tools/referral-1st-serve.js', port: 3855 },
+  { name: 'Prospecting Tool #6 — Referral Partner 2nd Connections', file: 'tools/referral-2nd-serve.js', port: 3856 },
+  { name: 'Prospecting Tool #7 — B2B Leads w/ Emails', file: 'tools/b2b-email-serve.js', port: 3857 },
+  { name: 'Prospecting Tool #8 — Cyber Leads w/ Emails', file: 'tools/cyber-email-serve.js', port: 3858 },
+  { name: 'Prospecting Tool #9 — Substack Subscriber Emails', file: 'tools/substack-serve.js', port: 3859 },
+  { name: 'Prospecting Tool #10 — Customers w/ Emails', file: 'tools/customer-serve.js', port: 3860 },
+  { name: 'Prospecting Tool #11 — Comment Queue', file: 'tools/comment-queue-serve.js', port: 3861 },
+  { name: 'Prospecting Tool #12 — Referral Partner Emails', file: 'tools/referral-email-serve.js', port: 3862 }
 ];
 
 console.log('\n  ===================================');

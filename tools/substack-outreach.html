@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Prospecting Tool #7 — B2B Leads w/ Emails</title>
+<title>Prospecting Tool #9 — Substack Subscriber Emails</title>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
 <style>
@@ -181,7 +181,7 @@ body { font-family: 'Poppins', sans-serif; background: #f5f5f5; color: #1a1a1a; 
 </head>
 <body>
 <div class="header">
-  <h1><span>DA</span> Prospecting Tool #7 — B2B Leads w/ Emails</h1>
+  <h1><span>DA</span> Prospecting Tool #9 — Substack Subscriber Emails</h1>
   <div class="header-right"><button class="btn-templates" onclick="openTemplateEditor()">Edit Templates</button> <span id="prospect-count" style="margin-left:8px;"></span></div>
 </div>
 <div class="tabs" id="tabs"></div>
@@ -194,13 +194,12 @@ body { font-family: 'Poppins', sans-serif; background: #f5f5f5; color: #1a1a1a; 
 // ============================================================
 // STATE
 // ============================================================
-const TITLE_KEYWORDS = ['founder','ceo','cmo','vp marketing','head of marketing','creative director','chief marketing','marketing director','co-founder','owner','president','managing director'];
-
 let state = {
   prospects: [],
   importedContacts: [],
   activeTab: 'dashboard',
-  searchQuery: ''
+  searchQuery: '',
+  dashboardSearch: ''
 };
 
 // ============================================================
@@ -246,12 +245,12 @@ async function loadFromServer() {
     // One-time migration: if server is empty but localStorage has data
     if (state.prospects.length === 0) {
       try {
-        const local = JSON.parse(localStorage.getItem('da-b2b-email-outreach')) || [];
-        if (local.length > 0 && confirm(`Found ${local.length} prospects in browser storage. Migrate to server?`)) {
+        const local = JSON.parse(localStorage.getItem('da-substack-outreach')) || [];
+        if (local.length > 0 && confirm(`Found ${local.length} subscribers in browser storage. Migrate to server?`)) {
           await apiPost('/api/prospects/migrate', { prospects: local });
           const refreshed = await apiGet('/api/prospects');
           state.prospects = refreshed.prospects || [];
-          localStorage.removeItem('da-b2b-email-outreach');
+          localStorage.removeItem('da-substack-outreach');
           alert('Migration complete! Your data is now saved on the server.');
         }
       } catch (e) { /* localStorage empty or parse error */ }
@@ -259,7 +258,7 @@ async function loadFromServer() {
   } catch (err) {
     console.error('Failed to load from server:', err);
     // Fallback to localStorage if server is down
-    try { state.prospects = JSON.parse(localStorage.getItem('da-b2b-email-outreach')) || []; }
+    try { state.prospects = JSON.parse(localStorage.getItem('da-substack-outreach')) || []; }
     catch { state.prospects = []; }
   }
   render();
@@ -286,7 +285,7 @@ function daysBetween(dateStr1, dateStr2) {
 }
 
 function formatDate(dateStr) {
-  if (!dateStr) return '—';
+  if (!dateStr) return '';
   const d = new Date(dateStr + 'T00:00:00');
   return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
 }
@@ -298,16 +297,16 @@ function todayStr() {
 // ============================================================
 // MESSAGE TEMPLATES (editable via localStorage)
 // ============================================================
-const TOOL_KEY = 'da_templates_tool7';
+const TOOL_KEY = 'da_templates_tool9';
 const DEFAULT_SUBJECTS = {
-  'email': `Quick question, {name}`,
-  'follow_up_1': `Re: Quick question, {name}`,
-  'follow_up_2': `Re: Quick question, {name}`
+  'email': `Thanks for subscribing — quick question`,
+  'follow_up_1': `Re: Thanks for subscribing — quick question`,
+  'follow_up_2': `Re: Thanks for subscribing — quick question`
 };
 const DEFAULT_BODIES = {
-  'email': `Hi {name},\n\nI run Digital Accomplice — we produce short-form video for B2B companies and post them on LinkedIn. Think thought-leadership content but in video form.\n\nI'm producing a series featuring B2B marketing leaders and wanted to see if you'd be interested. Takes 15 min, no prep, and I handle everything — editing, posting, tagging you.\n\nHere's what it looks like: https://www.digitalaccomplice.com/video-series\n\nWorth a quick look?\n\nBest,\nDane Frederiksen\nDigital Accomplice`,
-  'follow_up_1': `Hey {name} — wanted to bump this in case it got buried. Quick way to get your POV in front of thousands of B2B buyers on LinkedIn.\n\n15 min, no prep, I do all the work.\n\nInterested?\n\nDane`,
-  'follow_up_2': `{name} — last note on this. Free LinkedIn content featuring you as the expert. If the timing isn't right, no worries — but wanted to make sure this didn't slip through the cracks.\n\nDane Frederiksen\nDigital Accomplice`
+  'email': `Hey {name},\n\nThanks for subscribing to my newsletter — I really appreciate it.\n\nI'm reaching out because I'm producing a video series featuring people in my network. It's a 15-minute conversation — no prep, no script. I handle the editing and post it on LinkedIn with a tag to your profile.\n\nIt's a simple way to get some free content and visibility. Here's what it looks like: https://www.digitalaccomplice.com/video-series\n\nWould you be up for it?\n\nDane`,
+  'follow_up_1': `Hey {name} — wanted to make sure you saw this. I'm putting together a video series and thought you'd be a great fit.\n\n15 min, no prep, free LinkedIn content featuring you. I do all the work.\n\nInterested?\n\nDane`,
+  'follow_up_2': `{name} — last bump on this. If the timing isn't right, totally get it. But if you're ever interested in being featured in a video, the door's always open.\n\nThanks again for reading.\n\nDane`
 };
 
 const TEMPLATE_LABELS = {
@@ -375,14 +374,15 @@ function firstName(fullName) {
 function getMessage(prospect, step) {
   const tpl = loadTemplates();
   const name = firstName(prospect.name);
+  const displayName = (name && !name.includes('@')) ? name : 'there';
   const subjectTpl = tpl.subjects[step] || DEFAULT_SUBJECTS[step] || '';
   const bodyTpl = tpl.bodies[step] || DEFAULT_BODIES[step] || '';
   return {
     subject: subjectTpl
-    .replace(/\{name\}/g, name)
+    .replace(/\{name\}/g, displayName)
     .replace(/\{company\}/g, prospect.company || 'your company'),
     body: bodyTpl
-    .replace(/\{name\}/g, name)
+    .replace(/\{name\}/g, displayName)
     .replace(/\{company\}/g, prospect.company || 'your company')
   };
 }
@@ -399,7 +399,7 @@ async function copySubject(prospectId, step) {
       btn.classList.add('copied');
       setTimeout(() => { btn.textContent = 'Copy Subject'; btn.classList.remove('copied'); }, 2000);
     }
-  } catch (err) { alert('Copy failed — check browser permissions'); }
+  } catch (err) { alert('Copy failed \u2014 check browser permissions'); }
 }
 
 async function copyBody(prospectId, step) {
@@ -414,7 +414,7 @@ async function copyBody(prospectId, step) {
       btn.classList.add('copied');
       setTimeout(() => { btn.textContent = 'Copy Email'; btn.classList.remove('copied'); }, 2000);
     }
-  } catch (err) { alert('Copy failed — check browser permissions'); }
+  } catch (err) { alert('Copy failed \u2014 check browser permissions'); }
 }
 
 function togglePreview(prospectId, step) {
@@ -433,6 +433,34 @@ function togglePreview(prospectId, step) {
 }
 
 // ============================================================
+// DASHBOARD SEARCH
+// ============================================================
+function handleDashboardSearch(value) {
+  state.dashboardSearch = value;
+  const container = document.getElementById('dashboard-content');
+  if (container) container.innerHTML = renderDashboardInner();
+}
+
+function renderDashboardSearchResults() {
+  const q = state.dashboardSearch.trim().toLowerCase();
+  let matches = state.prospects.filter(p => {
+    if ((p.name || '').toLowerCase().includes(q)) return true;
+    if ((p.company || '').toLowerCase().includes(q)) return true;
+    if ((p.title || '').toLowerCase().includes(q)) return true;
+    if ((p.email || '').toLowerCase().includes(q)) return true;
+    return false;
+  });
+
+  if (matches.length === 0) {
+    return `<div class="empty"><div class="icon">&#x1F50D;</div>No prospects match that search.<br>Try a different name or company.</div>`;
+  }
+
+  let html = `<div class="search-count">${matches.length} match${matches.length !== 1 ? 'es' : ''}</div>`;
+  matches.forEach(p => { html += renderProspectCard(p); });
+  return html;
+}
+
+// ============================================================
 // PROSPECT ACTIONS (async — saved to server)
 // ============================================================
 async function markEmailSent(id) {
@@ -442,8 +470,8 @@ async function markEmailSent(id) {
       status: 'email_sent',
       emailSentDate: t,
       lastActionDate: t,
-      followUp1Due: addDays(t, 4),
-      followUp2Due: addDays(t, 9)
+      followUp1Due: addDays(t, 5),
+      followUp2Due: addDays(t, 12)
     });
     const idx = state.prospects.findIndex(x => x.id === id);
     if (idx !== -1) state.prospects[idx] = updated;
@@ -523,7 +551,7 @@ function updateNextStep(id, text) {
 }
 
 async function removeProspect(id) {
-  if (!confirm('Remove this prospect?')) return;
+  if (!confirm('Remove this subscriber?')) return;
   try {
     await apiDelete('/api/prospects/' + id);
     state.prospects = state.prospects.filter(x => x.id !== id);
@@ -533,7 +561,7 @@ async function removeProspect(id) {
 
 async function resetProspect(id) {
   const p = state.prospects.find(x => x.id === id);
-  if (!p || !confirm('Reset this prospect to Not Started?')) return;
+  if (!p || !confirm('Reset this subscriber to Not Started?')) return;
   try {
     const updated = await apiPut('/api/prospects/' + id, {
       status: 'not_started',
@@ -574,10 +602,25 @@ function handleCSV(file) {
       if (!raw.length) { alert('CSV appears empty.'); return; }
 
       const first = raw[0].map(c => (c || '').toLowerCase().trim());
+      const isSubstack = first.includes('email') && first.includes('created_at');
       const hasHeaders = first.includes('email') || first.includes('email address') || first.includes('first name');
 
       let rows;
-      if (hasHeaders) {
+      if (isSubstack) {
+        // Substack format: email, created_at, active_subscription
+        const headers = raw[0].map(c => (c || '').trim());
+        const dataRows = raw.slice(1);
+        rows = dataRows.map(cols => {
+          const obj = {};
+          headers.forEach((h, i) => { obj[h] = (cols[i] || '').trim(); });
+          const email = obj['email'] || '';
+          const createdAt = obj['created_at'] || '';
+          // Try to extract name from email prefix
+          let name = email.split('@')[0].replace(/[._]/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+          return { firstName: name, lastName: '', email, company: '', position: '', url: '', source: 'Substack', subscribedDate: createdAt ? createdAt.split('T')[0] : '', selected: false };
+        });
+      } else if (hasHeaders) {
+        // Generic CSV with headers
         const headers = raw[0].map(c => (c || '').trim());
         const dataRows = raw.slice(1);
         rows = dataRows.map(cols => {
@@ -589,45 +632,31 @@ function handleCSV(file) {
           const company = obj['Company'] || obj['company'] || obj['Organization'] || '';
           const position = obj['Position'] || obj['position'] || obj['Title'] || obj['title'] || obj['Job Title'] || '';
           const url = obj['URL'] || obj['url'] || obj['LinkedIn URL'] || obj['Profile URL'] || '';
-          const source = obj['Source'] || obj['source'] || '';
-          return { firstName: fn, lastName: ln, email, company, position, url, source, selected: false };
+          return { firstName: fn, lastName: ln, email, company, position, url, source: 'Substack', subscribedDate: '', selected: false };
         });
       } else {
+        // Headerless fallback
         rows = raw.map(cols => {
           const name = (cols[0] || '').trim();
           let email = '';
-          let company = (cols[1] || '').trim();
-          let title = (cols[2] || '').trim();
-          let url = '';
           for (let i = 0; i < cols.length; i++) {
-            if ((cols[i] || '').includes('@')) { email = cols[i].trim(); }
-            if ((cols[i] || '').includes('linkedin.com/in/')) { url = cols[i].trim(); }
+            if ((cols[i] || '').includes('@')) { email = cols[i].trim(); break; }
           }
-          if (company.includes('|')) { company = ''; }
-          return { firstName: name, lastName: '', email, company, position: title, url, source: '', selected: false };
+          return { firstName: name, lastName: '', email, company: '', position: '', url: '', source: 'Substack', subscribedDate: '', selected: false };
         });
       }
 
-      // Filter out rows without email
       rows = rows.filter(r => r.email && r.email.includes('@'));
       if (!rows.length) { alert('No contacts with valid email addresses found.'); return; }
       finishImport(rows);
     },
-    error: function(err) {
-      alert('CSV parse error: ' + err.message);
-    }
+    error: function(err) { alert('CSV parse error: ' + err.message); }
   });
 }
 
 function finishImport(rows) {
-  // Filter by title keywords
-  const filtered = rows.filter(r => {
-    const pos = r.position.toLowerCase();
-    return TITLE_KEYWORDS.some(kw => pos.includes(kw));
-  });
-
-  // If keyword filter removes everything, show all rows (user's CSV may already be pre-filtered)
-  state.importedContacts = filtered.length > 0 ? filtered : rows;
+  // No title filter for Substack subscribers — all are valid
+  state.importedContacts = rows;
   render();
 }
 
@@ -641,7 +670,8 @@ async function activateSelected() {
     title: c.position,
     email: c.email,
     linkedinUrl: c.url,
-    source: c.source
+    source: c.source || 'Substack',
+    subscribedDate: c.subscribedDate || ''
   }));
 
   try {
@@ -649,10 +679,10 @@ async function activateSelected() {
     const data = await apiGet('/api/prospects');
     state.prospects = data.prospects || [];
     state.importedContacts = [];
-    alert(result.added + ' prospect(s) added.' + (result.skipped ? ' ' + result.skipped + ' skipped (duplicates).' : ''));
+    alert(result.added + ' subscriber(s) added.' + (result.skipped ? ' ' + result.skipped + ' skipped (duplicates).' : ''));
     state.activeTab = 'dashboard';
     render();
-  } catch (err) { alert('Failed to add prospects: ' + err.message); }
+  } catch (err) { alert('Failed to add subscribers: ' + err.message); }
 }
 
 async function addManualProspect() {
@@ -660,24 +690,19 @@ async function addManualProspect() {
   const email = document.getElementById('manual-email').value.trim();
   const company = document.getElementById('manual-company').value.trim();
   const title = document.getElementById('manual-title').value.trim();
-  const source = document.getElementById('manual-source').value.trim();
-  const url = document.getElementById('manual-url').value.trim();
 
-  if (!name) { alert('Name is required.'); return; }
   if (!email || !email.includes('@')) { alert('Valid email is required.'); return; }
 
   try {
-    await apiPost('/api/prospects', { prospects: [{ name, company, title, email, linkedinUrl: url, source }] });
+    await apiPost('/api/prospects', { prospects: [{ name: name || email.split('@')[0], company, title, email, source: 'Substack' }] });
     const data = await apiGet('/api/prospects');
     state.prospects = data.prospects || [];
     document.getElementById('manual-name').value = '';
     document.getElementById('manual-email').value = '';
     document.getElementById('manual-company').value = '';
     document.getElementById('manual-title').value = '';
-    document.getElementById('manual-source').value = '';
-    document.getElementById('manual-url').value = '';
     render();
-  } catch (err) { alert('Failed to add prospect: ' + err.message); }
+  } catch (err) { alert('Failed to add subscriber: ' + err.message); }
 }
 
 // ============================================================
@@ -692,7 +717,7 @@ function getFollowUpToday() {
   return state.prospects.filter(p => {
     if (p.status === 'email_sent' && p.followUp1Due && p.followUp1Due <= t) return true;
     if (p.status === 'follow_up_1' && p.followUp2Due && p.followUp2Due <= t) return true;
-    if (p.status === 'follow_up_2' && p.lastActionDate && daysBetween(p.lastActionDate, t) >= 5) return true;
+    if (p.status === 'follow_up_2' && p.lastActionDate && daysBetween(p.lastActionDate, t) >= 7) return true;
     return false;
   });
 }
@@ -715,13 +740,13 @@ function getWaiting() {
 // ============================================================
 function render() {
   // Prospect count
-  document.getElementById('prospect-count').textContent = state.prospects.length + ' prospect' + (state.prospects.length !== 1 ? 's' : '');
+  document.getElementById('prospect-count').textContent = state.prospects.length + ' subscriber' + (state.prospects.length !== 1 ? 's' : '');
 
   // Tabs
   const tabs = [
     { id: 'dashboard', label: 'Dashboard' },
     { id: 'import', label: 'Import' },
-    { id: 'prospects', label: 'All Prospects' },
+    { id: 'prospects', label: 'All Subscribers' },
     { id: 'activity', label: 'Activity Log' }
   ];
   document.getElementById('tabs').innerHTML = tabs.map(t =>
@@ -747,7 +772,7 @@ function switchTab(tab) {
 // ============================================================
 // DAILY PROGRESS
 // ============================================================
-const DAILY_TARGETS = { newEmails: 10 };
+const DAILY_TARGETS = { newEmails: 5 };
 
 function getDailyProgress() {
   const t = todayStr();
@@ -761,7 +786,7 @@ function renderDailyProgress() {
   const pct = Math.min(100, Math.round((newEmails / DAILY_TARGETS.newEmails) * 100));
   const emailDone = newEmails >= DAILY_TARGETS.newEmails;
   return `<div class="daily-progress">
-    <h3>Daily Target <span class="lbl">Email — no platform cap</span></h3>
+    <h3>Daily Target <span class="lbl">Email — warm subscribers</span></h3>
     <div class="progress-row">
       <span class="progress-label">New emails</span>
       <div class="progress-track"><div class="progress-fill ${emailDone ? 'green' : 'orange'}" style="width:${pct}%"></div></div>
@@ -788,7 +813,7 @@ function renderDashboard() {
   // Summary banner
   if (state.prospects.length > 0) {
     html += `<div class="alert-banner">
-      <strong>Today's Outreach</strong>
+      <strong>Subscriber Outreach</strong>
       <span class="alert-stat">${emailList.length} email${emailList.length !== 1 ? 's' : ''} to send</span>
       <span class="alert-stat">${fuList.length} follow-up${fuList.length !== 1 ? 's' : ''} due</span>
       <span class="alert-stat">${reList.length} repl${reList.length !== 1 ? 'ies' : 'y'} to handle</span>
@@ -826,7 +851,7 @@ function renderDashboard() {
   html += `<div class="section">
     <div class="section-header">Replied <span class="count">${reList.length}</span></div>`;
   if (reList.length === 0) {
-    html += `<div class="empty"><div class="icon">&#x1F4AC;</div>No replies yet — keep going</div>`;
+    html += `<div class="empty"><div class="icon">&#x1F4AC;</div>No replies yet \u2014 keep going</div>`;
   } else {
     reList.forEach(p => {
       html += renderDashboardCard(p, 'replied');
@@ -847,9 +872,10 @@ function renderDashboard() {
         <button class="card-delete" onclick="removeProspect('${p.id}')" title="Remove prospect">&times;</button>
         <div class="card-top">
           <div>
-            <span class="card-name">${esc(p.name)}</span> <span class="card-company">@ ${esc(p.company)}</span>
+            <span class="card-name">${esc(p.name)}</span>${p.company ? ` <span class="card-company">@ ${esc(p.company)}</span>` : ''}
             <div class="card-meta">
               <span>${esc(p.email)}</span>
+              ${p.subscribedDate ? `<span style="background:#e8f5e9;padding:2px 8px;border-radius:4px;font-size:11px;color:#2e7d32;">Subscribed ${formatDate(p.subscribedDate)}</span>` : ''}
             </div>
           </div>
           <span class="status status-${p.status}">${STATUS_LABELS[p.status]}</span>
@@ -900,7 +926,7 @@ function renderDashboardCard(p, mode) {
         <button class="btn btn-success btn-sm" onclick="markReplied('${p.id}')">Got Reply</button>
       `;
     } else if (p.status === 'follow_up_2') {
-      extra = `<div class="due-info">No reply after final nudge — time to close?</div>`;
+      extra = `<div class="due-info">No reply after final nudge \u2014 time to close?</div>`;
       buttons = `
         <button class="btn btn-danger btn-sm" onclick="markCold('${p.id}')">Mark Cold</button>
         <button class="btn btn-success btn-sm" onclick="markReplied('${p.id}')">Got Reply</button>
@@ -922,11 +948,12 @@ function renderDashboardCard(p, mode) {
   return `<div class="card">
     <div class="card-top">
       <div>
-        <span class="card-name">${esc(p.name)}</span> <span class="card-company">@ ${esc(p.company)}</span>
+        <span class="card-name">${esc(p.name)}</span>${p.company ? ` <span class="card-company">@ ${esc(p.company)}</span>` : ''}
         <div class="card-title">${esc(p.title)}</div>
         <div class="card-meta">
           <span>${esc(p.email)}</span>
           ${p.source ? `<span style="background:#f0f0f0;padding:2px 8px;border-radius:4px;font-size:11px;">${esc(p.source)}</span>` : ''}
+          ${p.subscribedDate ? `<span style="background:#e8f5e9;padding:2px 8px;border-radius:4px;font-size:11px;color:#2e7d32;">Subscribed ${formatDate(p.subscribedDate)}</span>` : ''}
           ${p.linkedinUrl ? `<a href="${esc(p.linkedinUrl)}" target="_blank" class="linkedin-link">LinkedIn</a>` : ''}
             ${getActivityFeedUrl(p.linkedinUrl) ? `<a href="${getActivityFeedUrl(p.linkedinUrl)}" target="_blank" class="linkedin-link">Activity Feed</a>` : ''}
         </div>
@@ -967,8 +994,8 @@ function renderImport() {
   let html = `
     <div class="import-zone" onclick="document.getElementById('csv-input').click()">
       <div class="icon">&#x1F4C4;</div>
-      <strong>Upload CSV with Email Addresses</strong>
-      <p>CSV should include name and email columns</p>
+      <strong>Upload Substack Subscriber CSV</strong>
+      <p>Export from Substack: Settings > Subscribers > Export</p>
       <input type="file" id="csv-input" accept=".csv" onchange="if(this.files[0]){handleCSV(this.files[0]);this.value='';}" />
     </div>
   `;
@@ -978,18 +1005,14 @@ function renderImport() {
     <div class="add-form">
       <h3>Or add manually</h3>
       <div class="form-row">
-        <input id="manual-name" placeholder="Full name *" />
+        <input id="manual-name" placeholder="Full name" />
         <input id="manual-email" placeholder="Email *" />
       </div>
       <div class="form-row">
-        <input id="manual-company" placeholder="Company" />
-        <input id="manual-title" placeholder="Title" />
+        <input id="manual-company" placeholder="Company (optional)" />
+        <input id="manual-title" placeholder="Title (optional)" />
       </div>
-      <div class="form-row">
-        <input id="manual-source" placeholder="Source (e.g. Conference, Sales Nav)" />
-        <input id="manual-url" placeholder="LinkedIn URL (optional)" />
-      </div>
-      <button class="btn btn-primary" onclick="addManualProspect()">Add Prospect</button>
+      <button class="btn btn-primary" onclick="addManualProspect()">Add Subscriber</button>
     </div>
   `;
 
@@ -999,7 +1022,7 @@ function renderImport() {
     html += `<div class="selected-count">Selected: <span>${selectedCount}</span> of ${state.importedContacts.length}</div>`;
     html += `<table class="filter-table">
       <thead><tr>
-        <th></th><th>Name</th><th>Email</th><th>Company</th><th>Title</th>
+        <th></th><th>Name</th><th>Email</th><th>Subscribed</th>
       </tr></thead><tbody>`;
 
     state.importedContacts.forEach((c, i) => {
@@ -1008,15 +1031,14 @@ function renderImport() {
         <td><input type="checkbox" ${c.selected ? 'checked' : ''} onchange="toggleContact(${i})" /></td>
         <td>${esc(name)}</td>
         <td>${esc(c.email)}</td>
-        <td>${esc(c.company)}</td>
-        <td>${esc(c.position)}</td>
+        <td>${c.subscribedDate ? formatDate(c.subscribedDate) : '\u2014'}</td>
       </tr>`;
     });
 
     html += `</tbody></table>`;
     html += `<div style="margin-top:12px; display:flex; gap:8px; align-items:center;">
       <button class="btn btn-primary" onclick="selectAllContacts()">Select All</button>
-      <button class="btn btn-primary" onclick="activateSelected()" ${selectedCount === 0 ? 'disabled' : ''}>Activate ${selectedCount} Prospect${selectedCount !== 1 ? 's' : ''}</button>
+      <button class="btn btn-primary" onclick="activateSelected()" ${selectedCount === 0 ? 'disabled' : ''}>Activate ${selectedCount} Subscriber${selectedCount !== 1 ? 's' : ''}</button>
     </div>`;
   }
 
@@ -1035,7 +1057,7 @@ function selectAllContacts() {
 }
 
 // ============================================================
-// RENDER — ALL PROSPECTS
+// RENDER — ALL SUBSCRIBERS
 // ============================================================
 
 function getActivityFeedUrl(linkedinUrl) {
@@ -1056,11 +1078,12 @@ function renderProspectCard(p) {
     html += `<div class="card">
       <div class="card-top">
         <div>
-          <span class="card-name">${esc(p.name)}</span> <span class="card-company">@ ${esc(p.company)}</span>
+          <span class="card-name">${esc(p.name)}</span>${p.company ? ` <span class="card-company">@ ${esc(p.company)}</span>` : ''}
           <div class="card-title">${esc(p.title)}</div>
           <div class="card-meta">
             <span>${esc(p.email)}</span>
             ${p.source ? `<span style="background:#f0f0f0;padding:2px 8px;border-radius:4px;font-size:11px;">${esc(p.source)}</span>` : ''}
+            ${p.subscribedDate ? `<span style="background:#e8f5e9;padding:2px 8px;border-radius:4px;font-size:11px;color:#2e7d32;">Subscribed ${formatDate(p.subscribedDate)}</span>` : ''}
             ${p.linkedinUrl ? `<a href="${esc(p.linkedinUrl)}" target="_blank" class="linkedin-link">LinkedIn</a>` : ''}
             ${getActivityFeedUrl(p.linkedinUrl) ? `<a href="${getActivityFeedUrl(p.linkedinUrl)}" target="_blank" class="linkedin-link">Activity Feed</a>` : ''}
             ${p.emailSentDate ? `<span>Email: ${formatDate(p.emailSentDate)}</span>` : ''}
@@ -1146,7 +1169,7 @@ async function loadActivityLog() {
       }
       html += `<div class="card" style="padding:10px 16px;">
         <span style="font-size:12px;color:#888;min-width:70px;display:inline-block;">${timeStr}</span>
-        <span style="font-size:13px;margin-left:8px;"><strong>${esc(a.action)}</strong>${a.prospectName ? ' — ' + esc(a.prospectName) : ''}</span>
+        <span style="font-size:13px;margin-left:8px;"><strong>${esc(a.action)}</strong>${a.prospectName ? ' \u2014 ' + esc(a.prospectName) : ''}</span>
       </div>`;
     });
     html += '</div>';
