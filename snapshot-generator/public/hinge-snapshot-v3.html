@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Visibility Snapshot — Hinge Marketing v3</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&family=Space+Mono:wght@400;700&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  @page { size: letter; margin: 0; }
+
+  html, body {
+    font-family: 'Poppins', Arial, Helvetica, sans-serif;
+    background: #fff;
+    color: #1a1a1a;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .page {
+    width: 8.5in;
+    height: 11in;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  /* ========== HEADER ========== */
+  .header {
+    background: #1a1a1a;
+    padding: 10px 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-shrink: 0;
+  }
+  .header-label {
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 3.5px;
+    text-transform: uppercase;
+    color: #F38B1C;
+  }
+  .header-meta {
+    font-size: 9px;
+    color: #888;
+    font-family: 'Space Mono', monospace;
+  }
+
+  /* ========== CONTENT ========== */
+  .content {
+    flex: 1;
+    padding: 16px 40px 0;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .section-label {
+    font-size: 8px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: #F38B1C;
+    margin-bottom: 4px;
+    font-family: 'Space Mono', monospace;
+  }
+
+  /* ========== S1: WHAT WE CHECKED ========== */
+  .what-checked {
+    font-size: 10px;
+    color: #5A6B7A;
+    line-height: 1.5;
+    margin-bottom: 10px;
+  }
+
+  /* ========== S2: AI VISIBILITY SCORE ========== */
+  .score-row {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    margin-bottom: 3px;
+  }
+  .score-big {
+    font-size: 38px;
+    font-weight: 900;
+    color: #F38B1C;
+    line-height: 1;
+  }
+  .score-big .sm { font-size: 20px; font-weight: 800; }
+  .score-context {
+    font-size: 11px;
+    color: #5A6B7A;
+    font-weight: 500;
+  }
+  .stats {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+  .stat {
+    flex: 1;
+    background: #F5F5F5;
+    border-radius: 5px;
+    padding: 9px 10px 7px;
+    text-align: center;
+  }
+  .stat-num {
+    font-size: 28px;
+    font-weight: 900;
+    color: #F38B1C;
+    line-height: 1;
+    margin-bottom: 2px;
+  }
+  .stat-num .sm { font-size: 15px; font-weight: 800; }
+  .stat-label {
+    font-size: 8.5px;
+    font-weight: 500;
+    color: #5A6B7A;
+    line-height: 1.3;
+  }
+  sup { font-size: 65%; color: #F38B1C; vertical-align: super; }
+
+  /* ========== S3: WHAT AI SAYS ========== */
+  .ai-quotes {
+    margin-bottom: 10px;
+  }
+  .ai-quote {
+    padding: 7px 10px;
+    background: #FAFAFA;
+    border-left: 3px solid #E0E0E0;
+    border-radius: 0 4px 4px 0;
+    margin-bottom: 5px;
+    font-size: 9.5px;
+    color: #5A6B7A;
+    line-height: 1.45;
+  }
+  .ai-quote .query { font-weight: 700; color: #1a1a1a; }
+  .ai-quote .model { color: #F38B1C; font-weight: 600; }
+  .ai-quote .gap { color: #1a1a1a; font-weight: 600; }
+
+  /* ========== S4: KEY FINDINGS ========== */
+  .findings {
+    margin-bottom: 10px;
+  }
+  .finding {
+    font-size: 9.5px;
+    color: #5A6B7A;
+    line-height: 1.45;
+    margin-bottom: 3px;
+    padding-left: 10px;
+    position: relative;
+  }
+  .finding::before {
+    content: "\2022";
+    position: absolute;
+    left: 0;
+    color: #F38B1C;
+    font-weight: 700;
+  }
+  .finding strong { color: #1a1a1a; font-weight: 700; }
+  .finding .video-status {
+    font-family: 'Space Mono', monospace;
+    font-size: 8.5px;
+    display: block;
+    margin-top: 2px;
+    color: #5A6B7A;
+  }
+
+  /* ========== S5: COMPETITOR COMPARISON ========== */
+  .comp-grid {
+    margin-bottom: 10px;
+  }
+  .comp-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 9px;
+  }
+  .comp-table th {
+    font-weight: 700;
+    color: #1a1a1a;
+    text-align: center;
+    padding: 4px 6px;
+    border-bottom: 2px solid #E8E8E8;
+    font-size: 8.5px;
+  }
+  .comp-table th:first-child {
+    text-align: left;
+    color: #5A6B7A;
+    font-family: 'Space Mono', monospace;
+    font-size: 8px;
+  }
+  .comp-table th.you { color: #F38B1C; }
+  .comp-table td {
+    text-align: center;
+    padding: 4px 6px;
+    border-bottom: 1px solid #F0F0F0;
+    font-size: 9px;
+  }
+  .comp-table td:first-child {
+    text-align: left;
+    font-weight: 600;
+    color: #5A6B7A;
+    font-family: 'Space Mono', monospace;
+    font-size: 8.5px;
+  }
+  .cited { color: #2E7D32; font-weight: 700; }
+  .partial { color: #F38B1C; font-weight: 600; }
+  .not-cited { color: #CBCBCB; }
+
+  /* ========== S6: THE GAP ========== */
+  .callout {
+    background: #1a1a1a;
+    border-radius: 6px;
+    padding: 12px 16px;
+    margin-bottom: 10px;
+  }
+  .callout p {
+    font-size: 11px;
+    font-weight: 500;
+    color: #fff;
+    line-height: 1.55;
+  }
+  .callout strong { font-weight: 700; }
+  .callout .punch { color: #F38B1C; font-weight: 700; }
+
+  /* ========== S7: WHY IT MATTERS ========== */
+  .why-matters {
+    font-size: 9.5px;
+    color: #5A6B7A;
+    line-height: 1.5;
+    margin-bottom: 10px;
+  }
+  .why-matters strong { color: #1a1a1a; font-weight: 700; }
+
+  /* ========== S8: RECOMMENDATION ========== */
+  .recs {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 6px;
+  }
+  .rec {
+    flex: 1;
+    padding: 8px 10px;
+    background: #FAFAFA;
+    border-radius: 5px;
+  }
+  .rec-tier {
+    font-size: 8px;
+    font-weight: 700;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    color: #F38B1C;
+    margin-bottom: 3px;
+    font-family: 'Space Mono', monospace;
+  }
+  .rec-text {
+    font-size: 9px;
+    color: #5A6B7A;
+    line-height: 1.4;
+  }
+  .rec-text strong { color: #1a1a1a; font-weight: 600; }
+
+  /* ========== S9: EFFORT LEVEL ========== */
+  .effort {
+    font-size: 9.5px;
+    color: #5A6B7A;
+    margin-bottom: 8px;
+  }
+  .effort strong { color: #1a1a1a; font-weight: 700; }
+  .effort .level { color: #F38B1C; font-weight: 700; }
+
+  /* ========== METHOD ========== */
+  .method {
+    font-size: 7px;
+    color: #999;
+    line-height: 1.45;
+    border-top: 1px solid #E8E8E8;
+    padding-top: 5px;
+    margin-top: auto;
+  }
+  .method b { color: #888; }
+
+  /* ========== FOOTER ========== */
+  .footer {
+    padding: 9px 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1px solid #E5E5E5;
+    flex-shrink: 0;
+  }
+  .cta-text {
+    font-size: 12px;
+    font-weight: 700;
+    color: #F38B1C;
+    margin-bottom: 1px;
+  }
+  .cta-contact {
+    font-size: 8.5px;
+    color: #5A6B7A;
+  }
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .brand-name {
+    font-size: 9px;
+    font-weight: 800;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: #1a1a1a;
+  }
+
+  .footnotes {
+    font-size: 6.5px;
+    color: #aaa;
+    padding: 2px 40px 5px;
+    line-height: 1.4;
+    flex-shrink: 0;
+  }
+
+  /* ========== EXPORT TOOLBAR ========== */
+  @media print { .export-bar { display: none !important; } }
+  .export-bar {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    background: #1a1a1a;
+    padding: 10px 24px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    z-index: 9999;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+  }
+  .export-bar .btn {
+    background: #F38B1C;
+    color: #fff;
+    border: none;
+    padding: 8px 20px;
+    font-size: 13px;
+    font-weight: 700;
+    font-family: 'Poppins', Arial, sans-serif;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  .export-bar .btn:hover { background: #d97a15; }
+  .export-bar .btn:disabled { opacity: 0.5; cursor: wait; }
+  .export-bar .status {
+    font-size: 12px;
+    color: #888;
+    font-family: 'Poppins', Arial, sans-serif;
+  }
+  .export-bar .title {
+    font-size: 12px;
+    color: #F38B1C;
+    font-weight: 700;
+    font-family: 'Poppins', Arial, sans-serif;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-right: auto;
+  }
+</style>
+</head>
+<body>
+
+<div class="page">
+
+  <!-- ===== HEADER ===== -->
+  <div class="header">
+    <span class="header-label">AI Visibility Snapshot</span>
+    <span class="header-meta">Prepared for Hinge Marketing &middot; March 2026</span>
+  </div>
+
+  <!-- ===== CONTENT ===== -->
+  <div class="content">
+
+    <!-- S1: WHAT WE CHECKED -->
+    <div class="section-label">What We Checked</div>
+    <div class="what-checked">
+      We ran 20 buyer-intent queries across ChatGPT, Perplexity, Claude, and Google AI for <strong>Hinge Marketing</strong> vs. <strong>Walker Sands</strong>, <strong>Circle S Studio</strong>, and <strong>Grey Matter</strong>.
+    </div>
+
+    <!-- S2: AI VISIBILITY SCORE -->
+    <div class="section-label">AI Visibility Score</div>
+    <div class="score-row">
+      <div class="score-big">5.5<span class="sm">/10</span></div>
+      <div class="score-context">14/20 queries mentioned Hinge &nbsp;|&nbsp; 8/20 recommended by name</div>
+    </div>
+    <div class="stats">
+      <div class="stat">
+        <div class="stat-num">5.5<span class="sm">/10</span></div>
+        <div class="stat-label">AI search visibility<br>Strongest in this set</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num">0<span class="sm">/332</span></div>
+        <div class="stat-label">Videos cited<br>in AI answers</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num">16%</div>
+        <div class="stat-label">of AI answers now<br>cite YouTube<sup>[1]</sup></div>
+      </div>
+    </div>
+
+    <!-- S3: WHAT AI SAYS -->
+    <div class="section-label">What AI Says</div>
+    <div class="ai-quotes">
+      <div class="ai-quote">
+        When we asked <span class="query">"Top professional services marketing firms for B2B"</span>:<br>
+        <span class="model">AI search</span> said: <em>"Hinge Marketing is the world's leading research-based branding, marketing, and website design firm for professional services."</em><br>
+        <span class="gap">Walker Sands mentioned as one option. Circle S Studio and Grey Matter were not mentioned.</span>
+      </div>
+      <div class="ai-quote">
+        When we asked <span class="query">"Expert thought leadership in professional services firm growth"</span>:<br>
+        <span class="model">AI search</span> said: <em>"Thought Leadership Marketing for the Subject Matter Expert &mdash; Hinge Marketing"</em> appeared as the #1 result.<br>
+        <span class="gap">Circle S Studio and Grey Matter: Not mentioned.</span>
+      </div>
+    </div>
+
+    <!-- S4: KEY FINDINGS -->
+    <div class="section-label">Key Findings</div>
+    <div class="findings">
+      <div class="finding"><strong>Hinge dominates problem-aware queries</strong> &mdash; AI cites Hinge research in 14 of 20 buyer-intent queries, more than Walker Sands (3), Grey Matter (1), and Circle S (0) combined.</div>
+      <div class="finding"><strong>Zero video from any company cited in AI</strong> &mdash; despite Hinge having 332 YouTube videos. Walker Sands and Circle S use Vimeo only; Grey Matter has no video channel.</div>
+      <div class="finding"><strong>Video status:</strong>
+        <span class="video-status">Hinge: Active (332 videos) &nbsp;|&nbsp; Walker Sands: Absent &nbsp;|&nbsp; Circle S: Absent &nbsp;|&nbsp; Grey Matter: Absent</span>
+      </div>
+    </div>
+
+    <!-- S5: COMPETITOR COMPARISON -->
+    <div class="section-label">Competitor Comparison</div>
+    <div class="comp-grid">
+      <table class="comp-table">
+        <tr>
+          <th></th>
+          <th class="you">Hinge</th>
+          <th>Walker Sands</th>
+          <th>Grey Matter</th>
+        </tr>
+        <tr>
+          <td>ChatGPT</td>
+          <td class="cited">&#10003; Cited</td>
+          <td class="partial">~ Partial</td>
+          <td class="not-cited">&#10007; Not Cited</td>
+        </tr>
+        <tr>
+          <td>Perplexity</td>
+          <td class="cited">&#10003; Cited</td>
+          <td class="partial">~ Partial</td>
+          <td class="not-cited">&#10007; Not Cited</td>
+        </tr>
+        <tr>
+          <td>Claude</td>
+          <td class="cited">&#10003; Cited</td>
+          <td class="not-cited">&#10007; Not Cited</td>
+          <td class="not-cited">&#10007; Not Cited</td>
+        </tr>
+        <tr>
+          <td>Google AI</td>
+          <td class="cited">&#10003; Cited</td>
+          <td class="partial">~ Partial</td>
+          <td class="partial">~ Partial</td>
+        </tr>
+      </table>
+    </div>
+
+    <!-- S6: THE GAP -->
+    <div class="callout">
+      <p>
+        <strong>Hinge owns 14 of 20 AI search queries in professional services marketing</strong> &mdash; but none of your 332 YouTube videos appear in a single AI answer. Your competitors aren't even close: Walker Sands shows up in 3, Circle S and Grey Matter in 1 or less. <span class="punch">First one to optimize video for AI citation locks the category for 2&ndash;3 years.</span>
+      </p>
+    </div>
+
+    <!-- S7: WHY IT MATTERS -->
+    <div class="section-label">Why It Matters</div>
+    <div class="why-matters">
+      <strong>AI search converts 5&ndash;6x higher than Google organic.</strong> Companies visible in AI search report 27&ndash;32% more inbound SQLs.* If Hinge isn't showing up when buyers ask AI for recommendations, that's pipeline walking to competitors who are. AI search adoption doubled in 2025. Companies building visibility now will own their categories for 2&ndash;3 years. This window is closing.
+    </div>
+
+    <!-- S8: RECOMMENDATION -->
+    <div class="section-label">Recommendation</div>
+    <div class="recs">
+      <div class="rec">
+        <div class="rec-tier">Quick Win (this week)</div>
+        <div class="rec-text">Record a 3-minute expert video answering <strong>"What do high-growth professional services firms do differently?"</strong> and publish to YouTube with a full transcript.</div>
+      </div>
+      <div class="rec">
+        <div class="rec-tier">Next Move (this month)</div>
+        <div class="rec-text">Create a <strong>4-video series</strong> from your most-cited research (High Growth Study, Visible Firm, PS pricing, thought leadership ROI) optimized for AI citation.</div>
+      </div>
+      <div class="rec">
+        <div class="rec-tier">Full Play (this quarter)</div>
+        <div class="rec-text">Build a <strong>monthly video program</strong> that positions Hinge as the go-to expert AI models cite in professional services marketing.</div>
+      </div>
+    </div>
+
+    <!-- S9: EFFORT LEVEL -->
+    <div class="effort">
+      <strong>Effort level:</strong> <span class="level">Low</span> &mdash; one 3-minute video + transcript, no production required.
+    </div>
+
+    <!-- METHOD -->
+    <div class="method">
+      <b>How we did this:</b> 20 buyer-intent queries across ChatGPT, Perplexity, Claude, and Google AI. Each answer evaluated for company mention, recommendation strength, content format cited, and video presence. AI answers change; we document the pattern, not a guarantee.
+    </div>
+
+  </div>
+
+  <!-- ===== FOOTER (S10: NEXT STEP) ===== -->
+  <div class="footer">
+    <div>
+      <div class="cta-text">15 minutes. No pitch. We walk through the data. &#8599;</div>
+      <div class="cta-contact">dane@digitalaccomplice.com &middot; calendly.com/accomplice-dane/15min</div>
+    </div>
+    <div class="brand">
+      <svg width="20" height="22" viewBox="0 0 20 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M0 0L20 11L0 22V0Z" fill="#F38B1C"/>
+      </svg>
+      <span class="brand-name">Digital Accomplice</span>
+    </div>
+  </div>
+
+  <!-- ===== FOOTNOTES ===== -->
+  <div class="footnotes">
+    [1] Adweek, Jan 2026 (Bluefish, Emberos, Goodie AI). YouTube is the #1 social platform cited in AI answers &mdash; 16% of responses. &nbsp; * SmartRent + Broworks data, 2025&ndash;2026.
+  </div>
+
+</div>
+
+<!-- ===== EXPORT TOOLBAR ===== -->
+<div class="export-bar">
+  <span class="title">Snapshot v3 &mdash; New 10-Section Format</span>
+  <button class="btn" id="exportPdf" onclick="exportPDF()">Export PDF</button>
+  <span class="status" id="exportStatus"></span>
+</div>
+
+<script>
+async function exportPDF() {
+  const btn = document.getElementById('exportPdf');
+  const status = document.getElementById('exportStatus');
+  btn.disabled = true;
+  status.textContent = 'Generating PDF...';
+  try {
+    const resp = await fetch('/api/download-pdf?file=hinge-snapshot-v3.html&name=HingeMarketing_Snapshot_v3');
+    if (!resp.ok) {
+      const err = await resp.json();
+      throw new Error(err.error || 'Export failed');
+    }
+    const blob = await resp.blob();
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'HingeMarketing_Snapshot_v3_Mar07.pdf';
+    a.click();
+    URL.revokeObjectURL(url);
+    status.textContent = 'PDF downloaded!';
+  } catch (err) {
+    status.textContent = 'Error: ' + err.message;
+  }
+  btn.disabled = false;
+}
+</script>
+
+</body>
+</html>
