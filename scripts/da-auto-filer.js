@@ -1,7 +1,8 @@
 #!/usr/bin/env node
 /**
- * DA Auto-Filer — watches ~/Downloads for DA_* files and moves them
+ * DA Auto-Filer — watches ~/Downloads for DA_* files and copies them
  * to the correct folder under ~/Desktop/Digital Accomplice/
+ * Original stays in Downloads; a copy is filed by department.
  *
  * Naming convention: DA_{Department}_{Subcategory}_{Description}_{YYYY-MM-DD}.{ext}
  *
@@ -128,13 +129,14 @@ function processFile(filename) {
   const dest = resolveDestPath(destDir, filename);
 
   try {
-    fs.renameSync(src, dest);
-    log(`FILED: ${filename} → ${path.relative(DA_ROOT, dest)}`);
+    fs.copyFileSync(src, dest);
+    log(`COPIED: ${filename} → ${path.relative(DA_ROOT, dest)} (original kept in Downloads)`);
     appendFileLog({
       timestamp: new Date().toISOString(),
       file: filename,
       from: src,
       to: dest,
+      action: 'copy',
       department: dept,
       subcategory: sub,
     });

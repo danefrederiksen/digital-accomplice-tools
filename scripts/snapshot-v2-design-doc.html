@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Poppins', Arial, sans-serif;
+    color: #5A6B7A;
+    font-size: 11px;
+    line-height: 1.5;
+    padding: 48px 56px;
+    background: #fff;
+    width: 816px;
+  }
+
+  .brand-label { font-size: 10px; font-weight: 700; color: #F8901E; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 4px; }
+  .title { font-size: 26px; font-weight: 800; color: #000; line-height: 1.2; margin-bottom: 6px; }
+  .subtitle { font-size: 12px; color: #CBCBCB; margin-bottom: 16px; }
+
+  .divider { border: none; border-bottom: 2px solid #F8901E; margin: 20px 0; }
+
+  h1 { font-size: 16px; font-weight: 700; color: #000; margin: 24px 0 8px 0; }
+  h2 { font-size: 13px; font-weight: 700; color: #000; margin: 16px 0 6px 0; }
+  h3 { font-size: 12px; font-weight: 700; color: #F8901E; margin: 14px 0 6px 0; }
+
+  p { margin-bottom: 10px; }
+  .italic { font-style: italic; }
+  .bold { font-weight: 700; color: #000; }
+
+  ul { margin: 4px 0 10px 20px; }
+  li { margin-bottom: 4px; }
+  li .bold { color: #000; }
+
+  table { width: 100%; border-collapse: collapse; margin: 8px 0 12px 0; font-size: 10px; }
+  th { background: #F5F5F5; color: #000; font-weight: 700; text-align: left; padding: 6px 8px; border: 1px solid #eee; }
+  td { padding: 5px 8px; border: 1px solid #eee; vertical-align: top; }
+
+  .stat-row { display: flex; gap: 12px; margin: 10px 0; }
+  .stat-card { flex: 1; background: #F5F5F5; padding: 10px 14px; text-align: center; }
+  .stat-num { font-size: 20px; font-weight: 800; color: #F8901E; }
+  .stat-label { font-size: 9px; color: #5A6B7A; text-transform: uppercase; letter-spacing: 0.5px; }
+
+  .tier-box { background: #F5F5F5; padding: 10px 14px; margin: 6px 0; }
+  .tier-label { font-size: 11px; font-weight: 700; color: #F8901E; margin-bottom: 4px; }
+  .tier-box ul { margin: 2px 0 0 16px; }
+  .tier-box li { font-size: 10px; margin-bottom: 2px; }
+
+  .cta-block { text-align: center; margin: 16px 0; padding: 12px; }
+  .cta-text { font-size: 12px; font-weight: 600; color: #000; font-style: italic; }
+  .cta-sub { font-size: 10px; color: #CBCBCB; margin-top: 4px; }
+
+  .hierarchy-list { counter-reset: hier; margin: 6px 0 10px 0; list-style: none; }
+  .hierarchy-list li { counter-increment: hier; margin-bottom: 3px; padding-left: 4px; }
+  .hierarchy-list li::before { content: counter(hier) ". "; font-weight: 700; color: #F8901E; }
+
+  .footer { margin-top: 24px; padding-top: 12px; border-top: 1px solid #eee; font-size: 9px; color: #CBCBCB; }
+  .footer span.brand { color: #F8901E; font-weight: 700; }
+
+  .page-break { page-break-before: always; }
+</style>
+</head>
+<body>
+
+<div class="brand-label">Digital Accomplice</div>
+<div class="title">Snapshot v2 — Design Doc / Generator Prompt</div>
+<div class="subtitle">March 13, 2026 &nbsp;|&nbsp; Working Spec</div>
+<hr class="divider">
+
+<h1>What This Is</h1>
+<p>A single branded PNG that combines the AI visibility diagnosis AND the recommendations brief into one clean, bold graphic. Replaces the 8-page report for most outreach. The full report still exists for deep-dive conversations — this is the door-opener version.</p>
+
+<h1>Output Format</h1>
+<ul>
+  <li><span class="bold">PNG image.</span> Single file. No HTML delivered, no PDF.</li>
+  <li><span class="bold">Dimensions:</span> 1080 x 1350px (portrait, LinkedIn/DM) OR 1920 x 1080px (landscape, email/deck). Generator supports both.</li>
+  <li><span class="bold">Pipeline:</span> HTML template rendered via Chrome headless → PNG screenshot. HTML is just the rendering engine.</li>
+  <li><span class="bold">File naming:</span> [Company]_AI_Snapshot_v2_[date].png</li>
+  <li><span class="bold">Resolution:</span> 2x pixel density for crisp text on retina screens.</li>
+</ul>
+
+<h1>Design Constraints</h1>
+<ul>
+  <li>One image. Everything fits in one graphic. No pages, no scrolling.</li>
+  <li>5th grade reading level. No jargon. Max 3 syllables per word.</li>
+  <li>Bold and scannable. Message lands in 10 seconds of skimming.</li>
+  <li>DA brand: Orange #F8901E, Black #000, Blue-Gray #5A6B7A, White #FFF, Light Gray #F5F5F5.</li>
+  <li>Font: Poppins (Arial fallback). No gradients, no shadows.</li>
+</ul>
+
+<hr class="divider">
+
+<h1>Image Layout (top to bottom)</h1>
+
+<h3>1. HEADER BAR</h3>
+<ul>
+  <li>DA logo (small, top left)</li>
+  <li>"AI VISIBILITY SNAPSHOT" label (top right, small caps, gray)</li>
+  <li>Company name: large, bold, black</li>
+  <li>Date generated</li>
+</ul>
+
+<h3>2. HEADLINE (the hook)</h3>
+<p>One bold sentence that creates urgency. Generated from data.</p>
+<p><span class="bold">Format: "[Company] has [X]. AI doesn't know it exists."</span></p>
+<ul>
+  <li>"Double Cross has a 95-point rating. AI recommends Grey Goose instead."</li>
+  <li>"BreachRx has 14 years of expertise. AI cites 0 of it."</li>
+  <li>"GISI has 200+ federal contracts. AI sends buyers to Deloitte."</li>
+</ul>
+<p class="italic">Rules: Use their strongest asset + the gap. Short. Punchy. Make them feel it.</p>
+
+<h3>3. THE SCORE BOX (3 stats, side by side)</h3>
+<p>Three bold stat cards in a horizontal row. Orange numbers, black labels.</p>
+<div class="stat-row">
+  <div class="stat-card"><div class="stat-num">0/20</div><div class="stat-label">AI mentions</div></div>
+  <div class="stat-card"><div class="stat-num">3</div><div class="stat-label">competitors rank higher</div></div>
+  <div class="stat-card"><div class="stat-num">0</div><div class="stat-label">videos found by AI</div></div>
+</div>
+<p class="italic">Pick the three most damning numbers. Always include AI mentions as stat 1.</p>
+
+<h3>4. COMPETITIVE BAR CHART</h3>
+<ul>
+  <li>Simple horizontal bars. 4 companies (target + 3 competitors).</li>
+  <li>Target bar = orange. Competitors = gray. Labels left, scores right.</li>
+  <li>No axis labels, no legend. A child could read it.</li>
+</ul>
+
+<h3>5. THE PRESCRIPTION — 3 TIERS</h3>
+<p>Three stacked boxes, full width. Light gray background. Orange tier labels. 2 bullets each.</p>
+
+<div class="tier-box">
+  <div class="tier-label">DO THIS TODAY (free, &lt;1 hour)</div>
+  <ul>
+    <li>2 specific actions they can do right now. Free. Immediate.</li>
+    <li>Ex: "Add transcripts to your 12 existing YouTube videos"</li>
+    <li>Ex: "Pin your best explainer to LinkedIn featured"</li>
+  </ul>
+  <p class="italic" style="font-size:10px;margin:4px 0 0 0;">Purpose: Proves you're not gatekeeping. Builds instant trust.</p>
+</div>
+
+<div class="tier-box">
+  <div class="tier-label">DO THIS QUARTER (the real plan)</div>
+  <ul>
+    <li>2 bigger moves with rough timelines.</li>
+    <li>Ex: "Launch a 6-video FAQ series targeting queries where [Competitor] outranks you"</li>
+    <li>Ex: "Build a competitor comparison video for your #1 buyer-intent query"</li>
+  </ul>
+  <p class="italic" style="font-size:10px;margin:4px 0 0 0;">Purpose: Where most prospects realize "I could do this... but I won't."</p>
+</div>
+
+<div class="tier-box">
+  <div class="tier-label">WHAT WE'D BUILD FOR YOU (the full engine)</div>
+  <ul>
+    <li>2 aspirational bullets. The vision of "done right." No pricing.</li>
+    <li>Ex: "Monthly video production + AI visibility tracking vs. competitors"</li>
+    <li>Ex: "Full YouTube channel strategy: branding, metadata, optimization, distribution"</li>
+  </ul>
+  <p class="italic" style="font-size:10px;margin:4px 0 0 0;">Purpose: Makes the gap feel concrete. Prospect thinks: "I want that."</p>
+</div>
+
+<h3>6. SINGLE CTA LINE</h3>
+<div class="cta-block">
+  <div class="cta-text">"If any of this interests you, I'm happy to talk through which pieces fit."</div>
+  <div class="cta-sub">Dane Frederiksen &nbsp;|&nbsp; dane@digitalaccomplice.com &nbsp;|&nbsp; Digital Accomplice — AI visibility through video.</div>
+</div>
+
+<h3>7. FOOTER</h3>
+<p class="italic" style="color:#CBCBCB;font-size:9px;">"Methodology: [X] buyer-intent queries tested across ChatGPT + Perplexity. Results reflect patterns, not guarantees. Full methodology available on request."</p>
+
+<hr class="divider">
+
+<div class="page-break"></div>
+
+<h1>Generator Input Fields</h1>
+<p>22 fields needed to produce the graphic:</p>
+<table>
+  <tr><th style="width:24%">Field</th><th style="width:10%">Type</th><th>Example</th></tr>
+  <tr><td>company_name</td><td>text</td><td>"Double Cross Vodka"</td></tr>
+  <tr><td>headline</td><td>text</td><td>"Double Cross has a 95-point rating. AI recommends Grey Goose instead."</td></tr>
+  <tr><td>stat_1_number</td><td>text</td><td>"0/20"</td></tr>
+  <tr><td>stat_1_label</td><td>text</td><td>"AI mentions"</td></tr>
+  <tr><td>stat_2_number</td><td>text</td><td>"3"</td></tr>
+  <tr><td>stat_2_label</td><td>text</td><td>"competitors rank higher"</td></tr>
+  <tr><td>stat_3_number</td><td>text</td><td>"0"</td></tr>
+  <tr><td>stat_3_label</td><td>text</td><td>"videos found by AI"</td></tr>
+  <tr><td>target_name</td><td>text</td><td>"Double Cross"</td></tr>
+  <tr><td>target_score</td><td>number</td><td>1</td></tr>
+  <tr><td>comp_1_name</td><td>text</td><td>"Grey Goose"</td></tr>
+  <tr><td>comp_1_score</td><td>number</td><td>16</td></tr>
+  <tr><td>comp_2_name</td><td>text</td><td>"Belvedere"</td></tr>
+  <tr><td>comp_2_score</td><td>number</td><td>14</td></tr>
+  <tr><td>comp_3_name</td><td>text</td><td>"Tito's"</td></tr>
+  <tr><td>comp_3_score</td><td>number</td><td>12</td></tr>
+  <tr><td>tier1_action1</td><td>text</td><td>"Add transcripts to your 12 existing YouTube videos"</td></tr>
+  <tr><td>tier1_action2</td><td>text</td><td>"Pin your best product review to LinkedIn featured"</td></tr>
+  <tr><td>tier2_action1</td><td>text</td><td>"Launch a 6-video tasting series targeting 'best premium vodka'"</td></tr>
+  <tr><td>tier2_action2</td><td>text</td><td>"Build a comparison video for 'best vodka for martini'"</td></tr>
+  <tr><td>tier3_action1</td><td>text</td><td>"Monthly video production + quarterly AI visibility re-scoring"</td></tr>
+  <tr><td>tier3_action2</td><td>text</td><td>"Full YouTube channel relaunch: branding, metadata, optimization"</td></tr>
+  <tr><td>num_queries</td><td>number</td><td>20</td></tr>
+  <tr><td>ai_platforms</td><td>text</td><td>"ChatGPT + Perplexity"</td></tr>
+  <tr><td>date</td><td>text</td><td>"March 13, 2026"</td></tr>
+</table>
+
+<h1>Visual Hierarchy</h1>
+<p>What the eye hits first, in order:</p>
+<ol class="hierarchy-list">
+  <li><span class="bold">Headline</span> — the hook. Biggest text on the image.</li>
+  <li><span class="bold">3 stat cards</span> — the damage. Bold orange numbers.</li>
+  <li><span class="bold">Bar chart</span> — the gap. Visual proof.</li>
+  <li><span class="bold">Tier boxes</span> — the fix. What to do about it.</li>
+  <li><span class="bold">CTA</span> — the door. Quiet, confident.</li>
+</ol>
+<p>Everything else is supporting. Header and footer should be invisible unless you look for them.</p>
+
+<hr class="divider">
+
+<h1>Export Endpoint</h1>
+<p><span class="bold">POST /api/export-snapshot-v2</span></p>
+<ul>
+  <li>Renders the HTML template with input data</li>
+  <li>Screenshots via Chrome headless at 2x resolution</li>
+  <li>Returns PNG buffer</li>
+  <li>Supports ?format=portrait (1080x1350, default) or ?format=landscape (1920x1080)</li>
+</ul>
+
+<h1>What This Is NOT</h1>
+<ul>
+  <li>Not an HTML page. HTML is only the rendering layer — the deliverable is a PNG.</li>
+  <li>Not an 8-page report. That still exists for deep conversations.</li>
+  <li>Not a proposal. No pricing. No scope. No contract language.</li>
+  <li>Not a sales pitch. It's a gift that happens to make them want to talk to you.</li>
+</ul>
+
+<h1>Tone</h1>
+<p>Write like you're explaining something important to a smart friend who's busy. No fluff. No filler. Every word earns its spot.</p>
+
+<div class="footer">
+  <span class="brand">Digital Accomplice</span> &nbsp;|&nbsp; digitalaccomplice.com &nbsp;|&nbsp; dane@digitalaccomplice.com<br>
+  <em>"Tell your story, grow revenue, zero frustration."</em>
+</div>
+
+</body>
+</html>
