@@ -1,0 +1,67 @@
+{
+  "2026-03-05": {
+    "prospectIds": [
+      "318703f7-e2d9-4419-94a1-f5c803dc939d",
+      "df2fd8cd-e8e8-4943-b1bc-720bbae1b494",
+      "bb9b8118-8bc5-4c55-a1e3-7b31922c9924"
+    ],
+    "screenshotId": "72f7029e-4821-4ecc-b749-dad994beaf9f",
+    "setAt": "2026-03-05T17:09:11.992Z"
+  },
+  "2026-03-06": {
+    "prospectIds": [
+      "d01b29eb-d152-4edb-8fe6-1db3137514e5",
+      "318703f7-e2d9-4419-94a1-f5c803dc939d",
+      "df2fd8cd-e8e8-4943-b1bc-720bbae1b494",
+      "bb9b8118-8bc5-4c55-a1e3-7b31922c9924",
+      "4f96be9a-27a1-4416-98ef-d4ef75b6363a"
+    ],
+    "screenshotId": "6ddf9f9b-3625-4370-a4b0-c14ed0339ee6",
+    "setAt": "2026-03-06T18:11:19.480Z"
+  },
+  "2026-03-08": {
+    "prospectIds": [
+      "0a40cf10-4a25-4f6e-91cf-7f6dc9c71b4a",
+      "04c35c4f-dfef-4653-8707-9e5edd847395",
+      "33ef28fa-146a-4582-9fba-b53056b4ff5d",
+      "ref2-004",
+      "4a59f501-2691-4afb-aea0-63f6432206c4",
+      "df93b9d7-8878-43f9-8571-e58153b1572c",
+      "95d882cb-ebb2-47e6-bec0-96ccb39fa047",
+      "ref2-001",
+      "ref2-005"
+    ],
+    "screenshotId": "364b6ac7-841c-4908-b2fe-25871f09f2b2",
+    "setAt": "2026-03-08T16:28:00.821Z"
+  },
+  "2026-03-09": {
+    "prospectIds": [
+      "95ddc6f3-013e-4cb7-9313-308941a7ed9b",
+      "15ceae18-4ff9-4335-beba-5692f6cabb69",
+      "df2fd8cd-e8e8-4943-b1bc-720bbae1b494",
+      "021e962f-79c5-4c79-b72d-2d7e2891bdd7",
+      "6baf519a-49cb-4893-8602-fe84fbe546b6"
+    ],
+    "screenshotId": "ad21cd41-6ac8-4cfa-8457-d8c4abb64da9",
+    "setAt": "2026-03-09T23:09:19.899Z"
+  },
+  "2026-03-10": {
+    "prospectIds": [
+      "2a47427a-523a-4998-bcca-3c2162778466",
+      "e94ac60f-04d8-4e7b-a63d-8bc6c38d0595",
+      "33ef28fa-146a-4582-9fba-b53056b4ff5d"
+    ],
+    "screenshotId": "86f973bc-bdcb-44ce-b7b4-aafdca0e2c3c",
+    "setAt": "2026-03-10T15:23:28.319Z"
+  },
+  "2026-03-12": {
+    "prospectIds": [
+      "66997ac3-5ca7-4280-a75f-a2e1724a44f1",
+      "df2fd8cd-e8e8-4943-b1bc-720bbae1b494",
+      "33ef28fa-146a-4582-9fba-b53056b4ff5d",
+      "ref2-004"
+    ],
+    "screenshotId": "0f77cc2a-1427-4b11-9d87-23b388a18ee7",
+    "setAt": "2026-03-12T16:34:27.043Z"
+  }
+}

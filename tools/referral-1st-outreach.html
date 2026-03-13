@@ -1,0 +1,1434 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Prospecting Tool #5 — Referral Partner 1st Connections DM Tracker</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: 'Poppins', sans-serif; background: #f5f5f5; color: #1a1a1a; }
+
+/* Header */
+.header { background: #000; color: #fff; padding: 16px 24px; display: flex; align-items: center; justify-content: space-between; }
+.header h1 { font-size: 20px; font-weight: 700; }
+.header h1 span { color: #F8901E; }
+.header-right { font-size: 13px; color: #999; }
+
+/* Tabs */
+.tabs { background: #fff; border-bottom: 2px solid #eee; padding: 0 24px; display: flex; gap: 0; }
+.tab { padding: 12px 20px; cursor: pointer; font-weight: 500; font-size: 14px; color: #666; border-bottom: 3px solid transparent; transition: all 0.2s; }
+.tab:hover { color: #F8901E; }
+.tab.active { color: #F8901E; border-bottom-color: #F8901E; }
+
+/* Content */
+.content { max-width: 1100px; margin: 0 auto; padding: 24px; }
+
+/* Alert banner */
+.alert-banner { background: linear-gradient(135deg, #F8901E, #e07a10); color: #fff; border-radius: 10px; padding: 16px 20px; margin-bottom: 24px; font-size: 14px; line-height: 1.5; }
+.alert-banner strong { font-size: 16px; display: block; margin-bottom: 4px; }
+.alert-stat { display: inline-block; background: rgba(255,255,255,0.2); border-radius: 6px; padding: 4px 10px; margin: 4px 4px 4px 0; font-weight: 600; font-size: 13px; }
+
+/* Section headers */
+.section-header { font-size: 16px; font-weight: 700; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+.section-header .count { background: #F8901E; color: #fff; border-radius: 50%; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; }
+.section { margin-bottom: 32px; }
+
+/* Cards */
+.card { background: #fff; border-radius: 10px; padding: 16px; margin-bottom: 10px; border: 1px solid #e5e5e5; transition: box-shadow 0.2s; }
+.card:hover { box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+.card-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; }
+.card-name { font-weight: 700; font-size: 15px; }
+.card-company { font-size: 13px; color: #666; }
+.card-title { font-size: 12px; color: #999; margin-top: 2px; }
+.card-meta { display: flex; gap: 12px; font-size: 12px; color: #888; margin-top: 6px; flex-wrap: wrap; }
+.card-meta a { color: #F8901E; text-decoration: none; font-weight: 500; }
+.card-meta a:hover { text-decoration: underline; }
+
+/* Status badge */
+.card-delete { position: absolute; top: 6px; right: 6px; background: #f5f5f5; border: 1px solid #ddd; color: #999; font-size: 14px; cursor: pointer; padding: 2px 7px; border-radius: 5px; line-height: 1; z-index: 10; }
+.card-delete:hover { color: #fff; background: #c62828; border-color: #c62828; }
+.card { position: relative; }
+
+/* Search bar */
+.search-bar { width: 100%; padding: 12px 16px; font-size: 15px; font-family: 'Poppins', sans-serif; border: 2px solid #ddd; border-radius: 10px; outline: none; transition: border-color 0.15s; background: #fff; margin-bottom: 16px; }
+.search-bar:focus { border-color: #F8901E; }
+.search-bar::placeholder { color: #bbb; }
+.search-count { font-size: 12px; color: #999; margin-bottom: 12px; }
+
+.status { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+.status-not_started { background: #e8e8e8; color: #666; }
+.status-dm_sent { background: #fff3e0; color: #e65100; }
+.status-follow_up_1 { background: #e3f2fd; color: #1565c0; }
+.status-follow_up_2 { background: #fce4ec; color: #c62828; }
+.status-replied { background: #e8f5e9; color: #2e7d32; }
+.status-cold { background: #f5f5f5; color: #999; }
+
+/* Buttons */
+.btn { padding: 7px 14px; border-radius: 6px; font-family: 'Poppins', sans-serif; font-size: 12px; font-weight: 600; cursor: pointer; border: none; transition: all 0.15s; }
+.btn-primary { background: #F8901E; color: #fff; }
+.btn-primary:hover { background: #e07a10; }
+.btn-secondary { background: #eee; color: #333; }
+.btn-secondary:hover { background: #ddd; }
+.btn-danger { background: #fee; color: #c62828; }
+.btn-danger:hover { background: #fdd; }
+.btn-success { background: #e8f5e9; color: #2e7d32; }
+.btn-success:hover { background: #c8e6c9; }
+.btn-sm { padding: 4px 10px; font-size: 11px; }
+.btn-group { display: flex; gap: 6px; margin-top: 10px; flex-wrap: wrap; }
+
+/* Import */
+.import-zone { border: 2px dashed #ccc; border-radius: 10px; padding: 40px; text-align: center; background: #fff; cursor: pointer; transition: border-color 0.2s; margin-bottom: 20px; }
+.import-zone:hover { border-color: #F8901E; }
+.import-zone input { display: none; }
+.import-zone p { color: #888; font-size: 14px; margin-top: 8px; }
+.import-zone .icon { font-size: 36px; margin-bottom: 8px; }
+
+/* Filter results table */
+.filter-table { width: 100%; border-collapse: collapse; background: #fff; border-radius: 10px; overflow: hidden; border: 1px solid #e5e5e5; }
+.filter-table th { background: #fafafa; text-align: left; padding: 10px 12px; font-size: 12px; font-weight: 600; color: #666; border-bottom: 2px solid #eee; }
+.filter-table td { padding: 10px 12px; font-size: 13px; border-bottom: 1px solid #f0f0f0; }
+.filter-table tr:hover td { background: #fafafa; }
+.filter-table input[type="checkbox"] { width: 16px; height: 16px; accent-color: #F8901E; cursor: pointer; }
+
+.selected-count { margin: 12px 0; font-size: 14px; font-weight: 500; }
+.selected-count span { color: #F8901E; font-weight: 700; }
+
+/* Reply field */
+.reply-area { margin-top: 8px; }
+.reply-area textarea { width: 100%; border: 1px solid #ddd; border-radius: 6px; padding: 8px; font-family: 'Poppins', sans-serif; font-size: 13px; resize: vertical; min-height: 60px; }
+.reply-area label { font-size: 12px; font-weight: 600; color: #666; display: block; margin-bottom: 4px; }
+
+/* Draft reply */
+.draft-reply-area { margin-top: 10px; background: #faf6ff; border: 1px solid #e0d0ff; border-radius: 8px; padding: 12px; }
+.draft-reply-area label { font-size: 12px; font-weight: 700; color: #6b21a8; display: flex; align-items: center; gap: 6px; margin-bottom: 6px; }
+.draft-reply-area textarea { width: 100%; border: 1px solid #d4c4f0; border-radius: 6px; padding: 8px; font-family: 'Poppins', sans-serif; font-size: 13px; resize: vertical; min-height: 80px; background: #fff; line-height: 1.5; }
+.draft-reply-area textarea:focus { outline: none; border-color: #6b21a8; box-shadow: 0 0 0 2px rgba(107,33,168,0.1); }
+.draft-reply-header { display: flex; justify-content: space-between; align-items: center; }
+.btn-copy-draft { background: #6b21a8; color: #fff; padding: 5px 12px; border-radius: 5px; font-size: 11px; font-weight: 600; cursor: pointer; border: none; transition: all 0.15s; font-family: 'Poppins', sans-serif; }
+.btn-copy-draft:hover { background: #581c87; }
+.btn-copy-draft.copied { background: #2e7d32; }
+
+/* Next step field */
+.next-step-field { margin-top: 6px; }
+.next-step-field input { width: 100%; border: 1px solid #ddd; border-radius: 6px; padding: 7px 10px; font-family: 'Poppins', sans-serif; font-size: 13px; }
+
+/* Empty state */
+.empty { text-align: center; padding: 40px; color: #aaa; font-size: 14px; }
+.empty .icon { font-size: 32px; margin-bottom: 8px; }
+
+/* Sequence timeline */
+.timeline { display: flex; gap: 0; margin-top: 8px; font-size: 11px; }
+.timeline-step { flex: 1; text-align: center; padding: 6px 4px; background: #f5f5f5; border-right: 1px solid #e5e5e5; color: #999; }
+.timeline-step:first-child { border-radius: 6px 0 0 6px; }
+.timeline-step:last-child { border-radius: 0 6px 6px 0; border-right: none; }
+.timeline-step.done { background: #e8f5e9; color: #2e7d32; }
+.timeline-step.current { background: #fff3e0; color: #e65100; font-weight: 600; }
+.timeline-step.upcoming { background: #f5f5f5; color: #bbb; }
+
+/* Copy message button */
+.btn-copy { background: #f0e6ff; color: #6b21a8; }
+.btn-copy:hover { background: #e0d0ff; }
+.btn-copy.copied { background: #e8f5e9; color: #2e7d32; }
+.msg-preview { background: #fafafa; border: 1px solid #eee; border-radius: 6px; padding: 10px 12px; margin-top: 8px; font-size: 12px; color: #555; line-height: 1.5; white-space: pre-wrap; display: none; }
+.msg-preview.show { display: block; }
+
+/* Manual add form */
+.add-form { background: #fff; border-radius: 10px; padding: 20px; border: 1px solid #e5e5e5; margin-bottom: 20px; }
+.add-form h3 { font-size: 14px; margin-bottom: 12px; }
+.form-row { display: flex; gap: 10px; margin-bottom: 10px; }
+.form-row input { flex: 1; padding: 8px 10px; border: 1px solid #ddd; border-radius: 6px; font-family: 'Poppins', sans-serif; font-size: 13px; }
+
+/* Overdue indicator */
+.overdue { color: #c62828; font-weight: 600; font-size: 11px; }
+
+/* Due date info */
+.due-info { font-size: 12px; color: #666; margin-top: 4px; }
+.due-info strong { color: #F8901E; }
+
+/* LinkedIn URL in card */
+.linkedin-link { color: #F8901E; text-decoration: none; font-size: 12px; font-weight: 500; }
+.linkedin-link:hover { text-decoration: underline; }
+
+/* Daily progress */
+.daily-progress { background: #fff; border-radius: 10px; padding: 14px 20px; border: 1px solid #e5e5e5; margin-bottom: 20px; }
+.daily-progress h3 { font-size: 13px; font-weight: 700; margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
+.daily-progress .lbl { color: #999; font-weight: 400; font-size: 11px; }
+.progress-row { display: flex; align-items: center; gap: 12px; margin-bottom: 6px; }
+.progress-row:last-child { margin-bottom: 0; }
+.progress-label { font-size: 12px; font-weight: 600; color: #555; min-width: 120px; }
+.progress-track { flex: 1; height: 20px; background: #f0f0f0; border-radius: 10px; overflow: hidden; }
+.progress-fill { height: 100%; border-radius: 10px; transition: width 0.3s; }
+.progress-fill.orange { background: linear-gradient(135deg, #F8901E, #e07a10); }
+.progress-fill.green { background: linear-gradient(135deg, #4caf50, #388e3c); }
+.progress-nums { font-size: 13px; font-weight: 700; min-width: 50px; text-align: right; }
+.progress-nums.done { color: #2e7d32; }
+
+/* Template editor modal */
+.modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center; }
+.modal-overlay.show { display: flex; }
+.modal { background: #fff; border-radius: 12px; padding: 24px; max-width: 700px; width: 95%; max-height: 85vh; overflow-y: auto; box-shadow: 0 8px 32px rgba(0,0,0,0.2); }
+.modal h2 { font-size: 18px; font-weight: 700; margin-bottom: 16px; }
+.modal label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 4px; color: #333; }
+.modal textarea { width: 100%; min-height: 100px; padding: 10px; font-family: 'Poppins', sans-serif; font-size: 13px; border: 2px solid #ddd; border-radius: 8px; resize: vertical; margin-bottom: 16px; outline: none; transition: border-color 0.15s; }
+.modal textarea:focus { border-color: #F8901E; }
+.modal .hint { font-size: 11px; color: #999; margin: -12px 0 16px; }
+.modal-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 8px; }
+.btn-templates { background: transparent; border: 1px solid #F8901E; color: #F8901E; padding: 6px 14px; border-radius: 6px; font-family: 'Poppins', sans-serif; font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.15s; }
+.btn-templates:hover { background: #F8901E; color: #fff; }
+
+/* A/B variant badge on prospect cards */
+.ab-badge { display: inline-block; font-size: 10px; font-weight: 700; padding: 2px 7px; border-radius: 4px; margin-left: 6px; vertical-align: middle; }
+.ab-a { background: #e3f2fd; color: #1565c0; }
+.ab-b { background: #fce4ec; color: #c62828; }
+
+/* Template editor: A/B step sections */
+.tpl-step-section { margin-bottom: 20px; border: 1px solid #eee; border-radius: 8px; padding: 12px 16px; }
+.tpl-step-header { font-size: 14px; font-weight: 700; color: #333; margin-bottom: 8px; }
+.tpl-variant-tabs { display: flex; gap: 0; margin-bottom: 8px; }
+.tpl-vtab { padding: 6px 16px; border: 1px solid #ddd; background: #f5f5f5; font-family: 'Poppins', sans-serif; font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.15s; }
+.tpl-vtab:first-child { border-radius: 6px 0 0 6px; }
+.tpl-vtab:last-child { border-radius: 0 6px 6px 0; border-left: none; }
+.tpl-vtab.active { background: #F8901E; color: #fff; border-color: #F8901E; }
+.tpl-vtab:hover:not(.active) { background: #eee; }
+
+/* A/B Report tab */
+.ab-report { background: #fff; border-radius: 10px; padding: 20px; border: 1px solid #e5e5e5; }
+.ab-report h3 { font-size: 16px; font-weight: 700; margin-bottom: 16px; }
+.ab-report h4 { margin-top: 16px; font-size: 14px; font-weight: 700; color: #333; }
+.ab-report table { width: 100%; border-collapse: collapse; font-size: 13px; margin-top: 6px; }
+.ab-report th { text-align: left; padding: 8px 12px; border-bottom: 2px solid #eee; color: #666; font-weight: 600; font-size: 12px; text-transform: uppercase; }
+.ab-report td { padding: 8px 12px; border-bottom: 1px solid #f0f0f0; }
+.rate-bar { display: inline-block; height: 16px; border-radius: 4px; vertical-align: middle; }
+.rate-bar-a { background: #1565c0; }
+.rate-bar-b { background: #c62828; }
+.ab-winner { font-weight: 700; color: #2e7d32; }
+.sample-warning { font-size: 11px; color: #999; font-style: italic; margin-top: 4px; }
+
+@media (max-width: 700px) {
+  .content { padding: 16px; }
+  .form-row { flex-direction: column; }
+  .card-top { flex-direction: column; gap: 6px; }
+}
+</style>
+</head>
+<body>
+<div class="header">
+  <h1><span>DA</span> Prospecting Tool #5 — Referral Partner 1st Connections</h1>
+  <div class="header-right"><button class="btn-templates" onclick="openTemplateEditor()">Edit Templates</button> <span id="prospect-count" style="margin-left:8px;"></span></div>
+</div>
+<div class="tabs" id="tabs"></div>
+<div class="content" id="content"></div>
+<div class="modal-overlay" id="template-modal" onclick="if(event.target===this)closeTemplateEditor()">
+  <div class="modal" id="template-modal-content"></div>
+</div>
+
+<script>
+// ============================================================
+// STATE
+// ============================================================
+const TITLE_KEYWORDS = ['founder','ceo','co-founder','owner','partner','managing partner','president','managing director','principal','director of partnerships','head of partnerships','vp partnerships','vp alliances','vp business development','head of business development','agency owner','creative director','fractional cmo'];
+
+let state = {
+  prospects: [],
+  importedContacts: [],
+  activeTab: 'dashboard',
+  searchQuery: '',
+  dashboardSearch: ''
+};
+
+// ============================================================
+// API HELPERS
+// ============================================================
+async function apiGet(url) {
+  const res = await fetch(url);
+  if (!res.ok) throw new Error(`GET ${url} failed: ${res.status}`);
+  return res.json();
+}
+
+async function apiPost(url, body) {
+  const res = await fetch(url, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body)
+  });
+  if (!res.ok) throw new Error(`POST ${url} failed: ${res.status}`);
+  return res.json();
+}
+
+async function apiPut(url, body) {
+  const res = await fetch(url, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body)
+  });
+  if (!res.ok) throw new Error(`PUT ${url} failed: ${res.status}`);
+  return res.json();
+}
+
+async function apiDelete(url) {
+  const res = await fetch(url, { method: 'DELETE' });
+  if (!res.ok) throw new Error(`DELETE ${url} failed: ${res.status}`);
+  return res.json();
+}
+
+async function loadFromServer() {
+  try {
+    const data = await apiGet('/api/prospects');
+    state.prospects = data.prospects || [];
+
+    // One-time migration: if server is empty but localStorage has data
+    if (state.prospects.length === 0) {
+      try {
+        const local = JSON.parse(localStorage.getItem('da-referral-1st-outreach')) || [];
+        if (local.length > 0 && confirm(`Found ${local.length} prospects in browser storage. Migrate to server?`)) {
+          await apiPost('/api/prospects/migrate', { prospects: local });
+          const refreshed = await apiGet('/api/prospects');
+          state.prospects = refreshed.prospects || [];
+          localStorage.removeItem('da-referral-1st-outreach');
+          alert('Migration complete! Your data is now saved on the server.');
+        }
+      } catch (e) { /* localStorage empty or parse error */ }
+    }
+  } catch (err) {
+    console.error('Failed to load from server:', err);
+    // Fallback to localStorage if server is down
+    try { state.prospects = JSON.parse(localStorage.getItem('da-referral-1st-outreach')) || []; }
+    catch { state.prospects = []; }
+  }
+  await loadTemplatesFromServer();
+  render();
+}
+
+// ============================================================
+// DATE HELPERS
+// ============================================================
+function today() {
+  const d = new Date();
+  return new Date(d.getFullYear(), d.getMonth(), d.getDate());
+}
+
+function addDays(dateStr, days) {
+  const d = new Date(dateStr);
+  d.setDate(d.getDate() + days);
+  return d.toISOString().split('T')[0];
+}
+
+function daysBetween(dateStr1, dateStr2) {
+  const d1 = new Date(dateStr1);
+  const d2 = new Date(dateStr2);
+  return Math.floor((d2 - d1) / (1000 * 60 * 60 * 24));
+}
+
+function formatDate(dateStr) {
+  if (!dateStr) return '—';
+  const d = new Date(dateStr + 'T00:00:00');
+  return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+}
+
+function todayStr() {
+  return today().toISOString().split('T')[0];
+}
+
+// ============================================================
+// MESSAGE TEMPLATES (editable via localStorage)
+// ============================================================
+const TOOL_KEY = 'da_templates_tool5';
+const AB_COUNTER_KEY = 'da_ab_counter_tool5';
+const TEMPLATE_STEPS = ['dm', 'follow_up_1', 'follow_up_2'];
+
+const DEFAULT_TEMPLATES = {
+  'dm_a': `Hey {name}, love what you're building at {company}. I run a video strategy agency and a lot of our clients overlap — yours need video, mine need what you do. Open to a quick chat about sending each other referrals?\n\nDane`,
+  'dm_b': `Hey {name} — been following {company} and think we serve the same market from different angles. I do video strategy for B2B brands — would you ever be open to trading referrals? Happy to send leads your way when video isn't what they need.\n\nDane`,
+  'follow_up_1_a': `Hey {name} — just bumping this. Think there's real overlap here. 15 min to see if it makes sense?`,
+  'follow_up_1_b': `Hey {name} — circling back on this. I just referred a client out for exactly what {company} does — made me think of you again. Worth a quick chat?`,
+  'follow_up_2_a': `{name} — last one from me on this. If referrals aren't your thing right now, totally get it. But if you ever need a video partner for your clients, door's always open.\n\nDane`,
+  'follow_up_2_b': `{name} — not going to keep bugging you. Just wanted to say if any of your clients ever mention needing video, feel free to send them my way. Happy to return the favor anytime.\n\nDane`
+};
+
+const TEMPLATE_LABELS = {
+  'dm': 'Initial DM',
+  'follow_up_1': 'Follow-Up #1',
+  'follow_up_2': 'Follow-Up #2'
+};
+
+let _cachedTemplates = null;
+
+async function loadTemplatesFromServer() {
+  try {
+    const data = await apiGet('/api/templates');
+    if (data.templates) {
+      _cachedTemplates = { ...DEFAULT_TEMPLATES, ...data.templates };
+    } else {
+      let migrated = null;
+      try {
+        const local = localStorage.getItem(TOOL_KEY);
+        if (local) {
+          const parsed = JSON.parse(local);
+          if (parsed.dm && !parsed.dm_a) {
+            migrated = { ...DEFAULT_TEMPLATES };
+            TEMPLATE_STEPS.forEach(step => {
+              if (parsed[step]) migrated[step + '_a'] = parsed[step];
+            });
+          } else {
+            migrated = parsed;
+          }
+        }
+      } catch {}
+      _cachedTemplates = { ...DEFAULT_TEMPLATES, ...(migrated || {}) };
+      await apiPut('/api/templates', { templates: _cachedTemplates });
+      localStorage.removeItem(TOOL_KEY);
+    }
+  } catch (err) {
+    console.error('Failed to load templates from server:', err);
+    try {
+      const local = localStorage.getItem(TOOL_KEY);
+      if (local) _cachedTemplates = { ...DEFAULT_TEMPLATES, ...JSON.parse(local) };
+    } catch {}
+    if (!_cachedTemplates) _cachedTemplates = { ...DEFAULT_TEMPLATES };
+  }
+  return _cachedTemplates;
+}
+
+function loadTemplates() {
+  return _cachedTemplates || { ...DEFAULT_TEMPLATES };
+}
+
+async function saveTemplatesToServer(templates) {
+  _cachedTemplates = templates;
+  try {
+    await apiPut('/api/templates', { templates });
+  } catch (err) {
+    console.error('Failed to save templates to server:', err);
+    localStorage.setItem(TOOL_KEY, JSON.stringify(templates));
+  }
+}
+
+function openTemplateEditor() {
+  const templates = loadTemplates();
+  const modal = document.getElementById('template-modal-content');
+  let html = `<h2>Edit Message Templates (A/B)</h2><p class="hint">Use {name} for first name, {company} for company name. Each step has two variants — A and B — sent in round-robin.</p>`;
+
+  TEMPLATE_STEPS.forEach(step => {
+    const label = TEMPLATE_LABELS[step];
+    html += `<div class="tpl-step-section">
+      <div class="tpl-step-header">${label}</div>
+      <div class="tpl-variant-tabs">
+        <div class="tpl-vtab active" id="vtab-${step}-a" onclick="switchVariantTab('${step}','a')">Variant A</div>
+        <div class="tpl-vtab" id="vtab-${step}-b" onclick="switchVariantTab('${step}','b')">Variant B</div>
+      </div>
+      <textarea id="tpl-${step}_a" class="tpl-variant-area" data-step="${step}" data-variant="a">${esc(templates[step + '_a'] || DEFAULT_TEMPLATES[step + '_a'])}</textarea>
+      <textarea id="tpl-${step}_b" class="tpl-variant-area" data-step="${step}" data-variant="b" style="display:none;">${esc(templates[step + '_b'] || DEFAULT_TEMPLATES[step + '_b'])}</textarea>
+    </div>`;
+  });
+
+  html += `<div class="modal-actions">
+    <button class="btn btn-secondary" onclick="resetTemplates()">Reset to Defaults</button>
+    <button class="btn btn-secondary" onclick="closeTemplateEditor()">Cancel</button>
+    <button class="btn btn-primary" onclick="saveTemplateEditor()">Save</button>
+  </div>`;
+  modal.innerHTML = html;
+  document.getElementById('template-modal').classList.add('show');
+}
+
+function switchVariantTab(step, variant) {
+  const other = variant === 'a' ? 'b' : 'a';
+  document.getElementById('vtab-' + step + '-' + variant).classList.add('active');
+  document.getElementById('vtab-' + step + '-' + other).classList.remove('active');
+  document.getElementById('tpl-' + step + '_' + variant).style.display = '';
+  document.getElementById('tpl-' + step + '_' + other).style.display = 'none';
+}
+
+function closeTemplateEditor() {
+  document.getElementById('template-modal').classList.remove('show');
+}
+
+async function saveTemplateEditor() {
+  const templates = {};
+  TEMPLATE_STEPS.forEach(step => {
+    templates[step + '_a'] = document.getElementById('tpl-' + step + '_a').value;
+    templates[step + '_b'] = document.getElementById('tpl-' + step + '_b').value;
+  });
+  await saveTemplatesToServer(templates);
+  closeTemplateEditor();
+}
+
+async function resetTemplates() {
+  if (!confirm('Reset all A/B templates to defaults?')) return;
+  await saveTemplatesToServer({ ...DEFAULT_TEMPLATES });
+  openTemplateEditor();
+}
+
+function firstName(fullName) {
+  return (fullName || '').split(' ')[0];
+}
+
+function getMessage(prospect, step, variant) {
+  const templates = loadTemplates();
+  const key = step + '_' + (variant || 'a');
+  const template = templates[key] || '';
+  return template
+    .replace(/\{name\}/g, firstName(prospect.name))
+    .replace(/\{company\}/g, prospect.company || 'your company');
+}
+
+async function copyMessage(prospectId, step) {
+  const p = state.prospects.find(x => x.id === prospectId);
+  if (!p) return;
+
+  // Round-robin A/B assignment
+  let counter = parseInt(localStorage.getItem(AB_COUNTER_KEY) || '0', 10);
+  const variant = counter % 2 === 0 ? 'a' : 'b';
+  counter++;
+  localStorage.setItem(AB_COUNTER_KEY, String(counter));
+
+  // Save variant assignment to prospect on server
+  if (!p.abVariants) p.abVariants = {};
+  p.abVariants[step] = variant;
+  try {
+    await apiPut('/api/prospects/' + p.id, { abVariants: p.abVariants });
+  } catch (err) { console.error('Failed to save A/B variant:', err); }
+
+  const msg = getMessage(p, step, variant);
+  try {
+    await navigator.clipboard.writeText(msg);
+    const btn = document.getElementById('copy-btn-' + prospectId);
+    if (btn) {
+      const label = 'Copied! (' + variant.toUpperCase() + ')';
+      btn.textContent = label;
+      btn.classList.add('copied');
+      setTimeout(() => { btn.textContent = 'Copy Message'; btn.classList.remove('copied'); }, 2000);
+    }
+    // Re-render to show badge
+    render();
+  } catch (err) { alert('Copy failed — check browser permissions'); }
+}
+
+function togglePreview(prospectId, step) {
+  const el = document.getElementById('msg-preview-' + prospectId);
+  if (!el) return;
+  if (el.classList.contains('show')) {
+    el.classList.remove('show');
+  } else {
+    const p = state.prospects.find(x => x.id === prospectId);
+    if (p) {
+      const variant = (p.abVariants && p.abVariants[step]) || 'a';
+      el.textContent = getMessage(p, step, variant);
+    }
+    el.classList.add('show');
+  }
+}
+
+function abBadge(p, step) {
+  if (!p.abVariants || !p.abVariants[step]) return '';
+  const v = p.abVariants[step];
+  return `<span class="ab-badge ab-${v}">${v.toUpperCase()}</span>`;
+}
+
+// ============================================================
+// DASHBOARD SEARCH
+// ============================================================
+function handleDashboardSearch(value) {
+  state.dashboardSearch = value;
+  const container = document.getElementById('dashboard-content');
+  if (container) container.innerHTML = renderDashboardInner();
+}
+
+function renderDashboardSearchResults() {
+  const q = state.dashboardSearch.trim().toLowerCase();
+  let matches = state.prospects.filter(p => {
+    if ((p.name || '').toLowerCase().includes(q)) return true;
+    if ((p.company || '').toLowerCase().includes(q)) return true;
+    if ((p.title || '').toLowerCase().includes(q)) return true;
+    if ((p.linkedinUrl || '').toLowerCase().includes(q)) return true;
+    return false;
+  });
+
+  if (matches.length === 0) {
+    return `<div class="empty"><div class="icon">&#x1F50D;</div>No prospects match that search.<br>Try a different name or company.</div>`;
+  }
+
+  let html = `<div class="search-count">${matches.length} match${matches.length !== 1 ? 'es' : ''}</div>`;
+  matches.forEach(p => { html += renderProspectCard(p); });
+  return html;
+}
+
+// ============================================================
+// PROSPECT ACTIONS (async — saved to server)
+// ============================================================
+async function markDmSent(id) {
+  const t = todayStr();
+  try {
+    const updated = await apiPut('/api/prospects/' + id, {
+      status: 'dm_sent',
+      dmSentDate: t,
+      lastActionDate: t,
+      followUp1Due: addDays(t, 3),
+      followUp2Due: addDays(t, 7)
+    });
+    const idx = state.prospects.findIndex(x => x.id === id);
+    if (idx !== -1) state.prospects[idx] = updated;
+    render();
+  } catch (err) { alert('Failed to save: ' + err.message); }
+}
+
+async function markFollowUp1(id) {
+  try {
+    const updated = await apiPut('/api/prospects/' + id, {
+      status: 'follow_up_1',
+      lastActionDate: todayStr()
+    });
+    const idx = state.prospects.findIndex(x => x.id === id);
+    if (idx !== -1) state.prospects[idx] = updated;
+    render();
+  } catch (err) { alert('Failed to save: ' + err.message); }
+}
+
+async function markFollowUp2(id) {
+  try {
+    const updated = await apiPut('/api/prospects/' + id, {
+      status: 'follow_up_2',
+      lastActionDate: todayStr()
+    });
+    const idx = state.prospects.findIndex(x => x.id === id);
+    if (idx !== -1) state.prospects[idx] = updated;
+    render();
+  } catch (err) { alert('Failed to save: ' + err.message); }
+}
+
+async function markReplied(id) {
+  try {
+    const updated = await apiPut('/api/prospects/' + id, {
+      status: 'replied',
+      lastActionDate: todayStr()
+    });
+    const idx = state.prospects.findIndex(x => x.id === id);
+    if (idx !== -1) state.prospects[idx] = updated;
+    render();
+  } catch (err) { alert('Failed to save: ' + err.message); }
+}
+
+async function markCold(id) {
+  try {
+    const updated = await apiPut('/api/prospects/' + id, {
+      status: 'cold',
+      lastActionDate: todayStr()
+    });
+    const idx = state.prospects.findIndex(x => x.id === id);
+    if (idx !== -1) state.prospects[idx] = updated;
+    render();
+  } catch (err) { alert('Failed to save: ' + err.message); }
+}
+
+const _debounce = {};
+function updateReply(id, text) {
+  clearTimeout(_debounce['reply_' + id]);
+  _debounce['reply_' + id] = setTimeout(async () => {
+    try {
+      await apiPut('/api/prospects/' + id, { reply: text });
+      const p = state.prospects.find(x => x.id === id);
+      if (p) p.reply = text;
+    } catch (err) { console.error('Failed to save reply:', err); }
+  }, 500);
+}
+
+function updateNextStep(id, text) {
+  clearTimeout(_debounce['next_' + id]);
+  _debounce['next_' + id] = setTimeout(async () => {
+    try {
+      await apiPut('/api/prospects/' + id, { nextStep: text });
+      const p = state.prospects.find(x => x.id === id);
+      if (p) p.nextStep = text;
+    } catch (err) { console.error('Failed to save next step:', err); }
+  }, 500);
+}
+
+function updateLinkedinUrl(id, url) {
+  clearTimeout(_debounce['linkedin_' + id]);
+  _debounce['linkedin_' + id] = setTimeout(async () => {
+    try {
+      await apiPut('/api/prospects/' + id, { linkedinUrl: url });
+      const p = state.prospects.find(x => x.id === id);
+      if (p) {
+        p.linkedinUrl = url;
+        render();
+      }
+    } catch (err) { console.error('Failed to save LinkedIn URL:', err); }
+  }, 500);
+}
+
+function getDraftReply(prospect) {
+  if (prospect.draftReply) return prospect.draftReply;
+  const name = firstName(prospect.name);
+  const company = prospect.company ? ` at ${prospect.company}` : '';
+  return `Hey ${name} — thanks for getting back to me! Really glad this resonated.\n\nWould love to set up a quick call to talk through how video could work for${company ? company : ' your team'}. What does your calendar look like this week or next?\n\nDane`;
+}
+
+async function copyDraftReply(prospectId) {
+  const p = state.prospects.find(x => x.id === prospectId);
+  if (!p) return;
+  const el = document.getElementById('draft-reply-' + prospectId);
+  const msg = el ? el.value : getDraftReply(p);
+  try {
+    await navigator.clipboard.writeText(msg);
+    const btn = document.getElementById('copy-draft-btn-' + prospectId);
+    if (btn) {
+      btn.textContent = 'Copied!';
+      btn.classList.add('copied');
+      setTimeout(() => { btn.textContent = 'Copy Draft'; btn.classList.remove('copied'); }, 2000);
+    }
+  } catch (err) { alert('Copy failed — check browser permissions'); }
+}
+
+function updateDraftReply(id, text) {
+  clearTimeout(_debounce['draft_' + id]);
+  _debounce['draft_' + id] = setTimeout(async () => {
+    try {
+      await apiPut('/api/prospects/' + id, { draftReply: text });
+      const p = state.prospects.find(x => x.id === id);
+      if (p) p.draftReply = text;
+    } catch (err) { console.error('Failed to save draft reply:', err); }
+  }, 500);
+}
+
+async function removeProspect(id) {
+  if (!confirm('Remove this prospect?')) return;
+  try {
+    await apiDelete('/api/prospects/' + id);
+    state.prospects = state.prospects.filter(x => x.id !== id);
+    render();
+  } catch (err) { alert('Failed to remove: ' + err.message); }
+}
+
+async function resetProspect(id) {
+  const p = state.prospects.find(x => x.id === id);
+  if (!p || !confirm('Reset this prospect to Not Started?')) return;
+  try {
+    const updated = await apiPut('/api/prospects/' + id, {
+      status: 'not_started',
+      dmSentDate: null,
+      followUp1Due: null,
+      followUp2Due: null,
+      lastActionDate: null,
+      reply: '',
+      nextStep: '',
+      draftReply: ''
+    });
+    const idx = state.prospects.findIndex(x => x.id === id);
+    if (idx !== -1) state.prospects[idx] = updated;
+    render();
+  } catch (err) { alert('Failed to reset: ' + err.message); }
+}
+
+// ============================================================
+// STATUS LABELS
+// ============================================================
+const STATUS_LABELS = {
+  not_started: 'Not Started',
+  dm_sent: 'DM Sent',
+  follow_up_1: 'Follow-Up Sent',
+  follow_up_2: 'Final Nudge Sent',
+  replied: 'Replied',
+  cold: 'Cold'
+};
+
+// ============================================================
+// CSV IMPORT
+// ============================================================
+function handleCSV(file) {
+  Papa.parse(file, {
+    header: false,
+    skipEmptyLines: true,
+    complete: function(results) {
+      const raw = results.data;
+      if (!raw.length) { alert('CSV appears empty — no rows found.'); return; }
+
+      // Detect format: check if first row looks like LinkedIn headers
+      const first = raw[0].map(c => (c || '').toLowerCase().trim());
+      const isLinkedIn = first.includes('first name') || first.includes('last name') || first.includes('position');
+
+      let rows;
+      if (isLinkedIn) {
+        // LinkedIn CSV with headers — use first row as keys, remaining rows as data
+        const headers = raw[0].map(c => (c || '').trim());
+        const dataRows = raw.slice(1);
+        rows = dataRows.map(cols => {
+          const obj = {};
+          headers.forEach((h, i) => { obj[h] = (cols[i] || '').trim(); });
+          const firstName = obj['First Name'] || obj['first_name'] || '';
+          const lastName = obj['Last Name'] || obj['last_name'] || '';
+          const company = obj['Company'] || obj['company'] || obj['Organization'] || '';
+          const position = obj['Position'] || obj['position'] || obj['Title'] || obj['title'] || '';
+          const url = obj['URL'] || obj['url'] || obj['LinkedIn URL'] || obj['Profile URL'] || '';
+          return { firstName, lastName, company, position, url, selected: false };
+        });
+      } else {
+        // No-header CSV
+        rows = raw.map(cols => {
+          const name = (cols[0] || '').trim();
+          const companyOrHeadline = (cols[1] || '').trim();
+          const title = (cols[2] || '').trim();
+          let url = '';
+          for (let i = 0; i < cols.length; i++) {
+            if ((cols[i] || '').includes('linkedin.com/in/')) { url = cols[i].trim(); break; }
+          }
+          let company = companyOrHeadline;
+          if (companyOrHeadline.includes('|')) { company = ''; }
+          return { firstName: name, lastName: '', company, position: title, url, selected: false };
+        });
+      }
+
+      if (!rows.length) { alert('No contacts found in file.'); return; }
+      finishImport(rows);
+    },
+    error: function(err) {
+      alert('CSV parse error: ' + err.message);
+    }
+  });
+}
+
+function finishImport(rows) {
+  // Filter by title keywords
+  const filtered = rows.filter(r => {
+    const pos = r.position.toLowerCase();
+    return TITLE_KEYWORDS.some(kw => pos.includes(kw));
+  });
+
+  // If keyword filter removes everything, show all rows (user's CSV may already be pre-filtered)
+  state.importedContacts = filtered.length > 0 ? filtered : rows;
+  render();
+}
+
+async function activateSelected() {
+  const selected = state.importedContacts.filter(c => c.selected);
+  if (!selected.length) return;
+
+  const prospects = selected.map(c => ({
+    name: (c.firstName + ' ' + c.lastName).trim(),
+    company: c.company,
+    title: c.position,
+    linkedinUrl: c.url
+  }));
+
+  try {
+    const result = await apiPost('/api/prospects', { prospects });
+    const data = await apiGet('/api/prospects');
+    state.prospects = data.prospects || [];
+    state.importedContacts = [];
+    alert(result.added + ' prospect(s) added.' + (result.skipped ? ' ' + result.skipped + ' skipped (duplicates).' : ''));
+    state.activeTab = 'dashboard';
+    render();
+  } catch (err) { alert('Failed to add prospects: ' + err.message); }
+}
+
+async function addManualProspect() {
+  const name = document.getElementById('manual-name').value.trim();
+  const company = document.getElementById('manual-company').value.trim();
+  const title = document.getElementById('manual-title').value.trim();
+  const url = document.getElementById('manual-url').value.trim();
+
+  if (!name) { alert('Name is required.'); return; }
+
+  try {
+    await apiPost('/api/prospects', { prospects: [{ name, company, title, linkedinUrl: url }] });
+    const data = await apiGet('/api/prospects');
+    state.prospects = data.prospects || [];
+    document.getElementById('manual-name').value = '';
+    document.getElementById('manual-company').value = '';
+    document.getElementById('manual-title').value = '';
+    document.getElementById('manual-url').value = '';
+    render();
+  } catch (err) { alert('Failed to add prospect: ' + err.message); }
+}
+
+// ============================================================
+// DASHBOARD LOGIC
+// ============================================================
+function getDmToday() {
+  // Show only DAILY_TARGETS.newOutreach prospects at a time (matches outreach plan: 1-2/day)
+  const queue = state.prospects.filter(p => p.status === 'not_started');
+  return queue.slice(0, DAILY_TARGETS.newOutreach);
+}
+
+function getQueueCount() {
+  return state.prospects.filter(p => p.status === 'not_started').length;
+}
+
+function getFollowUpToday() {
+  const t = todayStr();
+  return state.prospects.filter(p => {
+    if (p.status === 'dm_sent' && p.followUp1Due && p.followUp1Due <= t) return true;
+    if (p.status === 'follow_up_1' && p.followUp2Due && p.followUp2Due <= t) return true;
+    if (p.status === 'follow_up_2' && p.lastActionDate && daysBetween(p.lastActionDate, t) >= 3) return true;
+    return false;
+  });
+}
+
+function getReplied() {
+  return state.prospects.filter(p => p.status === 'replied');
+}
+
+function getWaiting() {
+  const t = todayStr();
+  return state.prospects.filter(p => {
+    if (p.status === 'dm_sent' && p.followUp1Due && p.followUp1Due > t) return true;
+    if (p.status === 'follow_up_1' && p.followUp2Due && p.followUp2Due > t) return true;
+    if (p.status === 'follow_up_2' && p.lastActionDate && daysBetween(p.lastActionDate, t) < 3) return true;
+    return false;
+  });
+}
+
+// ============================================================
+// RENDER — TABS
+// ============================================================
+function render() {
+  // Prospect count
+  document.getElementById('prospect-count').textContent = state.prospects.length + ' prospect' + (state.prospects.length !== 1 ? 's' : '');
+
+  // Tabs
+  const tabs = [
+    { id: 'dashboard', label: 'Dashboard' },
+    { id: 'import', label: 'Import' },
+    { id: 'prospects', label: 'All Prospects' },
+    { id: 'activity', label: 'Activity Log' },
+    { id: 'ab_report', label: 'A/B Report' }
+  ];
+  document.getElementById('tabs').innerHTML = tabs.map(t =>
+    `<div class="tab ${state.activeTab === t.id ? 'active' : ''}" onclick="switchTab('${t.id}')">${t.label}</div>`
+  ).join('');
+
+  // Content
+  const el = document.getElementById('content');
+  if (state.activeTab === 'dashboard') el.innerHTML = renderDashboard();
+  else if (state.activeTab === 'import') el.innerHTML = renderImport();
+  else if (state.activeTab === 'prospects') el.innerHTML = renderProspects();
+  else if (state.activeTab === 'activity') {
+    el.innerHTML = '<div class="empty">Loading activity...</div>';
+    loadActivityLog();
+  }
+  else if (state.activeTab === 'ab_report') el.innerHTML = renderABReport();
+}
+
+function switchTab(tab) {
+  state.activeTab = tab;
+  render();
+}
+
+// ============================================================
+// DAILY PROGRESS
+// ============================================================
+const DAILY_TARGETS = { newOutreach: 2, totalTouches: 5 };
+
+function getDailyProgress() {
+  const t = todayStr();
+  const newSends = state.prospects.filter(p => p.dmSentDate === t).length;
+  const followUps = state.prospects.filter(p => p.lastActionDate === t && (p.status === 'follow_up_1' || p.status === 'follow_up_2')).length;
+  return { newSends, followUps, total: newSends + followUps };
+}
+
+function renderDailyProgress() {
+  const { newSends, total } = getDailyProgress();
+  const newPct = Math.min(100, Math.round((newSends / DAILY_TARGETS.newOutreach) * 100));
+  const totalPct = Math.min(100, Math.round((total / DAILY_TARGETS.totalTouches) * 100));
+  const newDone = newSends >= DAILY_TARGETS.newOutreach;
+  const totalDone = total >= DAILY_TARGETS.totalTouches;
+  return `<div class="daily-progress">
+    <h3>Daily Target <span class="lbl">LinkedIn DMs</span></h3>
+    <div class="progress-row">
+      <span class="progress-label">New DMs</span>
+      <div class="progress-track"><div class="progress-fill ${newDone ? 'green' : 'orange'}" style="width:${newPct}%"></div></div>
+      <span class="progress-nums ${newDone ? 'done' : ''}">${newSends} / ${DAILY_TARGETS.newOutreach}</span>
+    </div>
+    <div class="progress-row">
+      <span class="progress-label">Total touches</span>
+      <div class="progress-track"><div class="progress-fill ${totalDone ? 'green' : 'orange'}" style="width:${totalPct}%"></div></div>
+      <span class="progress-nums ${totalDone ? 'done' : ''}">${total} / ${DAILY_TARGETS.totalTouches}</span>
+    </div>
+  </div>`;
+}
+
+// ============================================================
+// RENDER — DASHBOARD
+// ============================================================
+function renderDashboard() {
+  let html = '';
+  html += `<input type="text" class="search-bar" placeholder="Search by name, company, or title..." value="${esc(state.dashboardSearch)}" oninput="handleDashboardSearch(this.value)">`;
+  html += `<div id="dashboard-content">`;
+  html += renderDashboardInner();
+  html += `</div>`;
+  return html;
+}
+
+function renderDashboardInner() {
+  if (state.dashboardSearch.trim()) {
+    return renderDashboardSearchResults();
+  }
+
+  const dmList = getDmToday();
+  const fuList = getFollowUpToday();
+  const reList = getReplied();
+  const waitList = getWaiting();
+
+  const totalActive = state.prospects.filter(p => p.status !== 'cold').length;
+  const totalCold = state.prospects.filter(p => p.status === 'cold').length;
+  const queueTotal = getQueueCount();
+
+  let html = '';
+
+  // Summary banner
+  if (state.prospects.length > 0) {
+    html += `<div class="alert-banner">
+      <strong>Today's Outreach</strong>
+      <span class="alert-stat">${dmList.length} DM${dmList.length !== 1 ? 's' : ''} to send</span>
+      <span class="alert-stat">${fuList.length} follow-up${fuList.length !== 1 ? 's' : ''} due</span>
+      <span class="alert-stat">${reList.length} repl${reList.length !== 1 ? 'ies' : 'y'} to handle</span>
+      <span class="alert-stat">${waitList.length} waiting</span>
+      ${queueTotal > dmList.length ? `<span class="alert-stat">${queueTotal - dmList.length} in queue</span>` : ''}
+    </div>`;
+  }
+
+  html += renderDailyProgress();
+
+  // DM Today
+  html += `<div class="section">
+    <div class="section-header">DM Today <span class="count">${dmList.length}</span>${queueTotal > dmList.length ? ` <span style="font-size:12px;font-weight:400;color:#999;margin-left:4px;">(${queueTotal} total in queue)</span>` : ''}</div>`;
+  if (dmList.length === 0) {
+    html += `<div class="empty"><div class="icon">&#x2713;</div>All caught up — next prospects auto-queue when you finish these</div>`;
+  } else {
+    dmList.forEach(p => {
+      html += renderDashboardCard(p, 'dm');
+    });
+  }
+  html += `</div>`;
+
+  // Follow Up Today
+  html += `<div class="section">
+    <div class="section-header">Follow Up Today <span class="count">${fuList.length}</span></div>`;
+  if (fuList.length === 0) {
+    html += `<div class="empty"><div class="icon">&#x2713;</div>No follow-ups due today</div>`;
+  } else {
+    fuList.forEach(p => {
+      html += renderDashboardCard(p, 'followup');
+    });
+  }
+  html += `</div>`;
+
+  // Replied
+  html += `<div class="section">
+    <div class="section-header">Replied <span class="count">${reList.length}</span></div>`;
+  if (reList.length === 0) {
+    html += `<div class="empty"><div class="icon">&#x1F4AC;</div>No replies yet — keep going</div>`;
+  } else {
+    reList.forEach(p => {
+      html += renderDashboardCard(p, 'replied');
+    });
+  }
+  html += `</div>`;
+
+  // Waiting (collapsed info)
+  if (waitList.length > 0) {
+    html += `<div class="section">
+      <div class="section-header">Waiting for Response</div>`;
+    waitList.forEach(p => {
+      const t = todayStr();
+      let dueLabel = '';
+      if (p.status === 'dm_sent') dueLabel = 'Follow-up due ' + formatDate(p.followUp1Due);
+      else if (p.status === 'follow_up_1') dueLabel = 'Final nudge due ' + formatDate(p.followUp2Due);
+      else if (p.status === 'follow_up_2') {
+        const daysLeft = 3 - daysBetween(p.lastActionDate, todayStr());
+        dueLabel = 'Final nudge sent — check back in ' + daysLeft + ' day' + (daysLeft !== 1 ? 's' : '');
+      }
+      html += `<div class="card">
+        <div class="card-top">
+          <div><span class="card-name">${esc(p.name)}</span> <span class="card-company">@ ${esc(p.company)}</span></div>
+          <span class="status status-${p.status}">${STATUS_LABELS[p.status]}</span>
+        </div>
+        <button class="card-delete" onclick="removeProspect('${p.id}')" title="Remove prospect">&times;</button>
+        <div class="due-info">${dueLabel}</div>
+      </div>`;
+    });
+    html += `</div>`;
+  }
+
+  return html;
+}
+
+function renderDashboardCard(p, mode) {
+  let buttons = '';
+  let extra = '';
+  const t = todayStr();
+
+  if (mode === 'dm') {
+    buttons = `
+      <button class="btn btn-copy btn-sm" id="copy-btn-${p.id}" onclick="copyMessage('${p.id}','dm')">Copy Message</button>${abBadge(p, 'dm')}
+      <button class="btn btn-secondary btn-sm" onclick="togglePreview('${p.id}','dm')">Preview</button>
+      <button class="btn btn-primary btn-sm" onclick="markDmSent('${p.id}')">Mark DM Sent</button>
+    `;
+    extra = `<div class="msg-preview" id="msg-preview-${p.id}"></div>`;
+  } else if (mode === 'followup') {
+    if (p.status === 'dm_sent') {
+      const daysOver = daysBetween(p.followUp1Due, t);
+      const overdueLabel = daysOver > 0 ? `<span class="overdue">${daysOver} day${daysOver > 1 ? 's' : ''} overdue</span>` : '';
+      extra = `<div class="due-info">First follow-up ${overdueLabel}</div><div class="msg-preview" id="msg-preview-${p.id}"></div>`;
+      buttons = `
+        <button class="btn btn-copy btn-sm" id="copy-btn-${p.id}" onclick="copyMessage('${p.id}','follow_up_1')">Copy Message</button>${abBadge(p, 'follow_up_1')}
+        <button class="btn btn-secondary btn-sm" onclick="togglePreview('${p.id}','follow_up_1')">Preview</button>
+        <button class="btn btn-primary btn-sm" onclick="markFollowUp1('${p.id}')">Mark Follow-Up Sent</button>
+        <button class="btn btn-success btn-sm" onclick="markReplied('${p.id}')">Got Reply</button>
+      `;
+    } else if (p.status === 'follow_up_1') {
+      const daysOver = daysBetween(p.followUp2Due, t);
+      const overdueLabel = daysOver > 0 ? `<span class="overdue">${daysOver} day${daysOver > 1 ? 's' : ''} overdue</span>` : '';
+      extra = `<div class="due-info">Final nudge ${overdueLabel}</div><div class="msg-preview" id="msg-preview-${p.id}"></div>`;
+      buttons = `
+        <button class="btn btn-copy btn-sm" id="copy-btn-${p.id}" onclick="copyMessage('${p.id}','follow_up_2')">Copy Message</button>${abBadge(p, 'follow_up_2')}
+        <button class="btn btn-secondary btn-sm" onclick="togglePreview('${p.id}','follow_up_2')">Preview</button>
+        <button class="btn btn-primary btn-sm" onclick="markFollowUp2('${p.id}')">Mark Final Nudge Sent</button>
+        <button class="btn btn-success btn-sm" onclick="markReplied('${p.id}')">Got Reply</button>
+      `;
+    } else if (p.status === 'follow_up_2') {
+      extra = `<div class="due-info">No reply after final nudge — time to close?</div>`;
+      buttons = `
+        <button class="btn btn-danger btn-sm" onclick="markCold('${p.id}')">Mark Cold</button>
+        <button class="btn btn-success btn-sm" onclick="markReplied('${p.id}')">Got Reply</button>
+      `;
+    }
+  } else if (mode === 'replied') {
+    const draft = getDraftReply(p);
+    extra = `
+      <div class="reply-area">
+        <label>Their reply:</label>
+        <textarea placeholder="Paste what they said..." onblur="updateReply('${p.id}', this.value)">${esc(p.reply || '')}</textarea>
+      </div>
+      <div class="draft-reply-area">
+        <div class="draft-reply-header">
+          <label>Your draft reply:</label>
+          <button class="btn-copy-draft" id="copy-draft-btn-${p.id}" onclick="copyDraftReply('${p.id}')">Copy Draft</button>
+        </div>
+        <textarea id="draft-reply-${p.id}" placeholder="Your reply to send back..." onblur="updateDraftReply('${p.id}', this.value)">${esc(draft)}</textarea>
+      </div>
+      <div class="next-step-field">
+        <label style="font-size:12px;font-weight:600;color:#666;display:block;margin-bottom:4px;">Next step:</label>
+        <input placeholder="e.g. Schedule call for Tuesday" value="${esc(p.nextStep || '')}" onblur="updateNextStep('${p.id}', this.value)" />
+      </div>
+    `;
+  }
+
+  const linkedinSearchUrl = 'https://www.linkedin.com/search/results/people/?keywords=' + encodeURIComponent(p.name + ' ' + p.company);
+  const linkedinField = `<div class="linkedin-field" style="margin-top:6px;display:flex;align-items:center;gap:6px;">
+    <input type="text" placeholder="Paste LinkedIn URL..." value="${esc(p.linkedinUrl || '')}"
+      onblur="updateLinkedinUrl('${p.id}', this.value)"
+      style="flex:1;padding:5px 8px;border:1px solid #ddd;border-radius:5px;font-size:12px;font-family:'Poppins',sans-serif;color:#333;" />
+    <a href="${p.linkedinUrl ? esc(p.linkedinUrl) : linkedinSearchUrl}" target="_blank" class="btn btn-sm" style="background:#0077B5;color:#fff;white-space:nowrap;text-decoration:none;font-size:12px;padding:5px 10px;border-radius:5px;font-weight:600;">Open LinkedIn &#x2197;</a>
+  </div>`;
+
+  return `<div class="card">
+    <div class="card-top">
+      <div>
+        <span class="card-name">${esc(p.name)}</span> <span class="card-company">@ ${esc(p.company)}</span>
+        <div class="card-title">${esc(p.title)}</div>
+        ${linkedinField}
+      </div>
+      <span class="status status-${p.status}">${STATUS_LABELS[p.status]}</span>
+    </div>
+    <button class="card-delete" onclick="removeProspect('${p.id}')" title="Remove prospect">&times;</button>
+    ${extra}
+    ${renderTimeline(p)}
+    <div class="btn-group">${buttons}</div>
+  </div>`;
+}
+
+function renderTimeline(p) {
+  const steps = [
+    { label: 'DM', key: 'dm_sent' },
+    { label: 'Follow-Up', key: 'follow_up_1' },
+    { label: 'Final Nudge', key: 'follow_up_2' }
+  ];
+  const statusOrder = ['not_started', 'dm_sent', 'follow_up_1', 'follow_up_2'];
+  const currentIdx = statusOrder.indexOf(p.status);
+
+  if (p.status === 'not_started' || p.status === 'replied' || p.status === 'cold') return '';
+
+  return `<div class="timeline">${steps.map((s, i) => {
+    const stepIdx = i + 1;
+    let cls = 'upcoming';
+    if (stepIdx < currentIdx) cls = 'done';
+    else if (stepIdx === currentIdx) cls = 'current';
+    return `<div class="timeline-step ${cls}">${s.label}</div>`;
+  }).join('')}</div>`;
+}
+
+// ============================================================
+// RENDER — IMPORT
+// ============================================================
+function renderImport() {
+  let html = `
+    <div class="import-zone" onclick="document.getElementById('csv-input').click()">
+      <div class="icon">&#x1F4C4;</div>
+      <strong>Upload LinkedIn Connections CSV</strong>
+      <p>Export from LinkedIn: Settings > Data Privacy > Get a copy of your data > Connections</p>
+      <input type="file" id="csv-input" accept=".csv" onchange="if(this.files[0]){handleCSV(this.files[0]);this.value='';}" />
+    </div>
+  `;
+
+  // Manual add
+  html += `
+    <div class="add-form">
+      <h3>Or add manually</h3>
+      <div class="form-row">
+        <input id="manual-name" placeholder="Full name *" />
+        <input id="manual-company" placeholder="Company" />
+      </div>
+      <div class="form-row">
+        <input id="manual-title" placeholder="Title" />
+        <input id="manual-url" placeholder="LinkedIn URL" />
+      </div>
+      <button class="btn btn-primary" onclick="addManualProspect()">Add Prospect</button>
+    </div>
+  `;
+
+  // Imported contacts table
+  if (state.importedContacts.length > 0) {
+    const selectedCount = state.importedContacts.filter(c => c.selected).length;
+    html += `<div class="selected-count">Selected: <span>${selectedCount}</span> of ${state.importedContacts.length}</div>`;
+    html += `<table class="filter-table">
+      <thead><tr>
+        <th></th><th>Name</th><th>Company</th><th>Title</th>
+      </tr></thead><tbody>`;
+
+    state.importedContacts.forEach((c, i) => {
+      const name = (c.firstName + ' ' + c.lastName).trim();
+      html += `<tr>
+        <td><input type="checkbox" ${c.selected ? 'checked' : ''} onchange="toggleContact(${i})" /></td>
+        <td>${esc(name)}</td>
+        <td>${esc(c.company)}</td>
+        <td>${esc(c.position)}</td>
+      </tr>`;
+    });
+
+    html += `</tbody></table>`;
+    html += `<div style="margin-top:12px; display:flex; gap:8px; align-items:center;">
+      <button class="btn btn-primary" onclick="selectAllContacts()">Select All</button>
+      <button class="btn btn-primary" onclick="activateSelected()" ${selectedCount === 0 ? 'disabled' : ''}>Activate ${selectedCount} Prospect${selectedCount !== 1 ? 's' : ''}</button>
+    </div>`;
+  }
+
+  return html;
+}
+
+function toggleContact(index) {
+  state.importedContacts[index].selected = !state.importedContacts[index].selected;
+  render();
+}
+
+function selectAllContacts() {
+  const allSelected = state.importedContacts.every(c => c.selected);
+  state.importedContacts.forEach(c => { c.selected = !allSelected; });
+  render();
+}
+
+// ============================================================
+// RENDER — ALL PROSPECTS
+// ============================================================
+
+function getActivityFeedUrl(linkedinUrl) {
+  if (!linkedinUrl) return null;
+  const match = linkedinUrl.match(/linkedin\.com\/in\/([^/?#]+)/);
+  if (!match) return null;
+  return 'https://www.linkedin.com/in/' + match[1] + '/recent-activity/all/';
+}
+function handleSearch(value) {
+  state.searchQuery = value;
+  const container = document.getElementById('prospects-list');
+  if (container) container.innerHTML = renderProspectsList();
+}
+
+function renderProspectCard(p) {
+  let html = '';
+
+    html += `<div class="card">
+      <div class="card-top">
+        <div>
+          <span class="card-name">${esc(p.name)}</span> <span class="card-company">@ ${esc(p.company)}</span>
+          <div class="card-title">${esc(p.title)}</div>
+          <div class="linkedin-field" style="margin-top:4px;display:flex;align-items:center;gap:6px;">
+            <input type="text" placeholder="Paste LinkedIn URL..." value="${esc(p.linkedinUrl || '')}"
+              onblur="updateLinkedinUrl('${p.id}', this.value)"
+              style="flex:1;max-width:350px;padding:4px 8px;border:1px solid #ddd;border-radius:5px;font-size:11px;font-family:'Poppins',sans-serif;color:#333;" />
+            <a href="${p.linkedinUrl ? esc(p.linkedinUrl) : 'https://www.linkedin.com/search/results/people/?keywords=' + encodeURIComponent(p.name + ' ' + p.company)}" target="_blank" style="color:#0077B5;font-size:12px;font-weight:600;text-decoration:none;white-space:nowrap;">Open LinkedIn &#x2197;</a>
+            ${getActivityFeedUrl(p.linkedinUrl) ? `<a href="${getActivityFeedUrl(p.linkedinUrl)}" target="_blank" style="color:#F8901E;font-size:12px;font-weight:600;text-decoration:none;white-space:nowrap;">Activity Feed &#x2197;</a>` : ''}
+          </div>
+          <div class="card-meta">
+            ${p.dmSentDate ? `<span>DM: ${formatDate(p.dmSentDate)}</span>` : ''}
+            ${p.lastActionDate ? `<span>Last action: ${formatDate(p.lastActionDate)}</span>` : ''}
+          </div>
+        </div>
+        <span class="status status-${p.status}">${STATUS_LABELS[p.status]}</span>
+      </div>
+      ${renderTimeline(p)}
+      ${p.reply ? `<div style="margin-top:8px;font-size:13px;"><strong>Reply:</strong> ${esc(p.reply)}</div>` : ''}
+      ${p.nextStep ? `<div style="margin-top:4px;font-size:13px;"><strong>Next:</strong> ${esc(p.nextStep)}</div>` : ''}
+      <div class="btn-group">
+        ${p.status === 'not_started' ? `<button class="btn btn-primary btn-sm" onclick="markDmSent('${p.id}')">Mark DM Sent</button>` : ''}
+        ${p.status === 'dm_sent' ? `<button class="btn btn-primary btn-sm" onclick="markFollowUp1('${p.id}')">Mark Follow-Up Sent</button>` : ''}
+        ${p.status === 'follow_up_1' ? `<button class="btn btn-primary btn-sm" onclick="markFollowUp2('${p.id}')">Mark Final Nudge Sent</button>` : ''}
+        ${p.status !== 'replied' && p.status !== 'cold' ? `<button class="btn btn-success btn-sm" onclick="markReplied('${p.id}')">Got Reply</button>` : ''}
+        ${p.status !== 'cold' ? `<button class="btn btn-danger btn-sm" onclick="markCold('${p.id}')">Mark Cold</button>` : ''}
+        <button class="btn btn-secondary btn-sm" onclick="resetProspect('${p.id}')">Reset</button>
+        <button class="btn btn-secondary btn-sm" onclick="removeProspect('${p.id}')">Remove</button>
+      </div>
+    </div>`;
+  return html;
+}
+
+function renderProspectsList() {
+  const q = (state.searchQuery || '').toLowerCase().trim();
+  const order = ['not_started', 'dm_sent', 'follow_up_1', 'follow_up_2', 'replied', 'cold'];
+  let filtered = [...state.prospects].sort((a, b) => order.indexOf(a.status) - order.indexOf(b.status));
+
+  if (q) {
+    filtered = filtered.filter(p =>
+      (p.name || '').toLowerCase().includes(q) ||
+      (p.company || '').toLowerCase().includes(q) ||
+      (p.title || '').toLowerCase().includes(q)
+    );
+  }
+
+  if (filtered.length === 0) {
+    return `<div class="search-count">No matches for "${esc(state.searchQuery)}"</div>`;
+  }
+
+  let html = q ? `<div class="search-count">${filtered.length} of ${state.prospects.length} prospects</div>` : '';
+  filtered.forEach(p => {
+    html += renderProspectCard(p);
+  });
+  return html;
+}
+
+function renderProspects() {
+  if (state.prospects.length === 0) {
+    return `<div class="empty"><div class="icon">&#x1F465;</div>No prospects yet. Import a CSV or add manually.</div>`;
+  }
+
+  let html = `<input type="text" class="search-bar" placeholder="Search by name, company, or title..." value="${esc(state.searchQuery)}" oninput="handleSearch(this.value)">`;
+  html += `<div id="prospects-list">`;
+  html += renderProspectsList();
+  html += `</div>`;
+  return html;
+}
+
+// ============================================================
+// RENDER — ACTIVITY LOG
+// ============================================================
+async function loadActivityLog() {
+  try {
+    const data = await apiGet('/api/activity?limit=100');
+    const el = document.getElementById('content');
+    if (state.activeTab !== 'activity') return;
+
+    if (!data.activity || data.activity.length === 0) {
+      el.innerHTML = '<div class="empty"><div class="icon">&#x1F4CB;</div>No activity recorded yet. Actions will appear here as you use the tool.</div>';
+      return;
+    }
+
+    let html = '<div class="section"><div class="section-header">Activity Log <span class="count">' + data.activity.length + '</span></div>';
+    let lastDate = '';
+    data.activity.forEach(a => {
+      const dateStr = a.date ? a.date.split('T')[0] : '';
+      const timeStr = a.date ? new Date(a.date).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' }) : '';
+      if (dateStr !== lastDate) {
+        lastDate = dateStr;
+        html += `<div style="font-size:13px;font-weight:700;color:#333;margin:16px 0 8px;padding-bottom:4px;border-bottom:1px solid #eee;">${formatDate(dateStr)}</div>`;
+      }
+      html += `<div class="card" style="padding:10px 16px;">
+        <span style="font-size:12px;color:#888;min-width:70px;display:inline-block;">${timeStr}</span>
+        <span style="font-size:13px;margin-left:8px;"><strong>${esc(a.action)}</strong>${a.prospectName ? ' — ' + esc(a.prospectName) : ''}</span>
+      </div>`;
+    });
+    html += '</div>';
+    el.innerHTML = html;
+  } catch (err) {
+    document.getElementById('content').innerHTML = '<div class="empty">Failed to load activity log.</div>';
+  }
+}
+
+// ============================================================
+// A/B REPORT
+// ============================================================
+function renderABReport() {
+  let html = '<div class="ab-report">';
+  html += '<h3>A/B Test Results</h3>';
+
+  TEMPLATE_STEPS.forEach(step => {
+    const label = TEMPLATE_LABELS[step];
+    let countA = 0, countB = 0, replyA = 0, replyB = 0;
+
+    state.prospects.forEach(p => {
+      if (!p.abVariants || !p.abVariants[step]) return;
+      const v = p.abVariants[step];
+      if (v === 'a') {
+        countA++;
+        if (p.status === 'replied') replyA++;
+      } else if (v === 'b') {
+        countB++;
+        if (p.status === 'replied') replyB++;
+      }
+    });
+
+    const total = countA + countB;
+    const rateA = countA > 0 ? Math.round((replyA / countA) * 100) : 0;
+    const rateB = countB > 0 ? Math.round((replyB / countB) * 100) : 0;
+    const maxRate = Math.max(rateA, rateB, 1);
+    const barWidthA = Math.round((rateA / maxRate) * 120);
+    const barWidthB = Math.round((rateB / maxRate) * 120);
+    const enough = total >= 5;
+    const winnerA = enough && rateA > rateB;
+    const winnerB = enough && rateB > rateA;
+
+    html += `<h4>${label}</h4>`;
+    html += `<table>
+      <thead><tr><th>Variant</th><th>Sent</th><th>Replies</th><th>Reply Rate</th><th></th></tr></thead>
+      <tbody>
+        <tr>
+          <td><span class="ab-badge ab-a">A</span></td>
+          <td>${countA}</td>
+          <td>${replyA}</td>
+          <td${winnerA ? ' class="ab-winner"' : ''}>${rateA}%${winnerA ? ' Winner' : ''}</td>
+          <td><span class="rate-bar rate-bar-a" style="width:${barWidthA}px;"></span></td>
+        </tr>
+        <tr>
+          <td><span class="ab-badge ab-b">B</span></td>
+          <td>${countB}</td>
+          <td>${replyB}</td>
+          <td${winnerB ? ' class="ab-winner"' : ''}>${rateB}%${winnerB ? ' Winner' : ''}</td>
+          <td><span class="rate-bar rate-bar-b" style="width:${barWidthB}px;"></span></td>
+        </tr>
+      </tbody>
+    </table>`;
+    if (total < 10) {
+      html += `<div class="sample-warning">Low sample size (${total} total sends) — results not yet statistically meaningful.</div>`;
+    }
+  });
+
+  html += '</div>';
+  return html;
+}
+
+// ============================================================
+// HELPERS
+// ============================================================
+function esc(str) {
+  if (!str) return '';
+  const div = document.createElement('div');
+  div.textContent = str;
+  return div.innerHTML;
+}
+
+// ============================================================
+// INIT
+// ============================================================
+loadFromServer();
+</script>
+</body>
+</html>

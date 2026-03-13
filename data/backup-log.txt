@@ -1,0 +1,557 @@
+=== Backup started: 2026-03-10 06:42 PM ===
+building file list ... done
+./
+DA_BusinessPlan_v1_2026-03-08.docx
+Screenshot 2026-03-10 at 8.13.00\#342\#200\#257AM.png
+1_Sales/
+1_Sales/1.1_Prospects/
+1_Sales/1.1_Prospects/Clients.xls
+1_Sales/1.1_Prospects/DA_Customer_Reactivation.xlsx
+1_Sales/1.1_Prospects/DA_Sales_Prospects_CRUXYouTubeAudit_2026-03-10.md
+1_Sales/1.1_Prospects/DA_Sales_Prospects_GmailContacts_2025-03-09.xlsx
+1_Sales/1.1_Prospects/DA_Sales_Prospects_HunterVerify_2026-03-09.csv
+1_Sales/1.1_Prospects/DA_Sales_Prospects_LinkedInExport2_2026-03-10.csv
+1_Sales/1.1_Prospects/DA_Sales_Prospects_LinkedInExport3_2026-03-10.csv
+1_Sales/1.1_Prospects/DA_Sales_Prospects_LinkedInExport4_2026-03-10-2.csv
+1_Sales/1.1_Prospects/DA_Sales_Prospects_LinkedInExport4_2026-03-10.csv
+1_Sales/1.1_Prospects/DA_Sales_Prospects_LinkedInExport5_2026-03-10.csv
+1_Sales/1.1_Prospects/DA_Sales_Prospects_LinkedInExport6_2026-03-10-2.csv
+1_Sales/1.1_Prospects/DA_Sales_Prospects_LinkedInExport6_2026-03-10.csv
+1_Sales/1.1_Prospects/DA_Sales_Prospects_LinkedInExport_2026-03-10-2.csv
+1_Sales/1.1_Prospects/DA_Sales_Prospects_LinkedInExport_2026-03-10.csv
+1_Sales/1.1_Prospects/DA_Sales_Prospects_SalesNavUpload_2026-03-09.csv
+1_Sales/1.1_Prospects/DA_Sales_Prospects_SnapshotPivotTracker_2026-03-10.xlsx
+1_Sales/1.1_Prospects/DA_Tool10_Customer_Reactivation.jsx
+1_Sales/1.1_Prospects/cyber_leads_tool3.csv
+1_Sales/1.1_Prospects/leads for tool 1.csv
+1_Sales/1.1_Prospects/manual DM tracker backup  - Cyber Prospects (1).csv
+1_Sales/1.1_Prospects/manual DM tracker backup  - Cyber Prospects.csv
+1_Sales/1.1_Prospects/manual DM tracker backup  - ML 10 test.csv
+1_Sales/1.1_Prospects/manual DM tracker backup  - tool 3 leads.csv
+1_Sales/1.1_Prospects/referral-2nd-prospects copy.csv
+1_Sales/1.1_Prospects/March leads to warm csv files/
+1_Sales/1.1_Prospects/March leads to warm csv files/PT3_B2B_2nd_Connections.csv
+1_Sales/1.1_Prospects/March leads to warm csv files/PT4_Cyber_2nd_Connections.csv
+1_Sales/1.1_Prospects/PT10_Customer_Reactivation/
+1_Sales/1.1_Prospects/PT1_B2B_1st_Connections/
+1_Sales/1.1_Prospects/PT2_Cyber_1st_Connections/
+1_Sales/1.1_Prospects/PT3_B2B_2nd_Connections/
+1_Sales/1.1_Prospects/PT4_Cyber_2nd_Connections/
+1_Sales/1.1_Prospects/RevPal/
+1_Sales/1.1_Prospects/RevPal/Christine + Dane_ RevPal marketing strategy meeting 1.txt
+1_Sales/1.1_Prospects/RevPal/Christine_Email_Draft_v2.pdf
+1_Sales/1.1_Prospects/RevPal/DA sales RevPal email from Christine about pre-discovery call and deck-.rtf
+1_Sales/1.1_Prospects/RevPal/Lee + Dane chat about RevPal discovery call an dopportunity.txt
+1_Sales/1.1_Prospects/RevPal/ProspectResearchAgent_RevPalCaseStudy_v1_Mar6.md
+1_Sales/1.1_Prospects/RevPal/ProspectResearchAgent_SKILL_v1_Mar6.md
+1_Sales/1.1_Prospects/RevPal/RevPal 2026 Content Marketing Strategy_ Phase 2.pptx
+1_Sales/1.1_Prospects/RevPal/RevPal_CallSheet_v2_2026-03-06_Claude.pdf
+1_Sales/1.1_Prospects/RevPal/RevPal_CompetitiveAudit_MeasurementPlan_v1_Mar6.md
+1_Sales/1.1_Prospects/RevPal/RevPal_DiscoveryPrep_2026-03-06_Claude.pdf
+1_Sales/1.1_Prospects/RevPal/RevPal_DiscoveryQuestions_v1_Mar6.pdf
+1_Sales/1.1_Prospects/RevPal/RevPal_Discovery_Status_Competitor_Audit.pdf
+1_Sales/1.1_Prospects/RevPal/RevPal_MasterStatus_2026-03-06_Claude.pdf
+1_Sales/1.1_Prospects/RevPal/RevPal_PartnerDiscovery_2026-03-06_Claude.pdf
+1_Sales/1.1_Prospects/RevPal/RevPal_PartnerDiscovery_Choices_2026-03-06_Claude.pdf
+1_Sales/1.1_Prospects/RevPal/RevPal_StatusSummary_v1_2026-03-08_Claude.pdf
+1_Sales/1.1_Prospects/RevPal/RevPal_StatusSummary_v2_2026-03-08_Claude.pdf
+1_Sales/1.1_Prospects/RevPal/RevPal_StatusSummary_v3_2026-03-08_Claude.pdf
+1_Sales/1.1_Prospects/RevPal/RevPal_VideoStrategyPrompt_v1_Mar6.md
+1_Sales/1.1_Prospects/RevPal/RevPal_Video_Production_Tiers_DRAFT.pdf
+1_Sales/1.1_Prospects/RevPal/prospect-research-agent.skill
+1_Sales/1.2_Snapshots/
+1_Sales/1.2_Snapshots/AI_Visibility_Audit_Hinge from Gemini.pdf
+1_Sales/1.2_Snapshots/DA_Sales_Snapshots_Adyen_Provenance_v1_2026-03-10.pdf
+1_Sales/1.2_Snapshots/DA_Sales_Snapshots_BinaryDefense_2026-03-08.pdf
+1_Sales/1.2_Snapshots/DA_Sales_Snapshots_BinaryDefense_Provenance_2026-03-08.pdf
+1_Sales/1.2_Snapshots/DA_Sales_Snapshots_TestCompany_2026-03-08.pdf
+1_Sales/1.2_Snapshots/QUICK-REFERENCE.md
+1_Sales/1.2_Snapshots/SKILL.md
+1_Sales/1.2_Snapshots/ai-snapshot-methodology-research-plan.md
+1_Sales/1.2_Snapshots/ai-snapshot-tracking-template.xlsx
+1_Sales/1.2_Snapshots/hinge prototype from perplxity.rtf
+1_Sales/1.2_Snapshots/hinge-marketing-pilot-snapshot from Claude.md
+1_Sales/1.2_Snapshots/scientific approach to rebuilding snapshot tool.rtf
+1_Sales/1.2_Snapshots/snapshot-generator-SKILL.md
+1_Sales/1.2_Snapshots/prototypes/
+1_Sales/1.2_Snapshots/prototypes/DA_Sales_Snapshots_CyberMaxx_2026-03-08.pdf
+1_Sales/1.2_Snapshots/prototypes/DA_Sales_Snapshots_CyberMaxx_Provenance_2026-03-08.pdf
+1_Sales/1.2_Snapshots/prototypes/DeniseBoyer_Infographic_DM.jpg
+1_Sales/1.2_Snapshots/prototypes/DeniseBoyer_Video_Opportunity_Assessment.pdf
+1_Sales/1.2_Snapshots/prototypes/Hinge/
+1_Sales/1.2_Snapshots/prototypes/Hinge/Gemini_Generated_Image_wa6sgwa6sgwa6sgw.jpeg
+1_Sales/1.2_Snapshots/prototypes/Hinge/Gemini_Insight_Hinge_vs_WalkerSands_2026.pdf
+1_Sales/1.2_Snapshots/prototypes/Hinge/Gemini_Insight_Report_02_Investment_and_Engagement.pdf
+1_Sales/1.2_Snapshots/prototypes/Hinge/Gemini_Insight_Report_03_Market_Position_and_Strategy.pdf
+1_Sales/1.2_Snapshots/prototypes/Hinge/Gemini_Insight_Report_04_Tech_Stack_and_AI.pdf
+1_Sales/1.2_Snapshots/prototypes/Hinge/Gemini_Insight_Video_Sentiment_Audit_2026.pdf
+1_Sales/1.2_Snapshots/prototypes/Hinge/Hinge vs walker sands.jpg
+1_Sales/1.2_Snapshots/prototypes/Hinge/HingeMarketing_AI_Snapshot_2026-03-07.pdf
+1_Sales/1.2_Snapshots/prototypes/Hinge/HingeMarketing_Infographic_DM.jpg
+1_Sales/1.2_Snapshots/prototypes/Hinge/HingeMarketing_Snapshot_v3_Mar07.pdf
+1_Sales/1.2_Snapshots/prototypes/Hinge/Hinge_Alignment_Audit_2026.pdf
+1_Sales/1.2_Snapshots/prototypes/Hinge/Hinge_Restructure_Distilled.pdf
+1_Sales/1.2_Snapshots/prototypes/Hinge/Hinge_Strategic_Restructure_Infographic.html
+1_Sales/1.2_Snapshots/prototypes/Hinge/Hinge_Strategic_Restructure_Infographic.pdf
+1_Sales/1.2_Snapshots/prototypes/Hinge/Hinge_VideoCitation_OnePager_v1_Mar07.pdf
+1_Sales/1.2_Snapshots/prototypes/Hinge/Hinge_vs_WalkerSands_2026_Final.pdf
+1_Sales/1.2_Snapshots/prototypes/Hinge/Marketing_Comparison_2026.pdf
+1_Sales/1.2_Snapshots/prototypes/Hinge/files (20)/
+1_Sales/1.2_Snapshots/prototypes/Hinge/files (20)/HingeMarketing_Infographic_DM.jpg
+1_Sales/1.2_Snapshots/prototypes/Hinge/files (20)/HingeMarketing_Video_Opportunity_Assessment.pdf
+1_Sales/1.3_Proposals/
+1_Sales/1.4_Discovery_Calls/
+1_Sales/1.4_Discovery_Calls/DA_DiscoveryCallPrep_Template_v1_2026-03-08.docx
+1_Sales/1.4_Discovery_Calls/DA_Sales_Discovery_RevPalVideoStrategy_2026-03-10.pdf
+1_Sales/1.4_Discovery_Calls/DA_Sales_Discovery_RevPal_2026-03-12-2.pdf
+1_Sales/1.4_Discovery_Calls/DA_Sales_Discovery_RevPal_2026-03-12-2.pptx
+1_Sales/1.4_Discovery_Calls/DA_Sales_Discovery_RevPal_2026-03-12-3.pdf
+1_Sales/1.4_Discovery_Calls/DA_Sales_Discovery_RevPal_2026-03-12-3.pptx
+1_Sales/1.4_Discovery_Calls/DA_Sales_Discovery_RevPal_2026-03-12-4.pdf
+1_Sales/1.4_Discovery_Calls/DA_Sales_Discovery_RevPal_2026-03-12-4.pptx
+1_Sales/1.4_Discovery_Calls/DA_Sales_Discovery_RevPal_2026-03-12-5.pptx
+1_Sales/1.4_Discovery_Calls/DA_Sales_Discovery_RevPal_2026-03-12.pdf
+1_Sales/1.4_Discovery_Calls/DA_Sales_Discovery_RevPal_2026-03-12.pptx
+1_Sales/1.4_Discovery_Calls/DA_VideoStrategy_DiscoveryQuestions_v1_Mar8.pdf
+1_Sales/1.4_Discovery_Calls/Discovery Call Agenda.pdf
+1_Sales/1.4_Discovery_Calls/DiscoveryDeck_SystemPlan_2026-03-08.pdf
+1_Sales/1.4_Discovery_Calls/RevPal_DiscoveryDeck_2026-03-12.pdf
+1_Sales/1.4_Discovery_Calls/RevPal_FAQ_CheatSheet_2026-03-08.pdf
+1_Sales/1.5_Partners/
+1_Sales/1.5_Partners/Hinge/
+1_Sales/1.5_Partners/Quatrain/
+1_Sales/1.5_Partners/Tier_2/
+1_Sales/1.6_Scripts_and_Templates/
+1_Sales/1.6_Scripts_and_Templates/DA_Outreach_Drafts_Feb2026 (1).docx
+1_Sales/1.6_Scripts_and_Templates/DA_Sales_Scripts_AdyenWhyThisWorks_2026-03-10.pdf
+1_Sales/1.6_Scripts_and_Templates/DA_Sales_Scripts_ReferralPartnerSnapshotPivot_2026-03-10.md
+1_Sales/1.6_Scripts_and_Templates/Prospecting tool 5 plan - DA_Referral_Partner_Snapshot_Playbook.docx
+1_Sales/1.6_Scripts_and_Templates/batch1_outreach_drafts.md
+1_Sales/1.6_Scripts_and_Templates/outreach linkedin best practices.rtf
+1_Sales/1.6_Scripts_and_Templates/snapshot-outreach-template.md
+2_Marketing/
+2_Marketing/2.1_Positioning/
+2_Marketing/2.1_Positioning/DA_Case_For_Video_Strategy- ow we work v2.pdf
+2_Marketing/2.1_Positioning/DA_Case_For_Video_Strategy_v2.pdf
+2_Marketing/2.1_Positioning/DA_FAQ_v1.docx
+2_Marketing/2.1_Positioning/DA_How_I_Help_OnePager.pdf
+2_Marketing/2.1_Positioning/DA_How_We_Help_OnePager_v2.docx
+2_Marketing/2.1_Positioning/DA_How_We_Work.pdf
+2_Marketing/2.1_Positioning/DA_How_We_Work_v1.docx
+2_Marketing/2.1_Positioning/DA_How_We_Work_v1.pdf
+2_Marketing/2.1_Positioning/DA_Narrative_v1.docx
+2_Marketing/2.1_Positioning/DA_Narrative_v1.pdf
+2_Marketing/2.1_Positioning/DA_Narrative_v2.html
+2_Marketing/2.1_Positioning/DA_Positioning_Distillation_v1.html
+2_Marketing/2.1_Positioning/DA_Positioning_Distillation_v1.pdf
+2_Marketing/2.1_Positioning/DA_Positioning_Distillation_v2.html
+2_Marketing/2.1_Positioning/Fishkin_CitationsCausation_Reference_v1_Mar5.docx
+2_Marketing/2.1_Positioning/RandFishkin_VideoHypothesis_Summary_Mar5.docx
+2_Marketing/2.1_Positioning/RevPal_Video_Strategy_Positioning.pdf
+2_Marketing/2.1_Positioning/Screenshot 2026-03-05 at 11.43.13\#342\#200\#257AM.png
+2_Marketing/2.1_Positioning/Screenshot 2026-03-05 at 11.44.01\#342\#200\#257AM.png
+2_Marketing/2.2_Content/
+2_Marketing/2.2_Content/DA_Marketing_Content_LinkedIn-AIVideo_2026-03-08.md
+2_Marketing/2.2_Content/DA_Marketing_Content_LinkedInCard_2026-03-10-3.png
+2_Marketing/2.2_Content/DA_Marketing_Content_LinkedInCard_2026-03-10-4.png
+2_Marketing/2.2_Content/DA_Marketing_Content_LinkedInCard_2026-03-10.png
+2_Marketing/2.2_Content/DA_Marketing_Content_VideoAISearchNewsletter_2026-03-09.md
+2_Marketing/2.2_Content/DA_Marketing_Content_VideoAISearchReport_2026-03-09.pdf
+2_Marketing/2.2_Content/Blog/
+2_Marketing/2.2_Content/LinkedIn_Posts/
+2_Marketing/2.2_Content/LinkedIn_Posts/drafts/
+2_Marketing/2.2_Content/LinkedIn_Posts/instructions/
+2_Marketing/2.2_Content/LinkedIn_Posts/instructions/claims-research-tracker.docx
+2_Marketing/2.2_Content/LinkedIn_Posts/instructions/claims_research_tracker.pdf
+2_Marketing/2.2_Content/LinkedIn_Posts/instructions/dane-linkedin-voice-kb.md
+2_Marketing/2.2_Content/LinkedIn_Posts/instructions/linkedin instructions.rtf
+2_Marketing/2.2_Content/LinkedIn_Posts/instructions/linkedin-draft-video-strategy-story.md
+2_Marketing/2.2_Content/LinkedIn_Posts/instructions/linkedin-post-doubt-audit.md
+2_Marketing/2.2_Content/LinkedIn_Posts/instructions/linkedin-post-owned-media-ai-discovery (1).md
+2_Marketing/2.2_Content/LinkedIn_Posts/instructions/linkedin-post-owned-media-ai-discovery-draft-10.md
+2_Marketing/2.2_Content/LinkedIn_Posts/instructions/linkedin-post-owned-media-ai-discovery-draft-2.md
+2_Marketing/2.2_Content/LinkedIn_Posts/instructions/linkedin-post-owned-media-ai-discovery-draft-3.md
+2_Marketing/2.2_Content/LinkedIn_Posts/instructions/linkedin-post-owned-media-ai-discovery-draft-4.md
+2_Marketing/2.2_Content/LinkedIn_Posts/instructions/linkedin-post-owned-media-ai-discovery-draft-5.md
+2_Marketing/2.2_Content/LinkedIn_Posts/instructions/linkedin-post-owned-media-ai-discovery-draft-6.md
+2_Marketing/2.2_Content/LinkedIn_Posts/instructions/linkedin-post-owned-media-ai-discovery-draft-7.md
+2_Marketing/2.2_Content/LinkedIn_Posts/instructions/linkedin-post-owned-media-ai-discovery-draft-8.md
+2_Marketing/2.2_Content/LinkedIn_Posts/instructions/linkedin-post-owned-media-ai-discovery-draft-9.md
+2_Marketing/2.2_Content/LinkedIn_Posts/instructions/linkedin-post-owned-media-ai-discovery.md
+2_Marketing/2.2_Content/Substack/
+2_Marketing/2.3_Podcast/
+2_Marketing/2.3_Podcast/Episodes/
+2_Marketing/2.3_Podcast/Guest_Notes/
+2_Marketing/2.4_Speaking/
+2_Marketing/2.4_Speaking/2026-04_Content_Marketing_Meetup/
+2_Marketing/2.4_Speaking/2026-04_Content_Marketing_Meetup/DA_Marketing_Content_LinkedInCard-StatOnly_2026-03-10.png
+2_Marketing/2.4_Speaking/2026-04_Content_Marketing_Meetup/DA_Marketing_Content_LinkedInCard-TalkPromo_2026-03-17.png
+2_Marketing/2.4_Speaking/2026-04_Content_Marketing_Meetup/DA_Marketing_Content_LinkedInCard_2026-03-10-2.png
+2_Marketing/2.4_Speaking/2026-04_Content_Marketing_Meetup/DA_PromoSlide_Apr14Talk_v1.png
+2_Marketing/2.4_Speaking/2026-04_Content_Marketing_Meetup/Dennis ship presentation topic overview.rtf
+2_Marketing/2.4_Speaking/2026-04_Content_Marketing_Meetup/Video-Is-Your-Secret-Weapon-for-AI-Search (1).pdf
+2_Marketing/2.4_Speaking/2026-04_Content_Marketing_Meetup/Video-Is-Your-Secret-Weapon-for-AI-Search (2).pdf
+2_Marketing/2.4_Speaking/2026-04_Content_Marketing_Meetup/Video-Is-Your-Secret-Weapon-for-AI-Search (3).pdf
+2_Marketing/2.4_Speaking/2026-04_Content_Marketing_Meetup/Video-Is-Your-Secret-Weapon-for-AI-Search.pdf
+2_Marketing/2.4_Speaking/2026-04_Content_Marketing_Meetup/data for dennis talk.rtf
+2_Marketing/2.4_Speaking/2026-04_Content_Marketing_Meetup/dennis shiao presentation plan.rtf
+2_Marketing/2.4_Speaking/2026-04_Content_Marketing_Meetup/video is your secret weapon for AI search.pdf
+2_Marketing/2.5_Outreach_Sequences/
+3_Clients/
+3_Clients/3.1_Active/
+3_Clients/3.1_Active/Quatrain/
+3_Clients/3.1_Active/Quatrain/AWS + IBM Cyber Campus.mp4
+3_Clients/3.1_Active/Quatrain/Kyndryl.jpg
+3_Clients/3.1_Active/Quatrain/Quatrain Creative - Kyndryl  Video Version 2-3840x2160.mp4
+3_Clients/3.1_Active/Quatrain/Quatrain Creative AWS Beyond Identity Video 2.mp4
+3_Clients/3.1_Active/Quatrain/Quatrain Creative AWS Trend Micro Video 1  .mp4
+3_Clients/3.1_Active/Quatrain/SMX + Betond Identity.jpg
+3_Clients/3.1_Active/Quatrain/cyber security 1.jpg
+3_Clients/3.1_Active/Quatrain/cyber security 2.jpg
+3_Clients/3.1_Active/Quatrain/smx.jpg
+3_Clients/3.2_Archive/
+4_Operations/
+4_Operations/DA_Ops_Agent_Daily_Report_Instructions.docx
+4_Operations/DA_Ops_SoftwareSubscriptions_2026-03-10.xlsx
+4_Operations/4.1_Strategy/
+4_Operations/4.1_Strategy/5-races-report-2026-02-24.docx
+4_Operations/4.1_Strategy/DA-expertise race 1 Daily-Report-2026-02-24.docx
+4_Operations/4.1_Strategy/DA_5Races_Executive_Summary.docx
+4_Operations/4.1_Strategy/DA_Content_Agent_Daily_Report_Feb24_2026.docx
+4_Operations/4.1_Strategy/DA_Master_Data.xlsx
+4_Operations/4.1_Strategy/DA_Ops_Agent_Daily_Report_2026-02-24.docx
+4_Operations/4.1_Strategy/DA_Ops_Strategy_DailyReport_2026-03-09.pdf
+4_Operations/4.1_Strategy/DA_Ops_Strategy_ProjectPriorityList_2026-03-10-2.pdf
+4_Operations/4.1_Strategy/DA_Ops_Strategy_ProjectPriorityList_2026-03-10.pdf
+4_Operations/4.1_Strategy/DA_Ops_Strategy_WeeklyReport_2026-03-08-2.pdf
+4_Operations/4.1_Strategy/DA_Ops_Strategy_WeeklyReport_2026-03-08.pdf
+4_Operations/4.1_Strategy/DA_Outreach_Agent_Daily_Report_2026-02-24 (1).docx
+4_Operations/4.1_Strategy/outreach progress report 3:2:2026.rtf
+4_Operations/4.1_Strategy/reports from "business manager" agent/
+4_Operations/4.1_Strategy/reports from "business manager" agent/DA_5_Races_Today_Feb24.md
+4_Operations/4.1_Strategy/reports from "business manager" agent/Race1_Expertise_Feb24.md
+4_Operations/4.1_Strategy/reports from "business manager" agent/Race2_Content_Feb24.md
+4_Operations/4.1_Strategy/reports from "business manager" agent/Race3_Outreach_Feb24.md
+4_Operations/4.1_Strategy/reports from "business manager" agent/Race4_Opportunities_Feb24.md
+4_Operations/4.1_Strategy/reports from "business manager" agent/Race5_Offering_Feb24.md
+4_Operations/4.2_Tools/
+4_Operations/4.2_Tools/CC_TaskList_EmailTools_2026-03-06.md
+4_Operations/4.2_Tools/DA_Ops_Tools_SnapshotCapabilityAssessment_2026-03-10.pdf
+4_Operations/4.2_Tools/Wireframe.jpg
+4_Operations/4.2_Tools/about.html
+4_Operations/4.2_Tools/cyber-interview-landing (2).html
+4_Operations/4.2_Tools/da_outreach.html
+4_Operations/4.2_Tools/index.html
+4_Operations/4.2_Tools/resources.html
+4_Operations/4.2_Tools/services.html
+4_Operations/4.2_Tools/work.html
+4_Operations/4.2_Tools/Claude_Skills/
+4_Operations/4.2_Tools/Prospect_Warming_Tracker/
+4_Operations/4.2_Tools/Prospect_Warming_Tracker/3 tests.xlsx
+4_Operations/4.2_Tools/Prospect_Warming_Tracker/Claude code prospecting organization experiment copy.docx
+4_Operations/4.2_Tools/Prospect_Warming_Tracker/Claude code prospecting organization experiment copy.md
+4_Operations/4.2_Tools/Prospect_Warming_Tracker/Claude code prospecting organization experiment copy.pdf
+4_Operations/4.2_Tools/Prospect_Warming_Tracker/Claude code prospecting organization experiment.docx
+4_Operations/4.2_Tools/Prospect_Warming_Tracker/DA_Daily_Outreach_Tracker_2026-02-24 (2).xlsx
+4_Operations/4.2_Tools/Prospect_Warming_Tracker/DA_Daily_Outreach_Tracker_2026-02-25.xlsx
+4_Operations/4.2_Tools/Prospect_Warming_Tracker/DA_Prospect_Master.xlsx
+4_Operations/4.2_Tools/Prospect_Warming_Tracker/Lime export user_data.json
+4_Operations/4.2_Tools/Prospect_Warming_Tracker/Lime_export_connections.csv
+4_Operations/4.2_Tools/Prospect_Warming_Tracker/Prospecting_Tools_Action_Plan.pdf
+4_Operations/4.2_Tools/Prospect_Warming_Tracker/cyber prospect_linkedin_tracker.html
+4_Operations/4.2_Tools/Prospect_Warming_Tracker/da-followup-tracker.jsx
+4_Operations/4.2_Tools/Prospect_Warming_Tracker/da-pipeline-tracker-v3.html
+4_Operations/4.2_Tools/Prospect_Warming_Tracker/da-pipeline-tracker-v3.html alias
+4_Operations/4.2_Tools/Prospect_Warming_Tracker/da-pipeline-tracker-v4.html
+4_Operations/4.2_Tools/Prospect_Warming_Tracker/da-pipeline-tracker.html
+4_Operations/4.2_Tools/Prospect_Warming_Tracker/da_outreach (1).html
+4_Operations/4.2_Tools/Prospect_Warming_Tracker/da_outreach_v2.html
+4_Operations/4.2_Tools/Prospect_Warming_Tracker/da_prospect_master.csv
+4_Operations/4.2_Tools/Prospect_Warming_Tracker/daily_outreach_tracker.xlsx
+4_Operations/4.2_Tools/Prospect_Warming_Tracker/daily_outreach_tracker_feb23.xlsx
+4_Operations/4.2_Tools/Prospect_Warming_Tracker/prospect_matches.csv
+4_Operations/4.2_Tools/Prospect_Warming_Tracker/Prospecting tool 2 prototype/
+4_Operations/4.2_Tools/Prospect_Warming_Tracker/Prospecting tool 2 prototype/Cyber_1st_Connections_Design_Doc.md
+4_Operations/4.2_Tools/Prospect_Warming_Tracker/Prospecting tool 2 prototype/DA_Outreach_Capacity_Plan.md
+4_Operations/4.2_Tools/Prospect_Warming_Tracker/Prospecting tool 2 prototype/Prospect_Tools_List - 10 tools.pdf
+4_Operations/4.2_Tools/Prospect_Warming_Tracker/Prospecting_tool_1_prototype/
+4_Operations/4.2_Tools/Prospect_Warming_Tracker/Prospecting_tool_1_prototype/B2B_Outreach_Tool_Status_Report_Mar1.txt
+4_Operations/4.2_Tools/Prospect_Warming_Tracker/Prospecting_tool_1_prototype/DA_Outreach_Capacity_Plan.md
+4_Operations/4.2_Tools/Prospect_Warming_Tracker/Prospecting_tool_1_prototype/Prospect_Tool_1_Features.pdf
+4_Operations/4.2_Tools/Prospect_Warming_Tracker/Prospecting_tool_1_prototype/Prospect_Tool_Build_Process.pdf
+4_Operations/4.2_Tools/Prospect_Warming_Tracker/Prospecting_tool_1_prototype/Prospect_Tool_Progress_Report.txt
+4_Operations/4.2_Tools/Prospect_Warming_Tracker/Prospecting_tool_1_prototype/Prospect_Tools_List - 10 tools.pdf
+4_Operations/4.2_Tools/Prospect_Warming_Tracker/Prospecting_tool_1_prototype/Screenshot 2026-03-01 at 10.16.33\#342\#200\#257AM.png
+4_Operations/4.2_Tools/Prospect_Warming_Tracker/Prospecting_tool_1_prototype/Screenshot 2026-03-01 at 12.08.23\#342\#200\#257PM.png
+4_Operations/4.2_Tools/Prospect_Warming_Tracker/Prospecting_tool_1_prototype/Screenshot 2026-03-01 at 12.08.26\#342\#200\#257PM.png
+4_Operations/4.2_Tools/Prospect_Warming_Tracker/Prospecting_tool_1_prototype/Screenshot 2026-03-01 at 12.08.29\#342\#200\#257PM.png
+4_Operations/4.2_Tools/Prospect_Warming_Tracker/Prospecting_tool_1_prototype/manual DM tracker backup  - ML 10 test.csv
+4_Operations/4.2_Tools/Prospect_Warming_Tracker/Prospecting_tool_1_prototype/vidoe offer messag esequence for prospect tool 1.rtf
+4_Operations/4.2_Tools/Prospect_Warming_Tracker/latest status update screenshots/
+4_Operations/4.2_Tools/Prospect_Warming_Tracker/latest status update screenshots/Screenshot 2026-02-23 at 2.3.textClipping
+4_Operations/4.2_Tools/Prospect_Warming_Tracker/latest status update screenshots/Screenshot 2026-02-23 at 2.35.41\#342\#200\#257PM.png
+4_Operations/4.2_Tools/Prospect_Warming_Tracker/latest status update screenshots/Screenshot 2026-02-23 at 2.36.36\#342\#200\#257PM.png
+4_Operations/4.2_Tools/Prospect_Warming_Tracker/latest status update screenshots/Screenshot 2026-02-23 at 2.36.41\#342\#200\#257PM.png
+4_Operations/4.2_Tools/Prospect_Warming_Tracker/tools 3-10  deign docs/
+4_Operations/4.2_Tools/Prospect_Warming_Tracker/tools 3-10  deign docs/Prospecting_Tool_10_Design_Doc.md
+4_Operations/4.2_Tools/Prospect_Warming_Tracker/tools 3-10  deign docs/Prospecting_Tool_3_Design_Doc.md
+4_Operations/4.2_Tools/Prospect_Warming_Tracker/tools 3-10  deign docs/Prospecting_Tool_4_Design_Doc.md
+4_Operations/4.2_Tools/Prospect_Warming_Tracker/tools 3-10  deign docs/Prospecting_Tool_5_Design_Doc.md
+4_Operations/4.2_Tools/Prospect_Warming_Tracker/tools 3-10  deign docs/Prospecting_Tool_6_Design_Doc.md
+4_Operations/4.2_Tools/Prospect_Warming_Tracker/tools 3-10  deign docs/Prospecting_Tool_7_Design_Doc.md
+4_Operations/4.2_Tools/Prospect_Warming_Tracker/tools 3-10  deign docs/Prospecting_Tool_8_Design_Doc.md
+4_Operations/4.2_Tools/Prospect_Warming_Tracker/tools 3-10  deign docs/Prospecting_Tool_9_Design_Doc.md
+4_Operations/4.2_Tools/Prospect_Warming_Tracker/warming-app/
+4_Operations/4.2_Tools/Prospect_Warming_Tracker/warming-app/Clients copy.xls
+4_Operations/4.2_Tools/Prospect_Warming_Tracker/warming-app/DA_Customer_Reactivation copy.xlsx
+4_Operations/4.2_Tools/Prospect_Warming_Tracker/warming-app/package.json
+4_Operations/4.2_Tools/Prospect_Warming_Tracker/warming-app/server.js
+4_Operations/4.2_Tools/Prospect_Warming_Tracker/warming-app/server.py
+4_Operations/4.2_Tools/Prospect_Warming_Tracker/warming-app/.git/
+4_Operations/4.2_Tools/Prospect_Warming_Tracker/warming-app/.git/COMMIT_EDITMSG
+4_Operations/4.2_Tools/Prospect_Warming_Tracker/warming-app/.git/HEAD
+4_Operations/4.2_Tools/Prospect_Warming_Tracker/warming-app/.git/config
+4_Operations/4.2_Tools/Prospect_Warming_Tracker/warming-app/.git/description
+4_Operations/4.2_Tools/Prospect_Warming_Tracker/warming-app/.git/index
+4_Operations/4.2_Tools/Prospect_Warming_Tracker/warming-app/.git/hooks/
+4_Operations/4.2_Tools/Prospect_Warming_Tracker/warming-app/.git/hooks/applypatch-msg.sample
+4_Operations/4.2_Tools/Prospect_Warming_Tracker/warming-app/.git/hooks/commit-msg.sample
+4_Operations/4.2_Tools/Prospect_Warming_Tracker/warming-app/.git/hooks/fsmonitor-watchman.sample
+4_Operations/4.2_Tools/Prospect_Warming_Tracker/warming-app/.git/hooks/post-update.sample
+4_Operations/4.2_Tools/Prospect_Warming_Tracker/warming-app/.git/hooks/pre-applypatch.sample
+4_Operations/4.2_Tools/Prospect_Warming_Tracker/warming-app/.git/hooks/pre-commit.sample
+4_Operations/4.2_Tools/Prospect_Warming_Tracker/warming-app/.git/hooks/pre-merge-commit.sample
+4_Operations/4.2_Tools/Prospect_Warming_Tracker/warming-app/.git/hooks/pre-push.sample
+4_Operations/4.2_Tools/Prospect_Warming_Tracker/warming-app/.git/hooks/pre-rebase.sample
+4_Operations/4.2_Tools/Prospect_Warming_Tracker/warming-app/.git/hooks/pre-receive.sample
+4_Operations/4.2_Tools/Prospect_Warming_Tracker/warming-app/.git/hooks/prepare-commit-msg.sample
+4_Operations/4.2_Tools/Prospect_Warming_Tracker/warming-app/.git/hooks/push-to-checkout.sample
+4_Operations/4.2_Tools/Prospect_Warming_Tracker/warming-app/.git/hooks/update.sample
+4_Operations/4.2_Tools/Prospect_Warming_Tracker/warming-app/.git/info/
+4_Operations/4.2_Tools/Prospect_Warming_Tracker/warming-app/.git/info/exclude
+4_Operations/4.2_Tools/Prospect_Warming_Tracker/warming-app/.git/logs/
+4_Operations/4.2_Tools/Prospect_Warming_Tracker/warming-app/.git/logs/HEAD
+4_Operations/4.2_Tools/Prospect_Warming_Tracker/warming-app/.git/logs/refs/
+4_Operations/4.2_Tools/Prospect_Warming_Tracker/warming-app/.git/logs/refs/heads/
+4_Operations/4.2_Tools/Prospect_Warming_Tracker/warming-app/.git/logs/refs/heads/main
+4_Operations/4.2_Tools/Prospect_Warming_Tracker/warming-app/.git/objects/
+4_Operations/4.2_Tools/Prospect_Warming_Tracker/warming-app/.git/objects/0c/
+4_Operations/4.2_Tools/Prospect_Warming_Tracker/warming-app/.git/objects/0c/82877e372fa1d4460010c28ba98ae612c968c6
+4_Operations/4.2_Tools/Prospect_Warming_Tracker/warming-app/.git/objects/0d/
+4_Operations/4.2_Tools/Prospect_Warming_Tracker/warming-app/.git/objects/0d/b015e76947b1e44885481ad79cf8cb96c2f5e4
+4_Operations/4.2_Tools/Prospect_Warming_Tracker/warming-app/.git/objects/17/
+4_Operations/4.2_Tools/Prospect_Warming_Tracker/warming-app/.git/objects/17/f0ffafe626eb2b3a813876be6fc0b42369780d
+4_Operations/4.2_Tools/Prospect_Warming_Tracker/warming-app/.git/objects/2f/
+4_Operations/4.2_Tools/Prospect_Warming_Tracker/warming-app/.git/objects/2f/f1dcc35d531364eea6e04a1e9a39f1b0006122
+4_Operations/4.2_Tools/Prospect_Warming_Tracker/warming-app/.git/objects/34/
+4_Operations/4.2_Tools/Prospect_Warming_Tracker/warming-app/.git/objects/34/e03f0a36df037fec47aca09b5ca76e72e9ef03
+4_Operations/4.2_Tools/Prospect_Warming_Tracker/warming-app/.git/objects/51/
+4_Operations/4.2_Tools/Prospect_Warming_Tracker/warming-app/.git/objects/51/6bb7accdd4e0fb6d00b3375d40eff1a8152eac
+4_Operations/4.2_Tools/Prospect_Warming_Tracker/warming-app/.git/objects/66/
+4_Operations/4.2_Tools/Prospect_Warming_Tracker/warming-app/.git/objects/66/21ac5f6e11299188d874a19c7d248c4ee5372e
+4_Operations/4.2_Tools/Prospect_Warming_Tracker/warming-app/.git/objects/81/
+4_Operations/4.2_Tools/Prospect_Warming_Tracker/warming-app/.git/objects/81/a1be9e707cba5029832084f1c48aaf969c6f33
+4_Operations/4.2_Tools/Prospect_Warming_Tracker/warming-app/.git/objects/99/
+4_Operations/4.2_Tools/Prospect_Warming_Tracker/warming-app/.git/objects/99/524be9b235542b728a913f3a6ad0b6baeb34c8
+4_Operations/4.2_Tools/Prospect_Warming_Tracker/warming-app/.git/objects/9c/
+4_Operations/4.2_Tools/Prospect_Warming_Tracker/warming-app/.git/objects/9c/5605a523520aa74484e357da5fdc97ff4c408c
+4_Operations/4.2_Tools/Prospect_Warming_Tracker/warming-app/.git/objects/ad/
+4_Operations/4.2_Tools/Prospect_Warming_Tracker/warming-app/.git/objects/ad/323de0cf5f128bae4a6cfe9fe86a6fbc4355e9
+4_Operations/4.2_Tools/Prospect_Warming_Tracker/warming-app/.git/objects/ae/
+4_Operations/4.2_Tools/Prospect_Warming_Tracker/warming-app/.git/objects/ae/4a70f1524850d57a245088e2c8475cb4af81c7
+4_Operations/4.2_Tools/Prospect_Warming_Tracker/warming-app/.git/objects/b2/
+4_Operations/4.2_Tools/Prospect_Warming_Tracker/warming-app/.git/objects/b2/430256399a9927c1fcb93ec1bbaa5050f8cc68
+4_Operations/4.2_Tools/Prospect_Warming_Tracker/warming-app/.git/objects/c8/
+4_Operations/4.2_Tools/Prospect_Warming_Tracker/warming-app/.git/objects/c8/60847d61cdd77183b28944277abae107d8491f
+4_Operations/4.2_Tools/Prospect_Warming_Tracker/warming-app/.git/objects/ce/
+4_Operations/4.2_Tools/Prospect_Warming_Tracker/warming-app/.git/objects/ce/e865e3a4fdd506513c53a594ed2f4f85e09e9b
+4_Operations/4.2_Tools/Prospect_Warming_Tracker/warming-app/.git/objects/info/
+4_Operations/4.2_Tools/Prospect_Warming_Tracker/warming-app/.git/objects/pack/
+4_Operations/4.2_Tools/Prospect_Warming_Tracker/warming-app/.git/refs/
+4_Operations/4.2_Tools/Prospect_Warming_Tracker/warming-app/.git/refs/heads/
+4_Operations/4.2_Tools/Prospect_Warming_Tracker/warming-app/.git/refs/heads/main
+4_Operations/4.2_Tools/Prospect_Warming_Tracker/warming-app/.git/refs/tags/
+4_Operations/4.2_Tools/Prospect_Warming_Tracker/warming-app/data/
+4_Operations/4.2_Tools/Prospect_Warming_Tracker/warming-app/data/alerts.json
+4_Operations/4.2_Tools/Prospect_Warming_Tracker/warming-app/data/prospects.json
+4_Operations/4.2_Tools/Prospect_Warming_Tracker/warming-app/public/
+4_Operations/4.2_Tools/Prospect_Warming_Tracker/warming-app/public/index.html
+4_Operations/4.2_Tools/Snapshot_Generator/
+4_Operations/4.2_Tools/Snapshot_Generator/Gemini_Snapshot_Tool_Recommendations.md
+4_Operations/4.2_Tools/Snapshot_Generator/README.md
+4_Operations/4.2_Tools/Snapshot_Generator/SnapshotTool_CCImplementationPlan_v1_Mar7.pdf
+4_Operations/4.2_Tools/Snapshot_Generator/SnapshotTool_Wishlist_v1_Mar7.pdf
+4_Operations/4.2_Tools/Snapshot_Generator/Snapshot_Accuracy_Assessment_2026-03-07.pdf
+4_Operations/4.2_Tools/Snapshot_Generator/Snapshot_Automation_Plan copy.md
+4_Operations/4.2_Tools/Snapshot_Generator/youtube-discovery-problem.md
+4_Operations/4.2_Tools/Snapshot_Generator/youtube-discovery-tool-design-doc.md
+4_Operations/4.2_Tools/Snapshot_Generator/Binary Defense prototype/
+4_Operations/4.2_Tools/Snapshot_Generator/Binary Defense prototype/BinaryDefense_AI_Snapshot.jpg
+4_Operations/4.2_Tools/Snapshot_Generator/Binary Defense prototype/BinaryDefense_AI_Snapshot.pdf
+4_Operations/4.2_Tools/Snapshot_Generator/Binary Defense prototype/BinaryDefense_Snapshot_Provenance_v1_Mar7.pdf
+4_Operations/4.2_Tools/Snapshot_Generator/Binary Defense prototype/BinaryDefense_Snapshot_v1_Mar7.pdf
+4_Operations/4.2_Tools/Snapshot_Generator/Binary Defense prototype/Binary_Defense_AI_Snapshot_2026-03-07_Claude_Code.jpg
+4_Operations/4.2_Tools/Snapshot_Generator/Binary Defense prototype/Binary_Defense_AI_Snapshot_2026-03-07_Claude_Code.pdf
+4_Operations/4.2_Tools/Snapshot_Generator/Binary Defense prototype/Binary_Defense_AI_Snapshot_2026-03-07_Methodology.pdf
+4_Operations/4.2_Tools/Snapshot_Generator/Binary Defense prototype/Gemini_Binary_Defense_Reconciliation_Report_2026.pdf
+4_Operations/4.2_Tools/Snapshot_Generator/Binary Defense prototype/Gemini_Revised_Snapshot_Binary_Defense_2026.pdf
+4_Operations/4.2_Tools/Snapshot_Generator/BreachRX prototype/
+4_Operations/4.2_Tools/Snapshot_Generator/BreachRX prototype/BreachRX_AI_Snapshot.pdf
+4_Operations/4.2_Tools/Snapshot_Generator/BreachRX prototype/BreachRX_AI_Snapshot_2026-03-07_Claude_Code.pdf
+4_Operations/4.2_Tools/Snapshot_Generator/BreachRX prototype/BreachRX_AI_Snapshot_2026-03-07_Methodology.pdf
+4_Operations/4.2_Tools/Snapshot_Generator/BreachRX prototype/BreachRX_Snapshot_Provenance_v2_Mar7.pdf
+4_Operations/4.2_Tools/Snapshot_Generator/BreachRX prototype/BreachRX_Snapshot_v2_Mar7.pdf
+4_Operations/4.2_Tools/Snapshot_Generator/Hinge Marketing prototype/
+4_Operations/4.2_Tools/Snapshot_Generator/Hinge Marketing prototype/HingeMarketing_Research_Notes_v2_Mar07.pdf
+4_Operations/4.2_Tools/Snapshot_Generator/Hinge Marketing prototype/HingeMarketing_Snapshot_v2_Mar07.pdf
+4_Operations/4.2_Tools/Snapshot_Generator/Hinge Marketing prototype/HingeMarketing_Snapshot_v2_Mar07_Gemini_Assessment.pdf
+4_Operations/4.2_Tools/Snapshot_Generator/Hinge Marketing prototype/Hinge_Marketing_AI_Snapshot_2026-03-07.pdf
+4_Operations/4.2_Tools/Snapshot_Generator/Hinge Marketing prototype/Hinge_Marketing_Snapshot_Methodology_2026-03-07.pdf
+4_Operations/4.2_Tools/Snapshot_Generator/Hinge Marketing prototype/Hinge_Snapshot_Assessment_by_Claude.pdf
+4_Operations/4.2_Tools/Snapshot_Generator/Snapshot offer copy/
+4_Operations/4.2_Tools/Snapshot_Generator/Snapshot offer copy/AI_Visibility_Audit_Hinge from Gemini.pdf
+4_Operations/4.2_Tools/Snapshot_Generator/Snapshot offer copy/PHASE-A-PROGRESS-REPORT.md
+4_Operations/4.2_Tools/Snapshot_Generator/Snapshot offer copy/QUICK-REFERENCE.md
+4_Operations/4.2_Tools/Snapshot_Generator/Snapshot offer copy/RESUME-INSTRUCTIONS.md
+4_Operations/4.2_Tools/Snapshot_Generator/Snapshot offer copy/SKILL.md
+4_Operations/4.2_Tools/Snapshot_Generator/Snapshot offer copy/ai-snapshot-methodology-research-plan.md
+4_Operations/4.2_Tools/Snapshot_Generator/Snapshot offer copy/ai-snapshot-tracking-template.xlsx
+4_Operations/4.2_Tools/Snapshot_Generator/Snapshot offer copy/hinge prototype from perplxity.rtf
+4_Operations/4.2_Tools/Snapshot_Generator/Snapshot offer copy/hinge-marketing-pilot-snapshot from Claude.md
+4_Operations/4.2_Tools/Snapshot_Generator/Snapshot offer copy/scientific approach to rebuilding snapshot tool.rtf
+4_Operations/4.2_Tools/Snapshot_Generator/Snapshot offer copy/prototypes/
+4_Operations/4.2_Tools/Snapshot_Generator/Snapshot offer copy/prototypes/Denise Boyer/
+4_Operations/4.2_Tools/Snapshot_Generator/Snapshot offer copy/prototypes/Denise Boyer/DeniseBoyer_Infographic_DM.jpg
+4_Operations/4.2_Tools/Snapshot_Generator/Snapshot offer copy/prototypes/Denise Boyer/DeniseBoyer_Video_Opportunity_Assessment.pdf
+4_Operations/4.2_Tools/Snapshot_Generator/Snapshot offer copy/prototypes/Gong/
+4_Operations/4.2_Tools/Snapshot_Generator/Snapshot offer copy/prototypes/Gong/gong-video-strategy-outline.md
+4_Operations/4.2_Tools/Snapshot_Generator/Snapshot offer copy/prototypes/Hinge multi LLM research/
+4_Operations/4.2_Tools/Snapshot_Generator/Snapshot offer copy/prototypes/Hinge multi LLM research/HingeMarketing_AI_Snapshot.pdf
+4_Operations/4.2_Tools/Snapshot_Generator/Snapshot offer copy/prototypes/Hinge multi LLM research/HingeMarketing_Infographic_DM.jpg
+4_Operations/4.2_Tools/Snapshot_Generator/Snapshot offer copy/prototypes/Hinge multi LLM research/HingeMarketing_Video_Opportunity_Assessment.pdf
+4_Operations/4.2_Tools/Snapshot_Generator/Snapshot offer copy/prototypes/Hinge multi LLM research/hing eresearch pahse a.rtf
+4_Operations/4.2_Tools/Snapshot_Generator/Snapshot offer copy/prototypes/Hinge multi LLM research/screenshots for chat gpt search 1/
+4_Operations/4.2_Tools/Snapshot_Generator/Snapshot offer copy/prototypes/Hinge multi LLM research/screenshots for chat gpt search 1/Screenshot 2026-03-05 at 6.21.10\#342\#200\#257AM.png
+4_Operations/4.2_Tools/Snapshot_Generator/Snapshot offer copy/prototypes/Hinge multi LLM research/screenshots for chat gpt search 1/Screenshot 2026-03-05 at 6.21.16\#342\#200\#257AM.png
+4_Operations/4.2_Tools/Snapshot_Generator/Snapshot offer copy/prototypes/Hinge multi LLM research/screenshots for chat gpt search 1/Screenshot 2026-03-05 at 6.21.20\#342\#200\#257AM.png
+4_Operations/4.2_Tools/Snapshot_Generator/Snapshot offer copy/prototypes/Hinge multi LLM research/screenshots for chat gpt search 1/Screenshot 2026-03-05 at 6.21.28\#342\#200\#257AM.png
+4_Operations/4.2_Tools/Snapshot_Generator/Snapshot offer copy/prototypes/Hinge multi LLM research/screenshots for chat gpt search 1/Screenshot 2026-03-05 at 6.21.34\#342\#200\#257AM.png
+4_Operations/4.2_Tools/Workspace_Flows/
+4_Operations/4.3_Processes/
+4_Operations/4.3_Processes/DA_Business_Continuity_2026-03-06_Claude.pdf
+4_Operations/4.3_Processes/DA_FileNamingConvention_v1_2026-03-08.docx
+4_Operations/4.3_Processes/DA_Ops_Processes_WeeklyReport_2026-03-08.pdf
+4_Operations/4.3_Processes/file-log.json
+4_Operations/4.3_Processes/Single source of truth project/
+4_Operations/4.3_Processes/Single source of truth project/DA_SingleSourceOfTruth_ProjectPlan_Mar6.md
+4_Operations/4.3_Processes/Single source of truth project/SSOT_ProjectPlan_2026-03-07.pdf
+4_Operations/4.3_Processes/daily reports/
+4_Operations/4.3_Processes/daily reports/DA_2WeekSummary_Feb20-Mar6_2026.pdf
+4_Operations/4.3_Processes/daily reports/DA_Claude_Accomplishments_Feb20-Mar6.pdf
+4_Operations/4.3_Processes/daily reports/DA_Ops_Processes_DailyReport_2026-03-10.pdf
+4_Operations/4.3_Processes/daily reports/DA_Ops_Processes_WeeklyReport_2026-03-08.pdf
+4_Operations/4.3_Processes/daily reports/DA_Ops_Processes_WeeklyReport_2026-03-08_ProspectingData.xlsx
+4_Operations/4.3_Processes/daily reports/DA_OutreachStatus_2026-03-06_Claude.pdf
+4_Operations/4.3_Processes/daily reports/DA_ProspectingReport_Mar6_2026.docx
+4_Operations/4.3_Processes/daily reports/DA_Status_Report_2026-03-06.pdf
+4_Operations/4.3_Processes/daily reports/DA_WeeklyDataPack_Mar2-5_2026.docx
+4_Operations/4.3_Processes/daily reports/DA_WeeklyDataPack_Mar2-8.pdf
+4_Operations/4.3_Processes/daily reports/DA_WeeklySummary_Mar2-5_2026.docx
+4_Operations/4.3_Processes/daily reports/DA_Weekly_Report_Mar1-5_2026.docx
+4_Operations/4.3_Processes/daily reports/Daily_Report_2026-03-06_Claude (1).pdf
+4_Operations/4.3_Processes/daily reports/Daily_Report_2026-03-06_Claude.pdf
+4_Operations/4.3_Processes/daily reports/Daily_Report_2026-03-06_Claude_Code.pdf
+4_Operations/4.3_Processes/daily reports/Daily_Report_2026-03-06_Claude_Code_v2.pdf
+4_Operations/4.3_Processes/daily reports/Daily_Report_2026-03-06_Claude_Code_v3.pdf
+4_Operations/4.3_Processes/daily reports/Daily_Report_2026-03-07_Claude_Code.pdf
+4_Operations/4.3_Processes/daily reports/Fix_Plan_Progress_Report.md
+4_Operations/4.3_Processes/daily reports/HingeMarketing_Snapshot_v2_Mar07.pdf
+4_Operations/4.3_Processes/daily reports/HingeMarketing_Snapshot_v3_Mar07.pdf
+4_Operations/4.3_Processes/daily reports/Hinge_Marketing_AI_Snapshot_2026-03-08.pdf
+4_Operations/4.3_Processes/daily reports/Hinge_Marketing_Snapshot_Methodology_2026-03-08.pdf
+4_Operations/4.3_Processes/daily reports/Prospecting_Tools_Fix_Plan_2026-03-06_Claude_Code.pdf
+4_Operations/4.3_Processes/daily reports/Test_Company_AI_Snapshot_2026-03-07.pdf
+4_Operations/4.3_Processes/daily reports/Weekly_Report_2026-03-06_Claude_Code.pdf
+4_Operations/4.3_Processes/daily reports/Weekly_Review_2026-03-06_Claude_Code.pdf
+4_Operations/4.3_Processes/daily reports/weekly reports.textClipping
+4_Operations/4.3_Processes/video interview offer to pipeline process /
+4_Operations/4.3_Processes/video interview offer to pipeline process /DA_VideoInterview_ConversionSystem_v1_2026-03-06.pdf
+4_Operations/4.4_Legal/
+5_Finance/
+5_Finance/DA_Finance_HouseholdBudget_2026-03-10.xlsx
+5_Finance/DA_Finance_SpendingAnalysis_2026-03-10.xlsx
+5_Finance/5.1_Invoices/
+5_Finance/5.2_Expenses/
+5_Finance/5.3_QuickBooks_Exports/
+5_Finance/5.4_Tax/
+6_Assets/
+6_Assets/6.1_Brand/
+6_Assets/6.1_Brand/15 min podcast.png
+6_Assets/6.1_Brand/IMG_9055.jpg
+6_Assets/6.1_Brand/IMG_9222.jpg
+6_Assets/6.1_Brand/IMG_9245 2.jpg
+6_Assets/6.1_Brand/Marketing Agency.jpg
+6_Assets/6.1_Brand/cost o finnaction.png
+6_Assets/6.1_Brand/why video.png
+6_Assets/6.1_Brand/Brand_Guide/
+6_Assets/6.1_Brand/Brand_Guide/DA_Brand_Guidelines copy.pdf
+6_Assets/6.1_Brand/Brand_Guide/DA_Brand_Guidelines_Complete.docx
+6_Assets/6.1_Brand/Client logos/
+6_Assets/6.1_Brand/Client logos/3-32641_twitch-logo-hd-png-download.png
+6_Assets/6.1_Brand/Client logos/52-522851_national-geographic-logo-png-transparent-background-national-geographic.jpg
+6_Assets/6.1_Brand/Client logos/IBM_logo.svg.png
+6_Assets/6.1_Brand/Client logos/Logo-nvidia-transparent-PNG.png
+6_Assets/6.1_Brand/Client logos/adobe logo.jpeg
+6_Assets/6.1_Brand/Client logos/amazon-web-services-11550113695pg4ppffsio.png
+6_Assets/6.1_Brand/Client logos/discovery-channel-logo-vector-11574229905pblh5eesph.png
+6_Assets/6.1_Brand/Client logos/google-high-resolution-flat-logo-701751694791459t6wvlq2hos.png
+6_Assets/6.1_Brand/Client logos/hd-official-coca-cola-company-logo-png-701751694778501cwpnlq6cxs.png
+6_Assets/6.1_Brand/Client logos/honda-car-emblem-logo-png-701751694772075os3qi4x57u.png
+6_Assets/6.1_Brand/Client logos/intel_PNG11.png
+6_Assets/6.1_Brand/Client logos/sony logo.png
+6_Assets/6.1_Brand/Client logos/taco bell.png
+6_Assets/6.1_Brand/Client logos/usatoday.com logo.png
+6_Assets/6.1_Brand/Client logos/xbox-9-logo-png-transparent.png
+6_Assets/6.1_Brand/Colors_and_Fonts/
+6_Assets/6.1_Brand/Colors_and_Fonts/Digital accomplice color pallete.png
+6_Assets/6.1_Brand/Logos/
+6_Assets/6.1_Brand/Logos/DA logo 1.svg
+6_Assets/6.1_Brand/Logos/DA logo vector 2.svg
+6_Assets/6.1_Brand/Logos/DAC_logo_RGB (1).jpg
+6_Assets/6.1_Brand/Logos/da logo new v3.svg
+6_Assets/6.1_Brand/Logos/logo 300 x 300 (2) (1).jpg
+6_Assets/6.2_Templates/
+6_Assets/6.2_Templates/Email_Templates/
+6_Assets/6.2_Templates/Proposal_Template/
+6_Assets/6.2_Templates/Proposal_Template/Your Marketing Is Broken - Digital Accomplice Guide (3).pdf
+6_Assets/6.2_Templates/Snapshot_Template/
+6_Assets/6.3_Media/
+6_Assets/6.3_Media/B-Roll/
+6_Assets/6.3_Media/Headshots/
+6_Assets/6.3_Media/Headshots/Dane + dad.jpg
+6_Assets/6.3_Media/Headshots/Dane Frederiksen headshot.png
+6_Assets/6.3_Media/Headshots/Dane-F-headshots-09-07-24-1.jpg
+6_Assets/6.3_Media/Headshots/Dane-F-headshots-09-07-24-2.jpg
+6_Assets/6.3_Media/Headshots/Dane-F-headshots-09-07-24-3.jpg
+6_Assets/6.3_Media/Headshots/Dane-F-headshots-09-07-24-4.jpg
+6_Assets/6.3_Media/Headshots/Dane-F-headshots-09-07-24-5.jpg
+6_Assets/6.3_Media/Headshots/Dane-F-headshots-09-07-24-6.jpg
+6_Assets/6.3_Media/Headshots/Dane-F-headshots-09-07-24-7.jpg
+6_Assets/6.3_Media/Headshots/Gemini_Generated_Image_sxieabsxieabsxie.jpeg
+6_Assets/6.3_Media/Headshots/dane and Emily.jpg
+6_Assets/6.3_Media/Headshots/dane at beach.jpg
+6_Assets/6.3_Media/Headshots/dane gangster.png
+6_Assets/6.3_Media/Headshots/dane on bridge.jpg
+6_Assets/6.3_Media/Headshots/dane xmas 2025.jpg
+6_Assets/6.3_Media/Headshots/dane.jpg
+6_Assets/6.3_Media/Headshots/woods.jpg
+6_Assets/6.3_Media/Stock/
+6_Assets/6.4_IP/
+6_Assets/6.4_IP/Frameworks/
+6_Assets/6.4_IP/Pre-Purposing/
+6_Assets/6.4_IP/Three_Revolutions/
+
+sent 2380507088 bytes  received 10232 bytes  176334616.30 bytes/sec
+total size is 2380174803  speedup is 1.00
+Backup completed successfully.
+

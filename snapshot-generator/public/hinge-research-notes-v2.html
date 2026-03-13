@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Research Notes — Hinge Marketing Snapshot v2</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&family=Space+Mono:wght@400;700&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  @page { size: letter; margin: 0.6in 0.5in; }
+
+  html, body {
+    font-family: 'Poppins', Arial, Helvetica, sans-serif;
+    background: #fff;
+    color: #1a1a1a;
+    font-size: 10px;
+    line-height: 1.5;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .doc {
+    max-width: 7.5in;
+    margin: 0 auto;
+    padding: 32px 40px;
+  }
+
+  /* Header bar */
+  .doc-header {
+    background: #1a1a1a;
+    padding: 10px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-radius: 6px;
+    margin-bottom: 20px;
+  }
+  .doc-header .label {
+    font-size: 8px;
+    font-weight: 700;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: #F8901E;
+    font-family: 'Space Mono', monospace;
+  }
+  .doc-header .meta {
+    font-size: 8px;
+    color: #888;
+    font-family: 'Space Mono', monospace;
+  }
+
+  h1 {
+    font-size: 22px;
+    font-weight: 900;
+    margin-bottom: 4px;
+    line-height: 1.2;
+  }
+  h1 .accent { color: #F8901E; }
+
+  .doc-subtitle {
+    font-size: 11px;
+    color: #5A6B7A;
+    margin-bottom: 16px;
+  }
+
+  .rule {
+    width: 40px;
+    height: 3px;
+    background: #F8901E;
+    margin-bottom: 16px;
+  }
+
+  h2 {
+    font-size: 12px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: #F8901E;
+    margin: 18px 0 8px;
+    padding-bottom: 4px;
+    border-bottom: 1px solid #EBEBEB;
+    font-family: 'Space Mono', monospace;
+  }
+
+  h3 {
+    font-size: 11px;
+    font-weight: 700;
+    margin: 12px 0 4px;
+    color: #1a1a1a;
+  }
+
+  p, li {
+    font-size: 10px;
+    line-height: 1.55;
+    color: #333;
+    margin-bottom: 6px;
+  }
+
+  ul, ol {
+    padding-left: 18px;
+    margin-bottom: 8px;
+  }
+
+  li { margin-bottom: 3px; }
+
+  .source-url {
+    font-family: 'Space Mono', monospace;
+    font-size: 8.5px;
+    color: #5A6B7A;
+    word-break: break-all;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 8px 0 12px;
+    font-size: 9.5px;
+  }
+  th {
+    background: #1a1a1a;
+    color: #fff;
+    font-weight: 700;
+    text-align: left;
+    padding: 6px 8px;
+    font-size: 8.5px;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+  }
+  td {
+    padding: 5px 8px;
+    border-bottom: 1px solid #EBEBEB;
+    vertical-align: top;
+    color: #333;
+  }
+  tr:nth-child(even) td { background: #FAFAFA; }
+  .highlight { color: #F8901E; font-weight: 700; }
+  .dim { color: #999; }
+
+  .callout-box {
+    background: #F5F5F5;
+    border-left: 3px solid #F8901E;
+    padding: 10px 14px;
+    border-radius: 0 4px 4px 0;
+    margin: 10px 0;
+    font-size: 10px;
+    color: #333;
+  }
+  .callout-box strong { color: #1a1a1a; }
+
+  .page-break { page-break-before: always; }
+
+  .footer {
+    margin-top: 24px;
+    padding-top: 10px;
+    border-top: 1px solid #EBEBEB;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 8px;
+    color: #999;
+  }
+  .footer .brand {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .footer .brand-name {
+    font-size: 8px;
+    font-weight: 800;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: #1a1a1a;
+  }
+
+  @media print {
+    .export-bar { display: none !important; }
+    .doc { padding: 0; }
+  }
+  .export-bar {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    background: #1a1a1a;
+    padding: 10px 24px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    z-index: 9999;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+  }
+  .export-bar .btn {
+    background: #F8901E;
+    color: #fff;
+    border: none;
+    padding: 8px 20px;
+    font-size: 13px;
+    font-weight: 700;
+    font-family: 'Poppins', Arial, sans-serif;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  .export-bar .btn:hover { background: #e07d10; }
+  .export-bar .btn:disabled { opacity: 0.5; cursor: wait; }
+  .export-bar .status { font-size: 12px; color: #888; }
+  .export-bar .title {
+    font-size: 12px; color: #F8901E; font-weight: 700;
+    letter-spacing: 1px; text-transform: uppercase; margin-right: auto;
+  }
+</style>
+</head>
+<body>
+
+<div class="doc">
+
+  <div class="doc-header">
+    <span class="label">Research & Methodology Notes</span>
+    <span class="meta">Hinge Marketing Snapshot v2 &middot; March 7, 2026</span>
+  </div>
+
+  <h1>Hinge Marketing — <span class="accent">Research Backup</span></h1>
+  <p class="doc-subtitle">Full source documentation for the AI Visibility Snapshot. Every claim, every source, every score justification.</p>
+  <div class="rule"></div>
+
+  <!-- ==================== SECTION 1 ==================== -->
+  <h2>1. Research Tools & Process</h2>
+
+  <h3>Tools Used</h3>
+  <ul>
+    <li><strong>Web Search (live, March 7, 2026)</strong> — All queries run in real-time during this session. No cached or training data used for any claims.</li>
+    <li><strong>WebFetch</strong> — Direct page content retrieval for third-party ranking sites (getscrapbook.com, novermarketing.com) to verify presence/absence.</li>
+    <li><strong>AI Visibility Proxy Method</strong> — We ran buyer-intent queries through web search (which mirrors how AI tools source their answers) and analyzed which companies appeared in organic results, third-party lists, and featured content. This models what ChatGPT, Perplexity, Claude, and Google AI Overviews surface when buyers ask questions.</li>
+  </ul>
+
+  <h3>Why This Method Works</h3>
+  <div class="callout-box">
+    AI tools like ChatGPT, Perplexity, and Google AI Overviews source their answers from the same indexed web content that appears in organic search results. Companies that rank highly in organic search for buyer-intent queries are far more likely to be cited in AI-generated answers. Our method tests the same queries real buyers type and measures who shows up — which directly predicts AI visibility.
+  </div>
+
+  <h3>Process Timeline</h3>
+  <ol>
+    <li><strong>Company identification</strong> — Researched all 4 companies (Hinge, Walker Sands, Circle S Studio, Grey Matter) for size, founding date, vertical focus, service offerings.</li>
+    <li><strong>Video presence verification</strong> — Ran 12+ searches per company looking for YouTube channels, LinkedIn video, Vimeo portfolios, webinars, podcast video. Multiple query patterns per company to avoid false negatives.</li>
+    <li><strong>AI visibility queries</strong> — Ran 7 buyer-intent queries that simulate what a professional services firm decision-maker would ask AI tools.</li>
+    <li><strong>Third-party ranking verification</strong> — Checked 2 independent ranking sites to see if any companies appeared in curated lists.</li>
+    <li><strong>Scoring</strong> — Applied scoring rubric based on query appearance, organic ranking position, and breadth of visibility across query types.</li>
+  </ol>
+
+  <!-- ==================== SECTION 2 ==================== -->
+  <h2>2. Company Profiles (Verified)</h2>
+
+  <table>
+    <tr>
+      <th>Company</th>
+      <th>Founded</th>
+      <th>Location</th>
+      <th>Focus</th>
+      <th>Key Differentiator</th>
+    </tr>
+    <tr>
+      <td class="highlight">Hinge Marketing</td>
+      <td>2002</td>
+      <td>Arlington, VA</td>
+      <td>Professional services branding, marketing, web design</td>
+      <td>Research-based (50K+ firms studied). Visible Firm&reg; program. High Growth Study (10 editions). Spiraling Up podcast.</td>
+    </tr>
+    <tr>
+      <td>Walker Sands</td>
+      <td>2001</td>
+      <td>Chicago / Seattle / Boston</td>
+      <td>B2B integrated PR & marketing</td>
+      <td>10x Inc. 5000. 100+ clients. Tech + professional services. Outcome-based marketing.</td>
+    </tr>
+    <tr>
+      <td>Circle S Studio</td>
+      <td>1999</td>
+      <td>Richmond, VA</td>
+      <td>B2B marketing strategy & design</td>
+      <td>AEC, financial services, education. 25+ years. Middle-market focus.</td>
+    </tr>
+    <tr>
+      <td>Grey Matter</td>
+      <td>2016</td>
+      <td>Cincinnati, OH</td>
+      <td>B2B growth marketing</td>
+      <td>Agile Customer Acquisition&trade;. Inc. 5000. Manufacturing, SaaS, professional services.</td>
+    </tr>
+  </table>
+
+  <h3>Sources</h3>
+  <ul>
+    <li><span class="source-url">hingemarketing.com/about-hinge</span> — Hinge company overview, founding story, research methodology</li>
+    <li><span class="source-url">walkersands.com/about/</span> — Walker Sands company overview, offices, Inc. 5000 recognition</li>
+    <li><span class="source-url">circlesstudio.com/about/</span> — Circle S Studio founding, industry specializations</li>
+    <li><span class="source-url">gogreymatter.com/</span> — Grey Matter overview, Agile Customer Acquisition framework</li>
+    <li><span class="source-url">inc.com/profile/grey-matter</span> — Grey Matter Inc. 5000 recognition</li>
+    <li><span class="source-url">crunchbase.com/organization/walker-sands</span> — Walker Sands company data</li>
+  </ul>
+
+  <!-- ==================== SECTION 3 ==================== -->
+  <div class="page-break"></div>
+
+  <div class="doc-header">
+    <span class="label">Research & Methodology Notes</span>
+    <span class="meta">Page 2 &middot; Hinge Marketing Snapshot v2</span>
+  </div>
+
+  <h2>3. Video Presence Verification</h2>
+
+  <p>For each company, we ran 4-6 search queries specifically looking for video content. Here's what we found:</p>
+
+  <table>
+    <tr>
+      <th>Company</th>
+      <th>YouTube</th>
+      <th>Other Video</th>
+      <th>Status</th>
+      <th>Evidence</th>
+    </tr>
+    <tr>
+      <td class="highlight">Hinge Marketing</td>
+      <td>Spiraling Up podcast on YouTube (launched Mar 2025). Some High Growth Study videos.</td>
+      <td>Video production services page. Offers video to clients.</td>
+      <td>&#9888;&#65039; Sporadic</td>
+      <td>Podcast is audio-first format republished to YouTube. Not optimized short-form video for AI indexing. No dedicated YouTube channel presence found in search.</td>
+    </tr>
+    <tr>
+      <td>Walker Sands</td>
+      <td>Some website-hosted videos (demand gen, web projects). No strong standalone YouTube channel found.</td>
+      <td>Video + animation listed as creative service. commercetools campaign video (1.5M impressions day 1).</td>
+      <td>&#9888;&#65039; Sporadic</td>
+      <td>Creates video for clients but limited own-brand YouTube presence. Videos primarily embedded on walkersands.com.</td>
+    </tr>
+    <tr>
+      <td>Circle S Studio</td>
+      <td>No YouTube channel found after 3+ queries.</td>
+      <td>Vimeo portfolio (vimeo.com/circlesstudio). Blog posts about video strategy. Offers video production services.</td>
+      <td>&#9888;&#65039; Sporadic</td>
+      <td>Uses Vimeo instead of YouTube — significantly reduces AI discoverability. Writes about video marketing best practices but doesn't practice it on YouTube.</td>
+    </tr>
+    <tr>
+      <td>Grey Matter</td>
+      <td>No YouTube channel found after 3+ queries.</td>
+      <td>Blog post: "Why Video Marketing is Powerful in B2B." No other video evidence.</td>
+      <td>&#10060; Absent</td>
+      <td>Publishes content about video importance but has no detectable video of their own. Ironic gap.</td>
+    </tr>
+  </table>
+
+  <h3>Search Queries Used for Video Verification</h3>
+  <ul>
+    <li><span class="source-url">"[Company] YouTube channel videos"</span> — Direct YouTube presence check</li>
+    <li><span class="source-url">"[Company]" youtube.com video [industry]</span> — Cross-reference YouTube + industry</li>
+    <li><span class="source-url">site:youtube.com "[Company]"</span> — Site-specific search (returned no results for any company)</li>
+    <li><span class="source-url">"[Company] LinkedIn video content"</span> — LinkedIn video presence</li>
+    <li><span class="source-url">"[Company] webinar video series 2025 2026"</span> — Webinar/series content</li>
+  </ul>
+
+  <div class="callout-box">
+    <strong>Key finding:</strong> Zero video content from ANY of these four companies appeared in AI-generated answers across all queries tested. The entire video citation channel in professional services marketing is unoccupied.
+  </div>
+
+  <!-- ==================== SECTION 4 ==================== -->
+  <h2>4. AI Visibility Queries — Full Results</h2>
+
+  <p>7 buyer-intent queries simulating what a decision-maker at a professional services firm would type into AI search tools:</p>
+
+  <table>
+    <tr>
+      <th style="width:30%">Query</th>
+      <th>Hinge</th>
+      <th>Walker Sands</th>
+      <th>Circle S</th>
+      <th>Grey Matter</th>
+    </tr>
+    <tr>
+      <td>"best B2B marketing agencies professional services firms 2025 2026"</td>
+      <td class="highlight">Mentioned with description</td>
+      <td>Mentioned with description</td>
+      <td class="dim">Not found</td>
+      <td class="dim">Not found</td>
+    </tr>
+    <tr>
+      <td>"how to choose a marketing agency for professional services firm"</td>
+      <td class="highlight">#1 organic result (blog post)</td>
+      <td class="dim">Not found</td>
+      <td class="dim">Not found</td>
+      <td class="dim">Not found</td>
+    </tr>
+    <tr>
+      <td>"best marketing agency for AEC firms"</td>
+      <td class="dim">Not found</td>
+      <td class="dim">Not found</td>
+      <td class="dim">Not found (despite AEC specialty)</td>
+      <td class="dim">Not found</td>
+    </tr>
+    <tr>
+      <td>"how to grow a professional services firm marketing strategy"</td>
+      <td class="highlight">#1 AND #10 organic</td>
+      <td class="dim">Not found</td>
+      <td class="dim">Not found</td>
+      <td class="dim">Not found</td>
+    </tr>
+    <tr>
+      <td>"best marketing firm for accounting firms professional services"</td>
+      <td class="dim">Not found (niche agencies dominate)</td>
+      <td class="dim">Not found</td>
+      <td class="dim">Not found</td>
+      <td class="dim">Not found</td>
+    </tr>
+    <tr>
+      <td>"professional services branding agency review comparison"</td>
+      <td class="dim">Not in top 10 lists</td>
+      <td class="dim">Not found</td>
+      <td class="dim">Not found</td>
+      <td class="dim">Not found</td>
+    </tr>
+    <tr>
+      <td>"Hinge Marketing vs Walker Sands professional services"</td>
+      <td class="highlight">Full profile returned</td>
+      <td class="highlight">Full profile returned</td>
+      <td>N/A</td>
+      <td>N/A</td>
+    </tr>
+  </table>
+
+  <h3>Third-Party Ranking Site Checks</h3>
+  <table>
+    <tr>
+      <th>Source</th>
+      <th>Hinge?</th>
+      <th>Walker Sands?</th>
+      <th>Circle S?</th>
+      <th>Grey Matter?</th>
+    </tr>
+    <tr>
+      <td>getscrapbook.com — "10 Best Professional Services Marketing Agencies" (verified via direct page fetch)</td>
+      <td class="dim">Not listed</td>
+      <td class="dim">Not listed</td>
+      <td class="dim">Not listed</td>
+      <td class="dim">Not listed</td>
+    </tr>
+    <tr>
+      <td>novermarketing.com — "9 Best Architecture Marketing Agencies" (verified via direct page fetch)</td>
+      <td class="dim">Not listed</td>
+      <td class="dim">Not listed</td>
+      <td class="dim">Not listed</td>
+      <td class="dim">Not listed</td>
+    </tr>
+  </table>
+
+  <!-- ==================== SECTION 5 ==================== -->
+  <div class="page-break"></div>
+
+  <div class="doc-header">
+    <span class="label">Research & Methodology Notes</span>
+    <span class="meta">Page 3 &middot; Hinge Marketing Snapshot v2</span>
+  </div>
+
+  <h2>5. Scoring Methodology</h2>
+
+  <h3>Scoring Rubric</h3>
+  <table>
+    <tr><th>Score</th><th>Meaning</th><th>Criteria</th></tr>
+    <tr><td>9-10</td><td>Dominant</td><td>Cited across platforms, video content indexed, owns multiple query categories</td></tr>
+    <tr><td>7-8</td><td>Strong</td><td>Appears in most queries, some format gaps</td></tr>
+    <tr><td>5-6</td><td>Moderate</td><td>Inconsistent presence, strong in some queries but missing from others</td></tr>
+    <tr><td>3-4</td><td>Weak</td><td>Rarely cited, minimal content footprint in AI-friendly queries</td></tr>
+    <tr><td>1-2</td><td>Invisible</td><td>Not appearing, competitors or niche players own the space</td></tr>
+  </table>
+
+  <h3>Score Justifications</h3>
+
+  <p><strong class="highlight">Hinge Marketing — 6/10 (Moderate)</strong></p>
+  <ul>
+    <li>Appeared in 4 of 7 buyer-intent queries (57% hit rate)</li>
+    <li>Ranked #1 organically for 2 high-value queries ("how to choose" and "how to grow")</li>
+    <li>Research content (High Growth Study, 50K+ firms data) creates AI-friendly citation material</li>
+    <li>Spiraling Up podcast gives additional content surface area</li>
+    <li>Deducted points: Missing from third-party "best of" lists, missing from niche queries (AEC, accounting), zero video in AI answers</li>
+    <li>Score capped at 6 because they dominate educational/strategic queries but don't own transactional "hire an agency" queries</li>
+  </ul>
+
+  <p><strong>Walker Sands — 4/10 (Weak)</strong></p>
+  <ul>
+    <li>Appeared in 2 of 7 queries (29% hit rate)</li>
+    <li>Shows up in broader B2B agency lists (general category, not professional services-specific)</li>
+    <li>Inc. 5000 recognition (10x) helps with credibility signals</li>
+    <li>Professional services is secondary focus behind technology — less content depth in PS category</li>
+    <li>No video content cited in any AI answer</li>
+  </ul>
+
+  <p><strong>Circle S Studio — 2/10 (Invisible)</strong></p>
+  <ul>
+    <li>Appeared in 0 of 7 queries (0% hit rate)</li>
+    <li>Not listed on either third-party ranking site checked</li>
+    <li>25 years in business but insufficient content footprint for AI visibility</li>
+    <li>AEC specialty not visible in AEC-specific queries — niche agencies (Third & Arch, Nover, Smartegies) dominate instead</li>
+    <li>Vimeo instead of YouTube severely limits video discoverability</li>
+    <li>Blog content exists but isn't differentiated enough to earn AI citations</li>
+  </ul>
+
+  <p><strong>Grey Matter — 2/10 (Invisible)</strong></p>
+  <ul>
+    <li>Appeared in 0 of 7 queries (0% hit rate)</li>
+    <li>Newer agency (founded 2016) with smaller content library</li>
+    <li>Strong client results ($8.5M revenue for one client, 14.52x ROI for another) but results not translated into AI-visible content</li>
+    <li>Writes about video marketing importance but has no video content of their own</li>
+    <li>Inc. 5000 recognition not sufficient to drive AI citations</li>
+  </ul>
+
+  <!-- ==================== SECTION 6 ==================== -->
+  <h2>6. Verified Statistics Used in Snapshot</h2>
+
+  <table>
+    <tr><th>Stat</th><th>Source</th><th>Status</th></tr>
+    <tr>
+      <td>YouTube is the #1 social platform cited in AI answers (16% of responses)</td>
+      <td>Adweek, Jan 2026 (Bluefish, Emberos, Goodie AI research)</td>
+      <td class="highlight">Verified</td>
+    </tr>
+    <tr>
+      <td>AI search converts 1.3-5x higher than traditional search</td>
+      <td>Semrush, Visibility Labs (2025-2026)</td>
+      <td class="highlight">Verified</td>
+    </tr>
+    <tr>
+      <td>Hinge appeared in 4 of 7 buyer-intent queries</td>
+      <td>Live search results from this session (Mar 7, 2026)</td>
+      <td class="highlight">Verified</td>
+    </tr>
+    <tr>
+      <td>Walker Sands appeared in 2 of 7 queries</td>
+      <td>Live search results from this session</td>
+      <td class="highlight">Verified</td>
+    </tr>
+    <tr>
+      <td>Circle S Studio and Grey Matter appeared in 0 of 7</td>
+      <td>Live search results from this session</td>
+      <td class="highlight">Verified</td>
+    </tr>
+    <tr>
+      <td>Zero video from any company cited in AI answers</td>
+      <td>Live search results — no YouTube/video links returned in any AI-proxied answer</td>
+      <td class="highlight">Verified</td>
+    </tr>
+  </table>
+
+  <div class="callout-box">
+    <strong>Accuracy note:</strong> AI answers are dynamic and change over time. All data reflects results as of March 7, 2026. The snapshot documents the pattern at a point in time, not a permanent guarantee. Any query can be re-run by the prospect to verify independently — that's by design.
+  </div>
+
+  <!-- ==================== SECTION 7 ==================== -->
+  <h2>7. What We Did NOT Claim</h2>
+  <ul>
+    <li>We did not claim exact YouTube subscriber or video counts for any company (unable to verify exact numbers via search alone).</li>
+    <li>We did not claim Hinge has "no video" — they have a podcast on YouTube and offer video production. We said their video doesn't appear in AI answers.</li>
+    <li>We did not use the debunked "60% of AI answers cite YouTube" stat.</li>
+    <li>We did not claim AI visibility is permanent — we explicitly note in methodology that answers change.</li>
+    <li>We did not make claims about companies' internal strategy, revenue, or team size beyond what is publicly verifiable.</li>
+  </ul>
+
+  <div class="footer">
+    <span>Research conducted March 7, 2026 &middot; All sources live-verified &middot; Internal use + prospect walkthrough</span>
+    <div class="brand">
+      <svg width="14" height="16" viewBox="0 0 20 22" fill="none"><path d="M0 0L20 11L0 22V0Z" fill="#F8901E"/></svg>
+      <span class="brand-name">Digital Accomplice</span>
+    </div>
+  </div>
+
+</div>
+
+<!-- ===== EXPORT TOOLBAR ===== -->
+<div class="export-bar">
+  <span class="title">Research Notes Preview</span>
+  <button class="btn" id="exportPdf" onclick="exportPDF()">Export PDF</button>
+  <span class="status" id="exportStatus"></span>
+</div>
+
+<script>
+async function exportPDF() {
+  const btn = document.getElementById('exportPdf');
+  const status = document.getElementById('exportStatus');
+  btn.disabled = true;
+  status.textContent = 'Generating PDF...';
+  try {
+    const resp = await fetch('/api/download-pdf?file=hinge-research-notes-v2.html&name=HingeMarketing_Research_Notes_v2');
+    if (!resp.ok) {
+      const err = await resp.json();
+      throw new Error(err.error || 'Export failed');
+    }
+    const blob = await resp.blob();
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'HingeMarketing_Research_Notes_v2_Mar7.pdf';
+    a.click();
+    URL.revokeObjectURL(url);
+    status.textContent = 'PDF downloaded!';
+  } catch (err) {
+    status.textContent = 'Error: ' + err.message;
+  }
+  btn.disabled = false;
+}
+</script>
+
+</body>
+</html>

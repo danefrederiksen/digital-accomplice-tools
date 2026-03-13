@@ -1,0 +1,80 @@
+Prospect Tool 1 — B2B 1st Connections DM and Follow-Up Tracker
+==============================================================
+
+WHAT IT DOES:
+Tracks outreach to B2B prospects you're already connected with on LinkedIn.
+Manages the full DM sequence from first message through follow-ups to reply or cold.
+
+FEATURES:
+---------
+
+1. CSV Import (two formats supported)
+   - LinkedIn export format (with headers)
+   - Headerless CSV (name, company, title, LinkedIn URL)
+   - Drag-and-drop or click-to-upload
+
+2. Select All / Batch Import
+   - Preview imported contacts in a table
+   - Select All checkbox to import everyone at once
+   - Or cherry-pick individual contacts
+
+3. Manual Add
+   - Add a prospect by hand (name, company, title, LinkedIn URL)
+   - For contacts not in a CSV
+
+4. Title Keyword Filtering
+   - Auto-flags decision-maker titles (CEO, CMO, VP Marketing, etc.)
+   - Helps prioritize who to reach out to first
+
+5. 3-Step Outreach Sequence
+   - Step 1: DM Sent — log the initial direct message
+   - Step 2: Follow-Up 1 — first follow-up (auto-scheduled 2 days after DM)
+   - Step 3: Follow-Up 2 / Final Nudge — last follow-up before going cold
+   - Auto-advances through steps as you log actions
+
+6. Reply Tracking
+   - Mark any prospect as "Replied"
+   - Log what they said (reply notes field)
+   - Replied prospects move to their own section
+
+7. Cold Status
+   - After final nudge with no reply, prospect goes "Cold"
+   - Cold prospects are grayed out and separated
+
+8. Next Step Field
+   - Free-text field on every prospect card
+   - Track what you need to do next (e.g., "Send case study", "Book call")
+
+9. Due Date Tracking
+   - Each follow-up gets a due date (2 days after last action)
+   - Overdue follow-ups flagged in red
+   - Due date shown on each card
+
+10. Sequence Timeline
+    - Visual progress bar on each card
+    - Shows which step is done, current, and upcoming
+
+11. Dashboard Tab (Today View)
+    - Alert banner with stats (due today, overdue, total active)
+    - Sections: Overdue, Due Today, Upcoming, Recently Replied
+
+12. All Prospects Tab
+    - Full list of every prospect
+    - Filter and sort
+
+13. Import Tab
+    - CSV upload interface
+    - Preview and select contacts before importing
+
+14. DA Brand Styling
+    - Orange (#F8901E), black header, Poppins font
+    - Mobile responsive layout
+
+15. Server-Side Storage
+    - Data saved to server (b2b-serve.js, port 3851)
+    - Fallback to localStorage if server is down
+    - One-time migration from localStorage to server
+
+16. LinkedIn Profile Links
+    - Every card links directly to the prospect's LinkedIn profile
+    - One click to open their profile and send the message

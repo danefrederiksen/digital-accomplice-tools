@@ -1,0 +1,78 @@
+const { spawn } = require('child_process');
+const path = require('path');
+
+const TOOLS = [
+  { name: 'Hub Dashboard', file: 'tools/hub-serve.js', port: 3849 },
+  { name: 'Prospecting Tool #1 — B2B 1st Connections', file: 'tools/b2b-serve.js', port: 3851 },
+  { name: 'Prospecting Tool #2 — Cyber 1st Connections', file: 'tools/cyber-serve.js', port: 3852 },
+  { name: 'Prospecting Tool #3 — B2B 2nd Connections', file: 'tools/b2b-2nd-serve.js', port: 3853 },
+  { name: 'Prospecting Tool #4 — Cyber 2nd Connections', file: 'tools/cyber-2nd-serve.js', port: 3854 },
+  { name: 'Prospecting Tool #5 — Referral Partner 1st Connections', file: 'tools/referral-1st-serve.js', port: 3855 },
+  { name: 'Prospecting Tool #6 — Referral Partner 2nd Connections', file: 'tools/referral-2nd-serve.js', port: 3856 },
+  { name: 'Prospecting Tool #7 — B2B Leads w/ Emails', file: 'tools/b2b-email-serve.js', port: 3857 },
+  { name: 'Prospecting Tool #8 — Cyber Leads w/ Emails', file: 'tools/cyber-email-serve.js', port: 3858 },
+  { name: 'Prospecting Tool #9 — Substack Subscriber Emails', file: 'tools/substack-serve.js', port: 3859 },
+  { name: 'Prospecting Tool #10 — Customers w/ Emails', file: 'tools/customer-serve.js', port: 3860 },
+  { name: 'Prospecting Tool #11 — Comment Queue', file: 'tools/comment-queue-serve.js', port: 3861 },
+  { name: 'Prospecting Tool #12 — Referral Partner Emails', file: 'tools/referral-email-serve.js', port: 3862 }
+];
+
+console.log('\n  ===================================');
+console.log('  DA Prospecting Tools — Starting All');
+console.log('  ===================================\n');
+
+const children = [];
+
+TOOLS.forEach(tool => {
+  const filePath = path.join(__dirname, tool.file);
+  const child = spawn('node', [filePath], {
+    stdio: 'pipe',
+    env: { ...process.env }
+  });
+
+  const tag = tool.port === 3849 ? 'Hub' : `#${tool.port - 3850}`;
+  child.stdout.on('data', data => {
+    const lines = data.toString().trim().split('\n');
+    lines.forEach(line => {
+      if (line.trim()) console.log(`  [${tag}] ${line.trim()}`);
+    });
+  });
+
+  child.stderr.on('data', data => {
+    console.error(`  [${tag} ERROR] ${data.toString().trim()}`);
+  });
+
+  child.on('exit', (code) => {
+    console.log(`  [${tag}] ${tool.name} exited (code ${code})`);
+  });
+
+  children.push(child);
+});
+
+console.log('  All servers starting...\n');
+console.log('  >>> Hub Dashboard:       http://localhost:3849 <<<');
+console.log('  Tool #1 (B2B 1st):      http://localhost:3851');
+console.log('  Tool #2 (Cyber 1st):    http://localhost:3852');
+console.log('  Tool #3 (B2B 2nd):      http://localhost:3853');
+console.log('  Tool #4 (Cyber 2nd):    http://localhost:3854');
+console.log('  Tool #5 (Referral 1st): http://localhost:3855');
+console.log('  Tool #6 (Referral 2nd): http://localhost:3856');
+console.log('  Tool #7 (B2B Email):    http://localhost:3857');
+console.log('  Tool #8 (Cyber Email):  http://localhost:3858');
+console.log('  Tool #9 (Substack):     http://localhost:3859');
+console.log('  Tool #10 (Customers):   http://localhost:3860');
+console.log('  Tool #11 (Comments):    http://localhost:3861');
+console.log('  Tool #12 (Ref Email):   http://localhost:3862');
+console.log('\n  Press Ctrl+C to stop all servers.\n');
+
+// Graceful shutdown — kill all child servers when this script exits
+process.on('SIGINT', () => {
+  console.log('\n  Shutting down all servers...');
+  children.forEach(c => c.kill());
+  process.exit(0);
+});
+
+process.on('SIGTERM', () => {
+  children.forEach(c => c.kill());
+  process.exit(0);
+});

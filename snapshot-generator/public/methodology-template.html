@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Visibility Snapshot — Research Methodology</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  @page { size: letter; margin: 0.5in 0.6in; }
+  html, body {
+    font-family: 'Inter', Arial, Helvetica, sans-serif;
+    background: #fff;
+    color: #1a1a1a;
+    font-size: 10px;
+    line-height: 1.5;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  .page { max-width: 7.3in; margin: 0 auto; }
+  .page-break { page-break-before: always; }
+
+  /* Header */
+  .doc-header {
+    background: #1a1a1a;
+    padding: 16px 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+  .doc-header-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .doc-header .label {
+    font-size: 8px; font-weight: 700; letter-spacing: 3px;
+    text-transform: uppercase; color: #F38B1C;
+  }
+  .doc-header .title {
+    font-size: 13px; font-weight: 800; color: #fff;
+  }
+  .doc-header .meta {
+    font-size: 8px; color: #888; text-align: right; line-height: 1.6;
+  }
+
+  /* Section Headers */
+  h2 {
+    font-size: 11px; font-weight: 800; letter-spacing: 2px;
+    text-transform: uppercase; color: #F38B1C;
+    margin: 20px 0 8px; padding-bottom: 4px;
+    border-bottom: 2px solid #F5F5F5;
+  }
+  h3 {
+    font-size: 10px; font-weight: 700; color: #1a1a1a;
+    margin: 12px 0 6px;
+  }
+
+  /* Tables */
+  table {
+    width: 100%; border-collapse: collapse;
+    margin-bottom: 12px; font-size: 9px;
+  }
+  th {
+    background: #F5F5F5; font-weight: 700; color: #5A6B7A;
+    text-transform: uppercase; letter-spacing: 0.5px;
+    padding: 6px 8px; text-align: left; font-size: 8px;
+    border-bottom: 2px solid #E5E5E5;
+  }
+  td {
+    padding: 5px 8px; border-bottom: 1px solid #F0F0F0;
+    vertical-align: top;
+  }
+  tr:last-child td { border-bottom: none; }
+  .score-cell { text-align: center; font-weight: 700; width: 40px; }
+  .score-0 { color: #CBCBCB; }
+  .score-1 { color: #5A6B7A; }
+  .score-2 { color: #1a1a1a; }
+  .score-3 { color: #F38B1C; font-weight: 800; }
+  .total-row { background: #F5F5F5; font-weight: 700; }
+  .total-row td { border-top: 2px solid #E5E5E5; padding: 8px; }
+
+  /* Score Summary */
+  .score-summary {
+    display: flex; gap: 12px; margin-bottom: 16px;
+  }
+  .score-card {
+    flex: 1; background: #F5F5F5; border-radius: 6px;
+    padding: 12px; text-align: center;
+  }
+  .score-card .company { font-size: 9px; font-weight: 700; color: #5A6B7A; margin-bottom: 4px; }
+  .score-card .score { font-size: 28px; font-weight: 900; color: #F38B1C; line-height: 1; }
+  .score-card .score .unit { font-size: 14px; font-weight: 700; }
+  .score-card .detail { font-size: 8px; color: #999; margin-top: 4px; }
+  .score-card.target { border: 2px solid #F38B1C; }
+  .score-card.comp { border: 1px solid #E5E5E5; }
+  .score-card.comp .score { color: #5A6B7A; }
+
+  /* YouTube Table */
+  .yt-status { font-size: 8px; font-weight: 600; padding: 2px 6px; border-radius: 3px; display: inline-block; }
+  .yt-active { background: #ECFDF5; color: #059669; }
+  .yt-dormant { background: #FEF3C7; color: #D97706; }
+  .yt-none { background: #FEE2E2; color: #DC2626; }
+
+  /* Key Findings */
+  .finding {
+    padding: 8px 12px; margin-bottom: 6px;
+    background: #FAFAFA; border-left: 3px solid #F38B1C;
+    border-radius: 0 4px 4px 0; font-size: 9px;
+    color: #5A6B7A; line-height: 1.5;
+  }
+  .finding strong { color: #1a1a1a; }
+
+  /* Methodology Notes */
+  .method-notes {
+    background: #F5F5F5; border-radius: 6px;
+    padding: 12px 16px; font-size: 8.5px;
+    color: #5A6B7A; line-height: 1.6;
+    margin-top: 16px;
+  }
+  .method-notes strong { color: #1a1a1a; }
+
+  /* Footer */
+  .doc-footer {
+    margin-top: 20px; padding-top: 10px;
+    border-top: 1px solid #E5E5E5;
+    display: flex; justify-content: space-between;
+    align-items: center; font-size: 8px; color: #999;
+  }
+  .doc-footer .brand {
+    display: flex; align-items: center; gap: 6px;
+    font-weight: 800; letter-spacing: 1.5px;
+    text-transform: uppercase; color: #1a1a1a; font-size: 8px;
+  }
+
+  /* Category label */
+  .cat-label {
+    display: inline-block; font-size: 7px; font-weight: 700;
+    letter-spacing: 1px; text-transform: uppercase;
+    color: #F38B1C; background: #FFF7ED;
+    padding: 1px 5px; border-radius: 2px; margin-bottom: 2px;
+  }
+
+  /* Sources list */
+  .sources { font-size: 8px; color: #5A6B7A; line-height: 1.7; }
+  .sources a { color: #F38B1C; text-decoration: none; }
+  .sources a:hover { text-decoration: underline; }
+</style>
+</head>
+<body>
+
+<div class="page">
+
+  <!-- HEADER -->
+  <div class="doc-header">
+    <div class="doc-header-left">
+      <svg width="16" height="18" viewBox="0 0 20 22" fill="none"><path d="M0 0L20 11L0 22V0Z" fill="#F38B1C"/></svg>
+      <div>
+        <div class="label">Research Methodology</div>
+        <div class="title">AI Visibility Snapshot — {{COMPANY_NAME}}</div>
+      </div>
+    </div>
+    <div class="meta">
+      {{REPORT_DATE}}<br>
+      Prepared by Digital Accomplice
+    </div>
+  </div>
+
+  <!-- 1. SCOPE -->
+  <h2>1. Research Scope</h2>
+  <table>
+    <tr><th style="width:140px">Parameter</th><th>Value</th></tr>
+    <tr><td><strong>Target Company</strong></td><td>{{COMPANY_NAME}}</td></tr>
+    <tr><td><strong>Industry</strong></td><td>{{INDUSTRY}}</td></tr>
+    <tr><td><strong>Competitors Analyzed</strong></td><td>{{COMP1}}, {{COMP2}}, {{COMP3}}</td></tr>
+    <tr><td><strong>AI Platform</strong></td><td>Claude (Anthropic) + Web Search</td></tr>
+    <tr><td><strong>Queries Run</strong></td><td>20 standardized buyer-intent questions</td></tr>
+    <tr><td><strong>Scoring Method</strong></td><td>0-3 per query (Absent / Cited / Mentioned / Recommended), normalized to 0-10</td></tr>
+    <tr><td><strong>Date of Research</strong></td><td>{{REPORT_DATE}}</td></tr>
+  </table>
+
+  <!-- 2. SCORE SUMMARY -->
+  <h2>2. Score Summary</h2>
+  <div class="score-summary">
+    <div class="score-card target">
+      <div class="company">{{COMPANY_NAME}}</div>
+      <div class="score">{{AI_SCORE_0}}<span class="unit">/10</span></div>
+      <div class="detail">Raw: {{RAW_SCORE_0}}/60</div>
+    </div>
+    <div class="score-card comp">
+      <div class="company">{{COMP1}}</div>
+      <div class="score">{{AI_SCORE_1}}<span class="unit">/10</span></div>
+      <div class="detail">Raw: {{RAW_SCORE_1}}/60</div>
+    </div>
+    <div class="score-card comp">
+      <div class="company">{{COMP2}}</div>
+      <div class="score">{{AI_SCORE_2}}<span class="unit">/10</span></div>
+      <div class="detail">Raw: {{RAW_SCORE_2}}/60</div>
+    </div>
+    <div class="score-card comp">
+      <div class="company">{{COMP3}}</div>
+      <div class="score">{{AI_SCORE_3}}<span class="unit">/10</span></div>
+      <div class="detail">Raw: {{RAW_SCORE_3}}/60</div>
+    </div>
+  </div>
+
+  <!-- 3. QUERY LOG -->
+  <h2>3. Query Log — All 20 Queries</h2>
+
+  <h3>Category A: Solution Discovery</h3>
+  <table>
+    <tr>
+      <th style="width:24px">#</th>
+      <th>Query</th>
+      <th class="score-cell">{{COMPANY_SHORT}}</th>
+      <th class="score-cell">{{COMP1_SHORT}}</th>
+      <th class="score-cell">{{COMP2_SHORT}}</th>
+      <th class="score-cell">{{COMP3_SHORT}}</th>
+      <th style="width:160px">Notes</th>
+    </tr>
+    {{QUERY_ROWS_A}}
+  </table>
+
+  <h3>Category B: Company-Specific</h3>
+  <table>
+    <tr>
+      <th style="width:24px">#</th>
+      <th>Query</th>
+      <th class="score-cell">{{COMPANY_SHORT}}</th>
+      <th class="score-cell">{{COMP1_SHORT}}</th>
+      <th class="score-cell">{{COMP2_SHORT}}</th>
+      <th class="score-cell">{{COMP3_SHORT}}</th>
+      <th style="width:160px">Notes</th>
+    </tr>
+    {{QUERY_ROWS_B}}
+  </table>
+
+  <h3>Category C: Problem-Aware</h3>
+  <table>
+    <tr>
+      <th style="width:24px">#</th>
+      <th>Query</th>
+      <th class="score-cell">{{COMPANY_SHORT}}</th>
+      <th class="score-cell">{{COMP1_SHORT}}</th>
+      <th class="score-cell">{{COMP2_SHORT}}</th>
+      <th class="score-cell">{{COMP3_SHORT}}</th>
+      <th style="width:160px">Notes</th>
+    </tr>
+    {{QUERY_ROWS_C}}
+  </table>
+
+  <h3>Category D: Video & Content</h3>
+  <table>
+    <tr>
+      <th style="width:24px">#</th>
+      <th>Query</th>
+      <th class="score-cell">{{COMPANY_SHORT}}</th>
+      <th class="score-cell">{{COMP1_SHORT}}</th>
+      <th class="score-cell">{{COMP2_SHORT}}</th>
+      <th class="score-cell">{{COMP3_SHORT}}</th>
+      <th style="width:160px">Notes</th>
+    </tr>
+    {{QUERY_ROWS_D}}
+  </table>
+
+  <!-- Totals -->
+  <table>
+    <tr class="total-row">
+      <td colspan="2"><strong>Raw Totals (out of 60)</strong></td>
+      <td class="score-cell"><strong>{{RAW_SCORE_0}}</strong></td>
+      <td class="score-cell"><strong>{{RAW_SCORE_1}}</strong></td>
+      <td class="score-cell"><strong>{{RAW_SCORE_2}}</strong></td>
+      <td class="score-cell"><strong>{{RAW_SCORE_3}}</strong></td>
+      <td></td>
+    </tr>
+    <tr class="total-row">
+      <td colspan="2"><strong>Normalized Score (/10)</strong></td>
+      <td class="score-cell" style="color:#F38B1C"><strong>{{AI_SCORE_0}}</strong></td>
+      <td class="score-cell"><strong>{{AI_SCORE_1}}</strong></td>
+      <td class="score-cell"><strong>{{AI_SCORE_2}}</strong></td>
+      <td class="score-cell"><strong>{{AI_SCORE_3}}</strong></td>
+      <td></td>
+    </tr>
+  </table>
+
+  <!-- 4. YOUTUBE AUDIT -->
+  <h2>4. YouTube / Video Audit</h2>
+  <table>
+    <tr>
+      <th>Company</th>
+      <th>Channel</th>
+      <th style="text-align:center">Subscribers</th>
+      <th style="text-align:center">Videos</th>
+      <th>Last Upload</th>
+      <th style="text-align:center">Freq/mo</th>
+      <th>Status</th>
+      <th style="text-align:center">In AI?</th>
+    </tr>
+    {{YOUTUBE_ROWS}}
+  </table>
+
+  <!-- 5. VIDEO SCORES -->
+  <h2>5. Video Scores</h2>
+  <div class="score-summary">
+    <div class="score-card target">
+      <div class="company">{{COMPANY_NAME}}</div>
+      <div class="score">{{VID_SCORE_0}}<span class="unit">/10</span></div>
+      <div class="detail">{{VID_DETAIL_0}}</div>
+    </div>
+    <div class="score-card comp">
+      <div class="company">{{COMP1}}</div>
+      <div class="score">{{VID_SCORE_1}}<span class="unit">/10</span></div>
+      <div class="detail">{{VID_DETAIL_1}}</div>
+    </div>
+    <div class="score-card comp">
+      <div class="company">{{COMP2}}</div>
+      <div class="score">{{VID_SCORE_2}}<span class="unit">/10</span></div>
+      <div class="detail">{{VID_DETAIL_2}}</div>
+    </div>
+    <div class="score-card comp">
+      <div class="company">{{COMP3}}</div>
+      <div class="score">{{VID_SCORE_3}}<span class="unit">/10</span></div>
+      <div class="detail">{{VID_DETAIL_3}}</div>
+    </div>
+  </div>
+
+  <!-- 6. KEY FINDINGS -->
+  <h2>6. Key Findings</h2>
+  {{KEY_FINDINGS}}
+
+  <!-- 7. SOURCES -->
+  <h2>7. Sources Consulted</h2>
+  <div class="sources">
+    {{SOURCES_LIST}}
+  </div>
+
+  <!-- METHODOLOGY NOTES -->
+  <div class="method-notes">
+    <strong>Methodology:</strong> 20 buyer-intent queries were run through Claude (Anthropic) with live web search enabled.
+    Each response was scored 0&ndash;3 for each of the 4 companies analyzed (0 = Absent, 1 = Cited in sources only,
+    2 = Mentioned in text, 3 = Recommended by name). Raw scores were summed and normalized to a 0&ndash;10 scale
+    (raw / 60 &times; 10). YouTube channels were verified via live web search. Video scores were assigned based on
+    channel activity, subscriber count, upload frequency, and content variety. AI answers change over time &mdash;
+    these results represent a point-in-time snapshot, not a guarantee.
+  </div>
+
+  <!-- FOOTER -->
+  <div class="doc-footer">
+    <span>Confidential &mdash; Prepared for {{COMPANY_NAME}} &middot; {{REPORT_DATE}}</span>
+    <div class="brand">
+      <svg width="12" height="14" viewBox="0 0 20 22" fill="none"><path d="M0 0L20 11L0 22V0Z" fill="#F38B1C"/></svg>
+      Digital Accomplice
+    </div>
+  </div>
+
+</div>
+
+</body>
+</html>

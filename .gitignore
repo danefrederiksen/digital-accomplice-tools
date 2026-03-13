@@ -1,0 +1,55 @@
+# Dependencies
+node_modules/
+
+# Prospect data (contains real names, emails, notes)
+data/prospects.json
+data/b2b-prospects.json
+data/cyber-prospects.json
+data/b2b-2nd-prospects.json
+data/cyber-2nd-prospects.json
+data/referral-1st-prospects.json
+data/referral-2nd-prospects.json
+data/substack-prospects.json
+data/referral-email-prospects.json
+data/customer-prospects.json
+data/opportunities.json
+
+# Activity logs
+data/*-activity.json
+data/comment-log.json
+
+# Templates (contain customized outreach copy)
+data/*-templates.json
+data/templates.json
+
+# Alerts
+data/alerts.json
+
+# Backups
+data/backups/
+
+# Generated reports and deliverables
+reports/*.pdf
+reports/*.jpg
+reports/*.png
+reports/*.html
+
+# Screenshots
+data/screenshots/
+
+# Spreadsheets and docs
+*.xlsx
+*.docx
+*.csv
+
+# OS files
+.DS_Store
+
+# Environment
+.env
+
+# Warming app (has its own git repo)
+warming-app copy/
+
+# Claude internal
+.claude/

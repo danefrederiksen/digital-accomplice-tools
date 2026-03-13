@@ -1,0 +1,1849 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Prospecting Tool #11 — Comment Queue</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Poppins', Arial, sans-serif; background: #F5F5F5; color: #000; min-height: 100vh; }
+
+    /* Header */
+    .header {
+      background: #000; color: #fff; padding: 14px 24px;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .header-left { display: flex; align-items: center; gap: 12px; }
+    .header-left .logo { font-weight: 800; font-size: 16px; color: #F38B1C; }
+    .header-left .title { font-weight: 600; font-size: 15px; color: #fff; }
+    .header-right { display: flex; align-items: center; gap: 16px; }
+    .stat-pill {
+      background: rgba(243, 139, 28, 0.15); border: 1px solid #F38B1C;
+      border-radius: 20px; padding: 4px 14px; font-size: 13px; font-weight: 600; color: #F38B1C;
+    }
+    .stat-pill.done { background: rgba(16, 185, 129, 0.15); border-color: #10B981; color: #10B981; }
+
+    /* Tabs */
+    .tabs {
+      background: #000; display: flex; gap: 0; padding: 0 24px; border-bottom: 2px solid #222;
+    }
+    .tab {
+      padding: 10px 20px; font-size: 13px; font-weight: 600; color: #888;
+      cursor: pointer; border-bottom: 2px solid transparent; transition: all 0.15s;
+    }
+    .tab:hover { color: #ccc; }
+    .tab.active { color: #F38B1C; border-bottom-color: #F38B1C; }
+
+    /* Main container */
+    .container { max-width: 900px; margin: 0 auto; padding: 24px; }
+
+    /* Search bar */
+    .search-section { margin-bottom: 24px; }
+    .search-box {
+      width: 100%; padding: 16px 20px; font-size: 18px; font-family: 'Poppins', sans-serif;
+      border: 2px solid #ddd; border-radius: 12px; outline: none; transition: border-color 0.15s;
+      background: #fff;
+    }
+    .search-box:focus { border-color: #F38B1C; }
+    .search-box::placeholder { color: #bbb; }
+    .search-hint {
+      font-size: 12px; color: #999; margin-top: 6px; padding-left: 4px;
+    }
+
+    /* Search results */
+    .results-area { min-height: 60px; }
+    .no-match {
+      text-align: center; padding: 20px; color: #999; font-size: 14px;
+      background: #fff; border-radius: 10px; border: 1px dashed #ddd;
+    }
+    .no-match .big { font-size: 16px; font-weight: 600; color: #666; margin-bottom: 4px; }
+
+    /* Prospect card */
+    .prospect-card {
+      background: #fff; border-radius: 10px; padding: 16px 20px; margin-bottom: 10px;
+      border: 1px solid #eee; display: flex; align-items: center; justify-content: space-between;
+      transition: border-color 0.15s, box-shadow 0.15s;
+    }
+    .prospect-card:hover { border-color: #F38B1C; box-shadow: 0 2px 8px rgba(243,139,28,0.1); }
+    .prospect-info { flex: 1; }
+    .prospect-name { font-weight: 700; font-size: 15px; color: #000; }
+    .prospect-meta {
+      font-size: 12px; color: #5A6B7A; margin-top: 2px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+    }
+    .segment-badge {
+      display: inline-block; padding: 2px 8px; border-radius: 10px;
+      font-size: 11px; font-weight: 600; color: #fff;
+    }
+    .segment-badge.b2b_2nd { background: #3B82F6; }
+    .segment-badge.cyber_2nd { background: #8B5CF6; }
+    .segment-badge.referral_1st { background: #F38B1C; }
+    .segment-badge.referral_2nd { background: #10B981; }
+    .status-badge {
+      display: inline-block; padding: 2px 8px; border-radius: 10px;
+      font-size: 10px; font-weight: 600; text-transform: uppercase;
+    }
+    .status-badge.not_started { background: #f0f0f0; color: #666; }
+    .status-badge.connection_sent { background: #FEF3C7; color: #92400E; }
+    .status-badge.connection_accepted { background: #D1FAE5; color: #065F46; }
+    .status-badge.dm_sent { background: #DBEAFE; color: #1E40AF; }
+    .status-badge.follow_up_1 { background: #E0E7FF; color: #3730A3; }
+    .status-badge.follow_up_2 { background: #EDE9FE; color: #5B21B6; }
+    .status-badge.replied { background: #D1FAE5; color: #065F46; }
+    .status-badge.cold { background: #FEE2E2; color: #991B1B; }
+    .comment-stat {
+      font-size: 11px; color: #999;
+    }
+    .prospect-actions { display: flex; gap: 8px; align-items: center; }
+    .btn {
+      padding: 8px 16px; border-radius: 8px; font-size: 13px; font-weight: 600;
+      font-family: 'Poppins', sans-serif; cursor: pointer; border: none; transition: all 0.15s;
+    }
+    .btn-primary { background: #F38B1C; color: #fff; }
+    .btn-primary:hover { background: #e07d10; }
+    .btn-primary:disabled { background: #ccc; cursor: default; }
+    .btn-secondary { background: #f0f0f0; color: #333; }
+    .btn-secondary:hover { background: #e0e0e0; }
+    .btn-sm { padding: 5px 10px; font-size: 11px; }
+    .btn-link {
+      background: none; border: none; color: #F38B1C; font-size: 12px;
+      font-weight: 600; cursor: pointer; text-decoration: underline; padding: 0;
+      font-family: 'Poppins', sans-serif;
+    }
+    .btn-link:hover { color: #e07d10; }
+
+    /* Post URL input */
+    .post-url-row {
+      display: flex; align-items: center; gap: 8px; margin-top: 8px;
+    }
+    .post-url-input {
+      flex: 1; padding: 6px 10px; font-size: 12px; font-family: 'Poppins', sans-serif;
+      border: 1px solid #ddd; border-radius: 6px; outline: none;
+    }
+    .post-url-input:focus { border-color: #F38B1C; }
+
+    /* Logged confirmation */
+    .logged-flash {
+      background: #D1FAE5; color: #065F46; border-radius: 8px; padding: 8px 16px;
+      font-size: 13px; font-weight: 600; animation: flashIn 0.3s ease;
+    }
+    @keyframes flashIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+
+    /* Section headers */
+    .section-header {
+      font-size: 14px; font-weight: 700; color: #333; margin: 28px 0 12px;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .section-header .line { flex: 1; height: 1px; background: #ddd; }
+
+    /* Today's comments list */
+    .comment-item {
+      background: #fff; border-radius: 8px; padding: 10px 16px; margin-bottom: 6px;
+      border: 1px solid #eee; display: flex; align-items: center; justify-content: space-between;
+      font-size: 13px;
+    }
+    .comment-item .name { font-weight: 600; }
+    .comment-item .time { color: #999; font-size: 12px; }
+
+    /* Stats bar */
+    .stats-bar {
+      background: #fff; border-radius: 12px; padding: 16px 20px; margin-bottom: 24px;
+      border: 1px solid #eee; display: flex; align-items: center; gap: 24px; flex-wrap: wrap;
+    }
+    .stat-block { text-align: center; }
+    .stat-block .number { font-size: 28px; font-weight: 800; color: #F38B1C; }
+    .stat-block .label { font-size: 11px; color: #999; font-weight: 600; text-transform: uppercase; }
+    .stat-block.week .number { color: #5A6B7A; }
+    .progress-bar-wrap {
+      flex: 1; min-width: 200px;
+    }
+    .progress-label { font-size: 11px; color: #999; font-weight: 600; margin-bottom: 4px; }
+    .progress-bar {
+      height: 10px; background: #eee; border-radius: 5px; overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%; background: #F38B1C; border-radius: 5px; transition: width 0.3s;
+    }
+    .progress-fill.complete { background: #10B981; }
+
+    /* Segment breakdown */
+    .segment-row {
+      display: flex; align-items: center; gap: 6px; font-size: 12px; color: #5A6B7A; font-weight: 500;
+    }
+    .segment-row .dot { width: 8px; height: 8px; border-radius: 50%; }
+    .segment-row .dot.b2b { background: #3B82F6; }
+    .segment-row .dot.cyber { background: #8B5CF6; }
+    .segment-row .dot.referral1st { background: #F38B1C; }
+    .segment-row .dot.referral { background: #10B981; }
+
+    /* History tab */
+    .history-filters {
+      display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap;
+    }
+    .filter-btn {
+      padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: 600;
+      font-family: 'Poppins', sans-serif; cursor: pointer; border: 1px solid #ddd;
+      background: #fff; color: #666; transition: all 0.15s;
+    }
+    .filter-btn.active { background: #000; color: #fff; border-color: #000; }
+    .filter-btn:hover { border-color: #999; }
+
+    /* All Prospects tab */
+    .prospect-table-controls {
+      display: flex; gap: 12px; margin-bottom: 16px; align-items: center; flex-wrap: wrap;
+    }
+    .table-search {
+      padding: 8px 14px; font-size: 13px; font-family: 'Poppins', sans-serif;
+      border: 1px solid #ddd; border-radius: 8px; outline: none; flex: 1; min-width: 200px;
+    }
+    .table-search:focus { border-color: #F38B1C; }
+    .sort-select {
+      padding: 8px 12px; font-size: 12px; font-family: 'Poppins', sans-serif;
+      border: 1px solid #ddd; border-radius: 8px; outline: none; background: #fff;
+    }
+    .prospect-count { font-size: 12px; color: #999; font-weight: 600; }
+
+    /* Inactive flags */
+    .inactive-flag {
+      display: inline-block; padding: 2px 8px; border-radius: 10px;
+      font-size: 10px; font-weight: 600; background: #FEF3C7; color: #92400E;
+    }
+
+    /* Tab panels */
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+
+    /* Upload zone */
+    .upload-zone {
+      border: 2px dashed #ddd; border-radius: 12px; padding: 40px 20px;
+      text-align: center; cursor: pointer; transition: all 0.15s;
+      background: #fff; margin-bottom: 24px;
+    }
+    .upload-zone:hover, .upload-zone.dragover {
+      border-color: #F38B1C; background: rgba(243, 139, 28, 0.05);
+    }
+    .upload-icon { font-size: 36px; margin-bottom: 8px; }
+    .upload-text { font-size: 16px; font-weight: 600; color: #333; }
+    .upload-subtext { font-size: 12px; color: #999; margin-top: 4px; }
+    .upload-zone.uploading { opacity: 0.5; pointer-events: none; }
+
+    /* Screenshot cards */
+    .screenshot-card {
+      background: #fff; border-radius: 10px; padding: 16px; margin-bottom: 10px;
+      border: 1px solid #eee; display: flex; gap: 16px; align-items: flex-start;
+    }
+    .screenshot-card:hover { border-color: #F38B1C; }
+    .screenshot-thumb {
+      width: 160px; height: 100px; object-fit: cover; border-radius: 6px;
+      border: 1px solid #eee; cursor: pointer;
+    }
+    .screenshot-meta { flex: 1; }
+    .screenshot-meta .filename { font-weight: 600; font-size: 14px; }
+    .screenshot-meta .timestamp { font-size: 12px; color: #999; margin-top: 2px; }
+    .screenshot-meta .filepath {
+      font-size: 11px; color: #5A6B7A; margin-top: 6px; font-family: monospace;
+      background: #f5f5f5; padding: 4px 8px; border-radius: 4px; word-break: break-all;
+    }
+    .screenshot-status {
+      display: inline-block; padding: 2px 8px; border-radius: 10px;
+      font-size: 10px; font-weight: 600; text-transform: uppercase; margin-top: 4px;
+    }
+    .screenshot-status.new { background: #FEF3C7; color: #92400E; }
+    .screenshot-status.processed { background: #D1FAE5; color: #065F46; }
+    .copy-toast {
+      display: inline-block; padding: 2px 8px; font-size: 11px; font-weight: 600;
+      color: #065F46; animation: flashIn 0.3s ease;
+    }
+
+    /* Daily Targets */
+    .targets-section { margin-bottom: 28px; }
+    .targets-header {
+      display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;
+    }
+    .targets-title {
+      font-size: 16px; font-weight: 800; color: #000; display: flex; align-items: center; gap: 10px;
+    }
+    .targets-title .fire { font-size: 18px; }
+    .targets-progress {
+      padding: 4px 12px; border-radius: 16px; font-size: 12px; font-weight: 700;
+      background: rgba(243, 139, 28, 0.12); color: #F38B1C; border: 1px solid #F38B1C;
+    }
+    .targets-progress.done { background: rgba(16, 185, 129, 0.12); color: #10B981; border-color: #10B981; }
+    .targets-grid {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
+    }
+    @media (max-width: 700px) { .targets-grid { grid-template-columns: 1fr; } }
+    .target-card {
+      background: #fff; border-radius: 10px; padding: 12px 16px; border: 1px solid #eee;
+      display: flex; align-items: center; justify-content: space-between; gap: 8px;
+      transition: border-color 0.15s, box-shadow 0.15s; cursor: default;
+    }
+    .target-card:hover { border-color: #F38B1C; box-shadow: 0 2px 8px rgba(243,139,28,0.08); }
+    .target-card.commented {
+      opacity: 0.5; border-color: #10B981; background: #F0FDF4;
+    }
+    .target-card .tc-info { flex: 1; min-width: 0; }
+    .target-card .tc-name { font-weight: 700; font-size: 14px; color: #000; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .target-card .tc-meta {
+      font-size: 11px; color: #5A6B7A; margin-top: 2px;
+      display: flex; align-items: center; gap: 6px; flex-wrap: wrap;
+    }
+    .target-card .tc-actions { display: flex; gap: 6px; align-items: center; flex-shrink: 0; }
+    .target-card .tc-check { color: #10B981; font-size: 18px; font-weight: 800; }
+    .targets-done-banner {
+      background: linear-gradient(135deg, #D1FAE5 0%, #F0FDF4 100%);
+      border: 1px solid #10B981; border-radius: 12px; padding: 20px;
+      text-align: center; font-size: 15px; font-weight: 700; color: #065F46;
+    }
+    .targets-done-banner .emoji { font-size: 28px; margin-bottom: 6px; }
+    .priority-badge {
+      display: inline-block; padding: 1px 6px; border-radius: 8px;
+      font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.3px;
+    }
+    .priority-badge.hot { background: #FEE2E2; color: #991B1B; }
+    .priority-badge.stale { background: #FEF3C7; color: #92400E; }
+    .priority-badge.refresh { background: #DBEAFE; color: #1E40AF; }
+    .priority-badge.new { background: #F3F4F6; color: #374151; }
+    .priority-badge.screenshot { background: #EDE9FE; color: #5B21B6; }
+
+    /* Warming Progress */
+    .warming-progress {
+      display: flex; align-items: center; gap: 4px; margin-top: 4px;
+    }
+    .warming-dot {
+      width: 10px; height: 10px; border-radius: 50%; background: #eee;
+      border: 1.5px solid #ddd; transition: all 0.2s;
+    }
+    .warming-dot.filled { background: #F38B1C; border-color: #F38B1C; }
+    .warming-dot.filled.complete { background: #10B981; border-color: #10B981; }
+    .warming-label {
+      font-size: 10px; font-weight: 700; color: #999; margin-left: 4px;
+    }
+    .warming-label.ready { color: #10B981; }
+    .dm-ready-badge {
+      display: inline-block; padding: 3px 10px; border-radius: 10px;
+      font-size: 11px; font-weight: 700; background: #D1FAE5; color: #065F46;
+      animation: flashIn 0.3s ease;
+    }
+    .dm-sent-badge {
+      display: inline-block; padding: 3px 10px; border-radius: 10px;
+      font-size: 11px; font-weight: 700; background: #DBEAFE; color: #1E40AF;
+    }
+    .replied-badge {
+      display: inline-block; padding: 3px 10px; border-radius: 10px;
+      font-size: 11px; font-weight: 700; background: #D1FAE5; color: #065F46;
+    }
+
+    /* DM Queue tab */
+    .dm-card {
+      background: #fff; border-radius: 12px; padding: 20px; margin-bottom: 12px;
+      border: 1px solid #eee; transition: border-color 0.15s, box-shadow 0.15s;
+    }
+    .dm-card:hover { border-color: #10B981; box-shadow: 0 2px 8px rgba(16,185,129,0.1); }
+    .dm-card-header {
+      display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;
+    }
+    .dm-card-name { font-weight: 700; font-size: 16px; }
+    .dm-card-meta { font-size: 12px; color: #5A6B7A; margin-top: 2px; display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+    .dm-template-box {
+      background: #F5F5F5; border-radius: 8px; padding: 14px; font-size: 13px;
+      line-height: 1.5; color: #333; border: 1px solid #eee; margin-bottom: 12px;
+      white-space: pre-wrap;
+    }
+    .dm-actions { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+    .btn-success { background: #10B981; color: #fff; }
+    .btn-success:hover { background: #059669; }
+    .btn-copy { background: #f0f0f0; color: #333; }
+    .btn-copy:hover { background: #e0e0e0; }
+
+    /* Sent / Replies tab */
+    .sent-card {
+      background: #fff; border-radius: 10px; padding: 16px 20px; margin-bottom: 10px;
+      border: 1px solid #eee; display: flex; align-items: center; justify-content: space-between;
+    }
+    .sent-card.has-reply { border-color: #10B981; background: #F0FDF4; }
+    .sent-card .sent-info { flex: 1; }
+    .sent-card .sent-name { font-weight: 700; font-size: 15px; }
+    .sent-card .sent-meta { font-size: 12px; color: #5A6B7A; margin-top: 2px; display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+    .sent-card .sent-date { font-size: 12px; color: #999; }
+    .conversion-banner {
+      background: linear-gradient(135deg, #000 0%, #222 100%); border-radius: 12px;
+      padding: 20px; margin-bottom: 20px; display: flex; gap: 24px; align-items: center;
+      flex-wrap: wrap;
+    }
+    .conversion-stat { text-align: center; }
+    .conversion-stat .number { font-size: 28px; font-weight: 800; color: #F38B1C; }
+    .conversion-stat .label { font-size: 10px; color: #999; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+    .conversion-stat .number.green { color: #10B981; }
+    .funnel-bar {
+      flex: 1; min-width: 200px; display: flex; flex-direction: column; gap: 6px;
+    }
+    .funnel-row {
+      display: flex; align-items: center; gap: 8px; font-size: 12px; color: #ccc;
+    }
+    .funnel-row .funnel-fill {
+      height: 8px; border-radius: 4px; transition: width 0.3s;
+    }
+    .funnel-row .funnel-label { min-width: 80px; font-weight: 600; }
+    .funnel-row .funnel-count { min-width: 30px; text-align: right; font-weight: 700; }
+    .tab-badge {
+      display: inline-block; min-width: 18px; height: 18px; line-height: 18px;
+      border-radius: 9px; font-size: 10px; font-weight: 700; text-align: center;
+      margin-left: 6px; padding: 0 5px;
+    }
+    .tab-badge.orange { background: #F38B1C; color: #fff; }
+    .tab-badge.green { background: #10B981; color: #fff; }
+    .tab-badge.blue { background: #3B82F6; color: #fff; }
+
+    /* Screenshot Import */
+    .import-section {
+      background: #fff; border-radius: 12px; border: 1px solid #eee;
+      padding: 20px; margin-bottom: 20px;
+    }
+    .import-section.collapsed .import-body { display: none; }
+    .import-header {
+      display: flex; align-items: center; justify-content: space-between; cursor: pointer;
+    }
+    .import-header:hover .import-title { color: #F38B1C; }
+    .import-title {
+      font-size: 15px; font-weight: 700; color: #333; display: flex; align-items: center; gap: 8px;
+      transition: color 0.15s;
+    }
+    .import-toggle {
+      font-size: 12px; color: #999; font-weight: 600; padding: 4px 10px;
+      border-radius: 12px; background: #f5f5f5;
+    }
+    .import-body { margin-top: 16px; }
+    .import-row { display: flex; gap: 12px; align-items: flex-start; }
+    .import-upload-mini {
+      width: 140px; min-height: 120px; border: 2px dashed #ddd; border-radius: 10px;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      cursor: pointer; transition: all 0.15s; background: #fafafa; flex-shrink: 0;
+      text-align: center; padding: 10px;
+    }
+    .import-upload-mini:hover { border-color: #F38B1C; background: rgba(243,139,28,0.03); }
+    .import-upload-mini .icon { font-size: 24px; margin-bottom: 4px; }
+    .import-upload-mini .label { font-size: 11px; color: #999; font-weight: 600; }
+    .import-upload-mini img {
+      width: 100%; max-height: 100px; object-fit: cover; border-radius: 6px;
+    }
+    .import-names-area { flex: 1; }
+    .import-names-area textarea {
+      width: 100%; height: 120px; border: 1px solid #ddd; border-radius: 8px;
+      padding: 10px; font-family: 'Poppins', sans-serif; font-size: 13px;
+      resize: vertical; outline: none;
+    }
+    .import-names-area textarea:focus { border-color: #F38B1C; }
+    .import-names-area textarea::placeholder { color: #bbb; }
+    .import-hint { font-size: 11px; color: #999; margin-top: 4px; }
+    .import-actions { display: flex; gap: 8px; margin-top: 10px; align-items: center; }
+    .import-match-results { margin-top: 12px; }
+    .match-item {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 8px 12px; border-radius: 8px; font-size: 13px;
+    }
+    .match-item:nth-child(odd) { background: #fafafa; }
+    .match-item .match-name { font-weight: 600; }
+    .match-item .match-meta { font-size: 11px; color: #5A6B7A; }
+    .match-item .match-badge {
+      font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 10px;
+    }
+    .match-item .match-badge.found { background: #D1FAE5; color: #065F46; }
+    .match-item .match-badge.notfound { background: #FEE2E2; color: #991B1B; }
+    .override-banner {
+      background: linear-gradient(135deg, #EDE9FE 0%, #F5F3FF 100%);
+      border: 1px solid #8B5CF6; border-radius: 10px; padding: 10px 16px;
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 10px; font-size: 13px; color: #5B21B6; font-weight: 600;
+    }
+    .override-banner .clear-btn {
+      background: none; border: 1px solid #8B5CF6; color: #5B21B6;
+      padding: 3px 10px; border-radius: 8px; font-size: 11px; font-weight: 700;
+      cursor: pointer; font-family: 'Poppins', sans-serif;
+    }
+    .override-banner .clear-btn:hover { background: #8B5CF6; color: #fff; }
+  </style>
+</head>
+<body>
+
+  <div class="header">
+    <div class="header-left">
+      <span class="logo">DA</span>
+      <span class="title">Comment Queue</span>
+    </div>
+    <div class="header-right">
+      <span class="stat-pill" id="todayPill">0/8 today</span>
+      <span class="stat-pill" id="weekPill" style="border-color:#5A6B7A;color:#5A6B7A;background:rgba(90,107,122,0.1);">0 this week</span>
+    </div>
+  </div>
+
+  <div class="tabs">
+    <div class="tab active" data-tab="search" onclick="switchTab('search')">Search</div>
+    <div class="tab" data-tab="dmqueue" onclick="switchTab('dmqueue')">DM Queue <span class="tab-badge orange" id="dmQueueBadge" style="display:none;">0</span></div>
+    <div class="tab" data-tab="sent" onclick="switchTab('sent')">Sent / Replies <span class="tab-badge blue" id="sentBadge" style="display:none;">0</span></div>
+    <div class="tab" data-tab="history" onclick="switchTab('history')">History</div>
+    <div class="tab" data-tab="prospects" onclick="switchTab('prospects')">All Prospects</div>
+    <div class="tab" data-tab="uploads" onclick="switchTab('uploads')">Uploads</div>
+  </div>
+
+  <!-- SEARCH TAB -->
+  <div class="tab-panel active" id="panel-search">
+    <div class="container">
+
+      <!-- Screenshot Import -->
+      <div class="import-section collapsed" id="importSection">
+        <div class="import-header" onclick="toggleImport()">
+          <div class="import-title">&#128247; Import from Sales Nav Screenshot</div>
+          <span class="import-toggle" id="importToggle">Show</span>
+        </div>
+        <div class="import-body">
+          <div class="import-row">
+            <div class="import-upload-mini" id="importUploadZone">
+              <div id="importPreview">
+                <div class="icon">&#128247;</div>
+                <div class="label">Drop screenshot<br>or click</div>
+              </div>
+              <input type="file" id="importFileInput" accept="image/png,image/jpeg,image/webp" style="display:none">
+            </div>
+            <div class="import-names-area">
+              <textarea id="importNames" placeholder="Drop a screenshot above — names are extracted automatically.&#10;&#10;Or paste names manually (one per line):&#10;Jason Fox&#10;Julien Sauvage&#10;Sibasish Misra"></textarea>
+              <div class="import-hint">Drop a screenshot and names are extracted automatically. Or paste manually and click Find Matches.</div>
+              <div class="import-actions">
+                <button class="btn btn-primary" onclick="matchNames()">Find Matches</button>
+                <span id="matchStatus" style="font-size:12px;color:#999;"></span>
+              </div>
+            </div>
+          </div>
+          <div class="import-match-results" id="matchResults"></div>
+        </div>
+      </div>
+
+      <!-- Daily Targets -->
+      <div class="targets-section" id="targetsSection">
+        <div class="targets-header">
+          <div class="targets-title"><span class="fire">&#127919;</span> Today's Targets</div>
+          <span class="targets-progress" id="targetsProgress">0/8</span>
+        </div>
+        <div id="overrideBanner" style="display:none;"></div>
+        <div id="targetsGrid" class="targets-grid"></div>
+      </div>
+
+      <div class="search-section">
+        <input type="text" class="search-box" id="searchInput" placeholder="Type a name from Sales Nav..." autofocus>
+        <div class="search-hint">Search across B2B 2nd, Cyber 2nd, Referral 1st, and Referral 2nd prospects</div>
+      </div>
+
+      <div class="results-area" id="searchResults"></div>
+
+      <!-- Stats bar -->
+      <div class="stats-bar" id="statsBar">
+        <div class="stat-block">
+          <div class="number" id="todayCount">0</div>
+          <div class="label">Today</div>
+        </div>
+        <div class="progress-bar-wrap">
+          <div class="progress-label">Daily target: <span id="targetLabel">0/8</span></div>
+          <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+        </div>
+        <div class="stat-block week">
+          <div class="number" id="weekCount">0</div>
+          <div class="label">This Week</div>
+        </div>
+        <div style="display:flex;gap:12px;">
+          <div class="segment-row"><span class="dot b2b"></span> B2B: <strong id="segB2b">0</strong></div>
+          <div class="segment-row"><span class="dot cyber"></span> Cyber: <strong id="segCyber">0</strong></div>
+          <div class="segment-row"><span class="dot referral1st"></span> Ref 1st: <strong id="segReferral1st">0</strong></div>
+          <div class="segment-row"><span class="dot referral"></span> Ref 2nd: <strong id="segReferral">0</strong></div>
+        </div>
+      </div>
+
+      <!-- Today's comments -->
+      <div class="section-header">Today's Comments <span class="line"></span></div>
+      <div id="todayComments"></div>
+    </div>
+  </div>
+
+  <!-- DM QUEUE TAB -->
+  <div class="tab-panel" id="panel-dmqueue">
+    <div class="container">
+      <div class="section-header" style="margin-top:0;">Ready to DM <span class="line"></span> <span id="dmQueueCount" style="font-size:12px;color:#999;font-weight:600;"></span></div>
+      <p style="font-size:13px;color:#5A6B7A;margin-bottom:16px;">These prospects have been commented on 4+ times and are warmed up. Time to send a DM.</p>
+      <div id="dmQueueList"></div>
+    </div>
+  </div>
+
+  <!-- SENT / REPLIES TAB -->
+  <div class="tab-panel" id="panel-sent">
+    <div class="container">
+      <div id="conversionStats"></div>
+      <div class="section-header" style="margin-top:0;">DM'd Prospects <span class="line"></span> <span id="sentCount" style="font-size:12px;color:#999;font-weight:600;"></span></div>
+      <div id="sentList"></div>
+    </div>
+  </div>
+
+  <!-- HISTORY TAB -->
+  <div class="tab-panel" id="panel-history">
+    <div class="container">
+      <div class="history-filters">
+        <div class="filter-btn active" data-filter="" onclick="filterHistory('')">All</div>
+        <div class="filter-btn" data-filter="b2b_2nd" onclick="filterHistory('b2b_2nd')">B2B 2nd</div>
+        <div class="filter-btn" data-filter="cyber_2nd" onclick="filterHistory('cyber_2nd')">Cyber 2nd</div>
+        <div class="filter-btn" data-filter="referral_1st" onclick="filterHistory('referral_1st')">Referral 1st</div>
+        <div class="filter-btn" data-filter="referral_2nd" onclick="filterHistory('referral_2nd')">Referral 2nd</div>
+      </div>
+      <div id="historyList"></div>
+    </div>
+  </div>
+
+  <!-- ALL PROSPECTS TAB -->
+  <div class="tab-panel" id="panel-prospects">
+    <div class="container">
+      <div class="prospect-table-controls">
+        <input type="text" class="table-search" id="tableSearch" placeholder="Filter prospects..." oninput="renderProspectsTab()">
+        <select class="sort-select" id="sortSelect" onchange="renderProspectsTab()">
+          <option value="name">Sort: Name</option>
+          <option value="comments_desc">Sort: Most Comments</option>
+          <option value="comments_asc">Sort: Least Comments</option>
+          <option value="recent">Sort: Recently Commented</option>
+          <option value="stale">Sort: Needs Attention</option>
+          <option value="warming">Sort: Warming Progress</option>
+        </select>
+        <span class="prospect-count" id="prospectCount"></span>
+      </div>
+      <div id="prospectsList"></div>
+    </div>
+  </div>
+
+  <!-- UPLOADS TAB -->
+  <div class="tab-panel" id="panel-uploads">
+    <div class="container">
+      <div class="upload-zone" id="uploadZone">
+        <div class="upload-icon">&#128247;</div>
+        <div class="upload-text">Drop Sales Nav screenshot here</div>
+        <div class="upload-subtext">or click to browse — PNG, JPG, WebP (max 10MB)</div>
+        <input type="file" id="fileInput" accept="image/png,image/jpeg,image/webp" style="display:none">
+      </div>
+      <div class="section-header">Screenshots <span class="line"></span></div>
+      <div id="screenshotsList"></div>
+    </div>
+  </div>
+
+<script>
+// ============================================================
+// STATE
+// ============================================================
+let stats = { today: { total: 0, target: 8, bySegment: {} }, week: { total: 0, bySegment: {} } };
+let todayHistory = [];
+let allProspects = [];
+let dailyTargets = [];
+let historyFilter = '';
+let searchDebounce = null;
+let dmQueueData = [];
+let sentData = [];
+let warmingStats = null;
+const COMMENTS_TO_DM = 4;
+
+// ============================================================
+// API HELPERS
+// ============================================================
+async function apiGet(url) {
+  const res = await fetch(url);
+  return res.json();
+}
+
+async function apiPost(url, body) {
+  const res = await fetch(url, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body)
+  });
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.error || `Server error ${res.status}`);
+  return data;
+}
+
+// ============================================================
+// XSS PROTECTION
+// ============================================================
+function esc(str) {
+  const el = document.createElement('span');
+  el.textContent = str || '';
+  return el.innerHTML;
+}
+
+// ============================================================
+// DATE HELPERS
+// ============================================================
+function todayStr() { return new Date().toISOString().split('T')[0]; }
+
+function formatTime(isoStr) {
+  if (!isoStr) return '';
+  const d = new Date(isoStr);
+  return d.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
+}
+
+function formatDate(isoStr) {
+  if (!isoStr) return 'Never';
+  const d = new Date(isoStr);
+  return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+}
+
+function formatDateGroup(isoStr) {
+  if (!isoStr) return '';
+  const d = new Date(isoStr);
+  const today = new Date();
+  const yesterday = new Date(); yesterday.setDate(today.getDate() - 1);
+  if (d.toDateString() === today.toDateString()) return 'Today';
+  if (d.toDateString() === yesterday.toDateString()) return 'Yesterday';
+  return d.toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' });
+}
+
+function daysSince(isoStr) {
+  if (!isoStr) return null;
+  const d = new Date(isoStr);
+  const now = new Date();
+  return Math.floor((now - d) / (1000 * 60 * 60 * 24));
+}
+
+function getActivityUrl(linkedinUrl) {
+  if (!linkedinUrl) return null;
+  const match = linkedinUrl.match(/linkedin\.com\/in\/([^/?#]+)/);
+  if (!match) return null;
+  return `https://www.linkedin.com/in/${match[1]}/recent-activity/all/`;
+}
+
+function getLinkedInSearchUrl(name) {
+  if (!name) return null;
+  return `https://www.linkedin.com/search/results/people/?keywords=${encodeURIComponent(name)}`;
+}
+
+// Render warming progress dots (0-4)
+function renderWarmingProgress(commentCount, warmingStatus) {
+  const count = Math.min(commentCount || 0, COMMENTS_TO_DM);
+  const isReady = warmingStatus === 'dm_ready';
+  const isDmSent = warmingStatus === 'dm_sent';
+  const isReplied = warmingStatus === 'replied';
+
+  if (isReplied) return '<span class="replied-badge">Replied</span>';
+  if (isDmSent) return '<span class="dm-sent-badge">DM Sent — Waiting</span>';
+  if (isReady) return '<span class="dm-ready-badge">Ready to DM!</span>';
+
+  let dots = '';
+  for (let i = 0; i < COMMENTS_TO_DM; i++) {
+    dots += `<span class="warming-dot ${i < count ? 'filled' : ''}"></span>`;
+  }
+  const label = count === 0 ? 'Not started' : `${count}/${COMMENTS_TO_DM}`;
+  return `<div class="warming-progress">${dots}<span class="warming-label">${label}</span></div>`;
+}
+
+// ============================================================
+// SEARCH
+// ============================================================
+const searchInput = document.getElementById('searchInput');
+searchInput.addEventListener('input', () => {
+  clearTimeout(searchDebounce);
+  searchDebounce = setTimeout(doSearch, 150);
+});
+
+// Focus search on Escape or / key
+document.addEventListener('keydown', (e) => {
+  if (e.key === '/' && document.activeElement !== searchInput) {
+    e.preventDefault();
+    searchInput.focus();
+    searchInput.select();
+  }
+  if (e.key === 'Escape') {
+    searchInput.value = '';
+    searchInput.focus();
+    document.getElementById('searchResults').innerHTML = '';
+  }
+});
+
+async function doSearch() {
+  const q = searchInput.value.trim();
+  const resultsDiv = document.getElementById('searchResults');
+
+  if (!q) {
+    resultsDiv.innerHTML = '';
+    return;
+  }
+
+  const data = await apiGet('/api/search?q=' + encodeURIComponent(q));
+  const results = data.results || [];
+
+  if (results.length === 0) {
+    resultsDiv.innerHTML = `
+      <div class="no-match">
+        <div class="big">Not in system</div>
+        Skip and move to next alert
+      </div>
+    `;
+    return;
+  }
+
+  resultsDiv.innerHTML = results.map(p => renderSearchCard(p)).join('');
+}
+
+function renderSearchCard(p) {
+  const commentInfo = p.commentCount > 0
+    ? `${p.commentCount} comment${p.commentCount !== 1 ? 's' : ''} &middot; Last: ${formatDate(p.lastCommented)}`
+    : 'No comments yet';
+
+  const staleWarning = p.lastCommented && daysSince(p.lastCommented) >= 21
+    ? '<span class="inactive-flag">3+ weeks since last comment</span>'
+    : '';
+
+  const statusLabel = {
+    not_started: 'Not Started', connection_sent: 'Conn Sent', connection_accepted: 'Conn Accepted',
+    dm_sent: 'DM Sent', follow_up_1: 'Follow-Up 1', follow_up_2: 'Follow-Up 2',
+    replied: 'Replied', cold: 'Cold'
+  }[p.status] || p.status;
+
+  const warmStatus = p.warmingStatus || 'not_started';
+  const warmingHtml = renderWarmingProgress(p.commentCount, warmStatus);
+  const isDmReady = warmStatus === 'dm_ready';
+  const isDmSent = warmStatus === 'dm_sent';
+  const isReplied = warmStatus === 'replied';
+  const canComment = !isDmReady && !isDmSent && !isReplied;
+
+  return `
+    <div class="prospect-card" id="card-${esc(p.id)}" style="${isDmReady ? 'border-color:#10B981;' : ''}">
+      <div class="prospect-info">
+        <div class="prospect-name">${esc(p.name)}</div>
+        <div class="prospect-meta">
+          <span>${esc(p.company || 'No company')}</span>
+          <span class="segment-badge ${esc(p.segment)}">${esc(p.segmentLabel)} (Tool ${esc(p.sourceTool)})</span>
+          <span class="status-badge ${esc(p.status)}">${statusLabel}</span>
+          ${staleWarning}
+        </div>
+        <div class="prospect-meta" style="margin-top:4px;">
+          ${warmingHtml}
+          <span class="comment-stat" style="margin-left:8px;">${commentInfo}</span>
+        </div>
+      </div>
+      <div class="prospect-actions">
+        ${getActivityUrl(p.linkedinUrl)
+          ? `<a href="${esc(getActivityUrl(p.linkedinUrl))}" target="_blank" class="btn btn-primary btn-sm" title="View recent posts — won't trigger profile view">Activity</a>`
+          : `<a href="${esc(getLinkedInSearchUrl(p.name))}" target="_blank" class="btn btn-secondary btn-sm" title="Search LinkedIn to find their activity">Activity</a>`}
+        ${isDmReady ? `<button class="btn btn-success" onclick="switchTab('dmqueue')">Go to DM Queue</button>` : ''}
+        ${canComment ? `<button class="btn btn-primary" onclick="showLogForm('${esc(p.id)}', '${esc(p.name)}', '${esc(p.company)}', '${esc(p.segment)}')">Log Comment</button>` : ''}
+      </div>
+    </div>
+  `;
+}
+
+function showLogForm(prospectId, name, company, segment) {
+  const card = document.getElementById('card-' + prospectId);
+  if (!card) return;
+
+  // Check if form already exists
+  if (card.querySelector('.post-url-row')) return;
+
+  const form = document.createElement('div');
+  form.className = 'post-url-row';
+  form.innerHTML = `
+    <input type="text" class="post-url-input" placeholder="Post URL (optional)" id="url-${prospectId}">
+    <button class="btn btn-primary btn-sm" onclick="logComment('${prospectId}', '${name.replace(/'/g, "\\'")}', '${company.replace(/'/g, "\\'")}', '${segment}')">Save</button>
+    <button class="btn btn-secondary btn-sm" onclick="this.parentElement.remove()">Cancel</button>
+  `;
+  card.appendChild(form);
+  form.querySelector('input').focus();
+
+  // Enter key submits
+  form.querySelector('input').addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      logComment(prospectId, name, company, segment);
+    }
+  });
+}
+
+async function logComment(prospectId, name, company, segment) {
+  const urlInput = document.getElementById('url-' + prospectId);
+  const postUrl = urlInput ? urlInput.value.trim() : '';
+
+  const result = await apiPost('/api/comment', {
+    prospectId, prospectName: name, company, segment, postUrl
+  });
+
+  if (result.ok) {
+    // Flash confirmation on the card
+    const card = document.getElementById('card-' + prospectId);
+    if (card) {
+      const flash = document.createElement('div');
+      flash.className = 'logged-flash';
+      if (result.dmReady) {
+        flash.textContent = `${result.totalComments} comments — Ready to DM! Check the DM Queue tab.`;
+        flash.style.background = '#D1FAE5';
+      } else {
+        flash.textContent = `Logged! (${result.totalComments}/${COMMENTS_TO_DM}) ${result.commentsNeeded} more to DM`;
+      }
+      const urlRow = card.querySelector('.post-url-row');
+      if (urlRow) urlRow.remove();
+      card.appendChild(flash);
+      setTimeout(() => flash.remove(), 3000);
+    }
+
+    // Refresh stats, targets, and today's list
+    await loadStats();
+    await loadDailyTargets();
+    await loadTodayComments();
+    updateDmBadge();
+
+    // Clear search and refocus for next lookup
+    searchInput.value = '';
+    searchInput.focus();
+    document.getElementById('searchResults').innerHTML = '';
+  }
+}
+
+// ============================================================
+// STATS
+// ============================================================
+async function loadStats() {
+  stats = await apiGet('/api/stats');
+
+  // Update header pills
+  const todayPill = document.getElementById('todayPill');
+  const weekPill = document.getElementById('weekPill');
+  todayPill.textContent = `${stats.today.total}/${stats.today.target} today`;
+  if (stats.today.total >= stats.today.target) {
+    todayPill.className = 'stat-pill done';
+  } else {
+    todayPill.className = 'stat-pill';
+  }
+  weekPill.textContent = `${stats.week.total} this week`;
+
+  // Update stats bar
+  document.getElementById('todayCount').textContent = stats.today.total;
+  document.getElementById('weekCount').textContent = stats.week.total;
+  document.getElementById('targetLabel').textContent = `${stats.today.total}/${stats.today.target}`;
+
+  const pct = Math.min(100, (stats.today.total / stats.today.target) * 100);
+  const fill = document.getElementById('progressFill');
+  fill.style.width = pct + '%';
+  fill.className = 'progress-fill' + (pct >= 100 ? ' complete' : '');
+
+  // Segment breakdown (today)
+  document.getElementById('segB2b').textContent = stats.today.bySegment.b2b_2nd || 0;
+  document.getElementById('segCyber').textContent = stats.today.bySegment.cyber_2nd || 0;
+  document.getElementById('segReferral1st').textContent = stats.today.bySegment.referral_1st || 0;
+  document.getElementById('segReferral').textContent = stats.today.bySegment.referral_2nd || 0;
+}
+
+// ============================================================
+// DAILY TARGETS
+// ============================================================
+async function loadDailyTargets() {
+  const data = await apiGet('/api/daily-targets');
+  dailyTargets = data.targets || [];
+  renderDailyTargets(data);
+}
+
+function renderDailyTargets(data) {
+  const grid = document.getElementById('targetsGrid');
+  const pill = document.getElementById('targetsProgress');
+  const banner = document.getElementById('overrideBanner');
+  const doneToday = data.doneToday || 0;
+  const target = data.dailyTarget || 8;
+  const isOverride = data.isOverride || false;
+
+  // Update progress pill
+  pill.textContent = `${doneToday}/${target} done`;
+  pill.className = 'targets-progress' + (doneToday >= target ? ' done' : '');
+
+  // Show/hide override banner
+  if (isOverride) {
+    banner.style.display = 'flex';
+    banner.innerHTML = `
+      <span>&#128247; Targets loaded from screenshot (${dailyTargets.length} prospects)</span>
+      <button class="clear-btn" onclick="clearOverride()">Clear &amp; use auto</button>
+    `;
+    banner.className = 'override-banner';
+  } else {
+    banner.style.display = 'none';
+  }
+
+  // All done for the day
+  if (doneToday >= target) {
+    grid.innerHTML = `
+      <div class="targets-done-banner" style="grid-column: 1 / -1;">
+        <div class="emoji">&#127881;</div>
+        Daily target hit! ${doneToday} comments logged today.
+      </div>
+    `;
+    return;
+  }
+
+  if (dailyTargets.length === 0) {
+    grid.innerHTML = '<div class="no-match" style="grid-column: 1 / -1;">No targets available — all prospects commented recently</div>';
+    return;
+  }
+
+  // IDs already commented today (from todayHistory)
+  const commentedTodayIds = new Set(todayHistory.map(c => c.prospectId));
+
+  grid.innerHTML = dailyTargets.map(p => {
+    const isDone = commentedTodayIds.has(p.id);
+    const priorityLabel = {
+      0: '<span class="priority-badge screenshot">From Screenshot</span>',
+      1: '<span class="priority-badge hot">Engaged</span>',
+      2: '<span class="priority-badge stale">Stale</span>',
+      3: '<span class="priority-badge refresh">Refresh</span>',
+      4: '<span class="priority-badge new">New</span>',
+      5: ''
+    }[p.priority] || '';
+
+    const commentInfo = p.commentCount > 0
+      ? `${p.commentCount}/${COMMENTS_TO_DM}`
+      : '0/' + COMMENTS_TO_DM;
+
+    const activityUrl = getActivityUrl(p.linkedinUrl);
+
+    // Build mini progress dots for target cards
+    const count = Math.min(p.commentCount || 0, COMMENTS_TO_DM);
+    let miniDots = '';
+    for (let i = 0; i < COMMENTS_TO_DM; i++) {
+      miniDots += `<span class="warming-dot ${i < count ? 'filled' : ''}" style="width:7px;height:7px;"></span>`;
+    }
+
+    return `
+      <div class="target-card ${isDone ? 'commented' : ''}" id="target-${esc(p.id)}">
+        <div class="tc-info">
+          <div class="tc-name">${isDone ? '&#10003; ' : ''}${esc(p.name)}</div>
+          <div class="tc-meta">
+            <span>${esc(p.company || '')}</span>
+            <span class="segment-badge ${esc(p.segment)}" style="font-size:9px;padding:1px 6px;">${esc(p.segmentLabel)}</span>
+            ${priorityLabel}
+            <div style="display:flex;align-items:center;gap:3px;">${miniDots}<span style="color:#bbb;font-size:10px;margin-left:2px;">${commentInfo}</span></div>
+          </div>
+        </div>
+        <div class="tc-actions">
+          ${isDone
+            ? '<span class="tc-check">&#10003;</span>'
+            : `${activityUrl
+                ? `<a href="${esc(activityUrl)}" target="_blank" class="btn btn-primary btn-sm" title="View recent posts — won't trigger profile view">Activity</a>`
+                : `<a href="${esc(getLinkedInSearchUrl(p.name))}" target="_blank" class="btn btn-secondary btn-sm" title="Search LinkedIn to find their activity">Activity</a>`}
+               <button class="btn btn-primary btn-sm" onclick="showTargetLogForm('${esc(p.id)}', '${esc(p.name).replace(/'/g, "\\'")}', '${esc(p.company || '').replace(/'/g, "\\'")}', '${esc(p.segment)}')">Log</button>`
+          }
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function showTargetLogForm(prospectId, name, company, segment) {
+  const card = document.getElementById('target-' + prospectId);
+  if (!card || card.querySelector('.post-url-row')) return;
+
+  const form = document.createElement('div');
+  form.className = 'post-url-row';
+  form.style.gridColumn = '1 / -1';
+  form.innerHTML = `
+    <input type="text" class="post-url-input" placeholder="Post URL (optional)" id="turl-${prospectId}">
+    <button class="btn btn-primary btn-sm" onclick="logTargetComment('${prospectId}', '${name.replace(/'/g, "\\'")}', '${company.replace(/'/g, "\\'")}', '${segment}')">Save</button>
+    <button class="btn btn-secondary btn-sm" onclick="this.parentElement.remove()">Cancel</button>
+  `;
+  card.appendChild(form);
+  form.querySelector('input').focus();
+  form.querySelector('input').addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') logTargetComment(prospectId, name, company, segment);
+  });
+}
+
+async function logTargetComment(prospectId, name, company, segment) {
+  const urlInput = document.getElementById('turl-' + prospectId);
+  const postUrl = urlInput ? urlInput.value.trim() : '';
+
+  const result = await apiPost('/api/comment', {
+    prospectId, prospectName: name, company, segment, postUrl
+  });
+
+  if (result.ok) {
+    // Show DM ready notification if applicable
+    if (result.dmReady) {
+      const card = document.getElementById('target-' + prospectId);
+      if (card) {
+        const flash = document.createElement('div');
+        flash.className = 'logged-flash';
+        flash.textContent = `${result.totalComments} comments — Ready to DM! Check DM Queue tab.`;
+        flash.style.background = '#D1FAE5';
+        flash.style.marginTop = '6px';
+        card.appendChild(flash);
+      }
+    }
+    await loadStats();
+    await loadTodayComments();
+    await loadDailyTargets();
+    updateDmBadge();
+  }
+}
+
+// ============================================================
+// TODAY'S COMMENTS
+// ============================================================
+async function loadTodayComments() {
+  const data = await apiGet('/api/history?limit=100');
+  const today = todayStr();
+  todayHistory = (data.comments || []).filter(c => c.date.startsWith(today));
+  renderTodayComments();
+}
+
+function renderTodayComments() {
+  const div = document.getElementById('todayComments');
+  if (todayHistory.length === 0) {
+    div.innerHTML = '<div class="no-match">No comments logged today yet</div>';
+    return;
+  }
+
+  div.innerHTML = todayHistory.map(c => {
+    const segClass = c.segment || '';
+    const segLabel = {
+      b2b_2nd: 'B2B 2nd', cyber_2nd: 'Cyber 2nd', referral_1st: 'Referral 1st', referral_2nd: 'Referral 2nd'
+    }[c.segment] || c.segment;
+
+    return `
+      <div class="comment-item">
+        <div>
+          <span class="name">${esc(c.prospectName)}</span>
+          <span style="color:#999;font-size:12px;"> — ${esc(c.company || '')}</span>
+          <span class="segment-badge ${esc(segClass)}" style="margin-left:6px;font-size:10px;">${segLabel}</span>
+        </div>
+        <span class="time">${formatTime(c.date)}</span>
+      </div>
+    `;
+  }).join('');
+}
+
+// ============================================================
+// HISTORY TAB
+// ============================================================
+async function loadHistory() {
+  const seg = historyFilter ? `&segment=${historyFilter}` : '';
+  const data = await apiGet('/api/history?limit=200' + seg);
+  renderHistory(data.comments || []);
+}
+
+function filterHistory(segment) {
+  historyFilter = segment;
+  document.querySelectorAll('.filter-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.filter === segment);
+  });
+  loadHistory();
+}
+
+function renderHistory(comments) {
+  const div = document.getElementById('historyList');
+  if (comments.length === 0) {
+    div.innerHTML = '<div class="no-match">No comments logged yet</div>';
+    return;
+  }
+
+  // Group by date
+  const groups = {};
+  comments.forEach(c => {
+    const dateKey = c.date.split('T')[0];
+    if (!groups[dateKey]) groups[dateKey] = [];
+    groups[dateKey].push(c);
+  });
+
+  let html = '';
+  for (const [dateKey, items] of Object.entries(groups)) {
+    const label = formatDateGroup(dateKey + 'T12:00:00');
+    html += `<div class="section-header">${esc(label)} (${items.length}) <span class="line"></span></div>`;
+    html += items.map(c => {
+      const segLabel = {
+        b2b_2nd: 'B2B 2nd', cyber_2nd: 'Cyber 2nd', referral_1st: 'Referral 1st', referral_2nd: 'Referral 2nd'
+      }[c.segment] || c.segment;
+
+      return `
+        <div class="comment-item">
+          <div>
+            <span class="name">${esc(c.prospectName)}</span>
+            <span style="color:#999;font-size:12px;"> — ${esc(c.company || '')}</span>
+            <span class="segment-badge ${esc(c.segment)}" style="margin-left:6px;font-size:10px;">${segLabel}</span>
+            ${c.postUrl ? `<a href="${esc(c.postUrl)}" target="_blank" class="btn-link" style="margin-left:6px;">View Post</a>` : ''}
+          </div>
+          <span class="time">${formatTime(c.date)}</span>
+        </div>
+      `;
+    }).join('');
+  }
+
+  div.innerHTML = html;
+}
+
+// ============================================================
+// ALL PROSPECTS TAB
+// ============================================================
+async function loadProspectsData() {
+  const data = await apiGet('/api/prospects');
+  allProspects = data.prospects || [];
+  renderProspectsTab();
+}
+
+function renderProspectsTab() {
+  const searchQ = (document.getElementById('tableSearch').value || '').toLowerCase();
+  const sortBy = document.getElementById('sortSelect').value;
+
+  let filtered = allProspects;
+  if (searchQ) {
+    filtered = filtered.filter(p =>
+      (p.name || '').toLowerCase().includes(searchQ) ||
+      (p.company || '').toLowerCase().includes(searchQ)
+    );
+  }
+
+  // Sort
+  filtered = [...filtered].sort((a, b) => {
+    switch (sortBy) {
+      case 'name': return (a.name || '').localeCompare(b.name || '');
+      case 'comments_desc': return (b.commentCount || 0) - (a.commentCount || 0);
+      case 'comments_asc': return (a.commentCount || 0) - (b.commentCount || 0);
+      case 'recent': return (b.lastCommented || '').localeCompare(a.lastCommented || '');
+      case 'stale': {
+        const aLast = a.lastCommented || '1970-01-01';
+        const bLast = b.lastCommented || '1970-01-01';
+        return aLast.localeCompare(bLast);
+      }
+      case 'warming': {
+        const warmOrder = { replied: 0, dm_sent: 1, dm_ready: 2, commenting: 3, not_started: 4 };
+        const aW = warmOrder[a.warmingStatus] ?? 5;
+        const bW = warmOrder[b.warmingStatus] ?? 5;
+        if (aW !== bW) return aW - bW;
+        return (b.commentCount || 0) - (a.commentCount || 0);
+      }
+      default: return 0;
+    }
+  });
+
+  document.getElementById('prospectCount').textContent = `${filtered.length} of ${allProspects.length} prospects`;
+
+  const div = document.getElementById('prospectsList');
+  if (filtered.length === 0) {
+    div.innerHTML = '<div class="no-match">No prospects found</div>';
+    return;
+  }
+
+  div.innerHTML = filtered.map(p => {
+    const commentInfo = p.commentCount > 0
+      ? `${p.commentCount} comment${p.commentCount !== 1 ? 's' : ''} &middot; Last: ${formatDate(p.lastCommented)}`
+      : 'No comments yet';
+
+    const stale = p.lastCommented && daysSince(p.lastCommented) >= 21;
+    const neverCommented = !p.lastCommented;
+    const warmStatus = p.warmingStatus || 'not_started';
+    const warmingHtml = renderWarmingProgress(p.commentCount, warmStatus);
+
+    const statusLabel = {
+      not_started: 'Not Started', connection_sent: 'Conn Sent', connection_accepted: 'Conn Accepted',
+      dm_sent: 'DM Sent', follow_up_1: 'Follow-Up 1', follow_up_2: 'Follow-Up 2',
+      replied: 'Replied', cold: 'Cold'
+    }[p.status] || p.status;
+
+    return `
+      <div class="prospect-card" style="${warmStatus === 'dm_ready' ? 'border-color:#10B981;' : warmStatus === 'replied' ? 'border-color:#10B981;background:#F0FDF4;' : ''}">
+        <div class="prospect-info">
+          <div class="prospect-name">${esc(p.name)}</div>
+          <div class="prospect-meta">
+            <span>${esc(p.company || 'No company')}</span>
+            <span class="segment-badge ${esc(p.segment)}">${esc(p.segmentLabel)}</span>
+            <span class="status-badge ${esc(p.status)}">${statusLabel}</span>
+            ${stale && warmStatus === 'commenting' ? '<span class="inactive-flag">Stale (3+ weeks)</span>' : ''}
+            ${neverCommented && warmStatus === 'not_started' ? '<span class="inactive-flag" style="background:#EDE9FE;color:#5B21B6;">Never commented</span>' : ''}
+          </div>
+          <div class="prospect-meta" style="margin-top:4px;">
+            ${warmingHtml}
+            <span class="comment-stat" style="margin-left:8px;">${commentInfo}</span>
+          </div>
+        </div>
+        <div class="prospect-actions">
+          ${getActivityUrl(p.linkedinUrl)
+            ? `<a href="${esc(getActivityUrl(p.linkedinUrl))}" target="_blank" class="btn btn-primary btn-sm" title="View recent posts — won't trigger profile view">Activity</a>`
+            : `<a href="${esc(getLinkedInSearchUrl(p.name))}" target="_blank" class="btn btn-secondary btn-sm" title="Search LinkedIn to find their activity">Activity</a>`}
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+// ============================================================
+// UPLOADS TAB
+// ============================================================
+const uploadZone = document.getElementById('uploadZone');
+const fileInput = document.getElementById('fileInput');
+
+uploadZone.addEventListener('click', () => fileInput.click());
+uploadZone.addEventListener('dragover', (e) => { e.preventDefault(); uploadZone.classList.add('dragover'); });
+uploadZone.addEventListener('dragleave', () => uploadZone.classList.remove('dragover'));
+uploadZone.addEventListener('drop', (e) => {
+  e.preventDefault();
+  uploadZone.classList.remove('dragover');
+  const file = e.dataTransfer.files[0];
+  if (file) handleFileUpload(file);
+});
+fileInput.addEventListener('change', () => {
+  const file = fileInput.files[0];
+  if (file) handleFileUpload(file);
+  fileInput.value = '';
+});
+
+async function handleFileUpload(file) {
+  const allowed = ['image/png', 'image/jpeg', 'image/webp'];
+  if (!allowed.includes(file.type)) {
+    alert('Only PNG, JPG, and WebP images are allowed.');
+    return;
+  }
+  if (file.size > 10 * 1024 * 1024) {
+    alert('File too large (max 10MB).');
+    return;
+  }
+
+  uploadZone.classList.add('uploading');
+
+  const reader = new FileReader();
+  reader.onload = async () => {
+    const base64 = reader.result.split(',')[1];
+    try {
+      const result = await apiPost('/api/screenshots', {
+        filename: file.name,
+        mimeType: file.type,
+        data: base64,
+        notes: ''
+      });
+      if (result.ok) {
+        loadScreenshots();
+        loadStats();
+        loadTodayComments().then(() => loadDailyTargets());
+      }
+    } catch (err) {
+      alert('Upload failed: ' + err.message);
+    }
+    uploadZone.classList.remove('uploading');
+  };
+  reader.readAsDataURL(file);
+}
+
+async function loadScreenshots() {
+  const data = await apiGet('/api/screenshots');
+  renderScreenshots(data.screenshots || []);
+}
+
+function renderScreenshots(screenshots) {
+  const div = document.getElementById('screenshotsList');
+  if (screenshots.length === 0) {
+    div.innerHTML = '<div class="no-match">No screenshots uploaded yet</div>';
+    return;
+  }
+
+  div.innerHTML = screenshots.map(sc => {
+    const statusLabel = { new: 'New', processed: 'Processed' }[sc.status] || sc.status;
+    const filepath = `/Users/danefrederiksen/Desktop/Claude code/data/screenshots/${sc.id}.${sc.ext}`;
+
+    return `
+      <div class="screenshot-card">
+        <img class="screenshot-thumb" src="/api/screenshots/${esc(sc.id)}/image"
+             onclick="window.open('/api/screenshots/${esc(sc.id)}/image', '_blank')"
+             title="Click to view full size">
+        <div class="screenshot-meta">
+          <div class="filename">${esc(sc.filename)}</div>
+          <div class="timestamp">${formatTime(sc.uploadedAt)} &middot; ${formatDate(sc.uploadedAt)} &middot; ${Math.round(sc.sizeBytes / 1024)}KB</div>
+          <span class="screenshot-status ${esc(sc.status)}">${statusLabel}</span>
+          <div class="filepath">${esc(filepath)}</div>
+          <div style="margin-top:8px;display:flex;gap:6px;align-items:center;">
+            <button class="btn btn-secondary btn-sm" onclick="copyFilepath(this, '${esc(filepath)}')">Copy Path</button>
+            ${sc.status === 'new'
+              ? `<button class="btn btn-primary btn-sm" onclick="markScreenshot('${esc(sc.id)}', 'processed')">Mark Processed</button>`
+              : ''}
+            <button class="btn btn-secondary btn-sm" style="color:#991B1B;" onclick="deleteScreenshot('${esc(sc.id)}')">Delete</button>
+          </div>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function copyFilepath(btn, filepath) {
+  navigator.clipboard.writeText(filepath);
+  const toast = document.createElement('span');
+  toast.className = 'copy-toast';
+  toast.textContent = 'Copied!';
+  btn.parentElement.appendChild(toast);
+  setTimeout(() => toast.remove(), 1500);
+}
+
+async function markScreenshot(id, status) {
+  await fetch('/api/screenshots/' + id, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ status })
+  });
+  loadScreenshots();
+}
+
+async function deleteScreenshot(id) {
+  if (!confirm('Delete this screenshot?')) return;
+  await fetch('/api/screenshots/' + id, { method: 'DELETE' });
+  loadScreenshots();
+}
+
+// ============================================================
+// SCREENSHOT IMPORT → TARGETS
+// ============================================================
+let lastMatches = [];
+let importedScreenshotId = null;
+
+function toggleImport() {
+  const section = document.getElementById('importSection');
+  const toggle = document.getElementById('importToggle');
+  section.classList.toggle('collapsed');
+  toggle.textContent = section.classList.contains('collapsed') ? 'Show' : 'Hide';
+}
+
+// Mini upload zone in import section
+const importUploadZone = document.getElementById('importUploadZone');
+const importFileInput = document.getElementById('importFileInput');
+
+importUploadZone.addEventListener('click', () => importFileInput.click());
+importUploadZone.addEventListener('dragover', (e) => { e.preventDefault(); importUploadZone.style.borderColor = '#F38B1C'; });
+importUploadZone.addEventListener('dragleave', () => { importUploadZone.style.borderColor = '#ddd'; });
+importUploadZone.addEventListener('drop', (e) => {
+  e.preventDefault();
+  importUploadZone.style.borderColor = '#ddd';
+  const file = e.dataTransfer.files[0];
+  if (file) handleImportUpload(file);
+});
+importFileInput.addEventListener('change', () => {
+  const file = importFileInput.files[0];
+  if (file) handleImportUpload(file);
+  importFileInput.value = '';
+});
+
+async function handleImportUpload(file) {
+  const allowed = ['image/png', 'image/jpeg', 'image/webp'];
+  if (!allowed.includes(file.type)) { alert('Only PNG, JPG, and WebP allowed.'); return; }
+  if (file.size > 10 * 1024 * 1024) { alert('File too large (max 10MB).'); return; }
+
+  const reader = new FileReader();
+  reader.onload = async () => {
+    const base64 = reader.result.split(',')[1];
+    try {
+      // Upload to server
+      const result = await apiPost('/api/screenshots', {
+        filename: file.name, mimeType: file.type, data: base64, notes: 'Imported for daily targets'
+      });
+      if (result.ok) {
+        importedScreenshotId = result.screenshot.id;
+        // Show thumbnail preview
+        document.getElementById('importPreview').innerHTML =
+          `<img src="/api/screenshots/${result.screenshot.id}/image" alt="Screenshot">`;
+        // Auto-run OCR to extract names
+        await runOcrAndMatch(result.screenshot.id);
+      }
+    } catch (err) {
+      alert('Upload failed: ' + err.message);
+    }
+  };
+  reader.readAsDataURL(file);
+}
+
+async function runOcrAndMatch(screenshotId) {
+  const statusEl = document.getElementById('matchStatus');
+  const namesEl = document.getElementById('importNames');
+  statusEl.textContent = 'Reading names from screenshot...';
+  namesEl.value = '';
+  namesEl.placeholder = 'Extracting names from screenshot...';
+
+  try {
+    const ocrResult = await apiPost(`/api/screenshots/${screenshotId}/ocr`, {});
+    if (ocrResult.ok && ocrResult.names && ocrResult.names.length > 0) {
+      namesEl.value = ocrResult.names.join('\n');
+      statusEl.textContent = `Found ${ocrResult.names.length} names — matching...`;
+      // Auto-trigger the match
+      await matchNames();
+    } else {
+      statusEl.textContent = 'No names detected. Paste names manually below.';
+      namesEl.placeholder = 'Paste names from Sales Nav alerts (one per line)';
+    }
+  } catch (err) {
+    statusEl.textContent = 'OCR failed — paste names manually.';
+    namesEl.placeholder = 'Paste names from Sales Nav alerts (one per line)';
+    console.error('OCR error:', err);
+  }
+}
+
+async function matchNames() {
+  const raw = document.getElementById('importNames').value.trim();
+  if (!raw) { alert('Paste some names first.'); return; }
+
+  const names = raw.split('\n').map(n => n.trim()).filter(n => n.length > 0);
+  if (names.length === 0) { alert('No names found.'); return; }
+
+  document.getElementById('matchStatus').textContent = 'Searching...';
+
+  try {
+    const data = await apiPost('/api/match-names', { names });
+    lastMatches = data.matches || [];
+    const unmatched = data.unmatched || [];
+
+    const resultsDiv = document.getElementById('matchResults');
+    let html = '';
+
+    if (lastMatches.length > 0) {
+      html += lastMatches.map(m => `
+        <div class="match-item">
+          <div>
+            <span class="match-name">${esc(m.name)}</span>
+            <span class="match-meta"> — ${esc(m.company || '')} &middot; ${esc(m.segmentLabel)}</span>
+            ${m.commentedToday ? '<span style="color:#10B981;font-size:11px;font-weight:600;margin-left:6px;">Done today</span>' : ''}
+          </div>
+          <span class="match-badge found">Matched</span>
+        </div>
+      `).join('');
+    }
+
+    if (unmatched.length > 0) {
+      html += unmatched.map(name => `
+        <div class="match-item">
+          <div><span class="match-name" style="color:#999;">${esc(name)}</span></div>
+          <span class="match-badge notfound">Not in system</span>
+        </div>
+      `).join('');
+    }
+
+    if (lastMatches.length > 0) {
+      html += `
+        <div class="import-actions" style="margin-top:12px;">
+          <button class="btn btn-primary" onclick="setOverrideTargets()">
+            Set ${lastMatches.length} as Today's Targets
+          </button>
+          <span style="font-size:12px;color:#999;">Replaces auto-generated targets for today</span>
+        </div>
+      `;
+    }
+
+    resultsDiv.innerHTML = html;
+    document.getElementById('matchStatus').textContent = `${lastMatches.length} matched, ${unmatched.length} not found`;
+
+  } catch (err) {
+    document.getElementById('matchStatus').textContent = 'Error: ' + err.message;
+  }
+}
+
+async function setOverrideTargets() {
+  if (lastMatches.length === 0) return;
+
+  const prospectIds = lastMatches.map(m => m.id);
+
+  try {
+    await apiPost('/api/daily-targets/override', {
+      prospectIds,
+      screenshotId: importedScreenshotId || null
+    });
+
+    // Clear the import UI
+    document.getElementById('matchResults').innerHTML = '';
+    document.getElementById('importNames').value = '';
+    document.getElementById('matchStatus').textContent = '';
+    document.getElementById('importSection').classList.add('collapsed');
+    document.getElementById('importToggle').textContent = 'Show';
+    lastMatches = [];
+
+    // Reload targets
+    await loadDailyTargets();
+    await loadStats();
+
+  } catch (err) {
+    alert('Failed to set targets: ' + err.message);
+  }
+}
+
+async function clearOverride() {
+  try {
+    await fetch('/api/daily-targets/override', { method: 'DELETE' });
+    await loadDailyTargets();
+  } catch (err) {
+    alert('Failed to clear: ' + err.message);
+  }
+}
+
+// ============================================================
+// DM QUEUE TAB
+// ============================================================
+async function loadDmQueue() {
+  const data = await apiGet('/api/dm-queue');
+  dmQueueData = data.prospects || [];
+  renderDmQueue();
+  updateDmBadge();
+}
+
+function renderDmQueue() {
+  const div = document.getElementById('dmQueueList');
+  const countEl = document.getElementById('dmQueueCount');
+  countEl.textContent = `${dmQueueData.length} prospect${dmQueueData.length !== 1 ? 's' : ''} ready`;
+
+  if (dmQueueData.length === 0) {
+    div.innerHTML = `
+      <div class="no-match">
+        <div class="big">No prospects ready to DM yet</div>
+        Keep commenting — prospects move here after ${COMMENTS_TO_DM} comments
+      </div>
+    `;
+    return;
+  }
+
+  div.innerHTML = dmQueueData.map(p => {
+    const activityUrl = getActivityUrl(p.linkedinUrl);
+    const profileUrl = p.linkedinUrl || '#';
+
+    return `
+      <div class="dm-card" id="dm-${esc(p.id)}">
+        <div class="dm-card-header">
+          <div>
+            <div class="dm-card-name">${esc(p.name)}</div>
+            <div class="dm-card-meta">
+              <span>${esc(p.company || 'No company')}</span>
+              <span class="segment-badge ${esc(p.segment)}">${esc(p.segmentLabel)}</span>
+              <span style="color:#10B981;font-weight:700;">${p.commentCount} comments logged</span>
+              <span style="color:#bbb;">Last: ${formatDate(p.lastCommented)}</span>
+            </div>
+          </div>
+          <span class="dm-ready-badge">Ready to DM</span>
+        </div>
+        <div class="dm-template-box" id="template-${esc(p.id)}">${esc(p.dmTemplate)}</div>
+        <div class="dm-actions">
+          <button class="btn btn-copy" onclick="copyTemplate('${esc(p.id)}', this)">Copy Message</button>
+          ${profileUrl !== '#' ? `<a href="${esc(profileUrl)}" target="_blank" class="btn btn-secondary btn-sm">LinkedIn Profile</a>` : ''}
+          ${activityUrl ? `<a href="${esc(activityUrl)}" target="_blank" class="btn btn-secondary btn-sm">Activity</a>` : ''}
+          <button class="btn btn-success" onclick="logDmSent('${esc(p.id)}', '${esc(p.segment)}', '${esc(p.name).replace(/'/g, "\\'")}')">I Sent the DM</button>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function copyTemplate(prospectId, btn) {
+  const box = document.getElementById('template-' + prospectId);
+  if (box) {
+    navigator.clipboard.writeText(box.textContent);
+    const original = btn.textContent;
+    btn.textContent = 'Copied!';
+    btn.style.background = '#D1FAE5';
+    btn.style.color = '#065F46';
+    setTimeout(() => {
+      btn.textContent = original;
+      btn.style.background = '';
+      btn.style.color = '';
+    }, 1500);
+  }
+}
+
+async function logDmSent(prospectId, segment, name) {
+  const templateBox = document.getElementById('template-' + prospectId);
+  const message = templateBox ? templateBox.textContent : '';
+
+  try {
+    const result = await apiPost('/api/warming-dm', { prospectId, segment, message });
+    if (result.ok) {
+      // Flash success on the card
+      const card = document.getElementById('dm-' + prospectId);
+      if (card) {
+        card.style.borderColor = '#10B981';
+        card.style.background = '#F0FDF4';
+        card.innerHTML = `
+          <div style="text-align:center;padding:20px;">
+            <div style="font-size:24px;margin-bottom:8px;">&#10003;</div>
+            <div style="font-weight:700;color:#065F46;">DM logged for ${esc(name)}</div>
+            <div style="font-size:12px;color:#5A6B7A;margin-top:4px;">Moved to Sent / Replies tab</div>
+          </div>
+        `;
+        setTimeout(() => loadDmQueue(), 2000);
+      }
+    }
+  } catch (err) {
+    alert('Failed to log DM: ' + err.message);
+  }
+}
+
+async function updateDmBadge() {
+  try {
+    const data = await apiGet('/api/dm-queue');
+    const count = (data.prospects || []).length;
+    const badge = document.getElementById('dmQueueBadge');
+    if (count > 0) {
+      badge.textContent = count;
+      badge.style.display = 'inline-block';
+    } else {
+      badge.style.display = 'none';
+    }
+  } catch {}
+}
+
+// ============================================================
+// SENT / REPLIES TAB
+// ============================================================
+async function loadSentData() {
+  const [sentRes, statsRes] = await Promise.all([
+    apiGet('/api/dm-sent'),
+    apiGet('/api/warming-stats')
+  ]);
+  sentData = sentRes.prospects || [];
+  warmingStats = statsRes;
+  renderSentTab();
+  updateSentBadge();
+}
+
+function renderSentTab() {
+  renderConversionStats();
+  renderSentList();
+}
+
+function renderConversionStats() {
+  const div = document.getElementById('conversionStats');
+  if (!warmingStats) { div.innerHTML = ''; return; }
+
+  const f = warmingStats.funnel;
+  const total = f.commenting + f.dmReady + f.dmSent + f.replied;
+  const maxVal = Math.max(f.commenting, f.dmReady, f.dmSent, f.replied, 1);
+
+  div.innerHTML = `
+    <div class="conversion-banner">
+      <div class="conversion-stat">
+        <div class="number">${f.commenting}</div>
+        <div class="label">Warming</div>
+      </div>
+      <div class="conversion-stat">
+        <div class="number" style="color:#10B981;">${f.dmReady}</div>
+        <div class="label">DM Ready</div>
+      </div>
+      <div class="conversion-stat">
+        <div class="number" style="color:#3B82F6;">${f.dmSent}</div>
+        <div class="label">DM Sent</div>
+      </div>
+      <div class="conversion-stat">
+        <div class="number green">${f.replied}</div>
+        <div class="label">Replied</div>
+      </div>
+      <div class="conversion-stat">
+        <div class="number" style="color:#F38B1C;">${warmingStats.conversionRate}%</div>
+        <div class="label">Reply Rate</div>
+      </div>
+    </div>
+  `;
+}
+
+function renderSentList() {
+  const div = document.getElementById('sentList');
+  const countEl = document.getElementById('sentCount');
+  countEl.textContent = `${sentData.length} total`;
+
+  if (sentData.length === 0) {
+    div.innerHTML = `
+      <div class="no-match">
+        <div class="big">No DMs sent yet</div>
+        Warm up prospects with comments, then send DMs from the DM Queue tab
+      </div>
+    `;
+    return;
+  }
+
+  div.innerHTML = sentData.map(p => {
+    const hasReply = p.warmingStatus === 'replied';
+    const daysSinceDm = p.dmSentDate ? daysSince(p.dmSentDate) : null;
+    const waitLabel = daysSinceDm !== null
+      ? (daysSinceDm === 0 ? 'Sent today' : `${daysSinceDm} day${daysSinceDm !== 1 ? 's' : ''} ago`)
+      : '';
+
+    return `
+      <div class="sent-card ${hasReply ? 'has-reply' : ''}" id="sent-${esc(p.id)}">
+        <div class="sent-info">
+          <div class="sent-name">${esc(p.name)} ${hasReply ? '<span class="replied-badge">Replied!</span>' : ''}</div>
+          <div class="sent-meta">
+            <span>${esc(p.company || '')}</span>
+            <span class="segment-badge ${esc(p.segment)}" style="font-size:10px;">${esc(p.segmentLabel)}</span>
+            <span style="color:#bbb;">${p.commentCount} comments</span>
+            <span class="sent-date">DM: ${formatDate(p.dmSentDate)} (${waitLabel})</span>
+            ${hasReply ? `<span style="color:#10B981;font-weight:600;">Reply: ${formatDate(p.replyDate)}</span>` : ''}
+          </div>
+        </div>
+        <div style="display:flex;gap:6px;align-items:center;">
+          ${p.linkedinUrl ? `<a href="${esc(p.linkedinUrl)}" target="_blank" class="btn btn-secondary btn-sm">Profile</a>` : ''}
+          ${!hasReply ? `<button class="btn btn-success btn-sm" onclick="logReply('${esc(p.id)}', '${esc(p.segment)}', '${esc(p.name).replace(/'/g, "\\'")}')">Got Reply</button>` : ''}
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+async function logReply(prospectId, segment, name) {
+  try {
+    const result = await apiPost('/api/warming-reply', { prospectId, segment });
+    if (result.ok) {
+      const card = document.getElementById('sent-' + prospectId);
+      if (card) {
+        card.style.borderColor = '#10B981';
+        card.style.background = '#F0FDF4';
+        const nameEl = card.querySelector('.sent-name');
+        if (nameEl) nameEl.innerHTML += ' <span class="replied-badge">Replied!</span>';
+      }
+      setTimeout(() => loadSentData(), 1000);
+    }
+  } catch (err) {
+    alert('Failed to log reply: ' + err.message);
+  }
+}
+
+async function updateSentBadge() {
+  try {
+    const data = await apiGet('/api/dm-sent');
+    const waiting = (data.prospects || []).filter(p => p.warmingStatus === 'dm_sent').length;
+    const badge = document.getElementById('sentBadge');
+    if (waiting > 0) {
+      badge.textContent = waiting;
+      badge.style.display = 'inline-block';
+    } else {
+      badge.style.display = 'none';
+    }
+  } catch {}
+}
+
+// ============================================================
+// TAB SWITCHING
+// ============================================================
+function switchTab(tab) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t.dataset.tab === tab));
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.toggle('active', p.id === 'panel-' + tab));
+
+  if (tab === 'search') {
+    loadStats();
+    loadTodayComments().then(() => loadDailyTargets());
+    searchInput.focus();
+  } else if (tab === 'dmqueue') {
+    loadDmQueue();
+  } else if (tab === 'sent') {
+    loadSentData();
+  } else if (tab === 'history') {
+    loadHistory();
+  } else if (tab === 'prospects') {
+    loadProspectsData();
+  } else if (tab === 'uploads') {
+    loadScreenshots();
+  }
+}
+
+// ============================================================
+// INIT
+// ============================================================
+async function init() {
+  await loadStats();
+  await loadTodayComments();
+  await loadDailyTargets();
+  updateDmBadge();
+  updateSentBadge();
+  searchInput.focus();
+}
+
+init();
+</script>
+
+</body>
+</html>

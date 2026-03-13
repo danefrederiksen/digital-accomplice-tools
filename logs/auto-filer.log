@@ -1,0 +1,104 @@
+[2026-03-09T01:57:43.330Z] DA Auto-Filer started
+[2026-03-09T01:57:43.336Z] Watching: /Users/danefrederiksen/Downloads
+[2026-03-09T01:57:43.336Z] Filing to: /Users/danefrederiksen/Desktop/Digital Accomplice
+[2026-03-09T01:57:46.342Z] Found 61 existing DA_ file(s) — processing...
+[2026-03-09T01:57:46.343Z] Unknown department "Agent" in DA_Agent_Daily_Report_Instructions (1).md — leaving in Downloads
+[2026-03-09T01:57:46.343Z] Unknown department "Agent" in DA_Agent_Daily_Report_Instructions.md — leaving in Downloads
+[2026-03-09T01:57:46.343Z] Skipping DA_Agent_Registry.md — doesn't match DA_{Dept}_{Sub}_ pattern
+[2026-03-09T01:57:46.343Z] Unknown department "Brand" in DA_Brand_Guidelines_Voice_Guide.docx — leaving in Downloads
+[2026-03-09T01:57:46.343Z] Unknown department "Brand" in DA_Brand_Guidelines_v2.docx — leaving in Downloads
+[2026-03-09T01:57:46.343Z] Skipping DA_Business_Plan.docx — doesn't match DA_{Dept}_{Sub}_ pattern
+[2026-03-09T01:57:46.343Z] Unknown department "Business" in DA_Business_Plan_v3.docx — leaving in Downloads
+[2026-03-09T01:57:46.343Z] Unknown department "CC" in DA_CC_Status_Audit_2026-03-07.pdf — leaving in Downloads
+[2026-03-09T01:57:46.344Z] Unknown department "Consolidated" in DA_Consolidated_Knowledge_Base_v4.docx — leaving in Downloads
+[2026-03-09T01:57:46.344Z] Unknown department "Content" in DA_Content_Initiative_Status_Report.docx — leaving in Downloads
+[2026-03-09T01:57:46.344Z] Skipping DA_DailyReport_Mar6_2026.pdf — doesn't match DA_{Dept}_{Sub}_ pattern
+[2026-03-09T01:57:46.344Z] Unknown department "Daily" in DA_Daily_LinkedIn_Plan_2026-02-25.xlsx — leaving in Downloads
+[2026-03-09T01:57:46.344Z] Unknown department "Daily" in DA_Daily_Outreach_Tracker_2026-02-24 (1).xlsx — leaving in Downloads
+[2026-03-09T01:57:46.344Z] Unknown department "Daily" in DA_Daily_Outreach_Tracker_2026-02-24.xlsx — leaving in Downloads
+[2026-03-09T01:57:46.344Z] Unknown department "Daily" in DA_Daily_Outreach_Tracker_2026-02-25 (1).xlsx — leaving in Downloads
+[2026-03-09T01:57:46.344Z] Unknown department "Daily" in DA_Daily_Outreach_Tracker_2026-02-25.xlsx — leaving in Downloads
+[2026-03-09T01:57:46.344Z] Unknown department "Daily" in DA_Daily_Outreach_Tracker_Feb24_FINAL.xlsx — leaving in Downloads
+[2026-03-09T01:57:46.345Z] Unknown department "Daily" in DA_Daily_Outreach_Tracker_Feb24_REVISED (1).xlsx — leaving in Downloads
+[2026-03-09T01:57:46.345Z] Unknown department "Daily" in DA_Daily_Outreach_Tracker_Feb24_REVISED.xlsx — leaving in Downloads
+[2026-03-09T01:57:46.345Z] Unknown department "Daily" in DA_Daily_Outreach_Tracker_Feb24_v2.xlsx — leaving in Downloads
+[2026-03-09T01:57:46.345Z] Unknown department "Desktop" in DA_Desktop_Downloads_Cleanup.xlsx — leaving in Downloads
+[2026-03-09T01:57:46.345Z] Unknown department "Executive" in DA_Executive_Summary_Feb2026.md — leaving in Downloads
+[2026-03-09T01:57:46.345Z] Unknown department "FolderStructure" in DA_FolderStructure_Outline_Mar5.txt — leaving in Downloads
+[2026-03-09T01:57:46.345Z] Unknown department "How" in DA_How_I_Help_OnePager.pdf — leaving in Downloads
+[2026-03-09T01:57:46.345Z] Unknown department "Infographic" in DA_Infographic_Style_Prompt.txt — leaving in Downloads
+[2026-03-09T01:57:46.345Z] Unknown department "LinkedIn" in DA_LinkedIn_Content_Calendar.docx — leaving in Downloads
+[2026-03-09T01:57:46.345Z] Unknown department "LinkedIn" in DA_LinkedIn_Post_A.pdf — leaving in Downloads
+[2026-03-09T01:57:46.346Z] Unknown department "LinkedIn" in DA_LinkedIn_Post_B.pdf — leaving in Downloads
+[2026-03-09T01:57:46.346Z] Unknown department "LinkedIn" in DA_LinkedIn_Post_C.pdf — leaving in Downloads
+[2026-03-09T01:57:46.346Z] Unknown department "LinkedIn" in DA_LinkedIn_Post_Cybersecurity_AI_Video.docx — leaving in Downloads
+[2026-03-09T01:57:46.346Z] Unknown department "LinkedIn" in DA_LinkedIn_Post_VideoStrategy_Draft.docx — leaving in Downloads
+[2026-03-09T01:57:46.346Z] Unknown department "LinkedIn" in DA_LinkedIn_Post_VideoStrategy_v2 (1).docx — leaving in Downloads
+[2026-03-09T01:57:46.346Z] Unknown department "LinkedIn" in DA_LinkedIn_Post_VideoStrategy_v2.docx — leaving in Downloads
+[2026-03-09T01:57:46.346Z] Unknown department "LinkedIn" in DA_LinkedIn_Post_VideoStrategy_v3.docx — leaving in Downloads
+[2026-03-09T01:57:46.346Z] Skipping DA_Master_Inventory.xlsx — doesn't match DA_{Dept}_{Sub}_ pattern
+[2026-03-09T01:57:46.346Z] Skipping DA_Master_Prospects.xlsx — doesn't match DA_{Dept}_{Sub}_ pattern
+[2026-03-09T01:57:46.346Z] Skipping DA_Master_Reference (1).md — doesn't match DA_{Dept}_{Sub}_ pattern
+[2026-03-09T01:57:46.346Z] Skipping DA_Master_Reference (2).md — doesn't match DA_{Dept}_{Sub}_ pattern
+[2026-03-09T01:57:46.346Z] Skipping DA_Master_Reference (3).md — doesn't match DA_{Dept}_{Sub}_ pattern
+[2026-03-09T01:57:46.346Z] Skipping DA_Master_Reference.md — doesn't match DA_{Dept}_{Sub}_ pattern
+[2026-03-09T01:57:46.346Z] Unknown department "Objection" in DA_Objection_Handling_FAQ (1).docx — leaving in Downloads
+[2026-03-09T01:57:46.346Z] Unknown department "Objection" in DA_Objection_Handling_FAQ.docx — leaving in Downloads
+[2026-03-09T01:57:46.346Z] Unknown department "Objection" in DA_Objection_Handling_FAQ_v2.docx — leaving in Downloads
+[2026-03-09T01:57:46.346Z] Unknown department "Offers" in DA_Offers_Testing_Playbook copy.docx — leaving in Downloads
+[2026-03-09T01:57:46.346Z] Unknown department "Organization" in DA_Organization_Session_Progress_Mar5.md — leaving in Downloads
+[2026-03-09T01:57:46.346Z] Skipping DA_OutreachProgress_Feb23-Mar6_2026.pdf — doesn't match DA_{Dept}_{Sub}_ pattern
+[2026-03-09T01:57:46.346Z] Unknown department "Outreach" in DA_Outreach_Agent_Daily_Report_2026-02-24.docx — leaving in Downloads
+[2026-03-09T01:57:46.346Z] Unknown department "Outreach" in DA_Outreach_Agent_Daily_Report_2026-02-25.docx — leaving in Downloads
+[2026-03-09T01:57:46.346Z] Unknown department "Outreach" in DA_Outreach_Drafts_Feb2026.docx — leaving in Downloads
+[2026-03-09T01:57:46.346Z] Unknown department "Outreach" in DA_Outreach_Drafts_Feb2026.md — leaving in Downloads
+[2026-03-09T01:57:46.346Z] Unknown department "Outreach" in DA_Outreach_Strategy_2026-02-24 (1).docx — leaving in Downloads
+[2026-03-09T01:57:46.346Z] Unknown department "Outreach" in DA_Outreach_Strategy_2026-02-24.docx — leaving in Downloads
+[2026-03-09T01:57:46.346Z] Unknown department "Outreach" in DA_Outreach_Tracker_2026-02-25 (2).xlsx — leaving in Downloads
+[2026-03-09T01:57:46.346Z] Unknown department "Outreach" in DA_Outreach_Tracking_Update_Feb24_2026.docx — leaving in Downloads
+[2026-03-09T01:57:46.346Z] Unknown department "Pipeline" in DA_Pipeline_Master_Document.docx — leaving in Downloads
+[2026-03-09T01:57:46.346Z] Skipping DA_Pipeline_Tracker.xlsx — doesn't match DA_{Dept}_{Sub}_ pattern
+[2026-03-09T01:57:46.346Z] Skipping DA_PromoSlide_Apr14Talk_v1.html — doesn't match DA_{Dept}_{Sub}_ pattern
+[2026-03-09T01:57:46.346Z] Skipping DA_ProspectingProcess_v1_2026-03-06.pdf — doesn't match DA_{Dept}_{Sub}_ pattern
+[2026-03-09T01:57:46.346Z] Unknown department "Revised" in DA_Revised_Action_Plan_Feb24.docx — leaving in Downloads
+[2026-03-09T01:57:46.347Z] Unknown department "Revised" in DA_Revised_Pipeline_Plan_Feb24.docx — leaving in Downloads
+[2026-03-09T01:57:46.347Z] Unknown department "System" in DA_System_Documentation_Mar1_2026.md — leaving in Downloads
+[2026-03-09T01:57:46.349Z] Watching for new DA_ files...
+[2026-03-09T02:28:36.519Z] ERROR moving DA_Ops_Strategy_WeeklyReport_2026-03-08.pdf: ENOENT: no such file or directory, rename '/Users/danefrederiksen/Downloads/DA_Ops_Strategy_WeeklyReport_2026-03-08.pdf' -> '/Users/danefrederiksen/Desktop/Digital Accomplice/4_Operations/4.1_Strategy/DA_Ops_Strategy_WeeklyReport_2026-03-08.pdf'
+[2026-03-09T02:49:08.572Z] FILED: DA_Sales_Snapshots_BinaryDefense_2026-03-08.pdf → 1_Sales/1.2_Snapshots/DA_Sales_Snapshots_BinaryDefense_2026-03-08.pdf
+[2026-03-09T02:49:12.292Z] ERROR moving DA_Sales_Snapshots_BinaryDefense_Provenance_2026-03-08.pdf: ENOENT: no such file or directory, rename '/Users/danefrederiksen/Downloads/DA_Sales_Snapshots_BinaryDefense_Provenance_2026-03-08.pdf' -> '/Users/danefrederiksen/Desktop/Digital Accomplice/1_Sales/1.2_Snapshots/DA_Sales_Snapshots_BinaryDefense_Provenance_2026-03-08.pdf'
+[2026-03-09T17:41:52.656Z] FILED: DA_Sales_Discovery_RevPal_2026-03-12.pptx → 1_Sales/1.4_Discovery_Calls/DA_Sales_Discovery_RevPal_2026-03-12.pptx
+[2026-03-09T17:49:26.498Z] ERROR moving DA_Sales_Discovery_RevPal_2026-03-12.pptx: ENOENT: no such file or directory, rename '/Users/danefrederiksen/Downloads/DA_Sales_Discovery_RevPal_2026-03-12.pptx' -> '/Users/danefrederiksen/Desktop/Digital Accomplice/1_Sales/1.4_Discovery_Calls/DA_Sales_Discovery_RevPal_2026-03-12-2.pptx'
+[2026-03-09T18:27:26.934Z] FILED: DA_Sales_Discovery_RevPal_2026-03-12.pdf → 1_Sales/1.4_Discovery_Calls/DA_Sales_Discovery_RevPal_2026-03-12.pdf
+[2026-03-09T18:47:00.750Z] ERROR moving DA_Sales_Discovery_RevPal_2026-03-12.pptx: ENOENT: no such file or directory, rename '/Users/danefrederiksen/Downloads/DA_Sales_Discovery_RevPal_2026-03-12.pptx' -> '/Users/danefrederiksen/Desktop/Digital Accomplice/1_Sales/1.4_Discovery_Calls/DA_Sales_Discovery_RevPal_2026-03-12-3.pptx'
+[2026-03-09T18:47:04.691Z] ERROR moving DA_Sales_Discovery_RevPal_2026-03-12.pdf: ENOENT: no such file or directory, rename '/Users/danefrederiksen/Downloads/DA_Sales_Discovery_RevPal_2026-03-12.pdf' -> '/Users/danefrederiksen/Desktop/Digital Accomplice/1_Sales/1.4_Discovery_Calls/DA_Sales_Discovery_RevPal_2026-03-12-2.pdf'
+[2026-03-09T19:01:57.714Z] ERROR moving DA_Sales_Discovery_RevPal_2026-03-12.pptx: ENOENT: no such file or directory, rename '/Users/danefrederiksen/Downloads/DA_Sales_Discovery_RevPal_2026-03-12.pptx' -> '/Users/danefrederiksen/Desktop/Digital Accomplice/1_Sales/1.4_Discovery_Calls/DA_Sales_Discovery_RevPal_2026-03-12-4.pptx'
+[2026-03-09T19:01:58.944Z] ERROR moving DA_Sales_Discovery_RevPal_2026-03-12.pdf: ENOENT: no such file or directory, rename '/Users/danefrederiksen/Downloads/DA_Sales_Discovery_RevPal_2026-03-12.pdf' -> '/Users/danefrederiksen/Desktop/Digital Accomplice/1_Sales/1.4_Discovery_Calls/DA_Sales_Discovery_RevPal_2026-03-12-3.pdf'
+[2026-03-09T19:13:37.718Z] FILED: DA_Sales_Discovery_RevPal_2026-03-12.pptx → 1_Sales/1.4_Discovery_Calls/DA_Sales_Discovery_RevPal_2026-03-12-5.pptx
+[2026-03-09T19:13:38.667Z] ERROR moving DA_Sales_Discovery_RevPal_2026-03-12.pdf: ENOENT: no such file or directory, rename '/Users/danefrederiksen/Downloads/DA_Sales_Discovery_RevPal_2026-03-12.pdf' -> '/Users/danefrederiksen/Desktop/Digital Accomplice/1_Sales/1.4_Discovery_Calls/DA_Sales_Discovery_RevPal_2026-03-12-4.pdf'
+[2026-03-09T21:12:50.241Z] ERROR moving DA_Marketing_Content_LinkedInCard_2026-03-10.png: ENOENT: no such file or directory, rename '/Users/danefrederiksen/Downloads/DA_Marketing_Content_LinkedInCard_2026-03-10.png' -> '/Users/danefrederiksen/Desktop/Digital Accomplice/2_Marketing/2.2_Content/DA_Marketing_Content_LinkedInCard_2026-03-10.png'
+[2026-03-09T21:41:42.928Z] FILED: DA_Marketing_Content_LinkedInCard_2026-03-10.png → 2_Marketing/2.2_Content/DA_Marketing_Content_LinkedInCard_2026-03-10-3.png
+[2026-03-09T21:44:01.424Z] ERROR moving DA_Marketing_Content_LinkedInCard_2026-03-10.png: ENOENT: no such file or directory, rename '/Users/danefrederiksen/Downloads/DA_Marketing_Content_LinkedInCard_2026-03-10.png' -> '/Users/danefrederiksen/Desktop/Digital Accomplice/2_Marketing/2.2_Content/DA_Marketing_Content_LinkedInCard_2026-03-10-4.png'
+[2026-03-09T23:34:55.366Z] FILED: DA_Marketing_Content_VideoAISearchReport_2026-03-09.pdf → 2_Marketing/2.2_Content/DA_Marketing_Content_VideoAISearchReport_2026-03-09.pdf
+[2026-03-09T23:38:31.406Z] ERROR moving DA_Marketing_Content_VideoAISearchNewsletter_2026-03-09.md: ENOENT: no such file or directory, rename '/Users/danefrederiksen/Downloads/DA_Marketing_Content_VideoAISearchNewsletter_2026-03-09.md' -> '/Users/danefrederiksen/Desktop/Digital Accomplice/2_Marketing/2.2_Content/DA_Marketing_Content_VideoAISearchNewsletter_2026-03-09.md'
+[2026-03-10T00:55:05.382Z] FILED: DA_Sales_Prospects_GmailContacts_2025-03-09.xlsx → 1_Sales/1.1_Prospects/DA_Sales_Prospects_GmailContacts_2025-03-09.xlsx
+[2026-03-10T01:30:46.743Z] ERROR moving DA_Sales_Prospects_SalesNavUpload_2026-03-09.csv: ENOENT: no such file or directory, rename '/Users/danefrederiksen/Downloads/DA_Sales_Prospects_SalesNavUpload_2026-03-09.csv' -> '/Users/danefrederiksen/Desktop/Digital Accomplice/1_Sales/1.1_Prospects/DA_Sales_Prospects_SalesNavUpload_2026-03-09.csv'
+[2026-03-10T03:51:51.951Z] ERROR moving DA_Ops_Strategy_DailyReport_2026-03-09.pdf: ENOENT: no such file or directory, rename '/Users/danefrederiksen/Downloads/DA_Ops_Strategy_DailyReport_2026-03-09.pdf' -> '/Users/danefrederiksen/Desktop/Digital Accomplice/4_Operations/4.1_Strategy/DA_Ops_Strategy_DailyReport_2026-03-09.pdf'
+[2026-03-10T16:34:32.511Z] ERROR moving DA_Ops_Tools_SnapshotCapabilityAssessment_2026-03-10.pdf: ENOENT: no such file or directory, rename '/Users/danefrederiksen/Downloads/DA_Ops_Tools_SnapshotCapabilityAssessment_2026-03-10.pdf' -> '/Users/danefrederiksen/Desktop/Digital Accomplice/4_Operations/4.2_Tools/DA_Ops_Tools_SnapshotCapabilityAssessment_2026-03-10.pdf'
+[2026-03-10T17:05:43.422Z] FILED: DA_Sales_Scripts_ReferralPartnerSnapshotPivot_2026-03-10.md → 1_Sales/1.6_Scripts_and_Templates/DA_Sales_Scripts_ReferralPartnerSnapshotPivot_2026-03-10.md
+[2026-03-10T18:29:57.688Z] ERROR moving DA_Sales_Prospects_CRUXYouTubeAudit_2026-03-10.md: ENOENT: no such file or directory, rename '/Users/danefrederiksen/Downloads/DA_Sales_Prospects_CRUXYouTubeAudit_2026-03-10.md' -> '/Users/danefrederiksen/Desktop/Digital Accomplice/1_Sales/1.1_Prospects/DA_Sales_Prospects_CRUXYouTubeAudit_2026-03-10.md'
+[2026-03-10T18:47:45.862Z] FILED: DA_Sales_Prospects_LinkedInExport_2026-03-10.csv → 1_Sales/1.1_Prospects/DA_Sales_Prospects_LinkedInExport_2026-03-10.csv
+[2026-03-10T18:48:39.129Z] ERROR moving DA_Sales_Prospects_LinkedInExport_2026-03-10.csv: ENOENT: no such file or directory, rename '/Users/danefrederiksen/Downloads/DA_Sales_Prospects_LinkedInExport_2026-03-10.csv' -> '/Users/danefrederiksen/Desktop/Digital Accomplice/1_Sales/1.1_Prospects/DA_Sales_Prospects_LinkedInExport_2026-03-10-2.csv'
+[2026-03-10T18:50:22.919Z] FILED: DA_Sales_Prospects_LinkedInExport2_2026-03-10.csv → 1_Sales/1.1_Prospects/DA_Sales_Prospects_LinkedInExport2_2026-03-10.csv
+[2026-03-10T18:51:43.297Z] FILED: DA_Sales_Prospects_LinkedInExport4_2026-03-10.csv → 1_Sales/1.1_Prospects/DA_Sales_Prospects_LinkedInExport4_2026-03-10.csv
+[2026-03-10T18:52:24.795Z] FILED: DA_Sales_Prospects_LinkedInExport4_2026-03-10.csv → 1_Sales/1.1_Prospects/DA_Sales_Prospects_LinkedInExport4_2026-03-10-2.csv
+[2026-03-10T18:53:11.591Z] FILED: DA_Sales_Prospects_LinkedInExport5_2026-03-10.csv → 1_Sales/1.1_Prospects/DA_Sales_Prospects_LinkedInExport5_2026-03-10.csv
+[2026-03-10T18:54:42.487Z] FILED: DA_Sales_Prospects_LinkedInExport6_2026-03-10.csv → 1_Sales/1.1_Prospects/DA_Sales_Prospects_LinkedInExport6_2026-03-10.csv
+[2026-03-10T18:56:40.245Z] ERROR moving DA_Sales_Prospects_LinkedInExport6_2026-03-10.csv: ENOENT: no such file or directory, rename '/Users/danefrederiksen/Downloads/DA_Sales_Prospects_LinkedInExport6_2026-03-10.csv' -> '/Users/danefrederiksen/Desktop/Digital Accomplice/1_Sales/1.1_Prospects/DA_Sales_Prospects_LinkedInExport6_2026-03-10-2.csv'
+[2026-03-10T21:37:08.300Z] ERROR moving DA_Sales_Scripts_AdyenSOW_TalkTrack_2026-03-10.docx: ENOENT: no such file or directory, rename '/Users/danefrederiksen/Downloads/DA_Sales_Scripts_AdyenSOW_TalkTrack_2026-03-10.docx' -> '/Users/danefrederiksen/Desktop/Digital Accomplice/1_Sales/1.6_Scripts_and_Templates/DA_Sales_Scripts_AdyenSOW_TalkTrack_2026-03-10.docx'
+[2026-03-10T21:44:00.020Z] ERROR moving DA_Sales_Scripts_AdyenWhyThisWorks_2026-03-10.pdf: ENOENT: no such file or directory, rename '/Users/danefrederiksen/Downloads/DA_Sales_Scripts_AdyenWhyThisWorks_2026-03-10.pdf' -> '/Users/danefrederiksen/Desktop/Digital Accomplice/1_Sales/1.6_Scripts_and_Templates/DA_Sales_Scripts_AdyenWhyThisWorks_2026-03-10.pdf'
+[2026-03-11T00:31:02.765Z] FILED: DA_Finance_SpendingAnalysis_2026-03-10.xlsx → 5_Finance/DA_Finance_SpendingAnalysis_2026-03-10.xlsx
+[2026-03-11T00:36:17.156Z] FILED: DA_Ops_SoftwareSubscriptions_2026-03-10.xlsx → 4_Operations/DA_Ops_SoftwareSubscriptions_2026-03-10.xlsx
+[2026-03-11T00:48:30.016Z] FILED: DA_Finance_HouseholdBudget_2026-03-10.xlsx → 5_Finance/DA_Finance_HouseholdBudget_2026-03-10.xlsx
+[2026-03-11T01:18:01.458Z] FILED: DA_Sales_Discovery_RevPalVideoStrategy_2026-03-10.pdf → 1_Sales/1.4_Discovery_Calls/DA_Sales_Discovery_RevPalVideoStrategy_2026-03-10.pdf
+[2026-03-11T01:23:54.357Z] ERROR moving DA_Ops_Strategy_ProjectPriorityList_2026-03-10.pdf: ENOENT: no such file or directory, rename '/Users/danefrederiksen/Downloads/DA_Ops_Strategy_ProjectPriorityList_2026-03-10.pdf' -> '/Users/danefrederiksen/Desktop/Digital Accomplice/4_Operations/4.1_Strategy/DA_Ops_Strategy_ProjectPriorityList_2026-03-10.pdf'
