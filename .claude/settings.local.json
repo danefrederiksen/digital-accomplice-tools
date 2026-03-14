@@ -50,7 +50,25 @@
       "Bash(node -e ':*)",
       "Bash(open \"/Users/danefrederiksen/Desktop/Claude code/reports/Prospecting_Activity_Report_2026-03-13.pdf\")",
       "Bash(ln -s ~/Downloads ~/Desktop/Downloads)",
-      "Bash(open \"/Users/danefrederiksen/Desktop/Claude Code/reports/3-week-trajectory.html\")"
+      "Bash(open \"/Users/danefrederiksen/Desktop/Claude Code/reports/3-week-trajectory.html\")",
+      "Bash(python3 -c \":*)",
+      "Bash(curl -s http://localhost:3863/api/opportunities)",
+      "Bash(python3 -m json.tool)",
+      "Bash(curl -v http://localhost:3863/api/opportunities)",
+      "Bash(lsof -ti:3863)",
+      "Bash(echo \"EXIT: $?\")",
+      "Bash(curl -s http://127.0.0.1:3863/api/opportunities)",
+      "Bash(curl -v http://127.0.0.1:3863/api/opportunities)",
+      "Bash(xargs kill:*)",
+      "Bash(python3 -c \"import sys,json; o=json.load\\(sys.stdin\\); print\\(f''''{o[\"\"contact\"\"]} — next: {o[\"\"next_action_date\"\"]} — {o[\"\"next_action\"\"]}''''\\)\")",
+      "Bash(python3 -c \"import sys,json; o=json.load\\(sys.stdin\\); print\\(f''''Added: {o[\"\"contact\"\"]} — {o[\"\"company\"\"]} — yes_to={o[\"\"yes_to\"\"]}''''\\)\")",
+      "Bash(curl -s -X POST http://localhost:3863/api/opportunities -H \"Content-Type: application/json\" -d '{:*)",
+      "Bash(lsof -ti:3850)",
+      "Bash(curl -s http://localhost:3850/sovereign-snapshot.html)",
+      "mcp__800ca824-ea01-4a34-9303-02acf315f924__gmail_create_draft",
+      "Bash(curl -s -X PUT http://localhost:3863/api/opportunities/elexis-mosley -H \"Content-Type: application/json\" -d '{:*)",
+      "Bash(curl -s -X POST http://localhost:3863/api/opportunities/elexis-mosley/history -H \"Content-Type: application/json\" -d '{:*)",
+      "Bash(node --input-type=commonjs -e ':*)"
     ]
   }
 }

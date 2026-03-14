@@ -14,7 +14,8 @@ const TOOLS = [
   { name: 'Prospecting Tool #9 — Substack Subscriber Emails', file: 'tools/substack-serve.js', port: 3859 },
   { name: 'Prospecting Tool #10 — Customers w/ Emails', file: 'tools/customer-serve.js', port: 3860 },
   { name: 'Prospecting Tool #11 — Comment Queue', file: 'tools/comment-queue-serve.js', port: 3861 },
-  { name: 'Prospecting Tool #12 — Referral Partner Emails', file: 'tools/referral-email-serve.js', port: 3862 }
+  { name: 'Prospecting Tool #12 — Referral Partner Emails', file: 'tools/referral-email-serve.js', port: 3862 },
+  { name: 'Sales Opportunities Tracker', file: 'tools/opportunities-serve.js', port: 3863 }
 ];
 
 console.log('\n  ===================================');
@@ -63,6 +64,7 @@ console.log('  Tool #9 (Substack):     http://localhost:3859');
 console.log('  Tool #10 (Customers):   http://localhost:3860');
 console.log('  Tool #11 (Comments):    http://localhost:3861');
 console.log('  Tool #12 (Ref Email):   http://localhost:3862');
+console.log('  Sales Opportunities:    http://localhost:3863');
 console.log('\n  Press Ctrl+C to stop all servers.\n');
 
 // Graceful shutdown — kill all child servers when this script exits

@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DA Sales Opportunities</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: Inter, Arial, Helvetica, sans-serif; background: #111; color: #eee; min-height: 100vh; }
+
+  /* Header */
+  .header { background: #000; border-bottom: 3px solid #F38B1C; padding: 16px 24px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; }
+  .header h1 { font-size: 20px; font-weight: 700; color: #F38B1C; }
+  .header .subtitle { font-size: 13px; color: #999; margin-left: 12px; }
+  .header-right { display: flex; gap: 10px; align-items: center; }
+  .header-right .count { font-size: 14px; color: #ccc; }
+  .btn { padding: 8px 16px; border: none; border-radius: 6px; cursor: pointer; font-size: 13px; font-weight: 600; transition: all 0.15s; }
+  .btn-primary { background: #F38B1C; color: #000; }
+  .btn-primary:hover { background: #e07d10; }
+  .btn-sm { padding: 5px 10px; font-size: 12px; }
+  .btn-danger { background: #dc3545; color: #fff; }
+  .btn-danger:hover { background: #c82333; }
+  .btn-ghost { background: transparent; color: #F38B1C; border: 1px solid #F38B1C; }
+  .btn-ghost:hover { background: #F38B1C22; }
+
+  /* Filters */
+  .filters { padding: 12px 24px; background: #1a1a1a; border-bottom: 1px solid #333; display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+  .filter-btn { padding: 5px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; cursor: pointer; border: 1px solid #444; background: #222; color: #ccc; transition: all 0.15s; }
+  .filter-btn.active { background: #F38B1C; color: #000; border-color: #F38B1C; }
+  .filter-btn:hover { border-color: #F38B1C; }
+  .filter-label { font-size: 12px; color: #888; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+
+  /* Main */
+  .main { padding: 20px 24px; max-width: 1200px; margin: 0 auto; }
+
+  /* Opportunity Card */
+  .opp-card { background: #1a1a1a; border: 1px solid #333; border-radius: 10px; padding: 16px 20px; margin-bottom: 12px; transition: border-color 0.15s; }
+  .opp-card:hover { border-color: #F38B1C; }
+  .opp-card.stage-closed_won { border-left: 4px solid #28a745; }
+  .opp-card.stage-discovery { border-left: 4px solid #F38B1C; }
+  .opp-card.stage-proposal { border-left: 4px solid #ffc107; }
+  .opp-card.stage-engaged { border-left: 4px solid #17a2b8; }
+  .opp-card.stage-lead { border-left: 4px solid #6c757d; }
+  .opp-card.stage-nurture { border-left: 4px solid #6f42c1; }
+  .opp-card.stage-negotiation { border-left: 4px solid #fd7e14; }
+  .opp-card.stage-closed_lost { border-left: 4px solid #dc3545; }
+
+  .opp-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; }
+  .opp-name { font-size: 16px; font-weight: 700; color: #fff; }
+  .opp-company { font-size: 14px; color: #F38B1C; font-weight: 600; }
+  .opp-badges { display: flex; gap: 6px; flex-wrap: wrap; }
+  .badge { padding: 3px 8px; border-radius: 12px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.3px; }
+  .badge-call { background: #17a2b822; color: #17a2b8; border: 1px solid #17a2b844; }
+  .badge-snapshot { background: #F38B1C22; color: #F38B1C; border: 1px solid #F38B1C44; }
+  .badge-video { background: #28a74522; color: #28a745; border: 1px solid #28a74544; }
+  .badge-stage { background: #33333388; color: #aaa; border: 1px solid #44444488; }
+
+  .opp-meta { display: flex; gap: 16px; flex-wrap: wrap; font-size: 13px; color: #999; margin-bottom: 8px; }
+  .opp-meta span { display: flex; align-items: center; gap: 4px; }
+
+  .opp-next { background: #222; border-radius: 6px; padding: 8px 12px; font-size: 13px; margin-bottom: 8px; }
+  .opp-next .label { color: #F38B1C; font-weight: 700; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; }
+  .opp-next .value { color: #eee; margin-top: 2px; }
+  .opp-next .date { color: #999; font-size: 12px; }
+  .opp-next .overdue { color: #dc3545; font-weight: 600; }
+
+  .opp-actions { display: flex; gap: 6px; margin-top: 10px; }
+
+  .opp-notes { font-size: 12px; color: #888; margin-top: 6px; line-height: 1.4; max-height: 40px; overflow: hidden; transition: max-height 0.3s; cursor: pointer; }
+  .opp-notes.expanded { max-height: 500px; }
+
+  .opp-history { margin-top: 10px; padding-top: 10px; border-top: 1px solid #333; }
+  .opp-history h4 { font-size: 12px; color: #888; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
+  .history-entry { font-size: 12px; color: #999; padding: 2px 0; display: flex; gap: 8px; }
+  .history-entry .h-date { color: #666; min-width: 80px; }
+  .history-entry .h-type { color: #F38B1C; font-weight: 600; min-width: 70px; text-transform: uppercase; font-size: 10px; }
+
+  /* Empty state */
+  .empty { text-align: center; padding: 60px 20px; color: #666; }
+  .empty h2 { font-size: 18px; margin-bottom: 8px; color: #888; }
+
+  /* Modal */
+  .modal-overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.7); z-index: 200; justify-content: center; align-items: flex-start; padding: 40px 20px; overflow-y: auto; }
+  .modal-overlay.open { display: flex; }
+  .modal { background: #1a1a1a; border: 1px solid #444; border-radius: 12px; width: 100%; max-width: 600px; padding: 24px; }
+  .modal h2 { font-size: 18px; font-weight: 700; color: #F38B1C; margin-bottom: 16px; }
+  .form-group { margin-bottom: 14px; }
+  .form-group label { display: block; font-size: 12px; font-weight: 600; color: #999; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
+  .form-group input, .form-group select, .form-group textarea {
+    width: 100%; padding: 8px 12px; background: #222; border: 1px solid #444; border-radius: 6px;
+    color: #eee; font-size: 14px; font-family: inherit;
+  }
+  .form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color: #F38B1C; outline: none; }
+  .form-group textarea { resize: vertical; min-height: 60px; }
+  .form-row { display: flex; gap: 12px; }
+  .form-row .form-group { flex: 1; }
+  .checkbox-group { display: flex; gap: 12px; flex-wrap: wrap; }
+  .checkbox-group label { display: flex; align-items: center; gap: 6px; font-size: 13px; color: #ccc; cursor: pointer; text-transform: none; letter-spacing: 0; }
+  .checkbox-group input[type="checkbox"] { width: auto; accent-color: #F38B1C; }
+  .modal-actions { display: flex; justify-content: space-between; margin-top: 20px; }
+
+  /* Today section */
+  .today-section { background: #1a1a1a; border: 2px solid #F38B1C; border-radius: 10px; padding: 16px 20px; margin-bottom: 24px; }
+  .today-section h2 { font-size: 16px; font-weight: 700; color: #F38B1C; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+  .today-section .no-actions { font-size: 14px; color: #666; font-style: italic; }
+
+  /* Score cards */
+  .score-cards { display: flex; gap: 12px; margin-bottom: 20px; flex-wrap: wrap; }
+  .score-card { background: #1a1a1a; border: 1px solid #333; border-radius: 10px; padding: 14px 18px; flex: 1; min-width: 120px; text-align: center; }
+  .score-card .number { font-size: 28px; font-weight: 800; color: #F38B1C; }
+  .score-card .label { font-size: 11px; color: #888; text-transform: uppercase; letter-spacing: 0.5px; margin-top: 2px; }
+
+  /* Section headers */
+  .section-header { font-size: 14px; font-weight: 700; color: #888; text-transform: uppercase; letter-spacing: 0.5px; margin: 20px 0 10px; padding-bottom: 6px; border-bottom: 1px solid #333; }
+
+  /* Auto-refresh indicator */
+  .refresh-indicator { font-size: 11px; color: #555; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div style="display:flex;align-items:baseline;">
+    <h1>Sales Opportunities</h1>
+    <span class="subtitle">Who said YES</span>
+  </div>
+  <div class="header-right">
+    <span class="refresh-indicator" id="lastRefresh"></span>
+    <span class="count" id="totalCount"></span>
+    <button class="btn btn-primary" onclick="openAddModal()">+ Add</button>
+  </div>
+</div>
+
+<div class="filters">
+  <span class="filter-label">Said yes to:</span>
+  <button class="filter-btn active" data-filter="all" onclick="setFilter('all', this)">All</button>
+  <button class="filter-btn" data-filter="call" onclick="setFilter('call', this)">Call</button>
+  <button class="filter-btn" data-filter="snapshot" onclick="setFilter('snapshot', this)">Snapshot</button>
+  <button class="filter-btn" data-filter="video_interview" onclick="setFilter('video_interview', this)">Video Interview</button>
+  <span style="margin-left:auto;"></span>
+  <span class="filter-label">Stage:</span>
+  <button class="filter-btn active" data-stage="all" onclick="setStageFilter('all', this)">All</button>
+  <button class="filter-btn" data-stage="active" onclick="setStageFilter('active', this)">Active</button>
+  <button class="filter-btn" data-stage="nurture" onclick="setStageFilter('nurture', this)">Nurture</button>
+  <button class="filter-btn" data-stage="closed" onclick="setStageFilter('closed', this)">Closed</button>
+</div>
+
+<div class="main">
+  <!-- Score Cards -->
+  <div class="score-cards" id="scoreCards"></div>
+
+  <!-- Due Today -->
+  <div class="today-section" id="todaySection" style="display:none;">
+    <h2>&#9679; Due Today</h2>
+    <div id="todayList"></div>
+  </div>
+
+  <!-- Overdue -->
+  <div class="today-section" id="overdueSection" style="display:none;border-color:#dc3545;">
+    <h2 style="color:#dc3545;">&#9679; Overdue</h2>
+    <div id="overdueList"></div>
+  </div>
+
+  <!-- All Opportunities -->
+  <div class="section-header">All Opportunities</div>
+  <div id="oppList"></div>
+  <div class="empty" id="emptyState" style="display:none;">
+    <h2>No opportunities yet</h2>
+    <p>Click "+ Add" to track your first YES</p>
+  </div>
+</div>
+
+<!-- Add/Edit Modal -->
+<div class="modal-overlay" id="modal" onclick="if(event.target===this)closeModal()">
+  <div class="modal">
+    <h2 id="modalTitle">Add Opportunity</h2>
+    <input type="hidden" id="editId">
+    <div class="form-row">
+      <div class="form-group">
+        <label>Contact Name *</label>
+        <input type="text" id="fContact" placeholder="Jo Kaminska">
+      </div>
+      <div class="form-group">
+        <label>Company</label>
+        <input type="text" id="fCompany" placeholder="Acme Corp">
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Email</label>
+        <input type="email" id="fEmail" placeholder="jo@example.com">
+      </div>
+      <div class="form-group">
+        <label>Type</label>
+        <select id="fType">
+          <option value="prospect">Prospect</option>
+          <option value="client">Client</option>
+          <option value="referral_partner">Referral Partner</option>
+          <option value="client_and_referral">Client + Referral</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Stage</label>
+        <select id="fStage">
+          <option value="lead">Lead</option>
+          <option value="engaged">Engaged</option>
+          <option value="discovery">Discovery</option>
+          <option value="proposal">Proposal</option>
+          <option value="negotiation">Negotiation</option>
+          <option value="closed_won">Closed Won</option>
+          <option value="closed_lost">Closed Lost</option>
+          <option value="nurture">Nurture</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Source</label>
+        <input type="text" id="fSource" placeholder="inbound/calendly, referral/lee, outbound/snapshot">
+      </div>
+    </div>
+    <div class="form-group">
+      <label>Said YES to</label>
+      <div class="checkbox-group">
+        <label><input type="checkbox" id="fYesCall" value="call"> Call / Meeting</label>
+        <label><input type="checkbox" id="fYesSnapshot" value="snapshot"> Snapshot</label>
+        <label><input type="checkbox" id="fYesVideo" value="video_interview"> Video Interview</label>
+      </div>
+    </div>
+    <div class="form-group">
+      <label>Next Action</label>
+      <input type="text" id="fNextAction" placeholder="Follow up after call">
+    </div>
+    <div class="form-group">
+      <label>Next Action Date</label>
+      <input type="date" id="fNextDate">
+    </div>
+    <div class="form-group">
+      <label>Notes</label>
+      <textarea id="fNotes" rows="3" placeholder="Key context about this opportunity..."></textarea>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeModal()">Cancel</button>
+      <div style="display:flex;gap:8px;">
+        <button class="btn btn-danger btn-sm" id="deleteBtn" style="display:none;" onclick="deleteOpp()">Delete</button>
+        <button class="btn btn-primary" onclick="saveOpp()">Save</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- History Modal -->
+<div class="modal-overlay" id="historyModal" onclick="if(event.target===this)closeHistoryModal()">
+  <div class="modal">
+    <h2>Add History Entry</h2>
+    <input type="hidden" id="hOppId">
+    <div class="form-row">
+      <div class="form-group">
+        <label>Date</label>
+        <input type="date" id="hDate">
+      </div>
+      <div class="form-group">
+        <label>Type</label>
+        <select id="hType">
+          <option value="meeting">Meeting</option>
+          <option value="call">Call</option>
+          <option value="email">Email</option>
+          <option value="outreach">Outreach</option>
+          <option value="update">Update</option>
+          <option value="calendar">Calendar</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-group">
+      <label>Note</label>
+      <textarea id="hNote" rows="2" placeholder="What happened?"></textarea>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeHistoryModal()">Cancel</button>
+      <button class="btn btn-primary" onclick="saveHistory()">Add Entry</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const API = '';
+let allOpps = [];
+let currentFilter = 'all';
+let currentStageFilter = 'all';
+
+// ============================================================
+// DATA
+// ============================================================
+async function loadOpps() {
+  try {
+    const res = await fetch(API + '/api/opportunities');
+    const data = await res.json();
+    allOpps = data.opportunities || [];
+    render();
+    document.getElementById('lastRefresh').textContent = 'Updated ' + new Date().toLocaleTimeString();
+  } catch (err) {
+    console.error('Load failed:', err);
+  }
+}
+
+// Auto-refresh every 30 seconds
+setInterval(loadOpps, 30000);
+
+// ============================================================
+// FILTERS
+// ============================================================
+function setFilter(f, btn) {
+  currentFilter = f;
+  document.querySelectorAll('.filters [data-filter]').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  render();
+}
+
+function setStageFilter(f, btn) {
+  currentStageFilter = f;
+  document.querySelectorAll('.filters [data-stage]').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  render();
+}
+
+function filterOpps(opps) {
+  let filtered = opps;
+
+  // Yes-to filter
+  if (currentFilter !== 'all') {
+    filtered = filtered.filter(o => (o.yes_to || []).includes(currentFilter));
+  }
+
+  // Stage filter
+  if (currentStageFilter === 'active') {
+    filtered = filtered.filter(o => !['closed_won', 'closed_lost', 'nurture'].includes(o.stage));
+  } else if (currentStageFilter === 'nurture') {
+    filtered = filtered.filter(o => o.stage === 'nurture');
+  } else if (currentStageFilter === 'closed') {
+    filtered = filtered.filter(o => ['closed_won', 'closed_lost'].includes(o.stage));
+  }
+
+  return filtered;
+}
+
+// ============================================================
+// RENDER
+// ============================================================
+function render() {
+  const today = new Date().toISOString().split('T')[0];
+  const filtered = filterOpps(allOpps);
+
+  // Score cards
+  const yesCall = allOpps.filter(o => (o.yes_to || []).includes('call')).length;
+  const yesSnapshot = allOpps.filter(o => (o.yes_to || []).includes('snapshot')).length;
+  const yesVideo = allOpps.filter(o => (o.yes_to || []).includes('video_interview')).length;
+  const activeCount = allOpps.filter(o => !['closed_won', 'closed_lost'].includes(o.stage)).length;
+
+  document.getElementById('scoreCards').innerHTML = `
+    <div class="score-card"><div class="number">${allOpps.length}</div><div class="label">Total</div></div>
+    <div class="score-card"><div class="number">${activeCount}</div><div class="label">Active</div></div>
+    <div class="score-card"><div class="number">${yesCall}</div><div class="label">Said Yes to Call</div></div>
+    <div class="score-card"><div class="number">${yesSnapshot}</div><div class="label">Said Yes to Snapshot</div></div>
+    <div class="score-card"><div class="number">${yesVideo}</div><div class="label">Said Yes to Video</div></div>
+  `;
+
+  document.getElementById('totalCount').textContent = `${filtered.length} shown`;
+
+  // Due today
+  const dueToday = filtered.filter(o => o.next_action_date === today);
+  const todaySection = document.getElementById('todaySection');
+  if (dueToday.length > 0) {
+    todaySection.style.display = 'block';
+    document.getElementById('todayList').innerHTML = dueToday.map(o => renderCard(o, true)).join('');
+  } else {
+    todaySection.style.display = 'none';
+  }
+
+  // Overdue
+  const overdue = filtered.filter(o => o.next_action_date && o.next_action_date < today && !['closed_won', 'closed_lost'].includes(o.stage));
+  const overdueSection = document.getElementById('overdueSection');
+  if (overdue.length > 0) {
+    overdueSection.style.display = 'block';
+    document.getElementById('overdueList').innerHTML = overdue.map(o => renderCard(o, false, true)).join('');
+  } else {
+    overdueSection.style.display = 'none';
+  }
+
+  // All
+  const stageOrder = ['discovery', 'proposal', 'negotiation', 'engaged', 'lead', 'nurture', 'closed_won', 'closed_lost'];
+  const sorted = [...filtered].sort((a, b) => {
+    const ai = stageOrder.indexOf(a.stage);
+    const bi = stageOrder.indexOf(b.stage);
+    if (ai !== bi) return ai - bi;
+    return (b.updated || '').localeCompare(a.updated || '');
+  });
+
+  const oppList = document.getElementById('oppList');
+  const emptyState = document.getElementById('emptyState');
+
+  if (sorted.length === 0) {
+    oppList.innerHTML = '';
+    emptyState.style.display = 'block';
+  } else {
+    emptyState.style.display = 'none';
+    oppList.innerHTML = sorted.map(o => renderCard(o)).join('');
+  }
+}
+
+function renderCard(opp, isToday, isOverdue) {
+  const yesToBadges = (opp.yes_to || []).map(y => {
+    if (y === 'call') return '<span class="badge badge-call">Call</span>';
+    if (y === 'snapshot') return '<span class="badge badge-snapshot">Snapshot</span>';
+    if (y === 'video_interview') return '<span class="badge badge-video">Video</span>';
+    return '';
+  }).join('');
+
+  const stageLabel = opp.stage.replace('_', ' ');
+  const stageBadge = `<span class="badge badge-stage">${stageLabel}</span>`;
+
+  const today = new Date().toISOString().split('T')[0];
+  let dateClass = '';
+  if (opp.next_action_date && opp.next_action_date < today && !['closed_won', 'closed_lost'].includes(opp.stage)) {
+    dateClass = 'overdue';
+  }
+
+  const historyHtml = (opp.history && opp.history.length > 0) ? `
+    <div class="opp-history">
+      <h4>History (${opp.history.length})</h4>
+      ${opp.history.slice(-5).reverse().map(h => `
+        <div class="history-entry">
+          <span class="h-date">${h.date}</span>
+          <span class="h-type">${h.type}</span>
+          <span>${escHtml(h.note)}</span>
+        </div>
+      `).join('')}
+      ${opp.history.length > 5 ? `<div style="font-size:11px;color:#666;margin-top:4px;">+ ${opp.history.length - 5} more</div>` : ''}
+    </div>
+  ` : '';
+
+  return `
+    <div class="opp-card stage-${opp.stage}">
+      <div class="opp-top">
+        <div>
+          <div class="opp-name">${escHtml(opp.contact)}</div>
+          ${opp.company ? `<div class="opp-company">${escHtml(opp.company)}</div>` : ''}
+        </div>
+        <div class="opp-badges">${yesToBadges} ${stageBadge}</div>
+      </div>
+      <div class="opp-meta">
+        ${opp.type ? `<span>${opp.type.replace('_', ' ')}</span>` : ''}
+        ${opp.source ? `<span>via ${escHtml(opp.source)}</span>` : ''}
+        ${opp.email ? `<span>${escHtml(opp.email)}</span>` : ''}
+      </div>
+      ${opp.next_action ? `
+        <div class="opp-next">
+          <div class="label">Next Action</div>
+          <div class="value">${escHtml(opp.next_action)}</div>
+          ${opp.next_action_date ? `<div class="date ${dateClass}">${opp.next_action_date}${dateClass === 'overdue' ? ' — OVERDUE' : ''}</div>` : ''}
+        </div>
+      ` : ''}
+      ${opp.notes ? `<div class="opp-notes" onclick="this.classList.toggle('expanded')">${escHtml(opp.notes)}</div>` : ''}
+      ${historyHtml}
+      <div class="opp-actions">
+        <button class="btn btn-ghost btn-sm" onclick="openEditModal('${opp.id}')">Edit</button>
+        <button class="btn btn-ghost btn-sm" onclick="openHistoryModal('${opp.id}')">+ History</button>
+        <button class="btn btn-ghost btn-sm" onclick="quickStageChange('${opp.id}')">Move Stage</button>
+      </div>
+    </div>
+  `;
+}
+
+function escHtml(str) {
+  if (!str) return '';
+  return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+
+// ============================================================
+// ADD / EDIT
+// ============================================================
+function openAddModal() {
+  document.getElementById('modalTitle').textContent = 'Add Opportunity';
+  document.getElementById('editId').value = '';
+  document.getElementById('fContact').value = '';
+  document.getElementById('fCompany').value = '';
+  document.getElementById('fEmail').value = '';
+  document.getElementById('fType').value = 'prospect';
+  document.getElementById('fStage').value = 'discovery';
+  document.getElementById('fSource').value = '';
+  document.getElementById('fYesCall').checked = true;
+  document.getElementById('fYesSnapshot').checked = false;
+  document.getElementById('fYesVideo').checked = false;
+  document.getElementById('fNextAction').value = '';
+  document.getElementById('fNextDate').value = new Date().toISOString().split('T')[0];
+  document.getElementById('fNotes').value = '';
+  document.getElementById('deleteBtn').style.display = 'none';
+  document.getElementById('modal').classList.add('open');
+  document.getElementById('fContact').focus();
+}
+
+function openEditModal(id) {
+  const opp = allOpps.find(o => o.id === id);
+  if (!opp) return;
+
+  document.getElementById('modalTitle').textContent = 'Edit Opportunity';
+  document.getElementById('editId').value = id;
+  document.getElementById('fContact').value = opp.contact || '';
+  document.getElementById('fCompany').value = opp.company || '';
+  document.getElementById('fEmail').value = opp.email || '';
+  document.getElementById('fType').value = opp.type || 'prospect';
+  document.getElementById('fStage').value = opp.stage || 'lead';
+  document.getElementById('fSource').value = opp.source || '';
+  document.getElementById('fYesCall').checked = (opp.yes_to || []).includes('call');
+  document.getElementById('fYesSnapshot').checked = (opp.yes_to || []).includes('snapshot');
+  document.getElementById('fYesVideo').checked = (opp.yes_to || []).includes('video_interview');
+  document.getElementById('fNextAction').value = opp.next_action || '';
+  document.getElementById('fNextDate').value = opp.next_action_date || '';
+  document.getElementById('fNotes').value = opp.notes || '';
+  document.getElementById('deleteBtn').style.display = 'inline-block';
+  document.getElementById('modal').classList.add('open');
+  document.getElementById('fContact').focus();
+}
+
+function closeModal() {
+  document.getElementById('modal').classList.remove('open');
+}
+
+async function saveOpp() {
+  const id = document.getElementById('editId').value;
+  const yesTo = [];
+  if (document.getElementById('fYesCall').checked) yesTo.push('call');
+  if (document.getElementById('fYesSnapshot').checked) yesTo.push('snapshot');
+  if (document.getElementById('fYesVideo').checked) yesTo.push('video_interview');
+
+  const body = {
+    contact: document.getElementById('fContact').value.trim(),
+    company: document.getElementById('fCompany').value.trim(),
+    email: document.getElementById('fEmail').value.trim(),
+    type: document.getElementById('fType').value,
+    stage: document.getElementById('fStage').value,
+    source: document.getElementById('fSource').value.trim(),
+    yes_to: yesTo,
+    next_action: document.getElementById('fNextAction').value.trim(),
+    next_action_date: document.getElementById('fNextDate').value,
+    notes: document.getElementById('fNotes').value.trim()
+  };
+
+  if (!body.contact) { alert('Contact name is required'); return; }
+
+  try {
+    if (id) {
+      await fetch(API + '/api/opportunities/' + id, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body)
+      });
+    } else {
+      await fetch(API + '/api/opportunities', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body)
+      });
+    }
+    closeModal();
+    await loadOpps();
+  } catch (err) {
+    alert('Save failed: ' + err.message);
+  }
+}
+
+async function deleteOpp() {
+  const id = document.getElementById('editId').value;
+  if (!id) return;
+  if (!confirm('Delete this opportunity?')) return;
+
+  try {
+    await fetch(API + '/api/opportunities/' + id, { method: 'DELETE' });
+    closeModal();
+    await loadOpps();
+  } catch (err) {
+    alert('Delete failed: ' + err.message);
+  }
+}
+
+// ============================================================
+// QUICK STAGE CHANGE
+// ============================================================
+async function quickStageChange(id) {
+  const opp = allOpps.find(o => o.id === id);
+  if (!opp) return;
+
+  const stages = ['lead', 'engaged', 'discovery', 'proposal', 'negotiation', 'closed_won', 'closed_lost', 'nurture'];
+  const currentIdx = stages.indexOf(opp.stage);
+  const nextIdx = (currentIdx + 1) % stages.length;
+  const newStage = prompt(`Current: ${opp.stage.replace('_', ' ')}\n\nPick new stage:\n${stages.map((s, i) => `${i + 1}. ${s.replace('_', ' ')}`).join('\n')}\n\nEnter number:`, currentIdx + 2);
+
+  if (!newStage) return;
+  const stageIdx = parseInt(newStage) - 1;
+  if (stageIdx < 0 || stageIdx >= stages.length) return;
+
+  try {
+    await fetch(API + '/api/opportunities/' + id, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ stage: stages[stageIdx] })
+    });
+    await loadOpps();
+  } catch (err) {
+    alert('Update failed: ' + err.message);
+  }
+}
+
+// ============================================================
+// HISTORY
+// ============================================================
+function openHistoryModal(id) {
+  document.getElementById('hOppId').value = id;
+  document.getElementById('hDate').value = new Date().toISOString().split('T')[0];
+  document.getElementById('hType').value = 'update';
+  document.getElementById('hNote').value = '';
+  document.getElementById('historyModal').classList.add('open');
+  document.getElementById('hNote').focus();
+}
+
+function closeHistoryModal() {
+  document.getElementById('historyModal').classList.remove('open');
+}
+
+async function saveHistory() {
+  const id = document.getElementById('hOppId').value;
+  const body = {
+    date: document.getElementById('hDate').value,
+    type: document.getElementById('hType').value,
+    note: document.getElementById('hNote').value.trim()
+  };
+
+  if (!body.note) { alert('Note is required'); return; }
+
+  try {
+    await fetch(API + '/api/opportunities/' + id + '/history', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body)
+    });
+    closeHistoryModal();
+    await loadOpps();
+  } catch (err) {
+    alert('Save failed: ' + err.message);
+  }
+}
+
+// ============================================================
+// INIT
+// ============================================================
+loadOpps();
+</script>
+</body>
+</html>
