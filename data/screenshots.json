@@ -1,7 +1,27 @@
 [
   {
+    "id": "ss-20260313-1733a",
+    "filename": "prospecting_progress_2026-03-13_downloads.png",
+    "mimeType": "image/png",
+    "ext": "png",
+    "sizeBytes": 0,
+    "uploadedAt": "2026-03-14T00:43:03.000Z",
+    "notes": "Brinqa AI snapshot in Downloads, DM activity visible. Screenshot 1 of 2.",
+    "status": "processed"
+  },
+  {
+    "id": "ss-20260313-1733b",
+    "filename": "prospecting_progress_2026-03-13_linkedin.png",
+    "mimeType": "image/png",
+    "ext": "png",
+    "sizeBytes": 0,
+    "uploadedAt": "2026-03-14T00:43:03.000Z",
+    "notes": "Maria Velasquez (Brinqa) snapshot acceptance + messaging panel with 8+ DM conversations. Screenshot 2 of 2.",
+    "status": "processed"
+  },
+  {
     "id": "3fd5e617-0c01-48f0-9769-6913e7f862a7",
-    "filename": "Screenshot 2026-03-13 at 12.16.41 PM.png",
+    "filename": "Screenshot 2026-03-13 at 12.16.41\u202fPM.png",
     "mimeType": "image/png",
     "ext": "png",
     "sizeBytes": 6470521,
@@ -11,7 +31,7 @@
   },
   {
     "id": "0f77cc2a-1427-4b11-9d87-23b388a18ee7",
-    "filename": "Screenshot 2026-03-12 at 9.27.09 AM.png",
+    "filename": "Screenshot 2026-03-12 at 9.27.09\u202fAM.png",
     "mimeType": "image/png",
     "ext": "png",
     "sizeBytes": 5240958,
@@ -21,7 +41,7 @@
   },
   {
     "id": "e9016f7d-1f77-4353-b43d-1377ecb57727",
-    "filename": "Screenshot 2026-03-12 at 9.27.09 AM.png",
+    "filename": "Screenshot 2026-03-12 at 9.27.09\u202fAM.png",
     "mimeType": "image/png",
     "ext": "png",
     "sizeBytes": 5240958,
@@ -31,7 +51,7 @@
   },
   {
     "id": "f84966ed-3452-4323-815c-67f1af458f22",
-    "filename": "Screenshot 2026-03-12 at 9.05.51 AM.png",
+    "filename": "Screenshot 2026-03-12 at 9.05.51\u202fAM.png",
     "mimeType": "image/png",
     "ext": "png",
     "sizeBytes": 5026886,
@@ -41,7 +61,7 @@
   },
   {
     "id": "03c01fed-e12e-4df2-963b-4b83e882ac92",
-    "filename": "Screenshot 2026-03-11 at 2.42.34 PM.png",
+    "filename": "Screenshot 2026-03-11 at 2.42.34\u202fPM.png",
     "mimeType": "image/png",
     "ext": "png",
     "sizeBytes": 3943738,
@@ -51,7 +71,7 @@
   },
   {
     "id": "43afbd6d-e8ef-42cf-911a-3fa84607d94f",
-    "filename": "Screenshot 2026-03-11 at 8.04.39 AM.png",
+    "filename": "Screenshot 2026-03-11 at 8.04.39\u202fAM.png",
     "mimeType": "image/png",
     "ext": "png",
     "sizeBytes": 6042850,
@@ -61,7 +81,7 @@
   },
   {
     "id": "5548d3bd-898c-43d4-b081-792f95e3fa59",
-    "filename": "Screenshot 2026-03-11 at 8.04.39 AM.png",
+    "filename": "Screenshot 2026-03-11 at 8.04.39\u202fAM.png",
     "mimeType": "image/png",
     "ext": "png",
     "sizeBytes": 6042850,
@@ -71,7 +91,7 @@
   },
   {
     "id": "f5dbad92-5cb4-4a4c-b503-aabfab760dcf",
-    "filename": "Screenshot 2026-03-11 at 8.04.39 AM.png",
+    "filename": "Screenshot 2026-03-11 at 8.04.39\u202fAM.png",
     "mimeType": "image/png",
     "ext": "png",
     "sizeBytes": 6042850,
@@ -81,7 +101,7 @@
   },
   {
     "id": "86f973bc-bdcb-44ce-b7b4-aafdca0e2c3c",
-    "filename": "Screenshot 2026-03-10 at 7.04.54 AM.png",
+    "filename": "Screenshot 2026-03-10 at 7.04.54\u202fAM.png",
     "mimeType": "image/png",
     "ext": "png",
     "sizeBytes": 7233572,
@@ -91,7 +111,7 @@
   },
   {
     "id": "ad21cd41-6ac8-4cfa-8457-d8c4abb64da9",
-    "filename": "Screenshot 2026-03-09 at 4.05.54 PM.png",
+    "filename": "Screenshot 2026-03-09 at 4.05.54\u202fPM.png",
     "mimeType": "image/png",
     "ext": "png",
     "sizeBytes": 5520776,
@@ -101,7 +121,7 @@
   },
   {
     "id": "d3941aea-7e89-4fa5-b302-1f76fea62955",
-    "filename": "Screenshot 2026-03-09 at 8.32.26 AM.png",
+    "filename": "Screenshot 2026-03-09 at 8.32.26\u202fAM.png",
     "mimeType": "image/png",
     "ext": "png",
     "sizeBytes": 4651008,
@@ -111,7 +131,7 @@
   },
   {
     "id": "364b6ac7-841c-4908-b2fe-25871f09f2b2",
-    "filename": "Screenshot 2026-03-08 at 9.02.35 AM.png",
+    "filename": "Screenshot 2026-03-08 at 9.02.35\u202fAM.png",
     "mimeType": "image/png",
     "ext": "png",
     "sizeBytes": 4626391,
@@ -121,7 +141,7 @@
   },
   {
     "id": "0bd33e95-38af-47dd-9e42-bee9c2c53370",
-    "filename": "Screenshot 2026-03-08 at 9.02.35 AM.png",
+    "filename": "Screenshot 2026-03-08 at 9.02.35\u202fAM.png",
     "mimeType": "image/png",
     "ext": "png",
     "sizeBytes": 4626391,
@@ -131,7 +151,7 @@
   },
   {
     "id": "6ddf9f9b-3625-4370-a4b0-c14ed0339ee6",
-    "filename": "Screenshot 2026-03-06 at 10.10.55 AM.png",
+    "filename": "Screenshot 2026-03-06 at 10.10.55\u202fAM.png",
     "mimeType": "image/png",
     "ext": "png",
     "sizeBytes": 5790225,
@@ -141,7 +161,7 @@
   },
   {
     "id": "72f7029e-4821-4ecc-b749-dad994beaf9f",
-    "filename": "Screenshot 2026-03-05 at 9.03.59 AM.png",
+    "filename": "Screenshot 2026-03-05 at 9.03.59\u202fAM.png",
     "mimeType": "image/png",
     "ext": "png",
     "sizeBytes": 5301805,
@@ -151,7 +171,7 @@
   },
   {
     "id": "17f59f27-b4c2-40bc-85a5-d7ea4a66855d",
-    "filename": "Screenshot 2026-03-04 at 7.59.34 AM.png",
+    "filename": "Screenshot 2026-03-04 at 7.59.34\u202fAM.png",
     "mimeType": "image/png",
     "ext": "png",
     "sizeBytes": 5900514,
@@ -161,7 +181,7 @@
   },
   {
     "id": "f770f7dd-0344-4f43-9c5e-c0cc474e2e00",
-    "filename": "Screenshot 2026-03-04 at 7.59.34 AM.png",
+    "filename": "Screenshot 2026-03-04 at 7.59.34\u202fAM.png",
     "mimeType": "image/png",
     "ext": "png",
     "sizeBytes": 5900514,
@@ -171,7 +191,7 @@
   },
   {
     "id": "01db42a7-a702-48ea-a1aa-bd0c0e874b7b",
-    "filename": "Screenshot 2026-03-04 at 6.55.54 AM.png",
+    "filename": "Screenshot 2026-03-04 at 6.55.54\u202fAM.png",
     "mimeType": "image/png",
     "ext": "png",
     "sizeBytes": 6051378,
@@ -181,7 +201,7 @@
   },
   {
     "id": "9603bc12-df97-4f02-8573-91cb440f0e28",
-    "filename": "Screenshot 2026-03-03 at 3.01.07 PM.png",
+    "filename": "Screenshot 2026-03-03 at 3.01.07\u202fPM.png",
     "mimeType": "image/png",
     "ext": "png",
     "sizeBytes": 6306769,
@@ -191,7 +211,7 @@
   },
   {
     "id": "5a43ceba-2d73-4102-9ab6-e226727bb0d2",
-    "filename": "Screenshot 2026-03-03 at 10.06.54 AM.png",
+    "filename": "Screenshot 2026-03-03 at 10.06.54\u202fAM.png",
     "mimeType": "image/png",
     "ext": "png",
     "sizeBytes": 5758667,
@@ -201,7 +221,7 @@
   },
   {
     "id": "8f1f5c46-26c1-47ed-983b-c6dca1a1b458",
-    "filename": "Screenshot 2026-03-03 at 5.32.51 AM.png",
+    "filename": "Screenshot 2026-03-03 at 5.32.51\u202fAM.png",
     "mimeType": "image/png",
     "ext": "png",
     "sizeBytes": 5654209,
@@ -211,7 +231,7 @@
   },
   {
     "id": "7e670a22-3d91-4abf-b24b-be431a135255",
-    "filename": "Screenshot 2026-03-02 at 5.06.34 PM.png",
+    "filename": "Screenshot 2026-03-02 at 5.06.34\u202fPM.png",
     "mimeType": "image/png",
     "ext": "png",
     "sizeBytes": 5439325,
@@ -221,7 +241,7 @@
   },
   {
     "id": "b134deb2-8341-45a4-b823-1857df980c57",
-    "filename": "Screenshot 2026-03-02 at 2.56.29 PM.png",
+    "filename": "Screenshot 2026-03-02 at 2.56.29\u202fPM.png",
     "mimeType": "image/png",
     "ext": "png",
     "sizeBytes": 6089310,
@@ -231,7 +251,7 @@
   },
   {
     "id": "137f29f2-01f1-4f2a-aa68-8ef88ca34330",
-    "filename": "Screenshot 2026-03-02 at 1.44.57 PM.png",
+    "filename": "Screenshot 2026-03-02 at 1.44.57\u202fPM.png",
     "mimeType": "image/png",
     "ext": "png",
     "sizeBytes": 5780633,
@@ -251,7 +271,7 @@
   },
   {
     "id": "92e54f85-3efb-4e6d-bb43-efbbdc683d29",
-    "filename": "Screenshot 2026-03-02 at 1.44.57 PM.png",
+    "filename": "Screenshot 2026-03-02 at 1.44.57\u202fPM.png",
     "mimeType": "image/png",
     "ext": "png",
     "sizeBytes": 5780633,
@@ -261,7 +281,7 @@
   },
   {
     "id": "c496f462-a53d-4426-a10a-1f178979f327",
-    "filename": "Screenshot 2026-03-02 at 1.44.57 PM.png",
+    "filename": "Screenshot 2026-03-02 at 1.44.57\u202fPM.png",
     "mimeType": "image/png",
     "ext": "png",
     "sizeBytes": 5780633,
