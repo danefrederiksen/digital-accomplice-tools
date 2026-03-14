@@ -39,7 +39,18 @@
       "Bash(cp \"/Users/danefrederiksen/Desktop/Claude code/start-all.js\" \"./start-all.js\")",
       "Bash(pip3 install:*)",
       "Bash(python3 scripts/daily-report-pdf.py)",
-      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:3849)"
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:3849)",
+      "Bash('/Applications/Google Chrome.app/Contents/MacOS/Google Chrome' --headless --disable-gpu --print-to-pdf=\"/Users/danefrederiksen/Desktop/Digital Accomplice/1_Sales/1.2_Snapshots/Snapshot_v2_Design_Doc_2026-03-13.pdf\" --no-margins \"file:///dev/null\")",
+      "Bash('/Applications/Google Chrome.app/Contents/MacOS/Google Chrome' --headless --disable-gpu --no-pdf-header-footer --print-to-pdf=\"/Users/danefrederiksen/Desktop/Digital Accomplice/1_Sales/1.2_Snapshots/Snapshot_v2_Design_Doc_2026-03-13.pdf\" \"file:///Users/danefrederiksen/Desktop/Claude Code/scripts/snapshot-v2-design-doc.html\")",
+      "mcp__scheduled-tasks__list_scheduled_tasks",
+      "Bash(crontab -l)",
+      "Bash(launchctl list:*)",
+      "Bash(launchctl unload:*)",
+      "Bash(launchctl load:*)",
+      "Bash(node -e ':*)",
+      "Bash(open \"/Users/danefrederiksen/Desktop/Claude code/reports/Prospecting_Activity_Report_2026-03-13.pdf\")",
+      "Bash(ln -s ~/Downloads ~/Desktop/Downloads)",
+      "Bash(open \"/Users/danefrederiksen/Desktop/Claude Code/reports/3-week-trajectory.html\")"
     ]
   }
 }
