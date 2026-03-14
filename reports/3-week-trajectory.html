@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DA Prospecting — 3-Week Trajectory</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: #0a0a0a;
+    color: #e0e0e0;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    padding: 40px 60px;
+  }
+  h1 {
+    font-size: 28px;
+    font-weight: 800;
+    color: #F38B1C;
+    margin-bottom: 4px;
+  }
+  .subtitle {
+    font-size: 14px;
+    color: #5A6B7A;
+    margin-bottom: 40px;
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 32px;
+    margin-bottom: 32px;
+  }
+  .chart-card {
+    background: #141414;
+    border: 1px solid #222;
+    border-radius: 12px;
+    padding: 24px;
+  }
+  .chart-card.full {
+    grid-column: 1 / -1;
+  }
+  .chart-card h2 {
+    font-size: 16px;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 4px;
+  }
+  .chart-card .desc {
+    font-size: 12px;
+    color: #5A6B7A;
+    margin-bottom: 16px;
+  }
+  .chart-wrap {
+    position: relative;
+    width: 100%;
+  }
+  .chart-wrap.tall { height: 360px; }
+  .chart-wrap.med { height: 300px; }
+  .chart-wrap.short { height: 240px; }
+
+  .kpi-row {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 16px;
+    margin-bottom: 32px;
+  }
+  .kpi {
+    background: #141414;
+    border: 1px solid #222;
+    border-radius: 12px;
+    padding: 20px;
+    text-align: center;
+  }
+  .kpi .number {
+    font-size: 36px;
+    font-weight: 800;
+    color: #F38B1C;
+  }
+  .kpi .number.green { color: #22c55e; }
+  .kpi .number.red { color: #ef4444; }
+  .kpi .number.blue { color: #3b82f6; }
+  .kpi .number.white { color: #fff; }
+  .kpi .label {
+    font-size: 12px;
+    color: #5A6B7A;
+    margin-top: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .footer {
+    text-align: center;
+    color: #333;
+    font-size: 11px;
+    margin-top: 40px;
+    padding-top: 20px;
+    border-top: 1px solid #1a1a1a;
+  }
+</style>
+</head>
+<body>
+
+<h1>3-Week Prospecting Trajectory</h1>
+<p class="subtitle">Digital Accomplice &mdash; Feb 21 – Mar 13, 2026 &mdash; All 12 Tools</p>
+
+<!-- KPI Row -->
+<div class="kpi-row">
+  <div class="kpi">
+    <div class="number">135</div>
+    <div class="label">DMs Sent</div>
+  </div>
+  <div class="kpi">
+    <div class="number">134</div>
+    <div class="label">Follow-ups Sent</div>
+  </div>
+  <div class="kpi">
+    <div class="number green">4</div>
+    <div class="label">Replies Received</div>
+  </div>
+  <div class="kpi">
+    <div class="number blue">3%</div>
+    <div class="label">Reply Rate</div>
+  </div>
+  <div class="kpi">
+    <div class="number white">572</div>
+    <div class="label">Untouched Prospects</div>
+  </div>
+</div>
+
+<!-- Charts Grid -->
+<div class="grid">
+
+  <!-- Chart 1: Daily Total Touches (stacked bar) -->
+  <div class="chart-card full">
+    <h2>Daily Outreach Touches</h2>
+    <p class="desc">Stacked by type — DMs, Follow-ups, Comments, Connection Requests. Target zone: 45–60/day.</p>
+    <div class="chart-wrap tall">
+      <canvas id="dailyTouches"></canvas>
+    </div>
+  </div>
+
+  <!-- Chart 2: Cumulative DMs -->
+  <div class="chart-card">
+    <h2>Cumulative DMs Sent</h2>
+    <p class="desc">Running total of initial DMs across all tools</p>
+    <div class="chart-wrap med">
+      <canvas id="cumDMs"></canvas>
+    </div>
+  </div>
+
+  <!-- Chart 3: Weekly Comparison -->
+  <div class="chart-card">
+    <h2>Weekly Comparison</h2>
+    <p class="desc">Week 2 (Mar 1-7) vs Week 3 (Mar 8-13, incomplete)</p>
+    <div class="chart-wrap med">
+      <canvas id="weeklyComp"></canvas>
+    </div>
+  </div>
+
+  <!-- Chart 4: Pipeline Funnel -->
+  <div class="chart-card">
+    <h2>Pipeline Funnel</h2>
+    <p class="desc">712 total prospects → activated → replied → snapshot accepted</p>
+    <div class="chart-wrap med">
+      <canvas id="funnel"></canvas>
+    </div>
+  </div>
+
+  <!-- Chart 5: Pipeline by Tool -->
+  <div class="chart-card">
+    <h2>Prospect Pool by Tool</h2>
+    <p class="desc">Activated vs untouched per tool — shows where runway lives</p>
+    <div class="chart-wrap med">
+      <canvas id="toolPool"></canvas>
+    </div>
+  </div>
+
+  <!-- Chart 6: Replies Timeline -->
+  <div class="chart-card">
+    <h2>Reply Timeline</h2>
+    <p class="desc">Cumulative replies vs cumulative DMs (right axis)</p>
+    <div class="chart-wrap med">
+      <canvas id="replyTimeline"></canvas>
+    </div>
+  </div>
+
+  <!-- Chart 7: Projected Trajectory -->
+  <div class="chart-card">
+    <h2>Projected Trajectory → End of April</h2>
+    <p class="desc">DMs, replies, and discovery calls forecast at current pace</p>
+    <div class="chart-wrap med">
+      <canvas id="projection"></canvas>
+    </div>
+  </div>
+
+  <!-- Chart 8: Activity Consistency Heatmap -->
+  <div class="chart-card full">
+    <h2>Daily Consistency — Touches per Day</h2>
+    <p class="desc">Each bar = one day. Green = hit 35+ target. Yellow = partial. Red = zero/near-zero. Consistency is the #1 predictor of pipeline velocity.</p>
+    <div class="chart-wrap short">
+      <canvas id="consistency"></canvas>
+    </div>
+  </div>
+
+</div>
+
+<div class="footer">Generated by Claude Code &mdash; Digital Accomplice Prospecting System &mdash; Mar 13, 2026</div>
+
+<script>
+// === DATA ===
+const dates = ['2/21','2/22','2/23','2/24','2/25','2/26','2/27','2/28','3/1','3/2','3/3','3/4','3/5','3/6','3/7','3/8','3/9','3/10','3/11','3/12','3/13'];
+const dms      = [0,0,0,0,0,0,0,0,15,28,15,0,0,10,0,0,5,4,34,24,8];
+const followups= [0,0,0,0,0,0,0,0,0,3,8,13,7,17,0,26,24,21,0,11,4];
+const comments = [0,0,0,0,0,0,0,0,0,2,0,5,2,6,0,4,10,4,10,11,2];
+const conns    = [0,0,0,0,0,0,0,0,1,1,0,5,0,10,0,0,0,0,0,0,0];
+const replies  = [0,0,0,0,0,0,0,0,0,2,0,0,0,2,0,0,4,0,0,0,2];
+
+const totalTouches = dates.map((_,i) => dms[i]+followups[i]+comments[i]+conns[i]);
+
+// Cumulative DMs
+const cumDM = [];
+dms.reduce((acc, v, i) => { cumDM[i] = acc + v; return cumDM[i]; }, 0);
+
+// Cumulative replies
+const cumReply = [];
+replies.reduce((acc, v, i) => { cumReply[i] = acc + v; return cumReply[i]; }, 0);
+
+// Colors
+const orange = '#F38B1C';
+const orangeLight = 'rgba(243,139,28,0.3)';
+const blue = '#3b82f6';
+const blueLight = 'rgba(59,130,246,0.3)';
+const green = '#22c55e';
+const greenLight = 'rgba(34,197,94,0.3)';
+const gray = '#5A6B7A';
+const grayLight = 'rgba(90,107,122,0.3)';
+const red = '#ef4444';
+const white = '#ffffff';
+
+Chart.defaults.color = '#888';
+Chart.defaults.borderColor = '#222';
+Chart.defaults.font.family = "'Inter', sans-serif";
+
+// === CHART 1: Daily Stacked Bar ===
+new Chart(document.getElementById('dailyTouches'), {
+  type: 'bar',
+  data: {
+    labels: dates,
+    datasets: [
+      { label: 'DMs', data: dms, backgroundColor: orange, borderRadius: 2 },
+      { label: 'Follow-ups', data: followups, backgroundColor: blue, borderRadius: 2 },
+      { label: 'Comments', data: comments, backgroundColor: green, borderRadius: 2 },
+      { label: 'Connections', data: conns, backgroundColor: gray, borderRadius: 2 },
+    ]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: { position: 'top', labels: { boxWidth: 12, padding: 16 } },
+      annotation: {}
+    },
+    scales: {
+      x: { stacked: true, grid: { display: false } },
+      y: {
+        stacked: true,
+        beginAtZero: true,
+        max: 70,
+        ticks: { stepSize: 10 }
+      }
+    }
+  },
+  plugins: [{
+    id: 'targetZone',
+    beforeDraw(chart) {
+      const { ctx, chartArea: {left, right}, scales: {y} } = chart;
+      const y45 = y.getPixelForValue(45);
+      const y60 = y.getPixelForValue(60);
+      ctx.save();
+      ctx.fillStyle = 'rgba(34,197,94,0.06)';
+      ctx.fillRect(left, y60, right-left, y45-y60);
+      ctx.strokeStyle = 'rgba(34,197,94,0.3)';
+      ctx.setLineDash([4,4]);
+      ctx.beginPath();
+      ctx.moveTo(left, y45); ctx.lineTo(right, y45);
+      ctx.moveTo(left, y60); ctx.lineTo(right, y60);
+      ctx.stroke();
+      ctx.fillStyle = 'rgba(34,197,94,0.5)';
+      ctx.font = '10px Inter';
+      ctx.fillText('Target zone: 45-60', right - 110, y60 - 4);
+      ctx.restore();
+    }
+  }]
+});
+
+// === CHART 2: Cumulative DMs ===
+new Chart(document.getElementById('cumDMs'), {
+  type: 'line',
+  data: {
+    labels: dates,
+    datasets: [{
+      label: 'Cumulative DMs',
+      data: cumDM,
+      borderColor: orange,
+      backgroundColor: orangeLight,
+      fill: true,
+      tension: 0.3,
+      pointRadius: 3,
+      pointBackgroundColor: orange,
+    }]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: { legend: { display: false } },
+    scales: {
+      x: { grid: { display: false } },
+      y: { beginAtZero: true, ticks: { stepSize: 20 } }
+    }
+  }
+});
+
+// === CHART 3: Weekly Comparison ===
+new Chart(document.getElementById('weeklyComp'), {
+  type: 'bar',
+  data: {
+    labels: ['DMs', 'Follow-ups', 'Comments', 'Connections', 'Replies', 'Total Touches'],
+    datasets: [
+      { label: 'Week 2 (Mar 1-7)', data: [68, 48, 15, 17, 4, 148], backgroundColor: grayLight, borderColor: gray, borderWidth: 1 },
+      { label: 'Week 3 (Mar 8-13)*', data: [75, 86, 41, 0, 6, 202], backgroundColor: orangeLight, borderColor: orange, borderWidth: 1 },
+    ]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: { legend: { position: 'top', labels: { boxWidth: 12, padding: 12 } } },
+    scales: {
+      x: { grid: { display: false } },
+      y: { beginAtZero: true }
+    }
+  }
+});
+
+// === CHART 4: Pipeline Funnel ===
+new Chart(document.getElementById('funnel'), {
+  type: 'bar',
+  data: {
+    labels: ['Total Pool', 'Activated', 'DM Sent', 'In Follow-up', 'Replied', 'Snapshot\nAccepted'],
+    datasets: [{
+      data: [712, 140, 100, 19, 4, 1],
+      backgroundColor: [
+        'rgba(255,255,255,0.15)',
+        blueLight,
+        orangeLight,
+        'rgba(168,85,247,0.3)',
+        greenLight,
+        'rgba(34,197,94,0.6)',
+      ],
+      borderColor: ['#444', blue, orange, '#a855f7', green, green],
+      borderWidth: 1,
+      borderRadius: 4,
+    }]
+  },
+  options: {
+    indexAxis: 'y',
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: { display: false },
+      tooltip: {
+        callbacks: {
+          label: (ctx) => {
+            const pcts = ['100%', '19.7%', '14.0%', '2.7%', '0.56%', '0.14%'];
+            return `${ctx.raw} prospects (${pcts[ctx.dataIndex]})`;
+          }
+        }
+      }
+    },
+    scales: {
+      x: { beginAtZero: true, max: 750, grid: { color: '#1a1a1a' } },
+      y: { grid: { display: false } }
+    }
+  }
+});
+
+// === CHART 5: Tool Pool ===
+new Chart(document.getElementById('toolPool'), {
+  type: 'bar',
+  data: {
+    labels: ['B2B 1st', 'Cyber 1st', 'Referral 1st', 'B2B 2nd', 'Cyber 2nd', 'Referral 2nd', 'Substack', 'Ref Email'],
+    datasets: [
+      { label: 'Activated', data: [65, 16, 42, 1, 8, 8, 0, 0], backgroundColor: orange, borderRadius: 2 },
+      { label: 'Untouched', data: [15, 130, 4, 24, 221, 22, 155, 1], backgroundColor: 'rgba(255,255,255,0.08)', borderColor: '#333', borderWidth: 1, borderRadius: 2 },
+    ]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: { legend: { position: 'top', labels: { boxWidth: 12, padding: 12 } } },
+    scales: {
+      x: { stacked: true, grid: { display: false } },
+      y: { stacked: true, beginAtZero: true }
+    }
+  }
+});
+
+// === CHART 6: Reply Timeline ===
+new Chart(document.getElementById('replyTimeline'), {
+  type: 'line',
+  data: {
+    labels: dates,
+    datasets: [
+      {
+        label: 'Cumulative Replies',
+        data: cumReply,
+        borderColor: green,
+        backgroundColor: greenLight,
+        fill: true,
+        tension: 0.3,
+        pointRadius: 3,
+        pointBackgroundColor: green,
+        yAxisID: 'y',
+      },
+      {
+        label: 'Cumulative DMs',
+        data: cumDM,
+        borderColor: orange,
+        borderDash: [4,4],
+        tension: 0.3,
+        pointRadius: 2,
+        pointBackgroundColor: orange,
+        yAxisID: 'y1',
+      }
+    ]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: { legend: { position: 'top', labels: { boxWidth: 12, padding: 12 } } },
+    scales: {
+      x: { grid: { display: false } },
+      y: { beginAtZero: true, position: 'left', title: { display: true, text: 'Replies', color: green }, ticks: { stepSize: 1 } },
+      y1: { beginAtZero: true, position: 'right', title: { display: true, text: 'DMs', color: orange }, grid: { drawOnChartArea: false } }
+    }
+  }
+});
+
+// === CHART 7: Projection ===
+const projWeeks = ['Wk 2\n(actual)', 'Wk 3\n(actual)', 'Wk 4\n(proj)', 'Wk 5\n(proj)', 'Wk 6\n(proj)', 'Wk 7\n(proj)', 'Wk 8\n(proj)'];
+new Chart(document.getElementById('projection'), {
+  type: 'line',
+  data: {
+    labels: projWeeks,
+    datasets: [
+      {
+        label: 'Cumulative DMs',
+        data: [68, 143, 213, 293, 373, 453, 533],
+        borderColor: orange,
+        backgroundColor: orangeLight,
+        fill: true,
+        tension: 0.3,
+        pointRadius: 4,
+        pointBackgroundColor: orange,
+      },
+      {
+        label: 'Cumulative Replies',
+        data: [4, 10, 16, 23, 31, 40, 50],
+        borderColor: green,
+        backgroundColor: greenLight,
+        fill: true,
+        tension: 0.3,
+        pointRadius: 4,
+        pointBackgroundColor: green,
+      },
+      {
+        label: 'Discovery Calls (est.)',
+        data: [0, 0, 0, 1, 2, 3, 4],
+        borderColor: '#a855f7',
+        borderDash: [6,3],
+        tension: 0.3,
+        pointRadius: 5,
+        pointStyle: 'star',
+        pointBackgroundColor: '#a855f7',
+      },
+    ]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: { legend: { position: 'top', labels: { boxWidth: 12, padding: 12 } } },
+    scales: {
+      x: { grid: { display: false } },
+      y: { beginAtZero: true, ticks: { stepSize: 50 } }
+    }
+  }
+});
+
+// === CHART 8: Consistency Heatmap ===
+const consistencyColors = totalTouches.map(v => {
+  if (v >= 35) return green;
+  if (v >= 15) return '#eab308';
+  return red;
+});
+new Chart(document.getElementById('consistency'), {
+  type: 'bar',
+  data: {
+    labels: dates,
+    datasets: [{
+      data: totalTouches,
+      backgroundColor: consistencyColors,
+      borderRadius: 3,
+    }]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: { display: false },
+      tooltip: {
+        callbacks: {
+          label: (ctx) => {
+            const v = ctx.raw;
+            const grade = v >= 35 ? 'ON TARGET' : v >= 15 ? 'PARTIAL' : 'ZERO DAY';
+            return `${v} touches — ${grade}`;
+          }
+        }
+      }
+    },
+    scales: {
+      x: { grid: { display: false } },
+      y: { beginAtZero: true, max: 70, ticks: { stepSize: 10 } }
+    }
+  },
+  plugins: [{
+    id: 'targetLine2',
+    beforeDraw(chart) {
+      const { ctx, chartArea: {left, right}, scales: {y} } = chart;
+      const y35 = y.getPixelForValue(35);
+      ctx.save();
+      ctx.strokeStyle = 'rgba(34,197,94,0.4)';
+      ctx.setLineDash([4,4]);
+      ctx.beginPath();
+      ctx.moveTo(left, y35);
+      ctx.lineTo(right, y35);
+      ctx.stroke();
+      ctx.fillStyle = 'rgba(34,197,94,0.5)';
+      ctx.font = '10px Inter';
+      ctx.fillText('Min target: 35', right - 80, y35 - 4);
+      ctx.restore();
+    }
+  }]
+});
+</script>
+
+</body>
+</html>
