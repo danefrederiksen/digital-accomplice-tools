@@ -131,6 +131,11 @@ body { font-family: 'Poppins', sans-serif; background: #f5f5f5; color: #1a1a1a; 
 .btn-copy { background: #f0e6ff; color: #6b21a8; }
 .btn-copy:hover { background: #e0d0ff; }
 .btn-copy.copied { background: #e8f5e9; color: #2e7d32; }
+
+/* Offer type badges */
+.offer-badge { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 11px; font-weight: 600; margin-left: 6px; vertical-align: middle; }
+.offer-video { background: #5A6B7A; color: #fff; }
+.offer-snapshot { background: #F38B1C; color: #fff; }
 .msg-preview { background: #fafafa; border: 1px solid #eee; border-radius: 6px; padding: 10px 12px; margin-top: 8px; font-size: 12px; color: #555; line-height: 1.5; white-space: pre-wrap; display: none; }
 .msg-preview.show { display: block; }
 
@@ -337,20 +342,33 @@ function todayStr() {
 const TOOL_KEY = 'da_templates_tool2';
 const AB_COUNTER_KEY = 'da_ab_counter_tool2';
 
+const OFFER_TYPES = {
+  video: { label: '\u{1F4F9} Video Interview', color: '#5A6B7A' },
+  snapshot: { label: '\u{1F4CA} AI Snapshot', color: '#F38B1C' }
+};
+
 const TEMPLATE_STEPS = ['dm', 'follow_up_1', 'follow_up_2'];
 const TEMPLATE_LABELS = {
   dm: 'Initial DM',
   follow_up_1: 'Follow-Up #1',
-  follow_up_2: 'Follow-Up #2'
+  follow_up_2: 'Follow-Up #2 (Final Nudge)'
 };
 
 const DEFAULT_TEMPLATES = {
-  dm_a: `Hello {name}, I'm launching a new video series on cybersecurity — how security leaders are navigating the threat landscape as AI changes the game.\n\nI've been producing video for AWS, BreachRx, and other cyber companies, and I want to bring those conversations to LinkedIn.\n\nTakes just 15 min, no prep and I'll post on LinkedIn same day and tag you.\n\nhttps://www.digitalaccomplice.com/video-series\n\nInterested?\n\nDane`,
-  dm_b: `Hey {name} — I'm putting together a short LinkedIn video series featuring cybersecurity leaders talking about real challenges: AI threats, zero trust, talent gaps. CISOs from companies like BreachRx are already in.\n\n15 min, no prep, same-day post tagging you.\n\nhttps://www.digitalaccomplice.com/video-series\n\nWant in?\n\nDane`,
-  follow_up_1_a: `Hey {name} — just floating this back up. Would love to feature you in the series. 15 min, zero prep. Worth a quick chat?`,
-  follow_up_1_b: `Hey {name} — circling back on the cybersecurity video series. The conversations so far have been great and I think your take on the space would really stand out. 15 min, zero prep.`,
-  follow_up_2_a: `{name} — last one from me on this. If the timing's off no worries at all. But if you're open to it, I'd love to make it happen. Either way, keep killing it.\n\nDane`,
-  follow_up_2_b: `{name} — final ping on the video series. Totally get it if now's not the right time. The invite's open whenever you're ready.\n\nDane`
+  // Video Interview templates
+  video_dm_a: `Hello {name}, I'm producing a short video series on how cybersecurity marketing leaders are adapting to the challenges as AI changes the game.\n\nTakes just 15 min, no prep and I'll post on LinkedIn same day and tag you.\n\nhttps://www.digitalaccomplice.com/video-series\n\nInterested?\n\nDane`,
+  video_dm_b: `Hey {name} — I'm interviewing cybersecurity marketing leaders for a LinkedIn video series on AI's impact on marketing. 15 min, no prep, and you get a same-day post tagging you.\n\nhttps://www.digitalaccomplice.com/video-series\n\nWorth a shot?\n\nDane`,
+  video_follow_up_1_a: `Hey {name} — just floating this back up. Would love to feature you in the series. 15 min, zero prep. Worth a quick chat?`,
+  video_follow_up_1_b: `Hey {name} — bumping this one more time. The series is getting great traction and I think your perspective would be a standout. 15 min, zero prep.`,
+  video_follow_up_2_a: `{name} — last one from me on this. If the timing's off no worries at all. But if you're open to it, I'd love to make it happen. Either way, keep killing it.\n\nDane`,
+  video_follow_up_2_b: `{name} — final nudge on the video series. If now's not the right time, totally understand. But if you change your mind, the offer stands.\n\nDane`,
+  // AI Snapshot templates
+  snapshot_dm_a: `Hey {name} — I pulled together a free AI visibility snapshot for {company}. It shows how you're showing up when buyers ask ChatGPT, Perplexity, and Gemini about your space — and who's appearing instead.\n\nOne thing that stood out: YouTube is now cited in 16% of all LLM-generated answers, and competitors are starting to build video content that feeds those citations. {company} doesn't appear to have a video presence yet — which is a gap.\n\nHappy to send it over if useful — no strings.\n\nDane`,
+  snapshot_dm_b: `Hey {name} — I ran an AI visibility check on {company}. Looked at how you show up when buyers ask ChatGPT, Perplexity, and Gemini about your category.\n\nShort version: there's a gap — especially on video. YouTube content is now cited in 16% of AI-generated answers, and some of your competitors are already building for that.\n\nI put it in a one-page snapshot. Want me to send it over?\n\nDane`,
+  snapshot_follow_up_1_a: `Hey {name} — circling back on the AI visibility snapshot I mentioned for {company}. Still happy to send it over — it's a one-pager showing where you rank vs. competitors in AI search results. No cost, no pitch.\n\nDane`,
+  snapshot_follow_up_1_b: `Hey {name} — just floating this back up. The AI visibility snapshot for {company} is ready to go. Shows exactly where you stand in ChatGPT, Perplexity, and Gemini results vs. competitors. Want me to send it?`,
+  snapshot_follow_up_2_a: `{name} — last nudge on the AI snapshot. If the timing's off, no worries. It'll be here if you ever want to see where {company} stands in AI search. Either way, keep crushing it.\n\nDane`,
+  snapshot_follow_up_2_b: `{name} — final follow-up on this. The snapshot for {company} is sitting here whenever you want it. No strings, no pitch — just data. Let me know.\n\nDane`
 };
 
 let _cachedTemplates = null;
@@ -359,30 +377,55 @@ async function loadTemplatesFromServer() {
   try {
     const data = await apiGet('/api/templates');
     if (data.templates) {
-      _cachedTemplates = { ...DEFAULT_TEMPLATES, ...data.templates };
+      // Migrate old flat keys (dm_a, follow_up_1_a) to new prefixed keys (video_dm_a, video_follow_up_1_a)
+      const migrated = { ...data.templates };
+      let needsMigration = false;
+      for (const step of TEMPLATE_STEPS) {
+        for (const v of ['a', 'b']) {
+          const oldKey = step + '_' + v;
+          const newKey = 'video_' + oldKey;
+          if (migrated[oldKey] && !migrated[newKey]) {
+            migrated[newKey] = migrated[oldKey];
+            delete migrated[oldKey];
+            needsMigration = true;
+          }
+        }
+      }
+      _cachedTemplates = { ...DEFAULT_TEMPLATES, ...migrated };
+      if (needsMigration) {
+        await apiPut('/api/templates', { templates: _cachedTemplates });
+      }
     } else {
+      // Server has no templates yet — check localStorage for migration
       let migrated = null;
       try {
         const local = localStorage.getItem(TOOL_KEY);
         if (local) {
           const parsed = JSON.parse(local);
-          if (parsed.dm && !parsed.dm_a) {
-            migrated = {};
-            for (const step of TEMPLATE_STEPS) {
-              migrated[step + '_a'] = parsed[step] || DEFAULT_TEMPLATES[step + '_a'];
-              migrated[step + '_b'] = DEFAULT_TEMPLATES[step + '_b'];
+          // Handle old flat format — map to video_ prefix
+          migrated = {};
+          for (const step of TEMPLATE_STEPS) {
+            for (const v of ['a', 'b']) {
+              const oldKey = step + '_' + v;
+              const newKey = 'video_' + oldKey;
+              if (parsed[oldKey]) migrated[newKey] = parsed[oldKey];
+              // Handle even older format (has 'dm' but not 'dm_a')
+              if (!parsed[oldKey] && parsed[step] && v === 'a') {
+                migrated[newKey] = parsed[step];
+              }
             }
-          } else {
-            migrated = parsed;
           }
         }
       } catch {}
       _cachedTemplates = { ...DEFAULT_TEMPLATES, ...(migrated || {}) };
+      // Seed server with templates
       await apiPut('/api/templates', { templates: _cachedTemplates });
+      // Clean up localStorage after successful migration
       localStorage.removeItem(TOOL_KEY);
     }
   } catch (err) {
     console.error('Failed to load templates from server:', err);
+    // Fallback to localStorage if server is down
     try {
       const local = localStorage.getItem(TOOL_KEY);
       if (local) _cachedTemplates = { ...DEFAULT_TEMPLATES, ...JSON.parse(local) };
@@ -409,20 +452,27 @@ async function saveTemplatesToServer(templates) {
 function openTemplateEditor() {
   const templates = loadTemplates();
   const modal = document.getElementById('template-modal-content');
-  let html = `<h2>Edit Templates — A/B Variants</h2><p class="hint">Use {name} for first name, {company} for company name. Each step has two variants for A/B testing.</p>`;
+  let html = `<h2>Edit Templates</h2><p class="hint">Use {name} for first name, {company} for company name. Each offer type has A/B variants per step.</p>`;
 
-  for (const step of TEMPLATE_STEPS) {
-    const label = TEMPLATE_LABELS[step];
-    html += `
-      <div class="tpl-step-section">
-        <div class="tpl-step-header">${label}</div>
-        <div class="tpl-variant-tabs" id="tpl-tabs-${step}">
-          <button class="tpl-vtab active" onclick="switchVariantTab('${step}','a')">Variant A</button>
-          <button class="tpl-vtab" onclick="switchVariantTab('${step}','b')">Variant B</button>
-        </div>
-        <textarea id="tpl-${step}_a" class="tpl-variant tpl-variant-${step}" data-variant="a">${esc(templates[step + '_a'] || '')}</textarea>
-        <textarea id="tpl-${step}_b" class="tpl-variant tpl-variant-${step}" data-variant="b" style="display:none;">${esc(templates[step + '_b'] || '')}</textarea>
-      </div>`;
+  for (const [offerKey, offerInfo] of Object.entries(OFFER_TYPES)) {
+    html += `<div style="margin-top:16px;padding:12px;border-left:4px solid ${offerInfo.color};background:#1a1a1a;border-radius:6px;">
+      <h3 style="margin:0 0 10px;color:${offerInfo.color};">${offerInfo.label}</h3>`;
+
+    for (const step of TEMPLATE_STEPS) {
+      const label = TEMPLATE_LABELS[step];
+      const tplKey = offerKey + '_' + step;
+      html += `
+        <div class="tpl-step-section">
+          <div class="tpl-step-header">${label}</div>
+          <div class="tpl-variant-tabs" id="tpl-tabs-${tplKey}">
+            <button class="tpl-vtab active" onclick="switchVariantTab('${tplKey}','a')">Variant A</button>
+            <button class="tpl-vtab" onclick="switchVariantTab('${tplKey}','b')">Variant B</button>
+          </div>
+          <textarea id="tpl-${tplKey}_a" class="tpl-variant tpl-variant-${tplKey}" data-variant="a">${esc(templates[tplKey + '_a'] || '')}</textarea>
+          <textarea id="tpl-${tplKey}_b" class="tpl-variant tpl-variant-${tplKey}" data-variant="b" style="display:none;">${esc(templates[tplKey + '_b'] || '')}</textarea>
+        </div>`;
+    }
+    html += `</div>`;
   }
 
   html += `<div class="modal-actions">
@@ -450,9 +500,12 @@ function closeTemplateEditor() {
 
 async function saveTemplateEditor() {
   const templates = {};
-  for (const step of TEMPLATE_STEPS) {
-    templates[step + '_a'] = document.getElementById('tpl-' + step + '_a').value;
-    templates[step + '_b'] = document.getElementById('tpl-' + step + '_b').value;
+  for (const offerKey of Object.keys(OFFER_TYPES)) {
+    for (const step of TEMPLATE_STEPS) {
+      const tplKey = offerKey + '_' + step;
+      templates[tplKey + '_a'] = document.getElementById('tpl-' + tplKey + '_a').value;
+      templates[tplKey + '_b'] = document.getElementById('tpl-' + tplKey + '_b').value;
+    }
   }
   await saveTemplatesToServer(templates);
   closeTemplateEditor();
@@ -470,26 +523,38 @@ function firstName(fullName) {
 
 function getMessage(prospect, step, variant) {
   const templates = loadTemplates();
-  const key = step + '_' + (variant || 'a');
+  const offer = prospect.offerType || 'video';
+  const key = offer + '_' + step + '_' + (variant || 'a');
   const template = templates[key] || '';
   return template
     .replace(/\{name\}/g, firstName(prospect.name))
     .replace(/\{company\}/g, prospect.company || 'your company');
 }
 
-async function copyMessage(prospectId, step) {
+async function copyMessage(prospectId, step, offerOverride) {
   const p = state.prospects.find(x => x.id === prospectId);
   if (!p) return;
 
+  // If this is the initial DM, save the offer type
+  if (offerOverride && step === 'dm') {
+    try {
+      await apiPut('/api/prospects/' + prospectId, { offerType: offerOverride });
+      p.offerType = offerOverride;
+    } catch (err) {
+      console.error('Failed to save offer type:', err);
+    }
+  }
+
   // Determine variant: reuse if already assigned for this step, else round-robin
   let variant;
-  if (p.abVariants && p.abVariants[step]) {
-    variant = p.abVariants[step];
+  const variantKey = (p.offerType || 'video') + '_' + step;
+  if (p.abVariants && p.abVariants[variantKey]) {
+    variant = p.abVariants[variantKey];
   } else {
     let counter = parseInt(localStorage.getItem(AB_COUNTER_KEY) || '0');
     variant = (counter % 2 === 0) ? 'A' : 'B';
     localStorage.setItem(AB_COUNTER_KEY, String(counter + 1));
-    const abVariants = { ...(p.abVariants || {}), [step]: variant };
+    const abVariants = { ...(p.abVariants || {}), [variantKey]: variant };
     try {
       await apiPut('/api/prospects/' + prospectId, { abVariants });
       p.abVariants = abVariants;
@@ -501,11 +566,11 @@ async function copyMessage(prospectId, step) {
   const msg = getMessage(p, step, variant.toLowerCase());
   try {
     await navigator.clipboard.writeText(msg);
-    const btn = document.getElementById('copy-btn-' + prospectId);
+    const btn = document.getElementById('copy-btn-' + prospectId + (offerOverride ? '-' + offerOverride : ''));
     if (btn) {
       btn.textContent = 'Copied! (' + variant + ')';
       btn.classList.add('copied');
-      setTimeout(() => { btn.textContent = 'Copy Message'; btn.classList.remove('copied'); }, 2000);
+      setTimeout(() => { btn.textContent = btn.dataset.label || 'Copy Message'; btn.classList.remove('copied'); }, 2000);
     }
     const badge = document.getElementById('ab-badge-' + prospectId + '-' + step);
     if (badge) {
@@ -570,16 +635,33 @@ function togglePreview(prospectId, step) {
   } else {
     const p = state.prospects.find(x => x.id === prospectId);
     if (p) {
-      const variant = (p.abVariants && p.abVariants[step]) ? p.abVariants[step].toLowerCase() : 'a';
-      el.textContent = getMessage(p, step, variant);
+      const offer = p.offerType || 'video';
+      if (step === 'dm' && !p.offerType) {
+        // Show both offer previews side by side for DM cards before offer is chosen
+        let previewHtml = '';
+        for (const [offerKey, offerInfo] of Object.entries(OFFER_TYPES)) {
+          const variantKey = offerKey + '_' + step;
+          const variant = (p.abVariants && p.abVariants[variantKey]) ? p.abVariants[variantKey].toLowerCase() : 'a';
+          const tmpProspect = { ...p, offerType: offerKey };
+          const msg = getMessage(tmpProspect, step, variant);
+          previewHtml += `<div style="margin-bottom:12px;"><strong style="color:${offerInfo.color};">${offerInfo.label} (${variant.toUpperCase()}):</strong><br><span style="white-space:pre-wrap;">${esc(msg)}</span></div>`;
+        }
+        el.innerHTML = previewHtml;
+      } else {
+        const variantKey = offer + '_' + step;
+        const variant = (p.abVariants && p.abVariants[variantKey]) ? p.abVariants[variantKey].toLowerCase() : 'a';
+        el.textContent = getMessage(p, step, variant);
+      }
     }
     el.classList.add('show');
   }
 }
 
 function abBadge(p, step) {
-  if (p.abVariants && p.abVariants[step]) {
-    const v = p.abVariants[step];
+  const offer = p.offerType || 'video';
+  const variantKey = offer + '_' + step;
+  if (p.abVariants && p.abVariants[variantKey]) {
+    const v = p.abVariants[variantKey];
     return `<span class="ab-badge ab-${v.toLowerCase()}" id="ab-badge-${p.id}-${step}">${v}</span>`;
   }
   return `<span class="ab-badge" id="ab-badge-${p.id}-${step}" style="display:none;"></span>`;
@@ -1077,18 +1159,22 @@ function renderDashboardCard(p, mode) {
   const t = todayStr();
 
   if (mode === 'dm') {
+    const offerBadge = p.offerType ? `<span class="offer-badge offer-${p.offerType}">${OFFER_TYPES[p.offerType]?.label || p.offerType}</span>` : '';
     buttons = `
-      <button class="btn btn-copy btn-sm" id="copy-btn-${p.id}" onclick="copyMessage('${p.id}','dm')">Copy Message</button>
-      ${abBadge(p, 'dm')}
+      <button class="btn btn-copy btn-sm" id="copy-btn-${p.id}-video" data-label="\u{1F4F9} Video" onclick="copyMessage('${p.id}','dm','video')" style="background:#5A6B7A;color:#fff;">\u{1F4F9} Video</button>
+      <button class="btn btn-copy btn-sm" id="copy-btn-${p.id}-snapshot" data-label="\u{1F4CA} Snapshot" onclick="copyMessage('${p.id}','dm','snapshot')" style="background:#F38B1C;color:#fff;">\u{1F4CA} Snapshot</button>
       <button class="btn btn-secondary btn-sm" onclick="togglePreview('${p.id}','dm')">Preview</button>
       <button class="btn btn-primary btn-sm" onclick="markDmSent('${p.id}')">Mark DM Sent</button>
+      ${offerBadge}
     `;
     extra = `<div class="msg-preview" id="msg-preview-${p.id}"></div>`;
   } else if (mode === 'followup') {
     if (p.status === 'dm_sent') {
+      const offer = p.offerType || 'video';
+      const offerLabel = OFFER_TYPES[offer]?.label || offer;
       const daysOver = daysBetween(p.followUp1Due, t);
       const overdueLabel = daysOver > 0 ? `<span class="overdue">${daysOver} day${daysOver > 1 ? 's' : ''} overdue</span>` : '';
-      extra = `<div class="due-info">First follow-up ${overdueLabel}</div><div class="msg-preview" id="msg-preview-${p.id}"></div>`;
+      extra = `<div class="due-info">First follow-up ${overdueLabel} <span class="offer-badge offer-${offer}">${offerLabel}</span></div><div class="msg-preview" id="msg-preview-${p.id}"></div>`;
       buttons = `
         <button class="btn btn-copy btn-sm" id="copy-btn-${p.id}" onclick="copyMessage('${p.id}','follow_up_1')">Copy Message</button>
         ${abBadge(p, 'follow_up_1')}
@@ -1097,9 +1183,11 @@ function renderDashboardCard(p, mode) {
         <button class="btn btn-success btn-sm" onclick="markReplied('${p.id}')">Got Reply</button>
       `;
     } else if (p.status === 'follow_up_1') {
+      const offer = p.offerType || 'video';
+      const offerLabel = OFFER_TYPES[offer]?.label || offer;
       const daysOver = daysBetween(p.followUp2Due, t);
       const overdueLabel = daysOver > 0 ? `<span class="overdue">${daysOver} day${daysOver > 1 ? 's' : ''} overdue</span>` : '';
-      extra = `<div class="due-info">Final nudge ${overdueLabel}</div><div class="msg-preview" id="msg-preview-${p.id}"></div>`;
+      extra = `<div class="due-info">Final nudge ${overdueLabel} <span class="offer-badge offer-${offer}">${offerLabel}</span></div><div class="msg-preview" id="msg-preview-${p.id}"></div>`;
       buttons = `
         <button class="btn btn-copy btn-sm" id="copy-btn-${p.id}" onclick="copyMessage('${p.id}','follow_up_2')">Copy Message</button>
         ${abBadge(p, 'follow_up_2')}
@@ -1378,39 +1466,54 @@ async function loadActivityLog() {
 // ============================================================
 function renderABReport() {
   let html = '<div class="ab-report"><h3>A/B Template Performance</h3>';
-  html += '<p style="font-size:12px;color:#888;margin-bottom:16px;">Tracks which message variant (A or B) each prospect received. Reply rates show which version is working better.</p>';
+  html += '<p style="font-size:12px;color:#888;margin-bottom:16px;">Tracks which message variant (A or B) each prospect received, grouped by offer type. Reply rates show which version is working better.</p>';
 
-  for (const step of TEMPLATE_STEPS) {
-    const label = TEMPLATE_LABELS[step];
-    const withA = state.prospects.filter(p => p.abVariants && p.abVariants[step] === 'A');
-    const withB = state.prospects.filter(p => p.abVariants && p.abVariants[step] === 'B');
-    const sentA = withA.length;
-    const sentB = withB.length;
-    const repliedA = withA.filter(p => p.status === 'replied').length;
-    const repliedB = withB.filter(p => p.status === 'replied').length;
-    const rateA = sentA > 0 ? Math.round((repliedA / sentA) * 100) : 0;
-    const rateB = sentB > 0 ? Math.round((repliedB / sentB) * 100) : 0;
-    const totalSent = sentA + sentB;
-    const maxRate = Math.max(rateA, rateB, 1);
-    const barWidthA = Math.round((rateA / maxRate) * 120);
-    const barWidthB = Math.round((rateB / maxRate) * 120);
+  for (const [offerKey, offerInfo] of Object.entries(OFFER_TYPES)) {
+    html += `<div style="margin-top:16px;padding:12px;border-left:4px solid ${offerInfo.color};border-radius:6px;">
+      <h4 style="margin:0 0 12px;color:${offerInfo.color};">${offerInfo.label}</h4>`;
 
-    html += `<h4>${label}</h4>
-      <table>
-        <tr><th>Variant</th><th>Sent</th><th>Replied</th><th>Reply Rate</th><th></th></tr>
-        <tr>
-          <td><span class="ab-badge ab-a">A</span></td><td>${sentA}</td><td>${repliedA}</td>
-          <td class="${rateA > rateB && sentA >= 5 ? 'ab-winner' : ''}">${rateA}%</td>
-          <td><span class="rate-bar rate-bar-a" style="width:${barWidthA}px;"></span></td>
-        </tr>
-        <tr>
-          <td><span class="ab-badge ab-b">B</span></td><td>${sentB}</td><td>${repliedB}</td>
-          <td class="${rateB > rateA && sentB >= 5 ? 'ab-winner' : ''}">${rateB}%</td>
-          <td><span class="rate-bar rate-bar-b" style="width:${barWidthB}px;"></span></td>
-        </tr>
-      </table>
-      ${totalSent < 10 ? '<div class="sample-warning">Need at least 10 sends per variant for meaningful comparison.</div>' : ''}`;
+    for (const step of TEMPLATE_STEPS) {
+      const label = TEMPLATE_LABELS[step];
+      const variantKey = offerKey + '_' + step;
+      const offerProspects = state.prospects.filter(p => (p.offerType || 'video') === offerKey);
+      const withA = offerProspects.filter(p => p.abVariants && p.abVariants[variantKey] === 'A');
+      const withB = offerProspects.filter(p => p.abVariants && p.abVariants[variantKey] === 'B');
+
+      const sentA = withA.length;
+      const sentB = withB.length;
+      const repliedA = withA.filter(p => p.status === 'replied').length;
+      const repliedB = withB.filter(p => p.status === 'replied').length;
+      const rateA = sentA > 0 ? Math.round((repliedA / sentA) * 100) : 0;
+      const rateB = sentB > 0 ? Math.round((repliedB / sentB) * 100) : 0;
+      const totalSent = sentA + sentB;
+
+      const maxRate = Math.max(rateA, rateB, 1);
+      const barWidthA = Math.round((rateA / maxRate) * 120);
+      const barWidthB = Math.round((rateB / maxRate) * 120);
+
+      html += `<h4 style="font-size:13px;">${label}</h4>
+        <table>
+          <tr><th>Variant</th><th>Sent</th><th>Replied</th><th>Reply Rate</th><th></th></tr>
+          <tr>
+            <td><span class="ab-badge ab-a">A</span></td>
+            <td>${sentA}</td>
+            <td>${repliedA}</td>
+            <td class="${rateA > rateB && sentA >= 5 ? 'ab-winner' : ''}">${rateA}%</td>
+            <td><span class="rate-bar rate-bar-a" style="width:${barWidthA}px;"></span></td>
+          </tr>
+          <tr>
+            <td><span class="ab-badge ab-b">B</span></td>
+            <td>${sentB}</td>
+            <td>${repliedB}</td>
+            <td class="${rateB > rateA && sentB >= 5 ? 'ab-winner' : ''}">${rateB}%</td>
+            <td><span class="rate-bar rate-bar-b" style="width:${barWidthB}px;"></span></td>
+          </tr>
+        </table>
+        ${totalSent < 10 ? '<div class="sample-warning">Need at least 10 sends per variant for meaningful comparison.</div>' : ''}`;
+    }
+    html += `</div>`;
   }
+
   html += '</div>';
   return html;
 }
