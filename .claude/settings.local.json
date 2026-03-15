@@ -68,7 +68,22 @@
       "mcp__800ca824-ea01-4a34-9303-02acf315f924__gmail_create_draft",
       "Bash(curl -s -X PUT http://localhost:3863/api/opportunities/elexis-mosley -H \"Content-Type: application/json\" -d '{:*)",
       "Bash(curl -s -X POST http://localhost:3863/api/opportunities/elexis-mosley/history -H \"Content-Type: application/json\" -d '{:*)",
-      "Bash(node --input-type=commonjs -e ':*)"
+      "Bash(node --input-type=commonjs -e ':*)",
+      "Bash(sips -s format jpeg -s formatOptions 60 \"/Users/danefrederiksen/Desktop/Finances/planet fitness/IMG_0754.HEIC\" --out /tmp/pf_0754.jpg)",
+      "Bash(sips -s format jpeg -s formatOptions 60 \"/Users/danefrederiksen/Desktop/Finances/planet fitness/IMG_0755.HEIC\" --out /tmp/pf_0755.jpg)",
+      "Bash(sips -s format jpeg -s formatOptions 60 \"/Users/danefrederiksen/Desktop/Finances/planet fitness/IMG_0756.HEIC\" --out /tmp/pf_0756.jpg)",
+      "Read(//Users/danefrederiksen/Library/Application Support/Claude/local-agent-mode-sessions/skills-plugin/a8b937d3-aaa6-4419-966b-dd0f3296b0f5/47aad402-2ec6-4b40-8dc3-bf4ef7cae726/skills/xlsx/**)",
+      "Read(//Users/danefrederiksen/Desktop/**)",
+      "Bash(cp \"/Users/danefrederiksen/Desktop/DA_Sales_Opportunities_2026-03-14.xlsx\" \"/tmp/DA_Sales_Opportunities_2026-03-14.xlsx\")",
+      "Read(//Users/danefrederiksen/Library/Application Support/Claude/local-agent-mode-sessions/skills-plugin/a8b937d3-aaa6-4419-966b-dd0f3296b0f5/47aad402-2ec6-4b40-8dc3-bf4ef7cae726/skills/docx/**)",
+      "Bash(pandoc \"/Users/danefrederiksen/Desktop/Digital Accomplice/4_Operations/4.3_Processes/daily reports/DA_ProspectingReport_Mar6_2026.docx\" -o /tmp/prospecting_report.md)",
+      "Read(//tmp/**)",
+      "Bash(python3 scripts/office/unpack.py \"/Users/danefrederiksen/Desktop/Digital Accomplice/4_Operations/4.3_Processes/daily reports/DA_ProspectingReport_Mar6_2026.docx\" /tmp/prospecting_unpacked/)",
+      "Bash(open \"/Users/danefrederiksen/Desktop/Claude code/reports/30-day-growth-dashboard.html\")",
+      "Bash(open \"/Users/danefrederiksen/Desktop/Claude code/reports/followup-proof-dashboard.html\")",
+      "Bash(curl -s -u dane:da-pipeline-2026 http://localhost:3851/api/prospects)",
+      "Bash(python3 -c \"import sys,json; d=json.load\\(sys.stdin\\); print\\(f''''Server up: {len\\(d\\)} prospects loaded''''\\)\")",
+      "Bash(curl -s -u dane:da-pipeline-2026 http://localhost:3851/api/templates)"
     ]
   }
 }
