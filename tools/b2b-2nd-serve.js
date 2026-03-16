@@ -150,7 +150,7 @@ const ALLOWED_FIELDS = [
   'connectionSentDate', 'connectionCheckDate', 'connectionAcceptedDate',
   'dmSentDate', 'followUp1Due', 'followUp2Due', 'lastActionDate',
   'reply', 'nextStep', 'draftReply', 'abVariants',
-  'comment_count', 'last_commented'
+  'comment_count', 'last_commented', 'warming_dm_sent', 'warming_reply_date'
 ];
 
 // Map status changes to activity labels

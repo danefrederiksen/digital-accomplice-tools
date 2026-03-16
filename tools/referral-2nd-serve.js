@@ -11,8 +11,11 @@ const DATA_FILE = path.join(DATA_DIR, 'referral-2nd-prospects.json');
 const ACTIVITY_FILE = path.join(DATA_DIR, 'referral-2nd-activity.json');
 const TEMPLATES_FILE = path.join(DATA_DIR, 'referral-2nd-templates.json');
 const BACKUP_DIR = path.join(DATA_DIR, 'backups');
+const COMMENT_LOG_FILE = path.join(DATA_DIR, 'comment-log.json');
 const MAX_BACKUPS = 5;
 const MAX_ACTIVITY = 500;
+const COMMENTS_TO_DM = 4;
+const SEGMENT = 'referral_2nd';
 
 // ============================================================
 // MIDDLEWARE
@@ -135,7 +138,8 @@ const ALLOWED_FIELDS = [
   'name', 'company', 'title', 'linkedinUrl', 'status',
   'connectionSentDate', 'connectionCheckDate', 'connectionAcceptedDate',
   'dmSentDate', 'followUp1Due', 'followUp2Due', 'lastActionDate',
-  'reply', 'nextStep', 'draftReply', 'abVariants'
+  'reply', 'nextStep', 'draftReply', 'abVariants',
+  'comment_count', 'last_commented', 'warming_dm_sent', 'warming_reply_date'
 ];
 
 // Map status changes to activity labels
@@ -327,6 +331,89 @@ app.put('/api/templates', (req, res) => {
   }
   saveTemplates(clean);
   res.json({ ok: true });
+});
+
+// ============================================================
+// COMMENT TRACKING — shared comment-log.json with Tool #11
+// ============================================================
+
+function loadCommentLog() {
+  try {
+    if (!fs.existsSync(COMMENT_LOG_FILE)) return [];
+    return JSON.parse(fs.readFileSync(COMMENT_LOG_FILE, 'utf8')) || [];
+  } catch { return []; }
+}
+
+function saveCommentLog(entries) {
+  fs.writeFileSync(COMMENT_LOG_FILE, JSON.stringify(entries, null, 2), 'utf8');
+}
+
+// GET comment stats for all prospects in this tool
+app.get('/api/comment-stats', (req, res) => {
+  const commentLog = loadCommentLog();
+  const prospects = loadProspects();
+
+  const stats = {};
+  commentLog.forEach(entry => {
+    if (!stats[entry.prospectId]) {
+      stats[entry.prospectId] = { count: 0, lastDate: null };
+    }
+    stats[entry.prospectId].count++;
+    if (!stats[entry.prospectId].lastDate || entry.date > stats[entry.prospectId].lastDate) {
+      stats[entry.prospectId].lastDate = entry.date;
+    }
+  });
+
+  // Only return stats for prospects in this tool
+  const ourStats = {};
+  prospects.forEach(p => {
+    const s = stats[p.id] || { count: 0, lastDate: null };
+    ourStats[p.id] = { count: p.comment_count || s.count, lastDate: s.lastDate };
+  });
+
+  res.json({ stats: ourStats, commentsRequired: COMMENTS_TO_DM });
+});
+
+// POST log a comment — writes to shared comment-log.json AND updates prospect
+app.post('/api/comment', (req, res) => {
+  const { prospectId, postUrl } = req.body;
+  if (!prospectId) return res.status(400).json({ error: 'prospectId required' });
+
+  const prospects = loadProspects();
+  const prospect = prospects.find(p => p.id === prospectId);
+  if (!prospect) return res.status(404).json({ error: 'Prospect not found' });
+
+  const entry = {
+    id: uuidv4(),
+    prospectId: sanitize(prospectId),
+    prospectName: prospect.name,
+    company: prospect.company,
+    segment: SEGMENT,
+    postUrl: sanitize(postUrl || ''),
+    date: new Date().toISOString()
+  };
+
+  // Save to shared comment log
+  const log = loadCommentLog();
+  log.unshift(entry);
+  if (log.length > 2000) log.length = 2000;
+  saveCommentLog(log);
+
+  // Count total comments for this prospect
+  const totalComments = log.filter(e => e.prospectId === prospectId).length;
+
+  // Update prospect record (direct write to avoid backup on every comment)
+  const idx = prospects.findIndex(p => p.id === prospectId);
+  if (idx !== -1) {
+    prospects[idx].comment_count = totalComments;
+    prospects[idx].last_commented = entry.date;
+    fs.writeFileSync(DATA_FILE, JSON.stringify({ prospects }, null, 2), 'utf8');
+  }
+
+  logActivity('Logged comment', prospect.name, prospectId);
+
+  const dmReady = totalComments >= COMMENTS_TO_DM;
+  res.json({ ok: true, entry, totalComments, dmReady, commentsNeeded: Math.max(0, COMMENTS_TO_DM - totalComments) });
 });
 
 // ============================================================
