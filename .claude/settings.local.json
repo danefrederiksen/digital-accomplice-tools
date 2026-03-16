@@ -83,7 +83,28 @@
       "Bash(open \"/Users/danefrederiksen/Desktop/Claude code/reports/followup-proof-dashboard.html\")",
       "Bash(curl -s -u dane:da-pipeline-2026 http://localhost:3851/api/prospects)",
       "Bash(python3 -c \"import sys,json; d=json.load\\(sys.stdin\\); print\\(f''''Server up: {len\\(d\\)} prospects loaded''''\\)\")",
-      "Bash(curl -s -u dane:da-pipeline-2026 http://localhost:3851/api/templates)"
+      "Bash(curl -s -u dane:da-pipeline-2026 http://localhost:3851/api/templates)",
+      "Bash(lsof -ti:3852)",
+      "Bash(lsof -ti:3855)",
+      "Bash(curl -s http://localhost:3855/api/templates)",
+      "Bash(python3 -c \"import json,sys; d=json.load\\(sys.stdin\\); [print\\(f''''{x.get\\(action,?\\)} | {x.get\\(name,?\\)} | {x.get\\(timestamp,?\\)}''''\\) for x in d[-30:]]\")",
+      "Bash(python3 -c \"import json,sys; d=json.load\\(sys.stdin\\); [print\\(f''''{x.get\\(\"\"action\"\",\"\"?\"\"\\)} | {x.get\\(\"\"name\"\",\"\"?\"\"\\)} | {x.get\\(\"\"timestamp\"\",\"\"?\"\"\\)}''''\\) for x in d[-20:]]\")",
+      "Bash(python3 -c \"import json; d=json.load\\(open\\(''data/b2b-activity.json''\\)\\); [print\\(json.dumps\\(x, indent=2\\)\\) for x in d[-5:]]\")",
+      "Bash(python3 -c \"import json; d=json.load\\(open\\(''data/cyber-activity.json''\\)\\); [print\\(json.dumps\\(x, indent=2\\)\\) for x in d[-5:]]\")",
+      "Bash(python3 -c \"import json; d=json.load\\(open\\(''data/referral-1st-activity.json''\\)\\); [print\\(json.dumps\\(x, indent=2\\)\\) for x in d[-5:]]\")",
+      "Bash(for day:*)",
+      "Bash(do echo:*)",
+      "Bash(find '/Users/danefrederiksen/Desktop/Digital Accomplice' -type f \\\\\\(-name *.md -o -name *.txt -o -name *.json -o -name *.csv \\\\\\))",
+      "Bash(python3 -c \"import json; data=json.load\\(open\\(''data/b2b-2nd-prospects.json''\\)\\); print\\(f''B2B 2nd: {len\\(data[\"\"prospects\"\"]\\)} prospects''\\); data=json.load\\(open\\(''data/cyber-2nd-prospects.json''\\)\\); print\\(f''Cyber 2nd: {len\\(data[\"\"prospects\"\"]\\)} prospects''\\); data=json.load\\(open\\(''data/referral-2nd-prospects.json''\\)\\); print\\(f''Referral 2nd: {len\\(data[\"\"prospects\"\"]\\)} prospects''\\)\")",
+      "Bash(python3 -c \"import json; cl=json.load\\(open\\(''data/comment-log.json''\\)\\); print\\(f''Total comments logged: {len\\(cl\\)}''\\); segs={}; [segs.update\\({e[''segment'']: segs.get\\(e[''segment''],0\\)+1}\\) for e in cl]; print\\(''By segment:'', segs\\)\")",
+      "Bash(python3:*)",
+      "Bash(lsof -i:3856)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" -X POST http://localhost:3861/api/screenshots -H \"Content-Type: application/json\" -d '{\"\"filename\"\":\"\"test.png\"\",\"\"mimeType\"\":\"\"image/png\"\",\"\"data\"\":\"\"iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==\"\",\"\"notes\"\":\"\"test\"\"}')",
+      "Bash(curl -v http://localhost:3861/)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:3861/)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://127.0.0.1:3861/)",
+      "Bash(curl -s -o /dev/null -w \"localhost: %{http_code}\\\\n\" http://localhost:3861/)",
+      "Bash(curl -s -o /dev/null -w \"127.0.0.1: %{http_code}\\\\n\" http://127.0.0.1:3861/)"
     ]
   }
 }

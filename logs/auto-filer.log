@@ -102,3 +102,76 @@
 [2026-03-11T00:48:30.016Z] FILED: DA_Finance_HouseholdBudget_2026-03-10.xlsx → 5_Finance/DA_Finance_HouseholdBudget_2026-03-10.xlsx
 [2026-03-11T01:18:01.458Z] FILED: DA_Sales_Discovery_RevPalVideoStrategy_2026-03-10.pdf → 1_Sales/1.4_Discovery_Calls/DA_Sales_Discovery_RevPalVideoStrategy_2026-03-10.pdf
 [2026-03-11T01:23:54.357Z] ERROR moving DA_Ops_Strategy_ProjectPriorityList_2026-03-10.pdf: ENOENT: no such file or directory, rename '/Users/danefrederiksen/Downloads/DA_Ops_Strategy_ProjectPriorityList_2026-03-10.pdf' -> '/Users/danefrederiksen/Desktop/Digital Accomplice/4_Operations/4.1_Strategy/DA_Ops_Strategy_ProjectPriorityList_2026-03-10.pdf'
+[2026-03-15T17:53:56.988Z] DA Auto-Filer started
+[2026-03-15T17:53:56.991Z] Watching: /Users/danefrederiksen/Downloads
+[2026-03-15T17:53:56.991Z] Filing to: /Users/danefrederiksen/Desktop/Digital Accomplice
+[2026-03-15T17:53:57.023Z] Found 62 existing DA_ file(s) — processing...
+[2026-03-15T17:53:57.024Z] Unknown department "Agent" in DA_Agent_Daily_Report_Instructions (1).md — leaving in Downloads
+[2026-03-15T17:53:57.024Z] Unknown department "Agent" in DA_Agent_Daily_Report_Instructions.md — leaving in Downloads
+[2026-03-15T17:53:57.025Z] Skipping DA_Agent_Registry.md — doesn't match DA_{Dept}_{Sub}_ pattern
+[2026-03-15T17:53:57.025Z] Unknown department "Brand" in DA_Brand_Guidelines_Voice_Guide.docx — leaving in Downloads
+[2026-03-15T17:53:57.025Z] Unknown department "Brand" in DA_Brand_Guidelines_v2.docx — leaving in Downloads
+[2026-03-15T17:53:57.025Z] Skipping DA_Business_Plan.docx — doesn't match DA_{Dept}_{Sub}_ pattern
+[2026-03-15T17:53:57.026Z] Unknown department "Business" in DA_Business_Plan_v3.docx — leaving in Downloads
+[2026-03-15T17:53:57.026Z] Unknown department "CC" in DA_CC_Status_Audit_2026-03-07.pdf — leaving in Downloads
+[2026-03-15T17:53:57.026Z] Unknown department "Consolidated" in DA_Consolidated_Knowledge_Base_v4.docx — leaving in Downloads
+[2026-03-15T17:53:57.026Z] Unknown department "Content" in DA_Content_Initiative_Status_Report.docx — leaving in Downloads
+[2026-03-15T17:53:57.026Z] Skipping DA_DailyReport_Mar6_2026.pdf — doesn't match DA_{Dept}_{Sub}_ pattern
+[2026-03-15T17:53:57.026Z] Unknown department "Daily" in DA_Daily_LinkedIn_Plan_2026-02-25.xlsx — leaving in Downloads
+[2026-03-15T17:53:57.026Z] Unknown department "Daily" in DA_Daily_Outreach_Tracker_2026-02-24 (1).xlsx — leaving in Downloads
+[2026-03-15T17:53:57.026Z] Unknown department "Daily" in DA_Daily_Outreach_Tracker_2026-02-24.xlsx — leaving in Downloads
+[2026-03-15T17:53:57.026Z] Unknown department "Daily" in DA_Daily_Outreach_Tracker_2026-02-25 (1).xlsx — leaving in Downloads
+[2026-03-15T17:53:57.026Z] Unknown department "Daily" in DA_Daily_Outreach_Tracker_2026-02-25.xlsx — leaving in Downloads
+[2026-03-15T17:53:57.026Z] Unknown department "Daily" in DA_Daily_Outreach_Tracker_Feb24_FINAL.xlsx — leaving in Downloads
+[2026-03-15T17:53:57.027Z] Unknown department "Daily" in DA_Daily_Outreach_Tracker_Feb24_REVISED (1).xlsx — leaving in Downloads
+[2026-03-15T17:53:57.027Z] Unknown department "Daily" in DA_Daily_Outreach_Tracker_Feb24_REVISED.xlsx — leaving in Downloads
+[2026-03-15T17:53:57.027Z] Unknown department "Daily" in DA_Daily_Outreach_Tracker_Feb24_v2.xlsx — leaving in Downloads
+[2026-03-15T17:53:57.027Z] Unknown department "Desktop" in DA_Desktop_Downloads_Cleanup.xlsx — leaving in Downloads
+[2026-03-15T17:53:57.027Z] Unknown department "Executive" in DA_Executive_Summary_Feb2026.md — leaving in Downloads
+[2026-03-15T17:53:57.027Z] Unknown department "FolderStructure" in DA_FolderStructure_Outline_Mar5.txt — leaving in Downloads
+[2026-03-15T17:53:57.027Z] Unknown department "How" in DA_How_I_Help_OnePager.pdf — leaving in Downloads
+[2026-03-15T17:53:57.027Z] Unknown department "Infographic" in DA_Infographic_Style_Prompt.txt — leaving in Downloads
+[2026-03-15T17:53:57.027Z] Unknown department "LinkedIn" in DA_LinkedIn_Content_Calendar.docx — leaving in Downloads
+[2026-03-15T17:53:57.027Z] Unknown department "LinkedIn" in DA_LinkedIn_Post_A.pdf — leaving in Downloads
+[2026-03-15T17:53:57.027Z] Unknown department "LinkedIn" in DA_LinkedIn_Post_B.pdf — leaving in Downloads
+[2026-03-15T17:53:57.027Z] Unknown department "LinkedIn" in DA_LinkedIn_Post_C.pdf — leaving in Downloads
+[2026-03-15T17:53:57.027Z] Unknown department "LinkedIn" in DA_LinkedIn_Post_Cybersecurity_AI_Video.docx — leaving in Downloads
+[2026-03-15T17:53:57.027Z] Unknown department "LinkedIn" in DA_LinkedIn_Post_VideoStrategy_Draft.docx — leaving in Downloads
+[2026-03-15T17:53:57.027Z] Unknown department "LinkedIn" in DA_LinkedIn_Post_VideoStrategy_v2 (1).docx — leaving in Downloads
+[2026-03-15T17:53:57.027Z] Unknown department "LinkedIn" in DA_LinkedIn_Post_VideoStrategy_v2.docx — leaving in Downloads
+[2026-03-15T17:53:57.027Z] Unknown department "LinkedIn" in DA_LinkedIn_Post_VideoStrategy_v3.docx — leaving in Downloads
+[2026-03-15T17:53:57.027Z] Skipping DA_Master_Inventory.xlsx — doesn't match DA_{Dept}_{Sub}_ pattern
+[2026-03-15T17:53:57.027Z] Skipping DA_Master_Prospects.xlsx — doesn't match DA_{Dept}_{Sub}_ pattern
+[2026-03-15T17:53:57.027Z] Skipping DA_Master_Reference (1).md — doesn't match DA_{Dept}_{Sub}_ pattern
+[2026-03-15T17:53:57.027Z] Skipping DA_Master_Reference (2).md — doesn't match DA_{Dept}_{Sub}_ pattern
+[2026-03-15T17:53:57.027Z] Skipping DA_Master_Reference (3).md — doesn't match DA_{Dept}_{Sub}_ pattern
+[2026-03-15T17:53:57.027Z] Skipping DA_Master_Reference.md — doesn't match DA_{Dept}_{Sub}_ pattern
+[2026-03-15T17:53:57.027Z] Unknown department "Objection" in DA_Objection_Handling_FAQ (1).docx — leaving in Downloads
+[2026-03-15T17:53:57.028Z] Unknown department "Objection" in DA_Objection_Handling_FAQ.docx — leaving in Downloads
+[2026-03-15T17:53:57.028Z] Unknown department "Objection" in DA_Objection_Handling_FAQ_v2.docx — leaving in Downloads
+[2026-03-15T17:53:57.028Z] Unknown department "Offers" in DA_Offers_Testing_Playbook copy.docx — leaving in Downloads
+[2026-03-15T17:53:57.028Z] Unknown department "Organization" in DA_Organization_Session_Progress_Mar5.md — leaving in Downloads
+[2026-03-15T17:53:57.028Z] Skipping DA_OutreachProgress_Feb23-Mar6_2026.pdf — doesn't match DA_{Dept}_{Sub}_ pattern
+[2026-03-15T17:53:57.028Z] Unknown department "Outreach" in DA_Outreach_Agent_Daily_Report_2026-02-24.docx — leaving in Downloads
+[2026-03-15T17:53:57.028Z] Unknown department "Outreach" in DA_Outreach_Agent_Daily_Report_2026-02-25.docx — leaving in Downloads
+[2026-03-15T17:53:57.028Z] Unknown department "Outreach" in DA_Outreach_Drafts_Feb2026.docx — leaving in Downloads
+[2026-03-15T17:53:57.028Z] Unknown department "Outreach" in DA_Outreach_Drafts_Feb2026.md — leaving in Downloads
+[2026-03-15T17:53:57.028Z] Unknown department "Outreach" in DA_Outreach_Strategy_2026-02-24 (1).docx — leaving in Downloads
+[2026-03-15T17:53:57.028Z] Unknown department "Outreach" in DA_Outreach_Strategy_2026-02-24.docx — leaving in Downloads
+[2026-03-15T17:53:57.028Z] Unknown department "Outreach" in DA_Outreach_Tracker_2026-02-25 (2).xlsx — leaving in Downloads
+[2026-03-15T17:53:57.028Z] Unknown department "Outreach" in DA_Outreach_Tracking_Update_Feb24_2026.docx — leaving in Downloads
+[2026-03-15T17:53:57.028Z] Unknown department "Pipeline" in DA_Pipeline_Master_Document.docx — leaving in Downloads
+[2026-03-15T17:53:57.028Z] Skipping DA_Pipeline_Tracker.xlsx — doesn't match DA_{Dept}_{Sub}_ pattern
+[2026-03-15T17:53:57.028Z] Skipping DA_PromoSlide_Apr14Talk_v1.html — doesn't match DA_{Dept}_{Sub}_ pattern
+[2026-03-15T17:53:57.028Z] Skipping DA_ProspectingProcess_v1_2026-03-06.pdf — doesn't match DA_{Dept}_{Sub}_ pattern
+[2026-03-15T17:53:57.028Z] Unknown department "Revised" in DA_Revised_Action_Plan_Feb24.docx — leaving in Downloads
+[2026-03-15T17:53:57.028Z] Unknown department "Revised" in DA_Revised_Pipeline_Plan_Feb24.docx — leaving in Downloads
+[2026-03-15T17:53:57.029Z] Unknown department "System" in DA_System_Documentation_Mar1_2026.md — leaving in Downloads
+[2026-03-15T17:53:57.029Z] Skipping DA_WeeklyDataPack_2026-03-09_to_2026-03-13.pdf — doesn't match DA_{Dept}_{Sub}_ pattern
+[2026-03-15T17:53:57.031Z] Watching for new DA_ files...
+[2026-03-16T03:18:20.671Z] COPIED: DA_Sales_Prospects_ICPActivePosters_2026-03-15.csv → 1_Sales/1.1_Prospects/DA_Sales_Prospects_ICPActivePosters_2026-03-15.csv (original kept in Downloads)
+[2026-03-16T03:18:20.675Z] ERROR moving DA_Sales_Prospects_ICPActivePosters_2026-03-15.csv: Unknown system error -11: Unknown system error -11, open '/Users/danefrederiksen/Desktop/Digital Accomplice/4_Operations/4.3_Processes/file-log.json'
+[2026-03-16T03:56:37.628Z] COPIED: DA_Sales_Prospects_CyberLeadsPT4_2026-03-15.xlsx → 1_Sales/1.1_Prospects/DA_Sales_Prospects_CyberLeadsPT4_2026-03-15.xlsx (original kept in Downloads)
+[2026-03-16T03:56:37.697Z] ERROR moving DA_Sales_Prospects_CyberLeadsPT4_2026-03-15.xlsx: Unknown system error -11: Unknown system error -11, open '/Users/danefrederiksen/Desktop/Digital Accomplice/4_Operations/4.3_Processes/file-log.json'
+[2026-03-16T04:24:16.293Z] COPIED: DA_Sales_Prospects_CyberLeadsTool_4_pages_1-4_2026-03-15.csv → 1_Sales/1.1_Prospects/DA_Sales_Prospects_CyberLeadsTool_4_pages_1-4_2026-03-15.csv (original kept in Downloads)
+[2026-03-16T04:24:16.296Z] ERROR moving DA_Sales_Prospects_CyberLeadsTool_4_pages_1-4_2026-03-15.csv: Unknown system error -11: Unknown system error -11, open '/Users/danefrederiksen/Desktop/Digital Accomplice/4_Operations/4.3_Processes/file-log.json'
