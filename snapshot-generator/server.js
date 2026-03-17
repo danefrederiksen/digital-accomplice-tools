@@ -336,20 +336,20 @@ function buildSnapshotHTML(d) {
 html,body{font-family:'Inter',Arial,Helvetica,sans-serif;background:#fff;color:#1a1a1a;-webkit-print-color-adjust:exact;print-color-adjust:exact}
 .page{width:8.5in;height:11in;margin:0 auto;display:flex;flex-direction:column;overflow:hidden}
 .header{background:#1a1a1a;padding:12px 44px;display:flex;justify-content:space-between;align-items:center;flex-shrink:0}
-.header-label{font-size:9px;font-weight:700;letter-spacing:3.5px;text-transform:uppercase;color:#F38B1C}
+.header-label{font-size:9px;font-weight:700;letter-spacing:3.5px;text-transform:uppercase;color:#F8901E}
 .header-meta{font-size:9px;color:#888}
 .content{flex:1;padding:28px 44px 0;display:flex;flex-direction:column}
-.category{font-size:9px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:#F38B1C;margin-bottom:8px;padding-left:12px;border-left:3px solid #F38B1C}
+.category{font-size:9px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:#F8901E;margin-bottom:8px;padding-left:12px;border-left:3px solid #F8901E}
 .headline{font-size:32px;font-weight:900;line-height:1.12;margin-bottom:6px}
-.headline .accent{color:#F38B1C}
+.headline .accent{color:#F8901E}
 .subtitle{font-size:13px;color:#5A6B7A;line-height:1.5;margin-bottom:14px}
-.rule{width:48px;height:3px;background:#F38B1C;margin-bottom:16px}
+.rule{width:48px;height:3px;background:#F8901E;margin-bottom:16px}
 .stats{display:flex;gap:12px;margin-bottom:16px}
 .stat{flex:1;background:#F5F5F5;border-radius:6px;padding:14px 12px 12px;text-align:center}
-.stat-num{font-size:38px;font-weight:900;color:#F38B1C;line-height:1;margin-bottom:4px}
+.stat-num{font-size:38px;font-weight:900;color:#F8901E;line-height:1;margin-bottom:4px}
 .stat-num .sm{font-size:20px;font-weight:800}
 .stat-label{font-size:10.5px;font-weight:500;color:#5A6B7A;line-height:1.35}
-sup{font-size:65%;color:#F38B1C;vertical-align:super}
+sup{font-size:65%;color:#F8901E;vertical-align:super}
 .proof{font-size:11.5px;color:#5A6B7A;line-height:1.55;margin-bottom:16px;padding:9px 13px;background:#FAFAFA;border-left:3px solid #E0E0E0;border-radius:0 4px 4px 0}
 .proof strong{color:#1a1a1a;font-weight:700}
 .charts{display:flex;gap:20px;margin-bottom:18px}
@@ -357,25 +357,25 @@ sup{font-size:65%;color:#F38B1C;vertical-align:super}
 .chart-title{font-size:9px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:#5A6B7A;margin-bottom:8px;padding-bottom:5px;border-bottom:1px solid #EBEBEB}
 .bar-row{display:flex;align-items:center;margin-bottom:5px}
 .bar-name{width:110px;font-size:11px;font-weight:600;color:#1a1a1a;flex-shrink:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.bar-name.you{color:#F38B1C}
+.bar-name.you{color:#F8901E}
 .bar-track{flex:1;height:18px;background:#F0F0F0;border-radius:3px;overflow:hidden;margin-right:8px}
 .bar-fill{height:100%;border-radius:3px;min-width:2px}
-.bar-fill.ai{background:#F38B1C}.bar-fill.ai.dim{background:#F38B1C;opacity:0.45}
+.bar-fill.ai{background:#F8901E}.bar-fill.ai.dim{background:#F8901E;opacity:0.45}
 .bar-fill.vid{background:#5A6B7A}.bar-fill.vid.dim{background:#5A6B7A;opacity:0.45}
 .bar-fill.empty{background:transparent;min-width:0}
 .bar-val{width:28px;font-size:12px;font-weight:800;text-align:right;color:#1a1a1a}
-.bar-val.you{color:#F38B1C}.bar-val.zero{color:#CBCBCB}
+.bar-val.you{color:#F8901E}.bar-val.zero{color:#CBCBCB}
 .callout{background:#1a1a1a;border-radius:8px;padding:20px 24px;margin-bottom:18px}
 .callout p{font-size:13.5px;font-weight:500;color:#fff;line-height:1.6}
-.callout strong{font-weight:700}.callout .punch{color:#F38B1C;font-weight:700}
+.callout strong{font-weight:700}.callout .punch{color:#F8901E;font-weight:700}
 .next-step{display:flex;gap:16px;margin-bottom:18px;padding:16px 18px;background:#FAFAFA;border-radius:6px}
-.next-step-header{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#F38B1C;margin-bottom:6px}
+.next-step-header{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#F8901E;margin-bottom:6px}
 .next-step-item{flex:1;font-size:11px;color:#5A6B7A;line-height:1.45}
 .next-step-item strong{color:#1a1a1a;font-weight:600;display:block;margin-bottom:2px;font-size:11.5px}
 .method{font-size:8px;color:#999;line-height:1.5;border-top:1px solid #E8E8E8;padding-top:8px;margin-top:auto}
 .method b{color:#888}
 .footer{padding:11px 44px;display:flex;justify-content:space-between;align-items:center;border-top:1px solid #E5E5E5;flex-shrink:0}
-.cta-text{font-size:13px;font-weight:700;color:#F38B1C;margin-bottom:2px}
+.cta-text{font-size:13px;font-weight:700;color:#F8901E;margin-bottom:2px}
 .cta-contact{font-size:9px;color:#5A6B7A}
 .brand{display:flex;align-items:center;gap:9px}
 .brand-name{font-size:10px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:#1a1a1a}
@@ -399,7 +399,7 @@ sup{font-size:65%;color:#F38B1C;vertical-align:super}
 <div class="next-step"><div class="next-step-item"><div class="next-step-header">In 15 minutes you get</div></div><div class="next-step-item"><strong>The full data</strong>Every query, every AI answer, every screenshot. See exactly what buyers see.</div><div class="next-step-item"><strong>The 3 biggest gaps</strong>Where competitors are gaining ground and where you're leaving opportunity on the table.</div><div class="next-step-item"><strong>A clear next step</strong>One action you can take this month &mdash; whether or not we work together.</div></div>
 <div class="method"><b>How we did this:</b> 20 questions real buyers type into AI search. Each answer scored 0&ndash;3 (Absent / Cited / Mentioned / Recommended). You can re-run any query yourself &mdash; that's the point. AI answers change; we document the pattern, not a guarantee.</div>
 </div>
-<div class="footer"><div><div class="cta-text">15 minutes. No pitch. We walk through the data. &#8599;</div><div class="cta-contact">dane@digitalaccomplice.com &middot; calendly.com/accomplice-dane/15min</div></div><div class="brand"><svg width="20" height="22" viewBox="0 0 20 22" fill="none"><path d="M0 0L20 11L0 22V0Z" fill="#F38B1C"/></svg><span class="brand-name">Digital Accomplice</span></div></div>
+<div class="footer"><div><div class="cta-text">15 minutes. No pitch. We walk through the data. &#8599;</div><div class="cta-contact">dane@digitalaccomplice.com &middot; calendly.com/accomplice-dane/15min</div></div><div class="brand"><svg width="20" height="22" viewBox="0 0 20 22" fill="none"><path d="M0 0L20 11L0 22V0Z" fill="#F8901E"/></svg><span class="brand-name">Digital Accomplice</span></div></div>
 <div class="footnotes">[1] Adweek, Jan 2026 (Bluefish, Emberos, Goodie AI). YouTube is the #1 social platform cited in AI answers &mdash; 16% of responses. AI search converts 1.3&ndash;5x higher than traditional search (Semrush, Visibility Labs, 2025&ndash;2026).</div>
 </div></body></html>`;
 }

@@ -3,7 +3,7 @@ const { Document, Packer, Paragraph, TextRun, Table, TableRow, TableCell,
         WidthType, ShadingType, PageNumber, PageBreak, TabStopType, TabStopPosition } = require('docx');
 const fs = require('fs');
 
-const DA_ORANGE = "F38B1C";
+const DA_ORANGE = "F8901E";
 const DA_BLACK = "000000";
 const DA_BLUEGRAY = "5A6B7A";
 const DA_GRAY = "CBCBCB";

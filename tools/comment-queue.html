@@ -4,10 +4,10 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Prospecting Tool #11 — Comment Queue</title>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { font-family: 'Poppins', Arial, sans-serif; background: #F5F5F5; color: #000; min-height: 100vh; }
+    body { font-family: 'Inter', Arial, sans-serif; background: #F5F5F5; color: #000; min-height: 100vh; }
 
     /* Header */
     .header {
@@ -15,12 +15,12 @@
       display: flex; align-items: center; justify-content: space-between;
     }
     .header-left { display: flex; align-items: center; gap: 12px; }
-    .header-left .logo { font-weight: 800; font-size: 16px; color: #F38B1C; }
+    .header-left .logo { font-weight: 800; font-size: 16px; color: #F8901E; }
     .header-left .title { font-weight: 600; font-size: 15px; color: #fff; }
     .header-right { display: flex; align-items: center; gap: 16px; }
     .stat-pill {
-      background: rgba(243, 139, 28, 0.15); border: 1px solid #F38B1C;
-      border-radius: 20px; padding: 4px 14px; font-size: 13px; font-weight: 600; color: #F38B1C;
+      background: rgba(243, 139, 28, 0.15); border: 1px solid #F8901E;
+      border-radius: 20px; padding: 4px 14px; font-size: 13px; font-weight: 600; color: #F8901E;
     }
     .stat-pill.done { background: rgba(16, 185, 129, 0.15); border-color: #10B981; color: #10B981; }
 
@@ -33,7 +33,7 @@
       cursor: pointer; border-bottom: 2px solid transparent; transition: all 0.15s;
     }
     .tab:hover { color: #ccc; }
-    .tab.active { color: #F38B1C; border-bottom-color: #F38B1C; }
+    .tab.active { color: #F8901E; border-bottom-color: #F8901E; }
 
     /* Main container */
     .container { max-width: 900px; margin: 0 auto; padding: 24px; }
@@ -41,11 +41,11 @@
     /* Search bar */
     .search-section { margin-bottom: 24px; }
     .search-box {
-      width: 100%; padding: 16px 20px; font-size: 18px; font-family: 'Poppins', sans-serif;
+      width: 100%; padding: 16px 20px; font-size: 18px; font-family: 'Inter', sans-serif;
       border: 2px solid #ddd; border-radius: 12px; outline: none; transition: border-color 0.15s;
       background: #fff;
     }
-    .search-box:focus { border-color: #F38B1C; }
+    .search-box:focus { border-color: #F8901E; }
     .search-box::placeholder { color: #bbb; }
     .search-hint {
       font-size: 12px; color: #999; margin-top: 6px; padding-left: 4px;
@@ -65,7 +65,7 @@
       border: 1px solid #eee; display: flex; align-items: center; justify-content: space-between;
       transition: border-color 0.15s, box-shadow 0.15s;
     }
-    .prospect-card:hover { border-color: #F38B1C; box-shadow: 0 2px 8px rgba(243,139,28,0.1); }
+    .prospect-card:hover { border-color: #F8901E; box-shadow: 0 2px 8px rgba(243,139,28,0.1); }
     .prospect-info { flex: 1; }
     .prospect-name { font-weight: 700; font-size: 15px; color: #000; }
     .prospect-meta {
@@ -77,7 +77,7 @@
     }
     .segment-badge.b2b_2nd { background: #3B82F6; }
     .segment-badge.cyber_2nd { background: #8B5CF6; }
-    .segment-badge.referral_1st { background: #F38B1C; }
+    .segment-badge.referral_1st { background: #F8901E; }
     .segment-badge.referral_2nd { background: #10B981; }
     .status-badge {
       display: inline-block; padding: 2px 8px; border-radius: 10px;
@@ -97,18 +97,18 @@
     .prospect-actions { display: flex; gap: 8px; align-items: center; }
     .btn {
       padding: 8px 16px; border-radius: 8px; font-size: 13px; font-weight: 600;
-      font-family: 'Poppins', sans-serif; cursor: pointer; border: none; transition: all 0.15s;
+      font-family: 'Inter', sans-serif; cursor: pointer; border: none; transition: all 0.15s;
     }
-    .btn-primary { background: #F38B1C; color: #fff; }
+    .btn-primary { background: #F8901E; color: #fff; }
     .btn-primary:hover { background: #e07d10; }
     .btn-primary:disabled { background: #ccc; cursor: default; }
     .btn-secondary { background: #f0f0f0; color: #333; }
     .btn-secondary:hover { background: #e0e0e0; }
     .btn-sm { padding: 5px 10px; font-size: 11px; }
     .btn-link {
-      background: none; border: none; color: #F38B1C; font-size: 12px;
+      background: none; border: none; color: #F8901E; font-size: 12px;
       font-weight: 600; cursor: pointer; text-decoration: underline; padding: 0;
-      font-family: 'Poppins', sans-serif;
+      font-family: 'Inter', sans-serif;
     }
     .btn-link:hover { color: #e07d10; }
 
@@ -117,10 +117,10 @@
       display: flex; align-items: center; gap: 8px; margin-top: 8px;
     }
     .post-url-input {
-      flex: 1; padding: 6px 10px; font-size: 12px; font-family: 'Poppins', sans-serif;
+      flex: 1; padding: 6px 10px; font-size: 12px; font-family: 'Inter', sans-serif;
       border: 1px solid #ddd; border-radius: 6px; outline: none;
     }
-    .post-url-input:focus { border-color: #F38B1C; }
+    .post-url-input:focus { border-color: #F8901E; }
 
     /* Logged confirmation */
     .logged-flash {
@@ -151,7 +151,7 @@
       border: 1px solid #eee; display: flex; align-items: center; gap: 24px; flex-wrap: wrap;
     }
     .stat-block { text-align: center; }
-    .stat-block .number { font-size: 28px; font-weight: 800; color: #F38B1C; }
+    .stat-block .number { font-size: 28px; font-weight: 800; color: #F8901E; }
     .stat-block .label { font-size: 11px; color: #999; font-weight: 600; text-transform: uppercase; }
     .stat-block.week .number { color: #5A6B7A; }
     .progress-bar-wrap {
@@ -162,7 +162,7 @@
       height: 10px; background: #eee; border-radius: 5px; overflow: hidden;
     }
     .progress-fill {
-      height: 100%; background: #F38B1C; border-radius: 5px; transition: width 0.3s;
+      height: 100%; background: #F8901E; border-radius: 5px; transition: width 0.3s;
     }
     .progress-fill.complete { background: #10B981; }
 
@@ -173,7 +173,7 @@
     .segment-row .dot { width: 8px; height: 8px; border-radius: 50%; }
     .segment-row .dot.b2b { background: #3B82F6; }
     .segment-row .dot.cyber { background: #8B5CF6; }
-    .segment-row .dot.referral1st { background: #F38B1C; }
+    .segment-row .dot.referral1st { background: #F8901E; }
     .segment-row .dot.referral { background: #10B981; }
 
     /* History tab */
@@ -182,7 +182,7 @@
     }
     .filter-btn {
       padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: 600;
-      font-family: 'Poppins', sans-serif; cursor: pointer; border: 1px solid #ddd;
+      font-family: 'Inter', sans-serif; cursor: pointer; border: 1px solid #ddd;
       background: #fff; color: #666; transition: all 0.15s;
     }
     .filter-btn.active { background: #000; color: #fff; border-color: #000; }
@@ -193,12 +193,12 @@
       display: flex; gap: 12px; margin-bottom: 16px; align-items: center; flex-wrap: wrap;
     }
     .table-search {
-      padding: 8px 14px; font-size: 13px; font-family: 'Poppins', sans-serif;
+      padding: 8px 14px; font-size: 13px; font-family: 'Inter', sans-serif;
       border: 1px solid #ddd; border-radius: 8px; outline: none; flex: 1; min-width: 200px;
     }
-    .table-search:focus { border-color: #F38B1C; }
+    .table-search:focus { border-color: #F8901E; }
     .sort-select {
-      padding: 8px 12px; font-size: 12px; font-family: 'Poppins', sans-serif;
+      padding: 8px 12px; font-size: 12px; font-family: 'Inter', sans-serif;
       border: 1px solid #ddd; border-radius: 8px; outline: none; background: #fff;
     }
     .prospect-count { font-size: 12px; color: #999; font-weight: 600; }
@@ -220,7 +220,7 @@
       background: #fff; margin-bottom: 24px;
     }
     .upload-zone:hover, .upload-zone.dragover {
-      border-color: #F38B1C; background: rgba(243, 139, 28, 0.05);
+      border-color: #F8901E; background: rgba(243, 139, 28, 0.05);
     }
     .upload-icon { font-size: 36px; margin-bottom: 8px; }
     .upload-text { font-size: 16px; font-weight: 600; color: #333; }
@@ -232,7 +232,7 @@
       background: #fff; border-radius: 10px; padding: 16px; margin-bottom: 10px;
       border: 1px solid #eee; display: flex; gap: 16px; align-items: flex-start;
     }
-    .screenshot-card:hover { border-color: #F38B1C; }
+    .screenshot-card:hover { border-color: #F8901E; }
     .screenshot-thumb {
       width: 160px; height: 100px; object-fit: cover; border-radius: 6px;
       border: 1px solid #eee; cursor: pointer;
@@ -266,7 +266,7 @@
     .targets-title .fire { font-size: 18px; }
     .targets-progress {
       padding: 4px 12px; border-radius: 16px; font-size: 12px; font-weight: 700;
-      background: rgba(243, 139, 28, 0.12); color: #F38B1C; border: 1px solid #F38B1C;
+      background: rgba(243, 139, 28, 0.12); color: #F8901E; border: 1px solid #F8901E;
     }
     .targets-progress.done { background: rgba(16, 185, 129, 0.12); color: #10B981; border-color: #10B981; }
     .targets-grid {
@@ -278,7 +278,7 @@
       display: flex; align-items: center; justify-content: space-between; gap: 8px;
       transition: border-color 0.15s, box-shadow 0.15s; cursor: default;
     }
-    .target-card:hover { border-color: #F38B1C; box-shadow: 0 2px 8px rgba(243,139,28,0.08); }
+    .target-card:hover { border-color: #F8901E; box-shadow: 0 2px 8px rgba(243,139,28,0.08); }
     .target-card.commented {
       opacity: 0.5; border-color: #10B981; background: #F0FDF4;
     }
@@ -314,7 +314,7 @@
       width: 10px; height: 10px; border-radius: 50%; background: #eee;
       border: 1.5px solid #ddd; transition: all 0.2s;
     }
-    .warming-dot.filled { background: #F38B1C; border-color: #F38B1C; }
+    .warming-dot.filled { background: #F8901E; border-color: #F8901E; }
     .warming-dot.filled.complete { background: #10B981; border-color: #10B981; }
     .warming-label {
       font-size: 10px; font-weight: 700; color: #999; margin-left: 4px;
@@ -372,7 +372,7 @@
       flex-wrap: wrap;
     }
     .conversion-stat { text-align: center; }
-    .conversion-stat .number { font-size: 28px; font-weight: 800; color: #F38B1C; }
+    .conversion-stat .number { font-size: 28px; font-weight: 800; color: #F8901E; }
     .conversion-stat .label { font-size: 10px; color: #999; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
     .conversion-stat .number.green { color: #10B981; }
     .funnel-bar {
@@ -391,7 +391,7 @@
       border-radius: 9px; font-size: 10px; font-weight: 700; text-align: center;
       margin-left: 6px; padding: 0 5px;
     }
-    .tab-badge.orange { background: #F38B1C; color: #fff; }
+    .tab-badge.orange { background: #F8901E; color: #fff; }
     .tab-badge.green { background: #10B981; color: #fff; }
     .tab-badge.blue { background: #3B82F6; color: #fff; }
 
@@ -404,7 +404,7 @@
     .import-header {
       display: flex; align-items: center; justify-content: space-between; cursor: pointer;
     }
-    .import-header:hover .import-title { color: #F38B1C; }
+    .import-header:hover .import-title { color: #F8901E; }
     .import-title {
       font-size: 15px; font-weight: 700; color: #333; display: flex; align-items: center; gap: 8px;
       transition: color 0.15s;
@@ -421,7 +421,7 @@
       cursor: pointer; transition: all 0.15s; background: #fafafa; flex-shrink: 0;
       text-align: center; padding: 10px;
     }
-    .import-upload-mini:hover { border-color: #F38B1C; background: rgba(243,139,28,0.03); }
+    .import-upload-mini:hover { border-color: #F8901E; background: rgba(243,139,28,0.03); }
     .import-upload-mini .icon { font-size: 24px; margin-bottom: 4px; }
     .import-upload-mini .label { font-size: 11px; color: #999; font-weight: 600; }
     .import-upload-mini img {
@@ -430,10 +430,10 @@
     .import-names-area { flex: 1; }
     .import-names-area textarea {
       width: 100%; height: 120px; border: 1px solid #ddd; border-radius: 8px;
-      padding: 10px; font-family: 'Poppins', sans-serif; font-size: 13px;
+      padding: 10px; font-family: 'Inter', sans-serif; font-size: 13px;
       resize: vertical; outline: none;
     }
-    .import-names-area textarea:focus { border-color: #F38B1C; }
+    .import-names-area textarea:focus { border-color: #F8901E; }
     .import-names-area textarea::placeholder { color: #bbb; }
     .import-hint { font-size: 11px; color: #999; margin-top: 4px; }
     .import-actions { display: flex; gap: 8px; margin-top: 10px; align-items: center; }
@@ -459,7 +459,7 @@
     .override-banner .clear-btn {
       background: none; border: 1px solid #8B5CF6; color: #5B21B6;
       padding: 3px 10px; border-radius: 8px; font-size: 11px; font-weight: 700;
-      cursor: pointer; font-family: 'Poppins', sans-serif;
+      cursor: pointer; font-family: 'Inter', sans-serif;
     }
     .override-banner .clear-btn:hover { background: #8B5CF6; color: #fff; }
   </style>
@@ -1404,7 +1404,7 @@ const importUploadZone = document.getElementById('importUploadZone');
 const importFileInput = document.getElementById('importFileInput');
 
 importUploadZone.addEventListener('click', () => importFileInput.click());
-importUploadZone.addEventListener('dragover', (e) => { e.preventDefault(); importUploadZone.style.borderColor = '#F38B1C'; });
+importUploadZone.addEventListener('dragover', (e) => { e.preventDefault(); importUploadZone.style.borderColor = '#F8901E'; });
 importUploadZone.addEventListener('dragleave', () => { importUploadZone.style.borderColor = '#ddd'; });
 importUploadZone.addEventListener('drop', (e) => {
   e.preventDefault();
@@ -1724,7 +1724,7 @@ function renderConversionStats() {
         <div class="label">Replied</div>
       </div>
       <div class="conversion-stat">
-        <div class="number" style="color:#F38B1C;">${warmingStats.conversionRate}%</div>
+        <div class="number" style="color:#F8901E;">${warmingStats.conversionRate}%</div>
         <div class="label">Reply Rate</div>
       </div>
     </div>

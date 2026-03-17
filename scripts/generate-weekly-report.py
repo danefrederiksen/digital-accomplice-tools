@@ -12,7 +12,7 @@ from reportlab.platypus import (
 from reportlab.lib.enums import TA_LEFT, TA_CENTER, TA_RIGHT
 
 # DA Brand Colors
-DA_ORANGE = HexColor('#F38B1C')
+DA_ORANGE = HexColor('#F8901E')
 DA_BLACK = HexColor('#000000')
 DA_BLUE_GRAY = HexColor('#5A6B7A')
 DA_GRAY = HexColor('#CBCBCB')
@@ -108,7 +108,7 @@ daily_data = [
      Paragraph("<b>Hit?</b>", style_body_sm),
      Paragraph("<b>What Happened</b>", style_body_sm)],
     [Paragraph("Mon 3/2", style_body_sm), Paragraph("35", style_body_sm), Paragraph("45-60", style_body_sm),
-     Paragraph('<font color="#F38B1C">78%</font>', style_body_sm),
+     Paragraph('<font color="#F8901E">78%</font>', style_body_sm),
      Paragraph("Big ramp day. 29 DMs (Tool #1+2), 4 f/u, 1 conn req, 1 comment", style_body_sm)],
     [Paragraph("Tue 3/3", style_body_sm), Paragraph("23", style_body_sm), Paragraph("45-60", style_body_sm),
      Paragraph('<font color="#DC3545">51%</font>', style_body_sm),
@@ -120,7 +120,7 @@ daily_data = [
      Paragraph('<font color="#DC3545">4%</font>', style_body_sm),
      Paragraph("Near-zero outreach. 2 comments only. Biggest gap of the week", style_body_sm)],
     [Paragraph("Fri 3/6", style_body_sm), Paragraph("42", style_body_sm), Paragraph("45-60", style_body_sm),
-     Paragraph('<font color="#F38B1C">93%</font>', style_body_sm),
+     Paragraph('<font color="#F8901E">93%</font>', style_body_sm),
      Paragraph("Strong comeback. 10 DMs, 16 f/u, 10 conn reqs, 3 comments, 2 replies", style_body_sm)],
 ]
 

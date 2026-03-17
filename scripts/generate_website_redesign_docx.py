@@ -46,7 +46,7 @@ def add_orange_rule(doc):
     pPr = p._element.get_or_add_pPr()
     pBdr = parse_xml(
         f'<w:pBdr {nsdecls("w")}>'
-        f'  <w:bottom w:val="single" w:sz="6" w:space="1" w:color="F38B1C"/>'
+        f'  <w:bottom w:val="single" w:sz="6" w:space="1" w:color="F8901E"/>'
         f'</w:pBdr>'
     )
     pPr.append(pBdr)
@@ -126,7 +126,7 @@ def add_table(doc, headers, rows):
         run = p.add_run(h)
         set_run_font(run, size=10, bold=True, color=DA_WHITE)
         # Orange background
-        shading = parse_xml(f'<w:shd {nsdecls("w")} w:fill="F38B1C" w:val="clear"/>')
+        shading = parse_xml(f'<w:shd {nsdecls("w")} w:fill="F8901E" w:val="clear"/>')
         cell._element.get_or_add_tcPr().append(shading)
 
     # Data rows
@@ -324,7 +324,7 @@ def build_document():
     add_bullet(doc, "No \"buy now\" button for strategy")
 
     add_subsection_header(doc, "Brand Guidelines")
-    add_bullet(doc, "**Colors:** DA Orange #F38B1C, Black #000, Blue-Gray #5A6B7A, Gray #CBCBCB, White #FFF, Light Gray #F5F5F5")
+    add_bullet(doc, "**Colors:** DA Orange #F8901E, Black #000, Blue-Gray #5A6B7A, Gray #CBCBCB, White #FFF, Light Gray #F5F5F5")
     add_bullet(doc, "**Fonts:** Inter/Arial/Helvetica")
     add_bullet(doc, "**Voice:** Direct, data-first, no-BS, short sentences")
     add_bullet(doc, "**Do NOT use:** #F5A623, #AAAAAA, #F0F0F0")

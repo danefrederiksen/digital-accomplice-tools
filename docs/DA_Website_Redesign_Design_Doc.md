@@ -74,7 +74,7 @@
 - No "buy now" button for strategy
 
 ### Brand Guidelines (from memory)
-- Colors: DA Orange #F38B1C, Black #000, Blue-Gray #5A6B7A, Gray #CBCBCB, White #FFF, Light Gray #F5F5F5
+- Colors: DA Orange #F8901E, Black #000, Blue-Gray #5A6B7A, Gray #CBCBCB, White #FFF, Light Gray #F5F5F5
 - Fonts: Inter/Arial/Helvetica
 - Voice: Direct, data-first, no-BS, short sentences
 - Do NOT use: #F5A623, #AAAAAA, #F0F0F0
@@ -117,7 +117,7 @@
 - [x] 0.2 — Create new blank Webflow project ("Digital Accomplice") — DONE 2026-03-16
 - [x] 0.3 — ~~Set up Claude connector~~ — SKIPPED. No Claude connector in Webflow marketplace. Building manually in designer.
 - [x] 0.4 — ~~Verify connector~~ — SKIPPED (N/A)
-- [ ] 0.5 — Set up global styles: DA colors, fonts, spacing system
+- [x] 0.5 — Set up global styles: Inter font (400/500/600/700/800), Body 16px/26px black, H1 48px Bold, H2 36px Bold, H3 28px Semi Bold, H4 22px Semi Bold. Color swatches deferred to Phase 1. DONE 2026-03-16
 
 ### Phase 1: Home Page — First Draft
 - [ ] 1.1 — Build page skeleton: nav, hero section, sections, footer

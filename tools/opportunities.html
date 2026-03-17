@@ -9,25 +9,25 @@
   body { font-family: Inter, Arial, Helvetica, sans-serif; background: #111; color: #eee; min-height: 100vh; }
 
   /* Header */
-  .header { background: #000; border-bottom: 3px solid #F38B1C; padding: 16px 24px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; }
-  .header h1 { font-size: 20px; font-weight: 700; color: #F38B1C; }
+  .header { background: #000; border-bottom: 3px solid #F8901E; padding: 16px 24px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; }
+  .header h1 { font-size: 20px; font-weight: 700; color: #F8901E; }
   .header .subtitle { font-size: 13px; color: #999; margin-left: 12px; }
   .header-right { display: flex; gap: 10px; align-items: center; }
   .header-right .count { font-size: 14px; color: #ccc; }
   .btn { padding: 8px 16px; border: none; border-radius: 6px; cursor: pointer; font-size: 13px; font-weight: 600; transition: all 0.15s; }
-  .btn-primary { background: #F38B1C; color: #000; }
+  .btn-primary { background: #F8901E; color: #000; }
   .btn-primary:hover { background: #e07d10; }
   .btn-sm { padding: 5px 10px; font-size: 12px; }
   .btn-danger { background: #dc3545; color: #fff; }
   .btn-danger:hover { background: #c82333; }
-  .btn-ghost { background: transparent; color: #F38B1C; border: 1px solid #F38B1C; }
-  .btn-ghost:hover { background: #F38B1C22; }
+  .btn-ghost { background: transparent; color: #F8901E; border: 1px solid #F8901E; }
+  .btn-ghost:hover { background: #F8901E22; }
 
   /* Filters */
   .filters { padding: 12px 24px; background: #1a1a1a; border-bottom: 1px solid #333; display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
   .filter-btn { padding: 5px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; cursor: pointer; border: 1px solid #444; background: #222; color: #ccc; transition: all 0.15s; }
-  .filter-btn.active { background: #F38B1C; color: #000; border-color: #F38B1C; }
-  .filter-btn:hover { border-color: #F38B1C; }
+  .filter-btn.active { background: #F8901E; color: #000; border-color: #F8901E; }
+  .filter-btn:hover { border-color: #F8901E; }
   .filter-label { font-size: 12px; color: #888; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
 
   /* Main */
@@ -35,9 +35,9 @@
 
   /* Opportunity Card */
   .opp-card { background: #1a1a1a; border: 1px solid #333; border-radius: 10px; padding: 16px 20px; margin-bottom: 12px; transition: border-color 0.15s; }
-  .opp-card:hover { border-color: #F38B1C; }
+  .opp-card:hover { border-color: #F8901E; }
   .opp-card.stage-closed_won { border-left: 4px solid #28a745; }
-  .opp-card.stage-discovery { border-left: 4px solid #F38B1C; }
+  .opp-card.stage-discovery { border-left: 4px solid #F8901E; }
   .opp-card.stage-proposal { border-left: 4px solid #ffc107; }
   .opp-card.stage-engaged { border-left: 4px solid #17a2b8; }
   .opp-card.stage-lead { border-left: 4px solid #6c757d; }
@@ -47,11 +47,11 @@
 
   .opp-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; }
   .opp-name { font-size: 16px; font-weight: 700; color: #fff; }
-  .opp-company { font-size: 14px; color: #F38B1C; font-weight: 600; }
+  .opp-company { font-size: 14px; color: #F8901E; font-weight: 600; }
   .opp-badges { display: flex; gap: 6px; flex-wrap: wrap; }
   .badge { padding: 3px 8px; border-radius: 12px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.3px; }
   .badge-call { background: #17a2b822; color: #17a2b8; border: 1px solid #17a2b844; }
-  .badge-snapshot { background: #F38B1C22; color: #F38B1C; border: 1px solid #F38B1C44; }
+  .badge-snapshot { background: #F8901E22; color: #F8901E; border: 1px solid #F8901E44; }
   .badge-video { background: #28a74522; color: #28a745; border: 1px solid #28a74544; }
   .badge-stage { background: #33333388; color: #aaa; border: 1px solid #44444488; }
 
@@ -59,7 +59,7 @@
   .opp-meta span { display: flex; align-items: center; gap: 4px; }
 
   .opp-next { background: #222; border-radius: 6px; padding: 8px 12px; font-size: 13px; margin-bottom: 8px; }
-  .opp-next .label { color: #F38B1C; font-weight: 700; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; }
+  .opp-next .label { color: #F8901E; font-weight: 700; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; }
   .opp-next .value { color: #eee; margin-top: 2px; }
   .opp-next .date { color: #999; font-size: 12px; }
   .opp-next .overdue { color: #dc3545; font-weight: 600; }
@@ -73,7 +73,7 @@
   .opp-history h4 { font-size: 12px; color: #888; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
   .history-entry { font-size: 12px; color: #999; padding: 2px 0; display: flex; gap: 8px; }
   .history-entry .h-date { color: #666; min-width: 80px; }
-  .history-entry .h-type { color: #F38B1C; font-weight: 600; min-width: 70px; text-transform: uppercase; font-size: 10px; }
+  .history-entry .h-type { color: #F8901E; font-weight: 600; min-width: 70px; text-transform: uppercase; font-size: 10px; }
 
   /* Empty state */
   .empty { text-align: center; padding: 60px 20px; color: #666; }
@@ -83,31 +83,31 @@
   .modal-overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.7); z-index: 200; justify-content: center; align-items: flex-start; padding: 40px 20px; overflow-y: auto; }
   .modal-overlay.open { display: flex; }
   .modal { background: #1a1a1a; border: 1px solid #444; border-radius: 12px; width: 100%; max-width: 600px; padding: 24px; }
-  .modal h2 { font-size: 18px; font-weight: 700; color: #F38B1C; margin-bottom: 16px; }
+  .modal h2 { font-size: 18px; font-weight: 700; color: #F8901E; margin-bottom: 16px; }
   .form-group { margin-bottom: 14px; }
   .form-group label { display: block; font-size: 12px; font-weight: 600; color: #999; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
   .form-group input, .form-group select, .form-group textarea {
     width: 100%; padding: 8px 12px; background: #222; border: 1px solid #444; border-radius: 6px;
     color: #eee; font-size: 14px; font-family: inherit;
   }
-  .form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color: #F38B1C; outline: none; }
+  .form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color: #F8901E; outline: none; }
   .form-group textarea { resize: vertical; min-height: 60px; }
   .form-row { display: flex; gap: 12px; }
   .form-row .form-group { flex: 1; }
   .checkbox-group { display: flex; gap: 12px; flex-wrap: wrap; }
   .checkbox-group label { display: flex; align-items: center; gap: 6px; font-size: 13px; color: #ccc; cursor: pointer; text-transform: none; letter-spacing: 0; }
-  .checkbox-group input[type="checkbox"] { width: auto; accent-color: #F38B1C; }
+  .checkbox-group input[type="checkbox"] { width: auto; accent-color: #F8901E; }
   .modal-actions { display: flex; justify-content: space-between; margin-top: 20px; }
 
   /* Today section */
-  .today-section { background: #1a1a1a; border: 2px solid #F38B1C; border-radius: 10px; padding: 16px 20px; margin-bottom: 24px; }
-  .today-section h2 { font-size: 16px; font-weight: 700; color: #F38B1C; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+  .today-section { background: #1a1a1a; border: 2px solid #F8901E; border-radius: 10px; padding: 16px 20px; margin-bottom: 24px; }
+  .today-section h2 { font-size: 16px; font-weight: 700; color: #F8901E; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
   .today-section .no-actions { font-size: 14px; color: #666; font-style: italic; }
 
   /* Score cards */
   .score-cards { display: flex; gap: 12px; margin-bottom: 20px; flex-wrap: wrap; }
   .score-card { background: #1a1a1a; border: 1px solid #333; border-radius: 10px; padding: 14px 18px; flex: 1; min-width: 120px; text-align: center; }
-  .score-card .number { font-size: 28px; font-weight: 800; color: #F38B1C; }
+  .score-card .number { font-size: 28px; font-weight: 800; color: #F8901E; }
   .score-card .label { font-size: 11px; color: #888; text-transform: uppercase; letter-spacing: 0.5px; margin-top: 2px; }
 
   /* Section headers */

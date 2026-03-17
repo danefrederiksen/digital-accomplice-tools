@@ -17,7 +17,7 @@ from reportlab.platypus.flowables import Flowable
 import os
 
 # --- DA Brand Colors ---
-DA_ORANGE = HexColor("#F38B1C")
+DA_ORANGE = HexColor("#F8901E")
 DA_BLACK = HexColor("#000000")
 DA_BLUE_GRAY = HexColor("#5A6B7A")
 DA_GRAY = HexColor("#CBCBCB")
@@ -133,11 +133,11 @@ def subsection(title):
 
 def bullet(text, level=1):
     style = STYLES["bullet"] if level == 1 else STYLES["bullet2"]
-    orange_dot = '<font color="#F38B1C">\u2022</font>'
+    orange_dot = '<font color="#F8901E">\u2022</font>'
     return Paragraph(f"{orange_dot}  {text}", style)
 
 def checkbox(text):
-    orange_box = '<font color="#F38B1C">\u25A1</font>'
+    orange_box = '<font color="#F8901E">\u25A1</font>'
     return Paragraph(f"{orange_box}  {text}", STYLES["checkbox"])
 
 def body(text):
@@ -278,7 +278,7 @@ def build_pdf():
     ]
 
     for page_title, items in pages_data:
-        story.append(Paragraph(f"<b><font color='#F38B1C'>{page_title}</font></b>", STYLES["body"]))
+        story.append(Paragraph(f"<b><font color='#F8901E'>{page_title}</font></b>", STYLES["body"]))
         for item in items:
             if item.startswith("  "):
                 story.append(bullet(item.strip(), level=2))
@@ -299,7 +299,7 @@ def build_pdf():
 
     # Brand Guidelines
     story.extend(subsection("Brand Guidelines"))
-    story.append(bullet("Colors: DA Orange #F38B1C, Black #000, Blue-Gray #5A6B7A, Gray #CBCBCB, White #FFF, Light Gray #F5F5F5"))
+    story.append(bullet("Colors: DA Orange #F8901E, Black #000, Blue-Gray #5A6B7A, Gray #CBCBCB, White #FFF, Light Gray #F5F5F5"))
     story.append(bullet("Fonts: Inter / Arial / Helvetica"))
     story.append(bullet("Voice: Direct, data-first, no-BS, short sentences"))
     story.append(bullet("<font color='red'><b>Do NOT use:</b></font> #F5A623, #AAAAAA, #F0F0F0"))
@@ -543,7 +543,7 @@ def build_pdf():
     ]
 
     for i, (rule_text,) in enumerate(rules, 1):
-        orange_num = f'<font color="#F38B1C"><b>{i}.</b></font>'
+        orange_num = f'<font color="#F8901E"><b>{i}.</b></font>'
         story.append(Paragraph(f"{orange_num}  {rule_text}", STYLES["rule_num"]))
 
     story.append(Spacer(1, 24))

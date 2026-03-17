@@ -288,7 +288,7 @@ node server.js           # Dashboard → http://localhost:3847
 
 ## Brand Guidelines
 
-- **DA Orange:** #F38B1C
+- **DA Orange:** #F8901E
 - **Black:** #000000
 - **Blue-Gray:** #5A6B7A
 - **Gray:** #CBCBCB

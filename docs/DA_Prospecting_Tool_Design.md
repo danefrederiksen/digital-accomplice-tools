@@ -129,7 +129,7 @@ These lists are raw — no dedup against the master spreadsheet, no tier/ICP sco
 
 | Element | Value |
 |---------|-------|
-| Primary accent | DA Orange #F38B1C |
+| Primary accent | DA Orange #F8901E |
 | Headlines | Black #000000 |
 | Body text | Blue-Gray #5A6B7A |
 | Captions/labels | Gray #CBCBCB |

@@ -10,7 +10,7 @@ from reportlab.lib.utils import simpleSplit
 OUTPUT = "/Users/danefrederiksen/Desktop/Digital Accomplice/4_Operations/4.3_Processes/daily reports/Daily_Report_2026-03-06_Claude_Code.pdf"
 
 # DA Brand Colors
-ORANGE = HexColor("#F38B1C")
+ORANGE = HexColor("#F8901E")
 BLACK = HexColor("#000000")
 WHITE = HexColor("#FFFFFF")
 GRAY = HexColor("#5A6B7A")

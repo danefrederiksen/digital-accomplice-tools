@@ -13,7 +13,7 @@ from reportlab.lib.enums import TA_LEFT, TA_CENTER, TA_RIGHT
 import os
 
 # DA Brand Colors
-ORANGE = HexColor('#F38B1C')
+ORANGE = HexColor('#F8901E')
 BLACK = HexColor('#000000')
 BLUE_GRAY = HexColor('#5A6B7A')
 GRAY = HexColor('#CBCBCB')

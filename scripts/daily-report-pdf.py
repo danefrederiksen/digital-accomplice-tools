@@ -13,7 +13,7 @@ from datetime import datetime
 import os
 
 # DA Brand Colors
-DA_ORANGE = HexColor("#F38B1C")
+DA_ORANGE = HexColor("#F8901E")
 DA_BLACK = HexColor("#000000")
 DA_BLUE_GRAY = HexColor("#5A6B7A")
 DA_GRAY = HexColor("#CBCBCB")

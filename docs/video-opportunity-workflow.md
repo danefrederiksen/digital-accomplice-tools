@@ -56,7 +56,7 @@ Use `BreachRX_Video_Opportunity_Assessment_v4.html` as the template. Replace all
 
 **Colors:**
 ```
---orange: #F38B1C   (accent, CTAs, headings)
+--orange: #F8901E   (accent, CTAs, headings)
 --black: #000000    (headlines, table headers)
 --body: #5A6B7A     (body text, wordmark)
 --gray: #CBCBCB     (labels, captions, footnotes)
@@ -163,7 +163,7 @@ Stats numbers: 108px/900 orange
 Stats labels: 26px/700 black
 Bottom box: 32px/700 white on black, 20px border-radius
 Footer CTA: 24px/700 orange
-Top border on footer: 3px solid #F38B1C
+Top border on footer: 3px solid #F8901E
 ```
 
 ### Convert DM Infographic to JPG
@@ -254,7 +254,7 @@ Before sending to Dane:
 - [ ] PDF renders correctly (all 8-9 pages, no cutoff, colors correct)
 - [ ] DM infographic JPG is readable at small size (test by zooming browser to 25%)
 - [ ] Full-size infographic JPG has no content cutoff
-- [ ] All files use correct brand colors (#F38B1C orange, NOT #F5A623)
+- [ ] All files use correct brand colors (#F8901E orange, NOT #F5A623)
 - [ ] Font is Inter/Arial/Helvetica (no serif, no decorative)
 - [ ] CTA says "Book 20 Minutes With Dane" with dane@digitalaccomplice.com
 - [ ] Footer has DA logo (orange play button + "DIGITAL ACCOMPLICE")

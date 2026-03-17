@@ -4,11 +4,11 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Prospecting Tool #9 — Substack Subscriber Emails</title>
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
-body { font-family: 'Poppins', sans-serif; background: #f5f5f5; color: #1a1a1a; }
+body { font-family: 'Inter', sans-serif; background: #f5f5f5; color: #1a1a1a; }
 
 /* Header */
 .header { background: #000; color: #fff; padding: 16px 24px; display: flex; align-items: center; justify-content: space-between; }
@@ -52,7 +52,7 @@ body { font-family: 'Poppins', sans-serif; background: #f5f5f5; color: #1a1a1a; 
 .card { position: relative; }
 
 /* Search bar */
-.search-bar { width: 100%; padding: 12px 16px; font-size: 15px; font-family: 'Poppins', sans-serif; border: 2px solid #ddd; border-radius: 10px; outline: none; transition: border-color 0.15s; background: #fff; margin-bottom: 16px; }
+.search-bar { width: 100%; padding: 12px 16px; font-size: 15px; font-family: 'Inter', sans-serif; border: 2px solid #ddd; border-radius: 10px; outline: none; transition: border-color 0.15s; background: #fff; margin-bottom: 16px; }
 .search-bar:focus { border-color: #F8901E; }
 .search-bar::placeholder { color: #bbb; }
 .search-count { font-size: 12px; color: #999; margin-bottom: 12px; }
@@ -66,7 +66,7 @@ body { font-family: 'Poppins', sans-serif; background: #f5f5f5; color: #1a1a1a; 
 .status-cold { background: #f5f5f5; color: #999; }
 
 /* Buttons */
-.btn { padding: 7px 14px; border-radius: 6px; font-family: 'Poppins', sans-serif; font-size: 12px; font-weight: 600; cursor: pointer; border: none; transition: all 0.15s; }
+.btn { padding: 7px 14px; border-radius: 6px; font-family: 'Inter', sans-serif; font-size: 12px; font-weight: 600; cursor: pointer; border: none; transition: all 0.15s; }
 .btn-primary { background: #F8901E; color: #fff; }
 .btn-primary:hover { background: #e07a10; }
 .btn-secondary { background: #eee; color: #333; }
@@ -97,12 +97,12 @@ body { font-family: 'Poppins', sans-serif; background: #f5f5f5; color: #1a1a1a; 
 
 /* Reply field */
 .reply-area { margin-top: 8px; }
-.reply-area textarea { width: 100%; border: 1px solid #ddd; border-radius: 6px; padding: 8px; font-family: 'Poppins', sans-serif; font-size: 13px; resize: vertical; min-height: 60px; }
+.reply-area textarea { width: 100%; border: 1px solid #ddd; border-radius: 6px; padding: 8px; font-family: 'Inter', sans-serif; font-size: 13px; resize: vertical; min-height: 60px; }
 .reply-area label { font-size: 12px; font-weight: 600; color: #666; display: block; margin-bottom: 4px; }
 
 /* Next step field */
 .next-step-field { margin-top: 6px; }
-.next-step-field input { width: 100%; border: 1px solid #ddd; border-radius: 6px; padding: 7px 10px; font-family: 'Poppins', sans-serif; font-size: 13px; }
+.next-step-field input { width: 100%; border: 1px solid #ddd; border-radius: 6px; padding: 7px 10px; font-family: 'Inter', sans-serif; font-size: 13px; }
 
 /* Empty state */
 .empty { text-align: center; padding: 40px; color: #aaa; font-size: 14px; }
@@ -128,7 +128,7 @@ body { font-family: 'Poppins', sans-serif; background: #f5f5f5; color: #1a1a1a; 
 .add-form { background: #fff; border-radius: 10px; padding: 20px; border: 1px solid #e5e5e5; margin-bottom: 20px; }
 .add-form h3 { font-size: 14px; margin-bottom: 12px; }
 .form-row { display: flex; gap: 10px; margin-bottom: 10px; }
-.form-row input { flex: 1; padding: 8px 10px; border: 1px solid #ddd; border-radius: 6px; font-family: 'Poppins', sans-serif; font-size: 13px; }
+.form-row input { flex: 1; padding: 8px 10px; border: 1px solid #ddd; border-radius: 6px; font-family: 'Inter', sans-serif; font-size: 13px; }
 
 /* Overdue indicator */
 .overdue { color: #c62828; font-weight: 600; font-size: 11px; }
@@ -147,15 +147,15 @@ body { font-family: 'Poppins', sans-serif; background: #f5f5f5; color: #1a1a1a; 
 .modal { background: #fff; border-radius: 12px; padding: 24px; max-width: 700px; width: 95%; max-height: 85vh; overflow-y: auto; box-shadow: 0 8px 32px rgba(0,0,0,0.2); }
 .modal h2 { font-size: 18px; font-weight: 700; margin-bottom: 16px; }
 .modal label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 4px; color: #333; }
-.modal textarea { width: 100%; min-height: 100px; padding: 10px; font-family: 'Poppins', sans-serif; font-size: 13px; border: 2px solid #ddd; border-radius: 8px; resize: vertical; margin-bottom: 16px; outline: none; transition: border-color 0.15s; }
+.modal textarea { width: 100%; min-height: 100px; padding: 10px; font-family: 'Inter', sans-serif; font-size: 13px; border: 2px solid #ddd; border-radius: 8px; resize: vertical; margin-bottom: 16px; outline: none; transition: border-color 0.15s; }
 .modal textarea:focus { border-color: #F8901E; }
-.modal input.tpl-subject { width: 100%; padding: 8px 10px; font-family: 'Poppins', sans-serif; font-size: 13px; border: 2px solid #ddd; border-radius: 8px; margin-bottom: 8px; outline: none; transition: border-color 0.15s; }
+.modal input.tpl-subject { width: 100%; padding: 8px 10px; font-family: 'Inter', sans-serif; font-size: 13px; border: 2px solid #ddd; border-radius: 8px; margin-bottom: 8px; outline: none; transition: border-color 0.15s; }
 .modal input.tpl-subject:focus { border-color: #F8901E; }
 .modal .hint { font-size: 11px; color: #999; margin: -12px 0 16px; }
 .modal .step-group { border: 1px solid #eee; border-radius: 8px; padding: 12px; margin-bottom: 16px; }
 .modal .step-label { font-size: 14px; font-weight: 700; margin-bottom: 8px; color: #F8901E; }
 .modal-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 8px; }
-.btn-templates { background: transparent; border: 1px solid #F8901E; color: #F8901E; padding: 6px 14px; border-radius: 6px; font-family: 'Poppins', sans-serif; font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.15s; }
+.btn-templates { background: transparent; border: 1px solid #F8901E; color: #F8901E; padding: 6px 14px; border-radius: 6px; font-family: 'Inter', sans-serif; font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.15s; }
 .btn-templates:hover { background: #F8901E; color: #fff; }
 
 @media (max-width: 700px) {

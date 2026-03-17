@@ -14,7 +14,7 @@ from reportlab.lib import colors
 import os
 
 # DA Brand Colors
-DA_ORANGE = HexColor('#F38B1C')
+DA_ORANGE = HexColor('#F8901E')
 DA_BLACK = HexColor('#000000')
 DA_BLUE_GRAY = HexColor('#5A6B7A')
 DA_GRAY = HexColor('#CBCBCB')
@@ -437,7 +437,7 @@ def build():
         styled_row = [Paragraph(row[0], ParagraphStyle('MatrixLabel', fontName='Helvetica', fontSize=7, leading=9))]
         for cell in row[1:]:
             if cell == 'YES':
-                styled_row.append(Paragraph('<font color="#F38B1C"><b>YES</b></font>', ParagraphStyle('MatrixYes', fontName='Helvetica-Bold', fontSize=7, leading=9, alignment=TA_CENTER)))
+                styled_row.append(Paragraph('<font color="#F8901E"><b>YES</b></font>', ParagraphStyle('MatrixYes', fontName='Helvetica-Bold', fontSize=7, leading=9, alignment=TA_CENTER)))
             else:
                 styled_row.append(Paragraph(cell, ParagraphStyle('MatrixNo', fontName='Helvetica', fontSize=7, leading=9, alignment=TA_CENTER, textColor=DA_GRAY)))
         data.append(styled_row)

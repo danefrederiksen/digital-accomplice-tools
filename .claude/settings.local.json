@@ -106,7 +106,18 @@
       "Bash(curl -s -o /dev/null -w \"localhost: %{http_code}\\\\n\" http://localhost:3861/)",
       "Bash(curl -s -o /dev/null -w \"127.0.0.1: %{http_code}\\\\n\" http://127.0.0.1:3861/)",
       "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:3851)",
-      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:3847)"
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:3847)",
+      "Bash(find '/Users/danefrederiksen/Desktop/Digital Accomplice' -type f \\\\\\(-name *website* -o -name *redesign* -o -name *sitemap* -o -name *wireframe* -o -name *copy* -o -name *content* \\\\\\))",
+      "Bash(for f:*)",
+      "Bash(do sed:*)",
+      "Bash(echo \"Fixed orange in $f\")",
+      "Bash(echo \"Fixed hover orange in $f\")",
+      "Bash(echo \"Fixed font link in $f\")",
+      "Bash(echo \"Fixed font-family in $f\")",
+      "Bash(echo \"Reverted orange in $f\")",
+      "Bash(echo \"Reverted hover orange in $f\")",
+      "Bash(echo \"Fixed $f\")",
+      "Bash(pbcopy)"
     ]
   }
 }

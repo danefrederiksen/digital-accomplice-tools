@@ -175,3 +175,13 @@
 [2026-03-16T03:56:37.697Z] ERROR moving DA_Sales_Prospects_CyberLeadsPT4_2026-03-15.xlsx: Unknown system error -11: Unknown system error -11, open '/Users/danefrederiksen/Desktop/Digital Accomplice/4_Operations/4.3_Processes/file-log.json'
 [2026-03-16T04:24:16.293Z] COPIED: DA_Sales_Prospects_CyberLeadsTool_4_pages_1-4_2026-03-15.csv → 1_Sales/1.1_Prospects/DA_Sales_Prospects_CyberLeadsTool_4_pages_1-4_2026-03-15.csv (original kept in Downloads)
 [2026-03-16T04:24:16.296Z] ERROR moving DA_Sales_Prospects_CyberLeadsTool_4_pages_1-4_2026-03-15.csv: Unknown system error -11: Unknown system error -11, open '/Users/danefrederiksen/Desktop/Digital Accomplice/4_Operations/4.3_Processes/file-log.json'
+[2026-03-17T01:27:14.103Z] COPIED: DA_Ops_Tools_JSONLDSchemas_2026-03-16.html → 4_Operations/4.2_Tools/DA_Ops_Tools_JSONLDSchemas_2026-03-16.html (original kept in Downloads)
+[2026-03-17T01:27:14.120Z] ERROR moving DA_Ops_Tools_JSONLDSchemas_2026-03-16.html: Unknown system error -11: Unknown system error -11, open '/Users/danefrederiksen/Desktop/Digital Accomplice/4_Operations/4.3_Processes/file-log.json'
+[2026-03-17T01:30:24.026Z] COPIED: DA_Ops_Tools_JSONLDSchemas_2026-03-16.html → 4_Operations/4.2_Tools/DA_Ops_Tools_JSONLDSchemas_2026-03-16-2.html (original kept in Downloads)
+[2026-03-17T01:30:24.028Z] ERROR moving DA_Ops_Tools_JSONLDSchemas_2026-03-16.html: Unknown system error -11: Unknown system error -11, open '/Users/danefrederiksen/Desktop/Digital Accomplice/4_Operations/4.3_Processes/file-log.json'
+[2026-03-17T01:46:02.553Z] COPIED: DA_Ops_Tools_ClaudeCodeWebflowBrief_2026-03-16.pdf → 4_Operations/4.2_Tools/DA_Ops_Tools_ClaudeCodeWebflowBrief_2026-03-16.pdf (original kept in Downloads)
+[2026-03-17T01:46:02.554Z] ERROR moving DA_Ops_Tools_ClaudeCodeWebflowBrief_2026-03-16.pdf: Unknown system error -11: Unknown system error -11, open '/Users/danefrederiksen/Desktop/Digital Accomplice/4_Operations/4.3_Processes/file-log.json'
+[2026-03-17T01:46:03.632Z] COPIED: DA_Ops_Tools_JSONLDSchemas_2026-03-16.pdf → 4_Operations/4.2_Tools/DA_Ops_Tools_JSONLDSchemas_2026-03-16.pdf (original kept in Downloads)
+[2026-03-17T02:48:50.582Z] COPIED: DA_Assets_Brand_MasterStandards_2026-03-16.docx → 6_Assets/6.1_Brand/DA_Assets_Brand_MasterStandards_2026-03-16.docx (original kept in Downloads)
+[2026-03-17T02:48:50.583Z] ERROR moving DA_Assets_Brand_MasterStandards_2026-03-16.docx: Unknown system error -11: Unknown system error -11, open '/Users/danefrederiksen/Desktop/Digital Accomplice/4_Operations/4.3_Processes/file-log.json'
+[2026-03-17T02:48:51.919Z] Unknown department "Brand" in DA_Brand_Standards_Skill.md — leaving in Downloads

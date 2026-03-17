@@ -14,7 +14,7 @@ import json
 from datetime import datetime
 
 # DA Brand Colors
-DA_ORANGE = HexColor('#F38B1C')
+DA_ORANGE = HexColor('#F8901E')
 DA_BLACK = HexColor('#000000')
 DA_BLUE_GRAY = HexColor('#5A6B7A')
 DA_GRAY = HexColor('#CBCBCB')
@@ -186,7 +186,7 @@ story.append(Paragraph("Week-to-Date (Mon Mar 2 - Fri Mar 6)", style_section))
 week_text = (
     f"<b>Total activity across all tools: {week_total} actions</b><br/>"
     f"Target: 225-300 touches/week  |  "
-    f'{"<font color=#28A745>ON TRACK</font>" if week_total >= 225 else "<font color=#F38B1C>BUILDING</font>"}'
+    f'{"<font color=#28A745>ON TRACK</font>" if week_total >= 225 else "<font color=#F8901E>BUILDING</font>"}'
 )
 story.append(Paragraph(week_text, style_body))
 story.append(Spacer(1, 4))
