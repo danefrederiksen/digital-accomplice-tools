@@ -113,10 +113,10 @@
 ## Step-by-Step Build Plan
 
 ### Phase 0: Setup (this session or next)
-- [ ] 0.1 — Dane creates Webflow account (free tier)
-- [ ] 0.2 — Create new blank Webflow project ("Digital Accomplice")
-- [ ] 0.3 — Set up Claude connector (follow Webflow blog post instructions)
-- [ ] 0.4 — Verify connector works (test a simple edit)
+- [x] 0.1 — Dane creates Webflow account (free tier) — DONE 2026-03-16, workspace: danes-workspace-2a2780
+- [x] 0.2 — Create new blank Webflow project ("Digital Accomplice") — DONE 2026-03-16
+- [x] 0.3 — ~~Set up Claude connector~~ — SKIPPED. No Claude connector in Webflow marketplace. Building manually in designer.
+- [x] 0.4 — ~~Verify connector~~ — SKIPPED (N/A)
 - [ ] 0.5 — Set up global styles: DA colors, fonts, spacing system
 
 ### Phase 1: Home Page — First Draft
