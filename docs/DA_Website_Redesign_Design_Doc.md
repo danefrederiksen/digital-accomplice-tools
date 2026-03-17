@@ -1,7 +1,7 @@
 # Digital Accomplice Website Redesign — Design Doc
 **Created:** 2026-03-16
-**Status:** Planning phase — not yet building
-**Platform:** Webflow (new build) | Wix (current live site, kept as rollback)
+**Status:** Planning phase — pivoting to Wix redesign-in-place
+**Platform:** Wix (redesign in place) | Video hosting: Vimeo
 **Quick command:** "website redesign project"
 
 ---
@@ -13,10 +13,12 @@
 - Site doesn't reflect new positioning (strategy + production, not just production)
 - Need site that sells the 3-tier service model, showcases case studies, and leads with AI visibility angle
 
-### Platform Decision: Webflow
-- **Why Webflow over Wix:** Cleaner code (better SEO + AI visibility), Claude connector for assisted building, better CMS for blog/resources, more design control, zero maintenance
-- **Rollback plan:** Keep Wix site 100% intact and live. Build entire new site on Webflow staging URL. When ready, DNS swap. If problems, swap DNS back to Wix. Keep Wix active for 30 days post-launch.
-- **Claude connector:** Webflow has a Claude connector that may let us build/edit pages programmatically
+### Platform Decision: Wix (redesign in place)
+- **Why Wix over Webflow:** Dane already knows Wix, no migration needed, steep Webflow learning curve not worth it for a non-coder. Friend's experience with Squarespace+Claude confirmed that simpler platforms work fine.
+- **Why not Squarespace:** Would require full migration from Wix. Redesigning in place on Wix is lowest-friction path.
+- **Video hosting: Vimeo** — clean ad-free embeds, player customization, no "related videos" sending visitors away. YouTube stays for discovery/SEO; Vimeo for on-site embeds.
+- **No rollback needed:** Redesigning the existing Wix site. Can revert page-by-page if needed since Wix has version history.
+- **Webflow account:** Created 2026-03-16 but ABANDONED. Workspace `danes-workspace-2a2780` can be deleted.
 
 ### Sitemap (5 pages + eyebrow nav)
 
@@ -91,8 +93,8 @@ Do not duplicate brand rules here — reference the canonical source.
 
 ## Open Questions
 
-1. **Video hosting:** YouTube vs Wistia vs Vimeo vs hybrid for on-site video player? (Recommendation: hybrid — YouTube for discovery, Wistia/Vimeo for on-site embeds)
-2. **Blog approach:** Native Webflow blog CMS vs. embed/link to Substack? (Recommendation: Webflow native blog, cross-post to Substack)
+1. **Video hosting:** DECIDED — Vimeo for on-site embeds, YouTube for discovery/SEO. Hybrid approach.
+2. **Blog approach:** Wix native blog vs. embed/link to Substack? (TBD)
 3. **John Corcoran Showcase page idea:** Add as a service? Separate landing page?
 4. **Hero video:** What video goes in the hero? Does it exist yet or need to be produced?
 5. **Case study content:** Do we have the written case studies for Hinge, Thiel, Crux, Twitch, Tube Mogul, Quatrain? Or do these need to be written?
@@ -110,24 +112,22 @@ Do not duplicate brand rules here — reference the canonical source.
 
 ## Step-by-Step Build Plan
 
-### Phase 0: Setup (this session or next)
-- [x] 0.1 — Dane creates Webflow account (free tier) — DONE 2026-03-16, workspace: danes-workspace-2a2780
-- [x] 0.2 — Create new blank Webflow project ("Digital Accomplice") — DONE 2026-03-16
-- [x] 0.3 — ~~Set up Claude connector~~ — SKIPPED. No Claude connector in Webflow marketplace. Building manually in designer.
-- [x] 0.4 — ~~Verify connector~~ — SKIPPED (N/A)
-- [x] 0.5 — Set up global styles: Inter font (400/500/600/700/800), Body 16px/26px black, H1 48px Bold, H2 36px Bold, H3 28px Semi Bold, H4 22px Semi Bold. Color swatches deferred to Phase 1. DONE 2026-03-16
+### Phase 0: Setup — PIVOTED TO WIX
+- ~~[x] 0.1–0.5 — Webflow setup — DONE but ABANDONED (Mar 16). Pivoting to Wix redesign-in-place (Mar 17).~~
+- [ ] 0.6 — Audit current Wix site: inventory all pages, note what to keep vs. rebuild
+- [ ] 0.7 — Set up Vimeo account (Pro plan recommended for player customization + CTAs)
+- [ ] 0.8 — Document current Wix site structure (screenshots or page list) as baseline
 
-### Phase 1: Home Page — First Draft
-- [x] 1.1 — Build page skeleton: nav, hero section, sections, footer — DONE 2026-03-16
-- [x] 1.2 — Nav bar: Home | About | Services | Work | Resources — DONE 2026-03-16
-- [x] 1.3 — Hero section: headline + subhead + CTA button (placeholder image) — DONE 2026-03-16 (used "Hero Heading Left" layout)
-- [ ] 1.4 — Problem/solution section (StoryBrand style)
-- [ ] 1.5 — "Three Revolutions" overview section
-- [ ] 1.6 — Services preview (3 cards linking to Services page)
-- [ ] 1.7 — Logo wall (client logos)
-- [ ] 1.8 — CTA section (free assessment)
-- [ ] 1.9 — Footer (links, contact info, social)
-- [ ] 1.10 — **REVIEW WITH DANE** — adjust before moving on
+### Phase 1: Home Page — Redesign on Wix
+- [ ] 1.1 — Update nav: Home | About | Services | Work | Resources
+- [ ] 1.2 — Hero section: headline + subhead + CTA button + Vimeo hero video embed
+- [ ] 1.3 — Problem/solution section (StoryBrand style)
+- [ ] 1.4 — "Three Revolutions" overview section
+- [ ] 1.5 — Services preview (3 cards linking to Services page)
+- [ ] 1.6 — Logo wall (client logos)
+- [ ] 1.7 — CTA section (free assessment)
+- [ ] 1.8 — Footer (links, contact info, social)
+- [ ] 1.9 — **REVIEW WITH DANE** — adjust before moving on
 
 ### Phase 2: About Page
 - [ ] 2.1 — "Why us" section + Venn diagram
@@ -156,7 +156,7 @@ Do not duplicate brand rules here — reference the canonical source.
 - [ ] 4.6 — **REVIEW WITH DANE**
 
 ### Phase 5: Resources Page
-- [ ] 5.1 — Blog setup (Webflow CMS collection)
+- [ ] 5.1 — Blog setup (Wix native blog or Substack embed — TBD)
 - [ ] 5.2 — Import/create first 3-5 blog posts from Substack newsletter
 - [ ] 5.3 — Newsletter subscribe section (Substack link or embedded form)
 - [ ] 5.4 — Publications section (white paper, exec guide — PDFs or landing pages)
@@ -174,9 +174,9 @@ Do not duplicate brand rules here — reference the canonical source.
 - [ ] 6.6 — Mobile responsive pass (test all pages on phone/tablet)
 - [ ] 6.7 — **FULL REVIEW WITH DANE**
 
-### Phase 7: Video Hosting Decision + Implementation
-- [ ] 7.1 — Decide on video hosting (YouTube/Wistia/Vimeo/hybrid)
-- [ ] 7.2 — Set up chosen platform account
+### Phase 7: Video Hosting Implementation (Vimeo)
+- [x] 7.1 — Decide on video hosting — DECIDED: Vimeo for on-site, YouTube for discovery
+- [ ] 7.2 — Set up Vimeo Pro account (if not done in Phase 0)
 - [ ] 7.3 — Upload hero video
 - [ ] 7.4 — Upload case study videos
 - [ ] 7.5 — Upload thought leadership videos
@@ -202,12 +202,12 @@ Do not duplicate brand rules here — reference the canonical source.
 - [ ] 9.7 — **FINAL SIGN-OFF FROM DANE**
 
 ### Phase 10: Go Live
-- [ ] 10.1 — Point digitalaccomplice.com DNS to Webflow
-- [ ] 10.2 — Verify site is live and working
-- [ ] 10.3 — Test all forms again on live domain
-- [ ] 10.4 — Submit sitemap to Google Search Console
+- [ ] 10.1 — Final publish on Wix (already on digitalaccomplice.com — no DNS change needed)
+- [ ] 10.2 — Verify all pages live and working
+- [ ] 10.3 — Test all forms on live domain
+- [ ] 10.4 — Submit updated sitemap to Google Search Console
 - [ ] 10.5 — Monitor for 48 hours
-- [ ] 10.6 — If all good, keep Wix as backup for 30 more days, then cancel
+- [ ] 10.6 — Delete Webflow workspace (danes-workspace-2a2780)
 
 ---
 
