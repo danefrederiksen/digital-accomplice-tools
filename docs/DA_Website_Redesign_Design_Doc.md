@@ -73,11 +73,9 @@
 - CTAs woven throughout site, not just one page
 - No "buy now" button for strategy
 
-### Brand Guidelines (from memory)
-- Colors: DA Orange #F8901E, Black #000, Blue-Gray #5A6B7A, Gray #CBCBCB, White #FFF, Light Gray #F5F5F5
-- Fonts: Inter/Arial/Helvetica
-- Voice: Direct, data-first, no-BS, short sentences
-- Do NOT use: #F5A623, #AAAAAA, #F0F0F0
+### Brand Guidelines
+**Canonical source:** `docs/DA_Brand_Standards_Skill_CORRECTED.md` (local) + Google Drive `DA_Assets_Brand_MasterStandards_2026-03-16.docx` (shared).
+Do not duplicate brand rules here — reference the canonical source.
 
 ### Inspiration Sites
 - storybrand.com — StoryBrand framework layout
@@ -120,9 +118,9 @@
 - [x] 0.5 — Set up global styles: Inter font (400/500/600/700/800), Body 16px/26px black, H1 48px Bold, H2 36px Bold, H3 28px Semi Bold, H4 22px Semi Bold. Color swatches deferred to Phase 1. DONE 2026-03-16
 
 ### Phase 1: Home Page — First Draft
-- [ ] 1.1 — Build page skeleton: nav, hero section, sections, footer
-- [ ] 1.2 — Nav bar: Home | About | Services | Work | Resources + eyebrow nav
-- [ ] 1.3 — Hero section: headline + subhead + CTA button (placeholder video)
+- [x] 1.1 — Build page skeleton: nav, hero section, sections, footer — DONE 2026-03-16
+- [x] 1.2 — Nav bar: Home | About | Services | Work | Resources — DONE 2026-03-16
+- [x] 1.3 — Hero section: headline + subhead + CTA button (placeholder image) — DONE 2026-03-16 (used "Hero Heading Left" layout)
 - [ ] 1.4 — Problem/solution section (StoryBrand style)
 - [ ] 1.5 — "Three Revolutions" overview section
 - [ ] 1.6 — Services preview (3 cards linking to Services page)

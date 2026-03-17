@@ -117,7 +117,10 @@
       "Bash(echo \"Reverted orange in $f\")",
       "Bash(echo \"Reverted hover orange in $f\")",
       "Bash(echo \"Fixed $f\")",
-      "Bash(pbcopy)"
+      "Bash(pbcopy)",
+      "Bash(2)",
+      "mcp__c1fc4002-5f49-5f9d-a4e5-93c4ef5d6a75__google_drive_search",
+      "mcp__c1fc4002-5f49-5f9d-a4e5-93c4ef5d6a75__google_drive_fetch"
     ]
   }
 }

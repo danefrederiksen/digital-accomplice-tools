@@ -13,7 +13,7 @@ A single-page branded PDF that combines the AI visibility diagnosis AND the reco
 - **One image.** Everything fits in one graphic. No pages, no scrolling.
 - **5th grade reading level.** No jargon. No long sentences. If a word has more than 3 syllables, cut it.
 - **Bold and scannable.** Someone should get the message in 10 seconds of skimming.
-- **DA brand specs:** Orange #F8901E, Black #000, Blue-Gray #5A6B7A, White #FFF, Light Gray #F5F5F5. Font: Poppins (Arial fallback). No gradients, no shadows.
+- **DA brand specs:** Orange #F8901E, Black #000, Blue-Gray #5A6B7A, White #FFF, Light Gray #F5F5F5. Font: Inter (Arial fallback). No gradients, no shadows. See `docs/DA_Brand_Standards_Skill_CORRECTED.md` for full canonical brand rules.
 - **High-res.** 2x pixel density for crisp text on retina screens.
 
 ## Page Layout (top to bottom)
