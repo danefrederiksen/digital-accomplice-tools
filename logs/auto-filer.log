@@ -185,3 +185,5 @@
 [2026-03-17T02:48:50.582Z] COPIED: DA_Assets_Brand_MasterStandards_2026-03-16.docx → 6_Assets/6.1_Brand/DA_Assets_Brand_MasterStandards_2026-03-16.docx (original kept in Downloads)
 [2026-03-17T02:48:50.583Z] ERROR moving DA_Assets_Brand_MasterStandards_2026-03-16.docx: Unknown system error -11: Unknown system error -11, open '/Users/danefrederiksen/Desktop/Digital Accomplice/4_Operations/4.3_Processes/file-log.json'
 [2026-03-17T02:48:51.919Z] Unknown department "Brand" in DA_Brand_Standards_Skill.md — leaving in Downloads
+[2026-03-17T14:16:33.849Z] COPIED: DA_Assets_Brand_MasterStandards_2026-03-16.docx → 6_Assets/6.1_Brand/DA_Assets_Brand_MasterStandards_2026-03-16-2.docx (original kept in Downloads)
+[2026-03-17T14:16:33.860Z] ERROR moving DA_Assets_Brand_MasterStandards_2026-03-16.docx: Unknown system error -11: Unknown system error -11, open '/Users/danefrederiksen/Desktop/Digital Accomplice/4_Operations/4.3_Processes/file-log.json'

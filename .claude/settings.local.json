@@ -120,7 +120,9 @@
       "Bash(pbcopy)",
       "Bash(2)",
       "mcp__c1fc4002-5f49-5f9d-a4e5-93c4ef5d6a75__google_drive_search",
-      "mcp__c1fc4002-5f49-5f9d-a4e5-93c4ef5d6a75__google_drive_fetch"
+      "mcp__c1fc4002-5f49-5f9d-a4e5-93c4ef5d6a75__google_drive_fetch",
+      "Bash(sips -g all /Users/danefrederiksen/Downloads/IMG_0762.HEIC)",
+      "Bash(sips -s format jpeg /Users/danefrederiksen/Downloads/IMG_0762.HEIC --out /tmp/IMG_0762.jpg)"
     ]
   }
 }
