@@ -122,7 +122,10 @@
       "mcp__c1fc4002-5f49-5f9d-a4e5-93c4ef5d6a75__google_drive_search",
       "mcp__c1fc4002-5f49-5f9d-a4e5-93c4ef5d6a75__google_drive_fetch",
       "Bash(sips -g all /Users/danefrederiksen/Downloads/IMG_0762.HEIC)",
-      "Bash(sips -s format jpeg /Users/danefrederiksen/Downloads/IMG_0762.HEIC --out /tmp/IMG_0762.jpg)"
+      "Bash(sips -s format jpeg /Users/danefrederiksen/Downloads/IMG_0762.HEIC --out /tmp/IMG_0762.jpg)",
+      "Bash(pdftoppm -v)",
+      "Bash(pdftotext \"/Users/danefrederiksen/Desktop/Digital Accomplice/website redesign /Digital accomplice website redesign 2026 sitemap copy.pdf\" -)",
+      "Bash(open \"/Users/danefrederiksen/Desktop/Digital Accomplice/website redesign /DA_Website_Redesign_Design_Doc_2026-03-17.pdf\")"
     ]
   }
 }
