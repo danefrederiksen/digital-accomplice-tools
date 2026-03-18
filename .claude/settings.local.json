@@ -125,7 +125,12 @@
       "Bash(sips -s format jpeg /Users/danefrederiksen/Downloads/IMG_0762.HEIC --out /tmp/IMG_0762.jpg)",
       "Bash(pdftoppm -v)",
       "Bash(pdftotext \"/Users/danefrederiksen/Desktop/Digital Accomplice/website redesign /Digital accomplice website redesign 2026 sitemap copy.pdf\" -)",
-      "Bash(open \"/Users/danefrederiksen/Desktop/Digital Accomplice/website redesign /DA_Website_Redesign_Design_Doc_2026-03-17.pdf\")"
+      "Bash(open \"/Users/danefrederiksen/Desktop/Digital Accomplice/website redesign /DA_Website_Redesign_Design_Doc_2026-03-17.pdf\")",
+      "Bash(curl -s http://localhost:3851/api/prospects)",
+      "Bash(curl -s http://localhost:3852/api/prospects)",
+      "Bash(curl -s -X PUT http://localhost:3851/api/prospects/12c6314b-2230-4cfd-9ed8-3c6a0d66b039 -H \"Content-Type: application/json\" -d '{:*)",
+      "Bash(curl -s -X PUT http://localhost:3851/api/prospects/16e3b4e6-62c2-4017-b366-2cb04741edfc -H \"Content-Type: application/json\" -d '{:*)",
+      "Bash(curl -s -X PUT http://localhost:3852/api/prospects/78752165-db5c-4f54-ad63-511e8068c049 -H \"Content-Type: application/json\" -d '{:*)"
     ]
   }
 }
