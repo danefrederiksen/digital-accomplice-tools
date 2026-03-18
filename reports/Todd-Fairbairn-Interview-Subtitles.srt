@@ -1,0 +1,578 @@
+1
+00:00:00,000 --> 00:00:05,000
+Hey everybody. My name is Dane Frederiksen.
+I am a B2B video expert,
+
+2
+00:00:05,000 --> 00:00:09,000
+and I'm here today with Todd Fairbairn,
+who is from Emotiv Mobility,
+
+3
+00:00:09,000 --> 00:00:13,000
+and we're here to talk about what's going on
+in this crazy world of marketing and AI
+
+4
+00:00:13,000 --> 00:00:17,000
+and all the things we need to be thinking
+about right now.
+
+5
+00:00:17,000 --> 00:00:21,000
+Todd, why don't you introduce yourself and
+tell us a little bit about what we need to know about you.
+
+6
+00:00:21,000 --> 00:00:25,000
+Dane, thank you so much for having me on.
+Todd Fairbairn —
+
+7
+00:00:25,000 --> 00:00:29,000
+I am Head of Marketing and Brand
+at Emotiv Mobility.
+
+8
+00:00:29,000 --> 00:00:34,000
+It's a really interesting time to be in our space.
+B2B marketing is always a challenge.
+
+9
+00:00:34,000 --> 00:00:38,000
+You've got to cut through the noise.
+But I think you throw in AI
+
+10
+00:00:38,000 --> 00:00:42,000
+and everything that's happening,
+and for brand folks on usually smaller teams,
+
+11
+00:00:42,000 --> 00:00:46,000
+you've got to leverage AI.
+But how do you do it in a way that's authentic,
+
+12
+00:00:46,000 --> 00:00:50,000
+true to the brand, and isn't just slop?
+It's a great tool,
+
+13
+00:00:50,000 --> 00:00:54,000
+but you've got to be responsible with it.
+
+14
+00:00:54,000 --> 00:00:59,000
+It's such a great moment to be having
+this conversation. AI just took all the air
+
+15
+00:00:59,000 --> 00:01:04,000
+out of the room. We all went nuts last year,
+made all this slop —
+
+16
+00:01:04,000 --> 00:01:08,000
+word of the year. Now I'm seeing the pendulum
+swing back the other way.
+
+17
+00:01:08,000 --> 00:01:12,000
+They're hiring content writers to be human again.
+There's finally some appreciation
+
+18
+00:01:12,000 --> 00:01:17,000
+for the work that we do, and it has real value
+beyond just hitting numbers with volume.
+
+19
+00:01:17,000 --> 00:01:22,000
+So when that meets actual practice —
+how are you using AI, or not using it?
+
+20
+00:01:22,000 --> 00:01:25,000
+What's top of mind for you?
+
+21
+00:01:25,000 --> 00:01:30,000
+We use it a fair bit, in full transparency.
+It's not our North Star,
+
+22
+00:01:30,000 --> 00:01:34,000
+nor does it help us get there. But we use it
+to gut check a lot of our activities.
+
+23
+00:01:34,000 --> 00:01:39,000
+My marketing team — we're a smaller B2B
+in the automotive space.
+
+24
+00:01:39,000 --> 00:01:44,000
+It's myself, I have a marketing performance
+and operations manager who leads our campaigns,
+
+25
+00:01:44,000 --> 00:01:48,000
+and then I have a content creator
+who's diving into the material.
+
+26
+00:01:48,000 --> 00:01:53,000
+AI for us — we use it for keeping our website
+content fresh, looking at what others
+
+27
+00:01:53,000 --> 00:01:57,000
+in the space are doing, and guiding us
+on blog posts, thinking about keywords.
+
+28
+00:01:57,000 --> 00:02:02,000
+We'd love to see how we can use tools
+from a video content perspective.
+
+29
+00:02:02,000 --> 00:02:06,000
+That is real intriguing for a smaller group.
+How can we get more with less?
+
+30
+00:02:06,000 --> 00:02:11,000
+But then use it with the diligence
+and responsibility of remaining true to the brand.
+
+31
+00:02:11,000 --> 00:02:16,000
+This is one of my goals with this interview series —
+to take the chocolate and the peanut butter
+
+32
+00:02:16,000 --> 00:02:20,000
+and put them together. Me as a video expert,
+you as a marketer with your expertise.
+
+33
+00:02:20,000 --> 00:02:25,000
+I'm always advocating for leveraging video
+in an authentic way that still lets you
+
+34
+00:02:25,000 --> 00:02:29,000
+use AI responsibly without diluting your brand.
+
+35
+00:02:29,000 --> 00:02:34,000
+I think the best term for it is
+video-first content marketing.
+
+36
+00:02:34,000 --> 00:02:39,000
+The idea is that video, because it contains
+all other formats, is the perfect raw ingredient
+
+37
+00:02:39,000 --> 00:02:43,000
+for a content system that's repeatable
+and ongoing.
+
+38
+00:02:43,000 --> 00:02:48,000
+Imagine an interview like this chopped up
+into shorts, take the transcript,
+
+39
+00:02:48,000 --> 00:02:52,000
+use that for written content. If you plan that
+ahead of time rather than repurposing
+
+40
+00:02:52,000 --> 00:02:56,000
+as an afterthought — I call it pre-purposing.
+
+41
+00:02:56,000 --> 00:03:01,000
+Planning ahead, building a system
+that's low-lift.
+
+42
+00:03:01,000 --> 00:03:06,000
+SMEs shouldn't be writing articles,
+especially in this day and age.
+
+43
+00:03:06,000 --> 00:03:10,000
+An interview like this is a great way
+to extract on-brand thought leadership
+
+44
+00:03:10,000 --> 00:03:14,000
+and repurpose it across all channels.
+
+45
+00:03:14,000 --> 00:03:19,000
+There's this idea that so many different levels
+of quality are acceptable now.
+
+46
+00:03:19,000 --> 00:03:24,000
+A scrappy iPhone video or a webcam video
+like this has value if the content is valuable
+
+47
+00:03:24,000 --> 00:03:28,000
+and it's used in the right way, in the right place.
+
+48
+00:03:28,000 --> 00:03:33,000
+Of course, polished brand videos
+and Super Bowl commercials have their place too.
+
+49
+00:03:33,000 --> 00:03:37,000
+But post-pandemic, social media world —
+there's this other lane
+
+50
+00:03:37,000 --> 00:03:41,000
+that B2B is just now waking up to.
+
+51
+00:03:41,000 --> 00:03:46,000
+I love where your head's at, Dane.
+Sometimes you never have enough time
+
+52
+00:03:46,000 --> 00:03:50,000
+to tackle these ideas.
+From your perspective, it's almost like
+
+53
+00:03:50,000 --> 00:03:55,000
+a grand campaign where you have longer form
+content and you break it down
+
+54
+00:03:55,000 --> 00:03:59,000
+and leverage it across a multitude
+of different facets.
+
+55
+00:03:59,000 --> 00:04:04,000
+That was a big driving principle
+while I was at Ford Motor Company.
+
+56
+00:04:04,000 --> 00:04:09,000
+And what I think is so fun — for so long,
+B2B has been kind of rigid, no personality.
+
+57
+00:04:09,000 --> 00:04:14,000
+There's a hesitancy for brands to step out
+and be their own identity.
+
+58
+00:04:14,000 --> 00:04:18,000
+There's a lot of hiding. It's the people,
+the humanity, that makes a huge impact
+
+59
+00:04:18,000 --> 00:04:22,000
+as a brand differentiator.
+
+60
+00:04:22,000 --> 00:04:27,000
+It's one of the things we've been looking at doing.
+How might we get the individuals
+
+61
+00:04:27,000 --> 00:04:32,000
+on an assembly line at one of our facilities
+to capture the actual pieces coming together —
+
+62
+00:04:32,000 --> 00:04:37,000
+an activity that 99% of people
+wouldn't normally see.
+
+63
+00:04:37,000 --> 00:04:42,000
+But there are so many supply chain companies
+touching that product. It's really cool moments.
+
+64
+00:04:42,000 --> 00:04:47,000
+The biggest opportunity for brands in our space
+is to flex about the people doing the work.
+
+65
+00:04:47,000 --> 00:04:52,000
+Everyone's sitting on a content goldmine,
+because you do have the subject matter experts,
+
+66
+00:04:52,000 --> 00:04:57,000
+the people doing the work. There's this idea
+of hiding behind white papers and ghost writing.
+
+67
+00:04:57,000 --> 00:05:02,000
+The marketplace has started to demand
+something different.
+
+68
+00:05:02,000 --> 00:05:07,000
+A lot of execs are being asked to take off
+the mask and be real. And it makes people uncomfortable.
+
+69
+00:05:07,000 --> 00:05:12,000
+So what I'm getting closer to now is finding ways
+people can say yes.
+
+70
+00:05:12,000 --> 00:05:17,000
+The grand master plan content strategy
+just sounds too big, too hard.
+
+71
+00:05:17,000 --> 00:05:22,000
+How can we start small?
+Let's give this a pilot project name.
+
+72
+00:05:22,000 --> 00:05:27,000
+Let's call this a test. Making it so the bar
+is low and you can get some reps in.
+
+73
+00:05:27,000 --> 00:05:32,000
+A lot of people don't want to be on camera.
+If you can make that less scary —
+
+74
+00:05:32,000 --> 00:05:37,000
+let's just record something and not post it.
+We'll look at it, talk about it,
+
+75
+00:05:37,000 --> 00:05:41,000
+and then maybe take another swing.
+
+76
+00:05:41,000 --> 00:05:46,000
+I think there are paths forward
+in either direction.
+
+77
+00:05:46,000 --> 00:05:51,000
+The beauty of my job is I get to try
+different things.
+
+78
+00:05:51,000 --> 00:05:55,000
+People in my space haven't done it before.
+Doesn't mean it's wrong.
+
+79
+00:05:55,000 --> 00:05:59,000
+Doesn't mean it's right. You don't really know
+until you give it a whirl.
+
+80
+00:05:59,000 --> 00:06:04,000
+Making this part of some grandiose annual
+strategic marketing plan —
+
+81
+00:06:04,000 --> 00:06:08,000
+that just sounds daunting and not fun.
+
+82
+00:06:08,000 --> 00:06:13,000
+Everybody in marketing, we're in it to build
+things we love to see.
+
+83
+00:06:13,000 --> 00:06:18,000
+I love incremental approaches.
+Let's try this.
+
+84
+00:06:18,000 --> 00:06:23,000
+We flirted with the idea of TikTok
+while at CES. That was interesting.
+
+85
+00:06:23,000 --> 00:06:28,000
+When we were at CES, that's where the audience was.
+It would be prudent to be there.
+
+86
+00:06:28,000 --> 00:06:33,000
+You have to give things the opportunity
+before you automatically dismiss them.
+
+87
+00:06:33,000 --> 00:06:38,000
+Everything we've known has kind of flipped
+on its head in the past 10 years.
+
+88
+00:06:38,000 --> 00:06:42,000
+That's the beauty and the frustration
+of our space.
+
+89
+00:06:42,000 --> 00:06:47,000
+How are you selling this "we've got to just
+try it" mentality to people who need ROI,
+
+90
+00:06:47,000 --> 00:06:51,000
+numbers, results? How do you balance the need
+to measure with the need to test?
+
+91
+00:06:51,000 --> 00:06:56,000
+It is a balancing act,
+and that's the most stressful part.
+
+92
+00:06:56,000 --> 00:07:01,000
+We'll do little pilot-type programs where it's
+a piece of a smaller underlying budget.
+
+93
+00:07:01,000 --> 00:07:06,000
+We let the core piece of the business
+carry the mail, then we see what kind of reaction
+
+94
+00:07:06,000 --> 00:07:10,000
+these little pilots cause.
+
+95
+00:07:10,000 --> 00:07:15,000
+If you string a couple together
+over a couple of quarters,
+
+96
+00:07:15,000 --> 00:07:19,000
+then you might be on to something.
+Then it's easier to convince leadership
+
+97
+00:07:19,000 --> 00:07:24,000
+that this is something we try
+a little bit more in subsequent years.
+
+98
+00:07:24,000 --> 00:07:29,000
+It's these incremental, anecdotal tries
+to see where we might connect.
+
+99
+00:07:29,000 --> 00:07:33,000
+If we're on to something,
+then we keep pushing until we crack the egg
+
+100
+00:07:33,000 --> 00:07:37,000
+or start from scratch.
+
+101
+00:07:37,000 --> 00:07:42,000
+As you're looking forward — what are the things
+in front of you? What's the next thing
+
+102
+00:07:42,000 --> 00:07:46,000
+for you, or for the industry?
+Where are we headed?
+
+103
+00:07:46,000 --> 00:07:51,000
+I think AI, in terms of being able
+to harness it — one of my marketing leads
+
+104
+00:07:51,000 --> 00:07:56,000
+has been all over Claude for the past
+couple of weeks, figuring out how to leverage it
+
+105
+00:07:56,000 --> 00:08:00,000
+better for what we're doing.
+
+106
+00:08:00,000 --> 00:08:05,000
+I do think there's going to continue to be
+a movement to have people telling the story,
+
+107
+00:08:05,000 --> 00:08:10,000
+focusing on individuals to write copy,
+because there are differences.
+
+108
+00:08:10,000 --> 00:08:14,000
+You can tell things are AI-written
+versus an actual individual.
+
+109
+00:08:14,000 --> 00:08:19,000
+That delicate balance will continue to be there.
+
+110
+00:08:19,000 --> 00:08:24,000
+It's been a wild 12 months.
+It's probably going to be a wild 24 months
+
+111
+00:08:24,000 --> 00:08:28,000
+as these tools continue to get smarter.
+
+112
+00:08:28,000 --> 00:08:33,000
+We as marketers have a responsibility
+to be good stewards of the tools,
+
+113
+00:08:33,000 --> 00:08:37,000
+leverage them in a way that's beneficial
+for our craft.
+
+114
+00:08:37,000 --> 00:08:42,000
+Whether it's HubSpot or other platforms
+pushing AI functionality —
+
+115
+00:08:42,000 --> 00:08:46,000
+you're just inundated with AI everywhere.
+That'll be fascinating to see
+
+116
+00:08:46,000 --> 00:08:50,000
+how these capabilities all connect
+and intertwine.
+
+117
+00:08:50,000 --> 00:08:54,000
+It's the wild west all over again.
+Todd, thanks for joining me today.
+
+118
+00:08:54,000 --> 00:08:58,000
+Great conversation.
+Good luck out there.
+
+119
+00:08:58,000 --> 00:09:02,000
+Absolutely. Dane, appreciate the time. Cheers.
