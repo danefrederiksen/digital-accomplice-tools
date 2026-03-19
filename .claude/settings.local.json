@@ -132,7 +132,16 @@
       "Bash(curl -s -X PUT http://localhost:3851/api/prospects/16e3b4e6-62c2-4017-b366-2cb04741edfc -H \"Content-Type: application/json\" -d '{:*)",
       "Bash(curl -s -X PUT http://localhost:3852/api/prospects/78752165-db5c-4f54-ad63-511e8068c049 -H \"Content-Type: application/json\" -d '{:*)",
       "Bash(npm install:*)",
-      "Bash(find '/Users/danefrederiksen/Desktop/Digital Accomplice' -type f \\\\\\(-name *.xlsx -o -name *.csv -o -name *.md -o -name *.json \\\\\\))"
+      "Bash(find '/Users/danefrederiksen/Desktop/Digital Accomplice' -type f \\\\\\(-name *.xlsx -o -name *.csv -o -name *.md -o -name *.json \\\\\\))",
+      "Bash(sips -g pixelWidth -g pixelHeight \"/Users/danefrederiksen/Desktop/Screenshot 2026-03-18 at 10.42.01 PM.png\")",
+      "Bash(sips -g pixelWidth -g pixelHeight '/Users/danefrederiksen/Desktop/Screenshot 2026-03-18 at 10.42.01 PM.png')",
+      "Bash(curl -sL -D - \"https://www.aveycreative.com/\" -o /tmp/avey-home.html)",
+      "Bash(curl -sI \"https://www.aveycreative.com/\")",
+      "Bash(curl -sI \"https://www.aveycreative.com/about\")",
+      "Bash(gh repo:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git push:*)"
     ]
   }
 }

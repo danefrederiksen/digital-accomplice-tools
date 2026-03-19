@@ -1,7 +1,7 @@
 # Digital Accomplice Website Redesign — Design Doc
 **Created:** 2026-03-16 | **Updated:** 2026-03-17
-**Status:** Planning phase — building new Wix site from scratch
-**Platform:** Wix (new site, swap domain when ready) | Video hosting: Vimeo (on-site) + YouTube (discovery/SEO)
+**Status:** Planning phase — building in Claude Code, hosting on Wix
+**Platform:** Built in Claude Code (HTML/CSS/JS) → uploaded to Wix | Domain: GoDaddy | Video hosting: Vimeo (on-site) + YouTube (discovery/SEO)
 **Quick command:** "website redesign project"
 **Source PDF:** `Digital Accomplice/website redesign/Digital accomplice website redesign 2026 sitemap copy.pdf`
 **Framework:** StoryBrand (customer = hero, brand = guide)
@@ -11,10 +11,14 @@
 
 ## Platform & Approach
 
-- **Why Wix:** Dane already knows Wix, no migration needed. Webflow abandoned (steep learning curve for non-coder).
-- **New site from scratch:** Brand new Wix site (unpublished). Current digitalaccomplice.com stays untouched. Domain swap only after full approval.
+- **Build tool:** Claude Code — all HTML/CSS/JS written here, reviewed locally in browser
+- **Hosting:** Wix — finished pages uploaded/pasted into Wix for hosting
+- **Domain:** GoDaddy — digitalaccomplice.com, pointed to Wix
+- **Build-then-upload workflow:** Claude Code builds each page as clean HTML/CSS → Dane reviews locally (open file in browser) → approved pages get transferred to Wix → domain swap when fully ready
+- **Why this approach:** Dane is not a coder, but Claude Code can build the site faster and with more control than Wix's editor. Wix handles hosting/SSL/domain. Best of both worlds.
 - **Video hosting:** Vimeo for on-site embeds (clean, ad-free, no "related videos"). YouTube stays for SEO/discovery.
-- **Webflow account:** Created 2026-03-16 but ABANDONED. Workspace `danes-workspace-2a2780` can be deleted.
+- **Webflow:** ABANDONED (Mar 16). Workspace `danes-workspace-2a2780` can be deleted.
+- **Current live site:** digitalaccomplice.com stays untouched until new site is approved and domain is swapped.
 
 ---
 
@@ -344,12 +348,12 @@ From John Corcoran / Rise25 — an offer for a Showcase page + interview package
 
 ## Step-by-Step Build Plan
 
-### Phase 0: Setup — NEW WIX SITE
+### Phase 0: Setup — CLAUDE CODE BUILD + WIX HOSTING
 - ~~[x] 0.1–0.5 — Webflow setup — DONE but ABANDONED (Mar 16).~~
-- [ ] 0.6 — Create new blank Wix site (unpublished). Current live site stays untouched until swap.
-- [ ] 0.7 — Audit current Wix site: inventory all pages, note content/assets to carry over
+- [ ] 0.6 — Create `website/` folder in Claude Code with project structure (index.html, css/, assets/)
+- [ ] 0.7 — Audit current digitalaccomplice.com: inventory all pages, note content/assets to carry over
 - [ ] 0.8 — Set up Vimeo account (Pro plan recommended for player customization + CTAs)
-- [ ] 0.9 — Document current Wix site structure (screenshots or page list) as reference
+- [ ] 0.9 — Document current site structure (screenshots or page list) as reference
 
 ### Phase 1: Home Page
 - [ ] 1.1 — Set up nav: Home | About | Services | Work | Resources + eyebrow nav
