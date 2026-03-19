@@ -53,3 +53,4 @@ warming-app copy/
 
 # Claude internal
 .claude/
+data/youtube-credentials/

@@ -85,10 +85,17 @@ After these are built, the full guest-to-published flow is:
 
 ## Build Order
 
-1. Install `googleapis`: `npm install googleapis`
-2. Walk Dane through Google Cloud Console OAuth setup (in browser)
-3. Build `scripts/youtube-publish.js`
-4. Test on Todd Fairbairn video (ID: `0DHA9eBtiog`) — update metadata, upload subtitles
+1. ~~Install `googleapis`: `npm install googleapis`~~ ✅ DONE (Mar 18, 2026)
+2. ~~Walk Dane through Google Cloud Console OAuth setup (in browser)~~ ✅ DONE (Mar 18, 2026)
+   - Project: "DA YouTube Tools" on Google Cloud Console
+   - YouTube Data API v3: enabled
+   - OAuth consent screen: configured (External, testing mode)
+   - OAuth client: Desktop app, credentials downloaded
+   - Credentials saved to: `data/youtube-credentials/client_secret.json` (gitignored)
+   - Test user added: dane@digitalaccomplice.com
+   - **First script run will open browser for OAuth consent → saves refresh token automatically**
+3. ~~Build `scripts/youtube-publish.js`~~ ✅ DONE (Mar 18, 2026)
+4. ~~Test on Todd Fairbairn video (ID: `0DHA9eBtiog`) — update metadata, upload subtitles~~ ✅ DONE (Mar 18, 2026)
 5. Build `scripts/generate-thumbnail.js` with HTML template
 6. Generate Todd's thumbnail (need his headshot)
 7. Upload thumbnail via API script

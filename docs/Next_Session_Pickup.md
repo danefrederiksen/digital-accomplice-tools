@@ -1,60 +1,94 @@
-# Next Session Pickup — March 9, 2026
+# Next Session Pickup — March 18, 2026
 
-**Last session:** March 9, 2026
-**Reference doc:** `Prospecting_Tools_Fix_Plan_Progress.md`
-
----
-
-## ✅ FIX PLAN 100% COMPLETE — ALL 10 STEPS DONE
-
-**Do NOT start working on fix plan steps — they are ALL finished.**
-
-| Step | Task | Status |
-|------|------|--------|
-| 1 | Clean Tool #4 (Cyber 2nd) | DONE (partial — 62 records still need company + LinkedIn, Dane researching) |
-| 2 | Clean Tool #3 (B2B 2nd) | DONE |
-| 3 | Cross-tool duplicates (#1 vs #5) | DONE |
-| 4 | Clean comment-log.json | DONE |
-| 5 | Search bars | DONE (already built) |
-| 6 | Activity feed links | DONE (already built) |
-| 7 | Delete buttons | DONE (already built) |
-| 8 | Tool #11 verification | DONE |
-| 9 | Editable offers / A-B testing | DONE — server-side template storage + Tool #4 ALLOWED_FIELDS bug fix |
-| 10 | Unified hub dashboard | DONE — `tools/hub-dashboard.html` + `tools/hub-serve.js` on port 3849 |
+**Last session:** March 18, 2026
+**Focus:** YouTube Publish Automation Tool
 
 ---
 
-## What Got Done (March 9 Session)
+## What Got Done This Session
 
-- [x] **Step 9 COMPLETE** — Templates moved from localStorage to server-side JSON
-  - All 6 DM tool servers got GET/PUT `/api/templates` endpoints
-  - All 6 DM tool frontends use async server-first loading with localStorage migration
-  - Tool #4 ALLOWED_FIELDS bug fixed (A/B variant fields were silently dropped)
-  - Gitignore updated with `data/*-templates.json` pattern
-- [x] **Step 10 verified COMPLETE** — Hub dashboard already built (port 3849)
-  - Score cards, alerts, quick links, tool cards grid, weekly summary, auto-refresh
-- [x] All changes committed and pushed to GitHub
+1. **Built `scripts/youtube-publish.js`** — fully working YouTube Data API script
+   - Parses paste files from youtube-upload-optimizer skill
+   - Updates title, description, tags via API
+   - Uploads SRT subtitles (deletes old captions first)
+   - Supports thumbnail upload and publish-to-public flags
+   - OAuth flow with saved token (no re-auth needed)
+
+2. **Tested on Todd Fairbairn video** (ID: `0DHA9eBtiog`)
+   - Metadata updated (title, description, 15 tags — trimmed from 30 for YouTube's 400-char limit)
+   - Subtitles uploaded (replaced existing English captions)
+   - Video stays as draft (no --publish flag used)
+   - Verify in Studio: https://studio.youtube.com/video/0DHA9eBtiog/edit
+
+3. **OAuth token saved** at `data/youtube-credentials/token.json`
+   - Future runs skip browser sign-in
+   - Scopes: youtube, youtube.upload, youtube.force-ssl
 
 ---
 
-## Still Pending (NOT part of the fix plan)
+## What's Next (in order)
+
+### 1. Build `scripts/generate-thumbnail.js` (Step 5 in automation plan)
+- HTML template + Chrome headless → 1280×720 JPG
+- DA-branded: orange #F8901E, Inter font, dark background
+- Inputs: --name, --tagline, --photo, --output
+- Reference: snapshot-generator/server.js for Chrome headless pattern
+- **BLOCKER:** Need Todd's headshot photo from Dane
+
+### 2. Generate Todd's thumbnail
+- Run generate-thumbnail.js with Todd's headshot
+- Upload via youtube-publish.js --thumbnail flag
+
+### 3. Finalize Todd's video
+- Watch video, fine-tune chapter timestamps (manual)
+- Set to public (--publish flag or manual in Studio)
+
+### 4. Update workflow docs
+- Update youtube_publish_workflow.md with new automated steps
+- Mark Todd's checklist items complete
+
+---
+
+## How to Run the Script
+
+```bash
+# Metadata + subtitles (no publish)
+node scripts/youtube-publish.js \
+  --video=VIDEO_ID \
+  --paste=reports/YouTubePaste_Guest.txt \
+  --srt=reports/Subtitles.srt
+
+# Full publish with thumbnail
+node scripts/youtube-publish.js \
+  --video=VIDEO_ID \
+  --paste=reports/YouTubePaste_Guest.txt \
+  --srt=reports/Subtitles.srt \
+  --thumbnail=reports/Thumbnail.jpg \
+  --publish
+
+# Dry run (no API calls)
+node scripts/youtube-publish.js \
+  --video=VIDEO_ID \
+  --paste=reports/YouTubePaste_Guest.txt \
+  --dry-run
+```
+
+---
+
+## Still Pending (from previous sessions)
 
 | Item | Status |
 |------|--------|
 | Tool #1 missing "Open LinkedIn" on Replied cards | Not started |
-| Overdue follow-ups: 3 in Tool #2, 4 in Tool #5 | Not started |
-| Kevin Bocek + Peter Prieto duplicated across Tool #2 and #4 | Not started |
-| Step 1 remainder: 62 records need company + LinkedIn URL | Blocked — Dane researching |
-| Step 1 remainder: internal duplicate re-check in Tool #4 | Waiting on Step 1 cleanup |
+| 62 Tool #4 records need company + LinkedIn URL | Blocked — Dane researching |
 | Data imports (Tools #7, #8, #9, #10, #12) | Blocked — needs CSVs from Dane |
 
 ---
 
 ## How to Start Next Session
 
-1. **Read this file first** — confirms fix plan is done, shows what's still pending
+1. **Read this file first**
 2. **Read MEMORY.md** for full project context
-3. Start servers: `node start-all.js` from `/Desktop/Claude code/`
-4. **Always use `node server.js` for the main dashboard — NOT python**
-5. Hub dashboard: `http://localhost:3849`
-6. Ask Dane what he wants to work on next — fix plan is done, so it's his call
+3. **Always use `node server.js` for the main dashboard — NOT python**
+4. Start servers: `node start-all.js` from `/Desktop/Claude code/`
+5. Ask Dane what he wants to work on — thumbnail generator is the natural next step
