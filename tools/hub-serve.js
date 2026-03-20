@@ -43,10 +43,13 @@ app.use((req, res, next) => {
   }
   // Allow cross-origin from any localhost port (hub reads from all tools)
   res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  if (req.method === 'OPTIONS') return res.sendStatus(200);
   next();
 });
+
+app.use(express.json());
 
 // ============================================================
 // DATA HELPERS
@@ -325,6 +328,174 @@ app.get('/api/download-report', (req, res) => {
   res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
   res.setHeader('Content-Type', 'application/pdf');
   res.sendFile(filepath);
+});
+
+// ============================================================
+// QUICK LOG — Aggregate prospects + proxy updates
+// ============================================================
+
+// GET /api/all-prospects — reads all tool data files and returns combined list
+app.get('/api/all-prospects', (req, res) => {
+  const allProspects = [];
+
+  TOOLS.forEach(tool => {
+    const filepath = path.join(DATA_DIR, tool.prospectFile);
+    const raw = loadJSON(filepath);
+    if (!raw) return;
+
+    // Handle both array and { prospects: [...] } formats
+    const prospects = Array.isArray(raw) ? raw : (raw.prospects || []);
+
+    prospects.forEach(p => {
+      allProspects.push({
+        id: p.id,
+        name: p.name || '',
+        company: p.company || '',
+        status: p.status || 'unknown',
+        sourceToolId: tool.id,
+        sourceToolLabel: tool.label,
+        sourcePort: tool.port,
+        sourceType: tool.type
+      });
+    });
+  });
+
+  res.json({ prospects: allProspects, count: allProspects.length });
+});
+
+// POST /api/quick-log — proxy an action to the correct tool server
+app.post('/api/quick-log', async (req, res) => {
+  const { prospectId, sourcePort, action, replyText, nextStep } = req.body;
+
+  if (!prospectId || !sourcePort || !action) {
+    return res.status(400).json({ error: 'Missing required fields: prospectId, sourcePort, action' });
+  }
+
+  // Find the tool definition to know its type (dm vs email)
+  const tool = TOOLS.find(t => t.port === sourcePort);
+  if (!tool) {
+    return res.status(400).json({ error: `Unknown tool port: ${sourcePort}` });
+  }
+
+  const todayStr = getDateStr(new Date());
+  const isEmailTool = tool.type === 'email';
+
+  // Build field updates based on action
+  const updates = {};
+
+  switch (action) {
+    case 'DM Sent':
+      updates.status = isEmailTool ? 'email_sent' : 'dm_sent';
+      if (isEmailTool) {
+        updates.emailSentDate = todayStr;
+      } else {
+        updates.dmSentDate = todayStr;
+      }
+      updates.lastActionDate = todayStr;
+      break;
+
+    case 'Follow-Up Sent':
+      updates.lastActionDate = todayStr;
+      break;
+
+    case 'Reply Received':
+      updates.status = 'replied';
+      if (replyText) updates.reply = replyText;
+      updates.lastActionDate = todayStr;
+      break;
+
+    case 'Sent Snapshot':
+      updates.lastActionDate = todayStr;
+      if (nextStep) updates.nextStep = nextStep;
+      break;
+
+    case 'Sent Calendly':
+      updates.lastActionDate = todayStr;
+      if (nextStep) updates.nextStep = nextStep;
+      break;
+
+    case 'Meeting Booked':
+      updates.lastActionDate = todayStr;
+      if (nextStep) updates.nextStep = nextStep;
+      if (replyText) updates.reply = replyText;
+      // Only set status to sql if it's a DM tool (email tools may not support it)
+      // The tool server's VALID_STATUSES will filter out unsupported statuses
+      updates.status = 'replied';
+      break;
+
+    case 'Connection Request Sent':
+      updates.lastActionDate = todayStr;
+      break;
+
+    case 'Comment Left':
+      updates.lastActionDate = todayStr;
+      break;
+
+    case 'Email Sent':
+      updates.lastActionDate = todayStr;
+      if (isEmailTool) {
+        updates.status = 'email_sent';
+        updates.emailSentDate = todayStr;
+      } else {
+        updates.status = 'dm_sent';
+        updates.dmSentDate = todayStr;
+      }
+      break;
+
+    default:
+      return res.status(400).json({ error: `Unknown action: ${action}` });
+  }
+
+  // Proxy PUT to the target tool server
+  const url = `http://127.0.0.1:${sourcePort}/api/prospects/${prospectId}`;
+
+  try {
+    const http = require('http');
+
+    const result = await new Promise((resolve, reject) => {
+      const body = JSON.stringify(updates);
+      const options = {
+        hostname: '127.0.0.1',
+        port: sourcePort,
+        path: `/api/prospects/${prospectId}`,
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Content-Length': Buffer.byteLength(body)
+        },
+        timeout: 5000
+      };
+
+      const req = http.request(options, (resp) => {
+        let data = '';
+        resp.on('data', chunk => data += chunk);
+        resp.on('end', () => {
+          if (resp.statusCode >= 200 && resp.statusCode < 300) {
+            resolve({ ok: true, data: JSON.parse(data) });
+          } else {
+            resolve({ ok: false, status: resp.statusCode, data });
+          }
+        });
+      });
+
+      req.on('error', err => reject(err));
+      req.on('timeout', () => { req.destroy(); reject(new Error('Request timed out')); });
+      req.write(body);
+      req.end();
+    });
+
+    if (result.ok) {
+      res.json({ success: true, prospect: result.data, action, toolLabel: tool.label });
+    } else {
+      res.status(502).json({ error: `Tool server returned ${result.status}`, details: result.data });
+    }
+  } catch (err) {
+    console.error(`Quick log proxy error (port ${sourcePort}):`, err.message);
+    res.status(502).json({
+      error: `Could not reach tool server on port ${sourcePort}. Is it running?`,
+      details: err.message
+    });
+  }
 });
 
 // ============================================================

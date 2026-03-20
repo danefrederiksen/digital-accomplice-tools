@@ -141,7 +141,16 @@
       "Bash(gh repo:*)",
       "Bash(git add:*)",
       "Bash(git commit:*)",
-      "Bash(git push:*)"
+      "Bash(git push:*)",
+      "Bash(curl -s -X PUT http://localhost:3851/api/prospects/0a942d49-2e99-4b8b-bc8b-9b20a9b50b9d -H \"Content-Type: application/json\" -d \"{\"\"status\"\":\"\"replied\"\",\"\"dmSentDate\"\":\"\"2026-03-19\"\",\"\"lastActionDate\"\":\"\"2026-03-19\"\",\"\"reply\"\":\"\"Hey Dane! You seem like just the person I should be talking to haha, thanks for the connect and reaching out!\"\",\"\"nextStep\"\":\"\"Schedule meet and greet chat - he said yes. Referred by Jason Gong.\"\"}\")",
+      "Bash(curl -s -X PUT http://localhost:3855/api/prospects/49472d47-02a3-4eaa-b9d5-16bdff890bbb -H \"Content-Type: application/json\" -d \"{\"\"status\"\":\"\"replied\"\",\"\"dmSentDate\"\":\"\"2026-03-19\"\",\"\"lastActionDate\"\":\"\"2026-03-19\"\",\"\"reply\"\":\"\"Active referral partner - referred Joel Berntsen \\(Noteworthy AI\\) who is interested in LLM/AI search optimization + video\"\",\"\"nextStep\"\":\"\"She is also a hired assistant. Referred Joel Berntsen.\"\"}\")",
+      "Bash(curl -s -X PUT http://localhost:3851/api/prospects/0a942d49-2e99-4b8b-bc8b-9b20a9b50b9d -H \"Content-Type: application/json\" -d \"{\"\"status\"\":\"\"sql\"\",\"\"lastActionDate\"\":\"\"2026-03-19\"\",\"\"nextStep\"\":\"\"Meet and greet chat booked. Referred by Jason Gong.\"\"}\")",
+      "Bash(open \"/Users/danefrederiksen/Desktop/Claude Code/reports/DA_Sales_Pipeline_2026-03-19.html\")",
+      "Bash(curl -sv http://localhost:3849/api/all-prospects)",
+      "Read(//Users/danefrederiksen/Downloads/**)",
+      "Bash(pandoc \"Christine & Dane.docx\" -o /tmp/christine-dane.md)",
+      "Bash(brew list:*)",
+      "Bash(\"/Applications/Google Chrome.app/Contents/MacOS/Google Chrome\" --headless --disable-gpu --print-to-pdf=\"/Users/danefrederiksen/Desktop/Digital Accomplice/4_Operations/4.3_Processes/DA_Ops_Processes_PartnershipModel_2026-03-19.pdf\" --no-margins \"file:///Users/danefrederiksen/Desktop/Digital%20Accomplice/4_Operations/4.3_Processes/DA_Ops_Processes_PartnershipModel_2026-03-19.docx\")"
     ]
   }
 }

@@ -99,6 +99,45 @@
   /* ---- Footer ---- */
   .footer { text-align: center; padding: 20px; color: #999; font-size: 11px; border-top: 1px solid #eee; margin-top: 20px; }
 
+  /* ---- Quick Log Floating Button ---- */
+  .ql-fab { position: fixed; bottom: 28px; right: 28px; width: 56px; height: 56px; border-radius: 50%; background: #F8901E; color: #fff; border: none; font-size: 28px; font-weight: 700; cursor: pointer; box-shadow: 0 4px 16px rgba(248,144,30,0.4); z-index: 1000; display: flex; align-items: center; justify-content: center; transition: transform 0.15s, box-shadow 0.15s; }
+  .ql-fab:hover { transform: scale(1.08); box-shadow: 0 6px 24px rgba(248,144,30,0.5); }
+  .ql-fab svg { width: 26px; height: 26px; fill: #fff; }
+
+  /* ---- Quick Log Modal ---- */
+  .ql-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.45); z-index: 1001; justify-content: center; align-items: center; }
+  .ql-overlay.open { display: flex; }
+  .ql-modal { background: #fff; border-radius: 12px; width: 440px; max-width: 92vw; max-height: 90vh; overflow-y: auto; box-shadow: 0 8px 32px rgba(0,0,0,0.2); }
+  .ql-modal-header { display: flex; justify-content: space-between; align-items: center; padding: 16px 20px; border-bottom: 1px solid #eee; }
+  .ql-modal-header h2 { font-size: 16px; font-weight: 800; color: #000; margin: 0; }
+  .ql-modal-header .ql-close { background: none; border: none; font-size: 22px; color: #999; cursor: pointer; padding: 0 4px; }
+  .ql-modal-header .ql-close:hover { color: #000; }
+  .ql-modal-body { padding: 20px; }
+  .ql-field { margin-bottom: 14px; }
+  .ql-field label { display: block; font-size: 12px; font-weight: 700; color: #5A6B7A; text-transform: uppercase; letter-spacing: 0.3px; margin-bottom: 4px; }
+  .ql-field input, .ql-field select, .ql-field textarea { width: 100%; padding: 8px 10px; font-size: 13px; font-family: 'Inter', sans-serif; border: 1px solid #ddd; border-radius: 6px; background: #fafafa; transition: border-color 0.15s; }
+  .ql-field input:focus, .ql-field select:focus, .ql-field textarea:focus { outline: none; border-color: #F8901E; background: #fff; }
+  .ql-field textarea { resize: vertical; min-height: 60px; }
+  .ql-submit { width: 100%; padding: 10px; background: #F8901E; color: #fff; border: none; border-radius: 6px; font-size: 14px; font-weight: 700; font-family: 'Inter', sans-serif; cursor: pointer; transition: background 0.15s; }
+  .ql-submit:hover { background: #e07c10; }
+  .ql-submit:disabled { background: #ccc; cursor: not-allowed; }
+
+  /* ---- Autocomplete ---- */
+  .ql-ac-wrap { position: relative; }
+  .ql-ac-list { position: absolute; top: 100%; left: 0; right: 0; background: #fff; border: 1px solid #ddd; border-top: none; border-radius: 0 0 6px 6px; max-height: 256px; overflow-y: auto; z-index: 1010; display: none; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+  .ql-ac-list.open { display: block; }
+  .ql-ac-item { padding: 8px 10px; font-size: 13px; cursor: pointer; border-bottom: 1px solid #f5f5f5; }
+  .ql-ac-item:last-child { border-bottom: none; }
+  .ql-ac-item:hover, .ql-ac-item.active { background: #fff8f0; }
+  .ql-ac-item .ac-name { font-weight: 700; color: #000; }
+  .ql-ac-item .ac-company { color: #5A6B7A; }
+  .ql-ac-item .ac-tool { color: #999; font-size: 11px; }
+
+  /* ---- Toast ---- */
+  .ql-toast { position: fixed; bottom: 96px; right: 28px; background: #2e7d32; color: #fff; padding: 12px 20px; border-radius: 8px; font-size: 13px; font-weight: 600; z-index: 1002; box-shadow: 0 4px 16px rgba(0,0,0,0.2); transform: translateY(20px); opacity: 0; transition: all 0.3s ease; pointer-events: none; }
+  .ql-toast.show { transform: translateY(0); opacity: 1; }
+  .ql-toast.error { background: #c62828; }
+
   /* ---- Responsive ---- */
   @media (max-width: 768px) {
     .score-row { grid-template-columns: repeat(3, 1fr); }
@@ -366,6 +405,255 @@ loadData();
 
 // Auto-refresh every 30 seconds
 setInterval(loadData, 30000);
+</script>
+
+<!-- Quick Log FAB -->
+<button class="ql-fab" onclick="qlOpen()" title="Quick Log">
+  <svg viewBox="0 0 24 24"><path d="M7 2v11h3v9l7-12h-4l4-8z"/></svg>
+</button>
+
+<!-- Quick Log Modal -->
+<div class="ql-overlay" id="qlOverlay" onclick="if(event.target===this)qlClose()">
+  <div class="ql-modal">
+    <div class="ql-modal-header">
+      <h2>Quick Log</h2>
+      <button class="ql-close" onclick="qlClose()">&times;</button>
+    </div>
+    <div class="ql-modal-body">
+      <div class="ql-field">
+        <label>Name</label>
+        <div class="ql-ac-wrap">
+          <input type="text" id="qlName" placeholder="Search prospects..." autocomplete="off" oninput="qlSearch(this.value)" onkeydown="qlKeydown(event)">
+          <div class="ql-ac-list" id="qlAcList"></div>
+        </div>
+      </div>
+      <div class="ql-field">
+        <label>Action</label>
+        <select id="qlAction" onchange="qlActionChanged()">
+          <option value="">-- Select action --</option>
+          <option value="DM Sent">DM Sent</option>
+          <option value="Follow-Up Sent">Follow-Up Sent</option>
+          <option value="Reply Received">Reply Received</option>
+          <option value="Sent Snapshot">Sent Snapshot</option>
+          <option value="Sent Calendly">Sent Calendly</option>
+          <option value="Meeting Booked">Meeting Booked</option>
+          <option value="Connection Request Sent">Connection Request Sent</option>
+          <option value="Comment Left">Comment Left</option>
+          <option value="Email Sent">Email Sent</option>
+        </select>
+      </div>
+      <div class="ql-field" id="qlReplyField" style="display:none">
+        <label>Reply / Meeting Details</label>
+        <textarea id="qlReplyText" placeholder="What did they say?"></textarea>
+      </div>
+      <div class="ql-field">
+        <label>Next Step</label>
+        <input type="text" id="qlNextStep" placeholder="e.g., Send report, Schedule call...">
+      </div>
+      <button class="ql-submit" id="qlSubmitBtn" onclick="qlSubmit()" disabled>Log Action</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="ql-toast" id="qlToast"></div>
+
+<script>
+// ============================================================
+// QUICK LOG
+// ============================================================
+let qlProspects = [];
+let qlSelected = null;  // { id, name, company, sourcePort, sourceToolLabel }
+let qlAcIndex = -1;
+let qlSearchResults = [];
+
+// Load all prospects on page load
+async function qlLoadProspects() {
+  try {
+    const res = await fetch('/api/all-prospects');
+    if (!res.ok) return;
+    const data = await res.json();
+    qlProspects = data.prospects || [];
+  } catch (err) {
+    console.error('Quick Log: failed to load prospects', err);
+  }
+}
+
+function qlOpen() {
+  document.getElementById('qlOverlay').classList.add('open');
+  document.getElementById('qlName').value = '';
+  document.getElementById('qlAction').value = '';
+  document.getElementById('qlReplyText').value = '';
+  document.getElementById('qlNextStep').value = '';
+  document.getElementById('qlReplyField').style.display = 'none';
+  document.getElementById('qlSubmitBtn').disabled = true;
+  qlSelected = null;
+  qlAcIndex = -1;
+  qlSearchResults = [];
+  document.getElementById('qlAcList').classList.remove('open');
+  setTimeout(() => document.getElementById('qlName').focus(), 100);
+}
+
+function qlClose() {
+  document.getElementById('qlOverlay').classList.remove('open');
+}
+
+function qlActionChanged() {
+  const action = document.getElementById('qlAction').value;
+  const showReply = (action === 'Reply Received' || action === 'Meeting Booked');
+  document.getElementById('qlReplyField').style.display = showReply ? 'block' : 'none';
+  qlValidate();
+}
+
+function qlValidate() {
+  const hasProspect = !!qlSelected;
+  const hasAction = !!document.getElementById('qlAction').value;
+  document.getElementById('qlSubmitBtn').disabled = !(hasProspect && hasAction);
+}
+
+// Fuzzy search: match on name + company, case insensitive
+function qlSearch(query) {
+  const list = document.getElementById('qlAcList');
+  qlAcIndex = -1;
+
+  if (!query || query.length < 2) {
+    list.classList.remove('open');
+    qlSearchResults = [];
+    return;
+  }
+
+  const q = query.toLowerCase();
+  const terms = q.split(/\s+/).filter(Boolean);
+
+  // Score and filter
+  const scored = qlProspects.map(p => {
+    const haystack = `${p.name} ${p.company}`.toLowerCase();
+    let score = 0;
+    let allMatch = true;
+    for (const term of terms) {
+      const idx = haystack.indexOf(term);
+      if (idx === -1) { allMatch = false; break; }
+      // Bonus for starting at word boundary
+      if (idx === 0 || haystack[idx - 1] === ' ') score += 10;
+      score += 5;
+    }
+    if (!allMatch) return null;
+    // Bonus for exact name start
+    if (p.name.toLowerCase().startsWith(terms[0])) score += 20;
+    return { ...p, score };
+  }).filter(Boolean);
+
+  scored.sort((a, b) => b.score - a.score);
+  qlSearchResults = scored.slice(0, 8);
+
+  if (qlSearchResults.length === 0) {
+    list.classList.remove('open');
+    return;
+  }
+
+  list.innerHTML = qlSearchResults.map((p, i) =>
+    `<div class="ql-ac-item" data-idx="${i}" onmousedown="qlPick(${i})">
+      <span class="ac-name">${esc(p.name)}</span>
+      <span class="ac-company"> @ ${esc(p.company)}</span>
+      <span class="ac-tool"> (Tool #${p.sourceToolId} ${esc(p.sourceToolLabel)})</span>
+    </div>`
+  ).join('');
+
+  list.classList.add('open');
+}
+
+function qlPick(idx) {
+  const p = qlSearchResults[idx];
+  if (!p) return;
+  qlSelected = p;
+  document.getElementById('qlName').value = `${p.name} @ ${p.company}`;
+  document.getElementById('qlAcList').classList.remove('open');
+  qlSearchResults = [];
+  qlValidate();
+}
+
+function qlKeydown(e) {
+  const list = document.getElementById('qlAcList');
+  if (!list.classList.contains('open') || qlSearchResults.length === 0) return;
+
+  if (e.key === 'ArrowDown') {
+    e.preventDefault();
+    qlAcIndex = Math.min(qlAcIndex + 1, qlSearchResults.length - 1);
+    qlHighlight();
+  } else if (e.key === 'ArrowUp') {
+    e.preventDefault();
+    qlAcIndex = Math.max(qlAcIndex - 1, 0);
+    qlHighlight();
+  } else if (e.key === 'Enter') {
+    e.preventDefault();
+    if (qlAcIndex >= 0) qlPick(qlAcIndex);
+  } else if (e.key === 'Escape') {
+    list.classList.remove('open');
+  }
+}
+
+function qlHighlight() {
+  const items = document.querySelectorAll('#qlAcList .ql-ac-item');
+  items.forEach((el, i) => el.classList.toggle('active', i === qlAcIndex));
+  if (items[qlAcIndex]) items[qlAcIndex].scrollIntoView({ block: 'nearest' });
+}
+
+async function qlSubmit() {
+  if (!qlSelected) return;
+  const action = document.getElementById('qlAction').value;
+  if (!action) return;
+
+  const btn = document.getElementById('qlSubmitBtn');
+  btn.disabled = true;
+  btn.textContent = 'Logging...';
+
+  const payload = {
+    prospectId: qlSelected.id,
+    sourcePort: qlSelected.sourcePort,
+    action: action,
+    replyText: document.getElementById('qlReplyText').value.trim() || '',
+    nextStep: document.getElementById('qlNextStep').value.trim() || ''
+  };
+
+  try {
+    const res = await fetch('/api/quick-log', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+
+    const data = await res.json();
+
+    if (res.ok && data.success) {
+      qlToast(`Logged "${action}" for ${qlSelected.name} (${data.toolLabel})`, false);
+      qlClose();
+      // Refresh dashboard data
+      loadData();
+    } else {
+      qlToast(`Failed: ${data.error || 'Unknown error'}`, true);
+    }
+  } catch (err) {
+    qlToast(`Network error: ${err.message}`, true);
+  }
+
+  btn.disabled = false;
+  btn.textContent = 'Log Action';
+}
+
+function qlToast(msg, isError) {
+  const el = document.getElementById('qlToast');
+  el.textContent = msg;
+  el.className = 'ql-toast' + (isError ? ' error' : '');
+  // Force reflow
+  void el.offsetWidth;
+  el.classList.add('show');
+  setTimeout(() => el.classList.remove('show'), 3500);
+}
+
+// Load prospects when page loads
+qlLoadProspects();
+// Reload prospects every 60s in case new ones were added
+setInterval(qlLoadProspects, 60000);
 </script>
 
 </body>
