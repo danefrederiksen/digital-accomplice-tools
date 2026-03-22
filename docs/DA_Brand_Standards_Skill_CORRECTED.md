@@ -1,16 +1,15 @@
 ---
 name: da-brand-standards
-description: "Canonical DA brand rules. Every skill, agent, and template must follow these. Loaded automatically by da-content-agent, ai-visibility-snapshot, discovery-deck-generator, linkedin-post-optimizer, and any skill that produces branded output."
+description: "Canonical DA brand rules + design system. Every skill, agent, and template must follow these. Loaded automatically by da-content-agent, ai-visibility-snapshot, discovery-deck-generator, linkedin-post-optimizer, post-discovery-snapshot, youtube-upload-optimizer, and any skill that produces branded output."
 ---
 
-# DA Brand Standards — Skill Reference (v2.0, March 16, 2026)
+# DA Brand Standards + Design System — Skill Reference (v3.0, March 20, 2026)
 
-Consolidated from live site CSS audit, all existing brand docs, and ICP alignment review.
-If any other skill or doc conflicts with this file, **this file wins.**
+This file is the single source of truth. If any other skill contradicts this, this file wins.
 
 ---
 
-## Colors (7 approved, all others banned)
+## 1. Colors (7 approved, all others banned)
 
 | Name | Hex | Usage |
 |------|-----|-------|
@@ -36,7 +35,7 @@ If any other skill or doc conflicts with this file, **this file wins.**
 
 ---
 
-## Typography
+## 2. Typography
 
 | Role | Font | Notes |
 |------|------|-------|
@@ -55,9 +54,153 @@ https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&
 
 Inter was designed for screen readability and UI. DA's ICP is B2B marketing leaders and cybersecurity companies — serious buyers who value credibility. Inter signals precision and professionalism. Poppins is rounder and softer — better for consumer/creative brands, not DA's positioning.
 
+### Typography Scale (PDF / One-Pagers)
+
+| Role | Font | Weight | Size | Color |
+|------|------|--------|------|-------|
+| Page title | Inter | Bold (700) | 22–26pt | #000000 |
+| Section header | Inter | SemiBold (600) | 13–15pt | #000000 |
+| Body text | Inter | Regular (400) | 9–10pt | #5A6B7A |
+| Caption / metadata | Inter | Light (300) | 7–8pt | #5A6B7A |
+| Stat / callout number | Inter | Bold (700) | 28–36pt | #F8901E |
+| CTA button text | Inter | SemiBold (600) | 10–12pt | #FFFFFF on #F8901E |
+
+### Typography Scale (Decks / Slides)
+
+| Role | Font | Weight | Size | Color |
+|------|------|--------|------|-------|
+| Slide title | Inter | Bold (700) | 32–40pt | #000000 (white slides) or #FFFFFF (dark slides) |
+| Slide subtitle | Inter | Regular (400) | 18–22pt | #5A6B7A |
+| Slide body | Inter | Regular (400) | 16–18pt | #5A6B7A |
+| Slide caption | Inter | Light (300) | 12–14pt | #CBCBCB |
+| Stat number | Inter | Bold (700) | 48–64pt | #F8901E |
+
+**Rules:**
+- Minimum 3:1 size ratio between headline and body text (e.g., 26pt title vs. 9pt body).
+- Never use more than 3 weights on one page/slide.
+- Line height: 1.3× for body text, 1.0–1.1× for headlines.
+
 ---
 
-## Design Rules
+## 3. Spacing System
+
+Five-value scale. Use these consistently — never invent custom spacing.
+
+| Token | Value | Usage |
+|-------|-------|-------|
+| xs | 4pt | Inline spacing, icon gaps |
+| sm | 8pt | Between related elements (label + value) |
+| md | 16pt | Between components on same section |
+| lg | 24pt | Between sections |
+| xl | 36pt | Major section breaks, top/bottom page margins |
+
+### Page Margins (PDF / One-Pagers)
+
+- Top: 36pt (xl)
+- Bottom: 36pt (xl) — above CTA bar
+- Left/Right: 40pt
+- CTA bar: full bleed, 50pt tall
+
+### Slide Margins (Decks)
+
+- All sides: 48–56pt
+- Footer zone: bottom 40pt reserved for logo + page info
+
+---
+
+## 4. Page Zones (One-Pager Layout)
+
+Every one-page PDF follows this vertical zone structure:
+
+```
+┌────────────────────────────────┐
+│  HEADER ZONE (title + logo)    │  ~60pt
+├────────────────────────────────┤
+│  HERO ZONE (bar graph / key    │  ~200pt
+│  visual — ONE dominant element) │
+├────────────────────────────────┤
+│  CONTENT ZONE (2–3 sections    │  ~380pt
+│  max, separated by lg spacing)  │
+├────────────────────────────────┤
+│  CTA BAR (dark, full bleed)    │  50pt
+└────────────────────────────────┘
+```
+
+**Rules:**
+- Header zone: company name left, DA logo right. No subtitle unless absolutely necessary.
+- Hero zone: ONE visual. Bar graph, stat callout, or key insight. Never two competing visuals.
+- Content zone: max 3 sections. Each section gets a header + 2–3 lines of body text max.
+- CTA bar: #1A1A1A background, white text left, orange CTA button right.
+
+---
+
+## 5. Density & Composition Rules
+
+### Word Limits
+
+| Format | Max words |
+|--------|-----------|
+| One-pager PDF | 200 words total |
+| Individual section | 60 words max |
+| Slide (interior) | 40 words max |
+| Dark bookend slide | 15 words max |
+
+### Composition Rules
+
+1. **40% minimum negative space.** If more than 60% of the page has ink/elements, it's too dense. Remove something.
+2. **Three-level hierarchy only.** Every page/slide should have exactly 3 visual levels: (1) dominant element the eye hits first, (2) supporting content, (3) tertiary details. If you can't identify all three, redesign.
+3. **One idea per section.** If a section makes two points, split it or cut one.
+4. **Size contrast > color contrast.** Use big/small differences to create hierarchy before reaching for color.
+5. **Align everything to a grid.** Left edges align. Spacing between elements is consistent. No "close enough."
+
+### Anti-Patterns (Never Do These)
+
+- Wall of text with no visual break
+- More than one chart/graph per page on a one-pager
+- Text smaller than 7pt anywhere
+- Colored text on colored backgrounds (except white on dark CTA bar)
+- Centered body text (left-align all body copy)
+- Orphan lines (single word on last line of a paragraph)
+- Multiple accent colors (DA Orange is the ONLY accent)
+
+---
+
+## 6. Component Patterns
+
+### Bar Graph (Snapshot §1)
+
+- Prospect bar: #F8901E (DA Orange)
+- Competitor bars: #5A6B7A (Blue-Gray)
+- Bar height: proportional to score, max ~120pt
+- Labels: Inter Regular 8pt, #5A6B7A, below bars
+- Score labels: Inter Bold 10pt, centered above bars
+- Y-axis: implied only (no drawn axis line)
+- Max 5 bars total
+
+### CTA Button
+
+- Background: #F8901E
+- Text: #FFFFFF, Inter SemiBold 10–12pt
+- Corner radius: 4pt (subtle, not pill-shaped)
+- Padding: 8pt vertical, 20pt horizontal
+- Placement: right side of CTA bar, vertically centered
+
+### Section Dividers
+
+- Thin line: #CBCBCB, 0.5pt weight
+- OR: lg (24pt) whitespace — no line needed if spacing is sufficient
+- Never use both a line AND large spacing
+
+### Directional Arrows (Snapshot §3)
+
+- Arrow icon: DA Orange, simple right-pointing triangle or chevron
+- Text: Inter Regular 9pt, #5A6B7A
+- Max 3 arrows per section
+- Each arrow = one directional insight (NOT a step-by-step recipe)
+
+---
+
+## 7. Design Rules (General)
 
 - Bold, minimal. Fewer elements, bigger text.
 - DA Orange = only accent color. No secondary accents.
@@ -71,7 +214,7 @@ Inter was designed for screen readability and UI. DA's ICP is B2B marketing lead
 
 ---
 
-## CTA Language
+## 8. CTA Language
 
 | Offer | Context |
 |-------|---------|
@@ -85,18 +228,18 @@ Inter was designed for screen readability and UI. DA's ICP is B2B marketing lead
 
 ---
 
-## Voice (writing as Dane)
+## 9. Voice (writing as Dane)
 
 Short sentences. Fragments OK. Contractions always. Direct, no filler, no hedge words.
 Back claims with specifics — real clients, real numbers. Teach before selling.
-No corporate jargon. No passive voice. 1-2 emoji max. Zero hashtags. Links in comments only.
+No corporate jargon. No passive voice. 1–2 emoji max. Zero hashtags. Links in comments only.
 No exclamation points. No paragraphs longer than 3 sentences.
 
 **Don't say:** "leverage," "synergies," "holistic solutions," "unlock potential," "in today's landscape," "it's worth noting," "needless to say"
 
 ---
 
-## File Naming
+## 10. File Naming
 
 `DA_{Dept}_{Subcategory}_{Description}_{YYYY-MM-DD}.{ext}`
 
@@ -105,10 +248,27 @@ Never use generic names.
 
 ---
 
-## Snapshot PDF Rules
+## 11. Snapshot PDF Rules
 
-5 sections, 1 page, Inter font. S1 bar graph (prospect=orange, comps=#5A6B7A). S2 methodology. S3 directional arrows (no recipes). S4 Who We Are. S5 dark CTA bar + orange Book a Call. Text = Black/#5A6B7A only. No pricing. Provenance Log required separately.
+5 sections, 1 page, ReportLab + Inter. §1 bar graph (prospect=orange, comps=#5A6B7A). §2 methodology. §3 directional arrows (no recipes). §4 Who We Are. §5 dark CTA bar + orange Book a Call. Text = Black/#5A6B7A only. No pricing. Provenance Log required separately.
 
-## Deck Rules
+## 12. Deck Rules
 
 Slide 1 + last: #1A1A1A. Interior: #FFFFFF. Inter throughout. DA logo bottom-right every slide. 6 slides max for discovery.
+
+---
+
+## 13. Pre-Flight Checklist
+
+Run this before delivering ANY branded PDF, deck, or visual asset:
+
+1. ☐ All fonts are Inter (or Space Mono for tags/code). No Poppins anywhere.
+2. ☐ Every color on page is in the 7-color palette. No exceptions.
+3. ☐ Negative space ≥ 40% of total page area.
+4. ☐ Three-level visual hierarchy is clear (dominant → supporting → tertiary).
+5. ☐ Word count is within limits (200 for one-pager, 40 per slide).
+6. ☐ All body text is left-aligned.
+7. ☐ No text smaller than 7pt.
+8. ☐ Headline-to-body size ratio ≥ 3:1.
+9. ☐ Only ONE dominant visual per page/slide.
+10. ☐ CTA is obvious and uses correct language per §8.

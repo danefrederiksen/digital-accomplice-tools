@@ -150,7 +150,18 @@
       "Read(//Users/danefrederiksen/Downloads/**)",
       "Bash(pandoc \"Christine & Dane.docx\" -o /tmp/christine-dane.md)",
       "Bash(brew list:*)",
-      "Bash(\"/Applications/Google Chrome.app/Contents/MacOS/Google Chrome\" --headless --disable-gpu --print-to-pdf=\"/Users/danefrederiksen/Desktop/Digital Accomplice/4_Operations/4.3_Processes/DA_Ops_Processes_PartnershipModel_2026-03-19.pdf\" --no-margins \"file:///Users/danefrederiksen/Desktop/Digital%20Accomplice/4_Operations/4.3_Processes/DA_Ops_Processes_PartnershipModel_2026-03-19.docx\")"
+      "Bash(\"/Applications/Google Chrome.app/Contents/MacOS/Google Chrome\" --headless --disable-gpu --print-to-pdf=\"/Users/danefrederiksen/Desktop/Digital Accomplice/4_Operations/4.3_Processes/DA_Ops_Processes_PartnershipModel_2026-03-19.pdf\" --no-margins \"file:///Users/danefrederiksen/Desktop/Digital%20Accomplice/4_Operations/4.3_Processes/DA_Ops_Processes_PartnershipModel_2026-03-19.docx\")",
+      "Bash(npm list:*)",
+      "Bash(open \"/Users/danefrederiksen/Desktop/Digital Accomplice/1_Sales/DA_Compensation_Agreement_Christine.docx\")",
+      "Bash(open \"/Users/danefrederiksen/Desktop/DA_Compensation_Agreement_Christine.pdf\")",
+      "mcp__Claude_Preview__preview_start",
+      "Bash(sips -s format jpeg \"/Users/danefrederiksen/Downloads/IMG_0769.HEIC\" --out \"/tmp/IMG_0769.jpg\")",
+      "Read(//Users/danefrederiksen/.claude/**)",
+      "Bash(mdfind -name SKILL.md -onlyin /Users/danefrederiksen)",
+      "Bash(mdfind -name SKILL.md -onlyin '/Users/danefrederiksen/Library/Application Support/Claude/local-agent-mode-sessions/skills-plugin')",
+      "Bash(mount)",
+      "Bash(open \"/Users/danefrederiksen/Desktop/Claude Code/reports/Mashgin_AI_Snapshot_2026-03-21.html\")",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:3899/Mashgin_AI_Snapshot_2026-03-21.html)"
     ]
   }
 }
