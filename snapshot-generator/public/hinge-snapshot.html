@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>AI Visibility Snapshot — Hinge Marketing</title>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Mono:wght@400;700&display=swap');
 
   * { margin: 0; padding: 0; box-sizing: border-box; }
   @page { size: letter; margin: 0; }
@@ -13,7 +13,7 @@
   html, body {
     font-family: 'Inter', Arial, Helvetica, sans-serif;
     background: #fff;
-    color: #1a1a1a;
+    color: #000000;
     -webkit-print-color-adjust: exact;
     print-color-adjust: exact;
   }
@@ -45,7 +45,7 @@
   }
   .header-meta {
     font-size: 9px;
-    color: #888;
+    color: #CBCBCB;
   }
 
   /* ========== CONTENT ========== */
@@ -69,7 +69,7 @@
 
   .headline {
     font-size: 32px;
-    font-weight: 900;
+    font-weight: 700;
     line-height: 1.12;
     margin-bottom: 6px;
   }
@@ -98,13 +98,13 @@
   .stat {
     flex: 1;
     background: #F5F5F5;
-    border-radius: 6px;
+    border-radius: 4px;
     padding: 14px 12px 12px;
     text-align: center;
   }
   .stat-num {
     font-size: 38px;
-    font-weight: 900;
+    font-weight: 700;
     color: #F8901E;
     line-height: 1;
     margin-bottom: 4px;
@@ -125,11 +125,11 @@
     line-height: 1.55;
     margin-bottom: 16px;
     padding: 9px 13px;
-    background: #FAFAFA;
-    border-left: 3px solid #E0E0E0;
+    background: #F5F5F5;
+    border-left: 3px solid #CBCBCB;
     border-radius: 0 4px 4px 0;
   }
-  .proof strong { color: #1a1a1a; font-weight: 700; }
+  .proof strong { color: #000000; font-weight: 700; }
 
   /* ========== DUAL CHART ========== */
   .charts {
@@ -146,7 +146,7 @@
     color: #5A6B7A;
     margin-bottom: 8px;
     padding-bottom: 5px;
-    border-bottom: 1px solid #EBEBEB;
+    border-bottom: 1px solid #CBCBCB;
   }
   .bar-row {
     display: flex;
@@ -157,7 +157,7 @@
     width: 110px;
     font-size: 11px;
     font-weight: 600;
-    color: #1a1a1a;
+    color: #5A6B7A;
     flex-shrink: 0;
     white-space: nowrap;
     overflow: hidden;
@@ -167,7 +167,7 @@
   .bar-track {
     flex: 1;
     height: 18px;
-    background: #F0F0F0;
+    background: #F5F5F5;
     border-radius: 3px;
     overflow: hidden;
     margin-right: 8px;
@@ -178,7 +178,7 @@
     min-width: 2px;
   }
   .bar-fill.ai { background: #F8901E; }
-  .bar-fill.ai.dim { background: #F8901E; opacity: 0.45; }
+  .bar-fill.ai.dim { background: #5A6B7A; opacity: 1; }
   .bar-fill.vid { background: #5A6B7A; }
   .bar-fill.vid.dim { background: #5A6B7A; opacity: 0.45; }
   .bar-fill.empty { background: transparent; min-width: 0; }
@@ -187,7 +187,7 @@
     font-size: 12px;
     font-weight: 800;
     text-align: right;
-    color: #1a1a1a;
+    color: #5A6B7A;
   }
   .bar-val.you { color: #F8901E; }
   .bar-val.zero { color: #CBCBCB; }
@@ -195,7 +195,7 @@
   /* ========== CALLOUT ========== */
   .callout {
     background: #1a1a1a;
-    border-radius: 8px;
+    border-radius: 4px;
     padding: 20px 24px;
     margin-bottom: 18px;
   }
@@ -214,8 +214,8 @@
     gap: 16px;
     margin-bottom: 18px;
     padding: 16px 18px;
-    background: #FAFAFA;
-    border-radius: 6px;
+    background: #F5F5F5;
+    border-radius: 4px;
   }
   .next-step-header {
     font-size: 10px;
@@ -232,7 +232,7 @@
     line-height: 1.45;
   }
   .next-step-item strong {
-    color: #1a1a1a;
+    color: #000000;
     font-weight: 600;
     display: block;
     margin-bottom: 2px;
@@ -242,32 +242,32 @@
   /* ========== METHOD ========== */
   .method {
     font-size: 8px;
-    color: #999;
+    color: #5A6B7A;
     line-height: 1.5;
-    border-top: 1px solid #E8E8E8;
+    border-top: 1px solid #CBCBCB;
     padding-top: 8px;
     margin-top: auto;
   }
-  .method b { color: #888; }
+  .method b { color: #000000; }
 
   /* ========== FOOTER ========== */
   .footer {
-    padding: 11px 44px;
+    padding: 14px 44px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    border-top: 1px solid #E5E5E5;
+    background: #1A1A1A;
     flex-shrink: 0;
   }
   .cta-text {
     font-size: 13px;
     font-weight: 700;
-    color: #F8901E;
+    color: #FFFFFF;
     margin-bottom: 2px;
   }
   .cta-contact {
     font-size: 9px;
-    color: #5A6B7A;
+    color: #CBCBCB;
   }
   .brand {
     display: flex;
@@ -279,12 +279,12 @@
     font-weight: 800;
     letter-spacing: 2px;
     text-transform: uppercase;
-    color: #1a1a1a;
+    color: #FFFFFF;
   }
 
   .footnotes {
     font-size: 7px;
-    color: #aaa;
+    color: #CBCBCB;
     padding: 3px 44px 7px;
     line-height: 1.5;
     flex-shrink: 0;
@@ -301,7 +301,7 @@
     align-items: center;
     gap: 12px;
     z-index: 9999;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    /* no shadow — DA brand: flat design only */
   }
   .export-bar .btn {
     background: #F8901E;
@@ -474,7 +474,7 @@
   <!-- ===== FOOTER ===== -->
   <div class="footer">
     <div>
-      <div class="cta-text">15 minutes. No pitch. We walk through the data. &#8599;</div>
+      <div class="cta-text">15 minutes. No pitch. We walk through the data. <span style="color:#F8901E">&#8599;</span></div>
       <div class="cta-contact">dane@digitalaccomplice.com &middot; calendly.com/accomplice-dane/15min</div>
     </div>
     <div class="brand">
