@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Prospecting Tool #5 — Referral Partner 1st Connections DM Tracker</title>
+<title>Prospecting Tool #5, Referral Partner 1st Connections DM Tracker</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
 <style>
@@ -220,7 +220,7 @@ body { font-family: 'Inter', sans-serif; background: #f5f5f5; color: #1a1a1a; }
 </head>
 <body>
 <div class="header">
-  <h1><span>DA</span> Prospecting Tool #5 — Referral Partner 1st Connections</h1>
+  <h1><span>DA</span> Prospecting Tool #5, Referral Partner 1st Connections</h1>
   <div class="header-right"><button class="btn-templates" onclick="openTemplateEditor()">Edit Templates</button> <span id="prospect-count" style="margin-left:8px;"></span></div>
 </div>
 <div class="tabs" id="tabs"></div>
@@ -356,19 +356,19 @@ const TEMPLATE_LABELS = {
 
 const DEFAULT_TEMPLATES = {
   // Video Interview templates (referral partner)
-  video_dm_a: `Hey {name} — I run a video production agency focused on B2B tech and I'm always looking to connect with sharp agency partners. Would love to explore if there's a fit for referrals or collaboration.\n\nOpen to a quick chat?\n\nDane`,
-  video_dm_b: `Hey {name} — I help B2B companies build video content that shows up in AI search results. Always looking for agency partners who complement what we do. Would love to explore if there's a fit.\n\nDane`,
-  video_follow_up_1_a: `Hey {name} — just floating this back up. Would love to chat about potential collaboration between our agencies. Worth a quick call?`,
-  video_follow_up_1_b: `Hey {name} — bumping this one more time. I think there could be a natural referral fit between what we do and your work at {company}. Open to connecting?`,
-  video_follow_up_2_a: `{name} — last one from me on this. If the timing's off no worries at all. The door's always open if you want to explore a partnership down the road.\n\nDane`,
-  video_follow_up_2_b: `{name} — final nudge. If now's not the right time, totally understand. Either way, keep crushing it.\n\nDane`,
+  video_dm_a: `Hey {name}, I run a video production agency focused on B2B tech and I'm always looking to connect with sharp agency partners. Would love to explore if there's a fit for referrals or collaboration.\n\nOpen to a quick chat?\n\nDane`,
+  video_dm_b: `Hey {name}, I help B2B companies build video content that shows up in AI search results. Always looking for agency partners who complement what we do. Would love to explore if there's a fit.\n\nDane`,
+  video_follow_up_1_a: `Hey {name}, just floating this back up. Would love to chat about potential collaboration between our agencies. Worth a quick call?`,
+  video_follow_up_1_b: `Hey {name}, bumping this one more time. I think there could be a natural referral fit between what we do and your work at {company}. Open to connecting?`,
+  video_follow_up_2_a: `{name}, last one from me on this. If the timing's off no worries at all. The door's always open if you want to explore a partnership down the road.\n\nDane`,
+  video_follow_up_2_b: `{name}, final nudge. If now's not the right time, totally understand. Either way, keep crushing it.\n\nDane`,
   // AI Snapshot templates (referral partner)
-  snapshot_dm_a: `Hey {name} — I pulled together a free AI visibility snapshot for {company}. It shows how you're showing up when buyers ask ChatGPT, Perplexity, and Gemini about your space — and who's appearing instead.\n\nOne thing that stood out: YouTube is now cited in 16% of all LLM-generated answers, and competitors are starting to build video content that feeds those citations. {company} doesn't appear to have a video presence yet — which is a gap.\n\nHappy to send it over if useful — no strings.\n\nDane`,
-  snapshot_dm_b: `Hey {name} — I ran an AI visibility check on {company}. Looked at how you show up when buyers ask ChatGPT, Perplexity, and Gemini about your category.\n\nShort version: there's a gap — especially on video. YouTube content is now cited in 16% of AI-generated answers, and some of your competitors are already building for that.\n\nI put it in a one-page snapshot. Want me to send it over?\n\nDane`,
-  snapshot_follow_up_1_a: `Hey {name} — circling back on the AI visibility snapshot I mentioned for {company}. Still happy to send it over — it's a one-pager showing where you rank vs. competitors in AI search results. No cost, no pitch.\n\nDane`,
-  snapshot_follow_up_1_b: `Hey {name} — just floating this back up. The AI visibility snapshot for {company} is ready to go. Shows exactly where you stand in ChatGPT, Perplexity, and Gemini results vs. competitors. Want me to send it?`,
-  snapshot_follow_up_2_a: `{name} — last nudge on the AI snapshot. If the timing's off, no worries. It'll be here if you ever want to see where {company} stands in AI search. Either way, keep crushing it.\n\nDane`,
-  snapshot_follow_up_2_b: `{name} — final follow-up on this. The snapshot for {company} is sitting here whenever you want it. No strings, no pitch — just data. Let me know.\n\nDane`
+  snapshot_dm_a: `Hey {name}, I pulled together a free AI visibility snapshot for {company}. It shows how you're showing up when buyers ask ChatGPT, Perplexity, and Gemini about your space, and who's appearing instead.\n\nOne thing that stood out: YouTube is now cited in 16% of all LLM-generated answers, and competitors are starting to build video content that feeds those citations. {company} doesn't appear to have a video presence yet, which is a gap.\n\nHappy to send it over if useful, no strings.\n\nDane`,
+  snapshot_dm_b: `Hey {name}, I ran an AI visibility check on {company}. Looked at how you show up when buyers ask ChatGPT, Perplexity, and Gemini about your category.\n\nShort version: there's a gap, especially on video. YouTube content is now cited in 16% of AI-generated answers, and some of your competitors are already building for that.\n\nI put it in a one-page snapshot. Want me to send it over?\n\nDane`,
+  snapshot_follow_up_1_a: `Hey {name}, circling back on the AI visibility snapshot I mentioned for {company}. Still happy to send it over, it's a one-pager showing where you rank vs. competitors in AI search results. No cost, no pitch.\n\nDane`,
+  snapshot_follow_up_1_b: `Hey {name}, just floating this back up. The AI visibility snapshot for {company} is ready to go. Shows exactly where you stand in ChatGPT, Perplexity, and Gemini results vs. competitors. Want me to send it?`,
+  snapshot_follow_up_2_a: `{name}, last nudge on the AI snapshot. If the timing's off, no worries. It'll be here if you ever want to see where {company} stands in AI search. Either way, keep crushing it.\n\nDane`,
+  snapshot_follow_up_2_b: `{name}, final follow-up on this. The snapshot for {company} is sitting here whenever you want it. No strings, no pitch, just data. Let me know.\n\nDane`
 };
 
 let _cachedTemplates = null;
@@ -396,13 +396,13 @@ async function loadTemplatesFromServer() {
         await apiPut('/api/templates', { templates: _cachedTemplates });
       }
     } else {
-      // Server has no templates yet — check localStorage for migration
+      // Server has no templates yet, check localStorage for migration
       let migrated = null;
       try {
         const local = localStorage.getItem(TOOL_KEY);
         if (local) {
           const parsed = JSON.parse(local);
-          // Handle old flat format — map to video_ prefix
+          // Handle old flat format, map to video_ prefix
           migrated = {};
           for (const step of TEMPLATE_STEPS) {
             for (const v of ['a', 'b']) {
@@ -578,7 +578,7 @@ async function copyMessage(prospectId, step, offerOverride) {
       badge.className = 'ab-badge ab-' + variant.toLowerCase();
       badge.style.display = '';
     }
-  } catch (err) { alert('Copy failed — check browser permissions'); }
+  } catch (err) { alert('Copy failed, check browser permissions'); }
 }
 
 function togglePreview(prospectId, step) {
@@ -650,7 +650,7 @@ function renderDashboardSearchResults() {
 }
 
 // ============================================================
-// PROSPECT ACTIONS (async — saved to server)
+// PROSPECT ACTIONS (async, saved to server)
 // ============================================================
 async function markDmSent(id) {
   const t = todayStr();
@@ -757,7 +757,7 @@ function getDraftReply(prospect) {
   if (prospect.draftReply) return prospect.draftReply;
   const name = firstName(prospect.name);
   const company = prospect.company ? ` at ${prospect.company}` : '';
-  return `Hey ${name} — thanks for getting back to me! Really glad this resonated.\n\nWould love to set up a quick call to talk through how video could work for${company ? company : ' your team'}. What does your calendar look like this week or next?\n\nDane`;
+  return `Hey ${name}, thanks for getting back to me! Really glad this resonated.\n\nWould love to set up a quick call to talk through how video could work for${company ? company : ' your team'}. What does your calendar look like this week or next?\n\nDane`;
 }
 
 async function copyDraftReply(prospectId) {
@@ -773,7 +773,7 @@ async function copyDraftReply(prospectId) {
       btn.classList.add('copied');
       setTimeout(() => { btn.textContent = 'Copy Draft'; btn.classList.remove('copied'); }, 2000);
     }
-  } catch (err) { alert('Copy failed — check browser permissions'); }
+  } catch (err) { alert('Copy failed, check browser permissions'); }
 }
 
 function updateDraftReply(id, text) {
@@ -837,7 +837,7 @@ function handleCSV(file) {
     skipEmptyLines: true,
     complete: function(results) {
       const raw = results.data;
-      if (!raw.length) { alert('CSV appears empty — no rows found.'); return; }
+      if (!raw.length) { alert('CSV appears empty, no rows found.'); return; }
 
       // Detect format: check if first row looks like LinkedIn headers
       const first = raw[0].map(c => (c || '').toLowerCase().trim());
@@ -845,7 +845,7 @@ function handleCSV(file) {
 
       let rows;
       if (isLinkedIn) {
-        // LinkedIn CSV with headers — use first row as keys, remaining rows as data
+        // LinkedIn CSV with headers, use first row as keys, remaining rows as data
         const headers = raw[0].map(c => (c || '').trim());
         const dataRows = raw.slice(1);
         rows = dataRows.map(cols => {
@@ -975,7 +975,7 @@ function getWaiting() {
 }
 
 // ============================================================
-// RENDER — TABS
+// RENDER, TABS
 // ============================================================
 function render() {
   // Prospect count
@@ -1044,7 +1044,7 @@ function renderDailyProgress() {
 }
 
 // ============================================================
-// RENDER — DASHBOARD
+// RENDER, DASHBOARD
 // ============================================================
 function renderDashboard() {
   let html = '';
@@ -1089,7 +1089,7 @@ function renderDashboardInner() {
   html += `<div class="section">
     <div class="section-header">DM Today <span class="count">${dmList.length}</span>${queueTotal > dmList.length ? ` <span style="font-size:12px;font-weight:400;color:#999;margin-left:4px;">(${queueTotal} total in queue)</span>` : ''}</div>`;
   if (dmList.length === 0) {
-    html += `<div class="empty"><div class="icon">&#x2713;</div>All caught up — next prospects auto-queue when you finish these</div>`;
+    html += `<div class="empty"><div class="icon">&#x2713;</div>All caught up, next prospects auto-queue when you finish these</div>`;
   } else {
     dmList.forEach(p => {
       html += renderDashboardCard(p, 'dm');
@@ -1113,7 +1113,7 @@ function renderDashboardInner() {
   html += `<div class="section">
     <div class="section-header">Replied <span class="count">${reList.length}</span></div>`;
   if (reList.length === 0) {
-    html += `<div class="empty"><div class="icon">&#x1F4AC;</div>No replies yet — keep going</div>`;
+    html += `<div class="empty"><div class="icon">&#x1F4AC;</div>No replies yet, keep going</div>`;
   } else {
     reList.forEach(p => {
       html += renderDashboardCard(p, 'replied');
@@ -1132,7 +1132,7 @@ function renderDashboardInner() {
       else if (p.status === 'follow_up_1') dueLabel = 'Final nudge due ' + formatDate(p.followUp2Due);
       else if (p.status === 'follow_up_2') {
         const daysLeft = 3 - daysBetween(p.lastActionDate, todayStr());
-        dueLabel = 'Final nudge sent — check back in ' + daysLeft + ' day' + (daysLeft !== 1 ? 's' : '');
+        dueLabel = 'Final nudge sent, check back in ' + daysLeft + ' day' + (daysLeft !== 1 ? 's' : '');
       }
       html += `<div class="card">
         <div class="card-top">
@@ -1192,7 +1192,7 @@ function renderDashboardCard(p, mode) {
         <button class="btn btn-success btn-sm" onclick="markReplied('${p.id}')">Got Reply</button>
       `;
     } else if (p.status === 'follow_up_2') {
-      extra = `<div class="due-info">No reply after final nudge — time to close?</div>`;
+      extra = `<div class="due-info">No reply after final nudge, time to close?</div>`;
       buttons = `
         <button class="btn btn-danger btn-sm" onclick="markCold('${p.id}')">Mark Cold</button>
         <button class="btn btn-success btn-sm" onclick="markReplied('${p.id}')">Got Reply</button>
@@ -1264,7 +1264,7 @@ function renderTimeline(p) {
 }
 
 // ============================================================
-// RENDER — IMPORT
+// RENDER, IMPORT
 // ============================================================
 function renderImport() {
   let html = `
@@ -1333,7 +1333,7 @@ function selectAllContacts() {
 }
 
 // ============================================================
-// RENDER — ALL PROSPECTS
+// RENDER, ALL PROSPECTS
 // ============================================================
 
 function getActivityFeedUrl(linkedinUrl) {
@@ -1423,7 +1423,7 @@ function renderProspects() {
 }
 
 // ============================================================
-// RENDER — ACTIVITY LOG
+// RENDER, ACTIVITY LOG
 // ============================================================
 async function loadActivityLog() {
   try {
@@ -1447,7 +1447,7 @@ async function loadActivityLog() {
       }
       html += `<div class="card" style="padding:10px 16px;">
         <span style="font-size:12px;color:#888;min-width:70px;display:inline-block;">${timeStr}</span>
-        <span style="font-size:13px;margin-left:8px;"><strong>${esc(a.action)}</strong>${a.prospectName ? ' — ' + esc(a.prospectName) : ''}</span>
+        <span style="font-size:13px;margin-left:8px;"><strong>${esc(a.action)}</strong>${a.prospectName ? ', ' + esc(a.prospectName) : ''}</span>
       </div>`;
     });
     html += '</div>';

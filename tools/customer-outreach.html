@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Prospecting Tool #10 — Customers w/ Emails</title>
+<title>Prospecting Tool #10, Customers w/ Emails</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
 <style>
@@ -183,7 +183,7 @@ body { font-family: 'Inter', sans-serif; background: #f5f5f5; color: #1a1a1a; }
 </head>
 <body>
 <div class="header">
-  <h1><span>DA</span> Prospecting Tool #10 — Customers w/ Emails</h1>
+  <h1><span>DA</span> Prospecting Tool #10, Customers w/ Emails</h1>
   <div class="header-right"><button class="btn-templates" onclick="openTemplateEditor()">Edit Templates</button> <span id="prospect-count" style="margin-left:8px;"></span></div>
 </div>
 <div class="tabs" id="tabs"></div>
@@ -308,9 +308,9 @@ const DEFAULT_SUBJECTS = {
   'ask': `Re: Checking in, {name}`
 };
 const DEFAULT_BODIES = {
-  'check_in': `Hey {name},\n\nHope things are going well! It's been a while since we worked together and I wanted to check in.\n\nWe've been doing a lot more LinkedIn video content for B2B companies — short-form thought leadership pieces that are getting solid traction. Thought of you because it'd be a great fit for what {company} is doing.\n\nWould love to catch up for 15 min if you're open to it.\n\nDane`,
-  'value_add': `Hey {name} — wanted to share something quick. We recently launched a video series on LinkedIn featuring B2B leaders. The format is simple: 15-min conversation, we handle everything, and you get free content tagged to your profile.\n\nHere's what it looks like: https://www.digitalaccomplice.com/video-series\n\nIf you or anyone on your team would be a good fit, I'd love to set it up.\n\nDane`,
-  'ask': `{name} — one more thing. If video isn't on the radar right now, totally understand. But if you know anyone who could use help with B2B video content or LinkedIn strategy, I'd really appreciate a referral.\n\nEither way, glad to be in your network.\n\nDane`
+  'check_in': `Hey {name},\n\nHope things are going well! It's been a while since we worked together and I wanted to check in.\n\nWe've been doing a lot more LinkedIn video content for B2B companies, short-form thought leadership pieces that are getting solid traction. Thought of you because it'd be a great fit for what {company} is doing.\n\nWould love to catch up for 15 min if you're open to it.\n\nDane`,
+  'value_add': `Hey {name}, wanted to share something quick. We recently launched a video series on LinkedIn featuring B2B leaders. The format is simple: 15-min conversation, we handle everything, and you get free content tagged to your profile.\n\nHere's what it looks like: https://www.digitalaccomplice.com/video-series\n\nIf you or anyone on your team would be a good fit, I'd love to set it up.\n\nDane`,
+  'ask': `{name}, one more thing. If video isn't on the radar right now, totally understand. But if you know anyone who could use help with B2B video content or LinkedIn strategy, I'd really appreciate a referral.\n\nEither way, glad to be in your network.\n\nDane`
 };
 
 const TEMPLATE_LABELS = {
@@ -464,7 +464,7 @@ function renderDashboardSearchResults() {
 }
 
 // ============================================================
-// PROSPECT ACTIONS (async — saved to server)
+// PROSPECT ACTIONS (async, saved to server)
 // ============================================================
 async function markCheckInSent(id) {
   const t = todayStr();
@@ -769,7 +769,7 @@ function getWaiting() {
 }
 
 // ============================================================
-// RENDER — TABS
+// RENDER, TABS
 // ============================================================
 function render() {
   // Prospect count
@@ -819,7 +819,7 @@ function renderDailyProgress() {
   const pct = Math.min(100, Math.round((total / DAILY_TARGETS.touches) * 100));
   const isDone = total >= DAILY_TARGETS.touches;
   return `<div class="daily-progress">
-    <h3>Daily Target <span class="lbl">Customer emails — no cap</span></h3>
+    <h3>Daily Target <span class="lbl">Customer emails, no cap</span></h3>
     <div class="progress-row">
       <span class="progress-label">Total touches</span>
       <div class="progress-track"><div class="progress-fill ${isDone ? 'green' : 'orange'}" style="width:${pct}%"></div></div>
@@ -830,7 +830,7 @@ function renderDailyProgress() {
 }
 
 // ============================================================
-// RENDER — DASHBOARD
+// RENDER, DASHBOARD
 // ============================================================
 function renderDashboard() {
   let html = '';
@@ -1062,7 +1062,7 @@ function renderTimeline(p) {
 }
 
 // ============================================================
-// RENDER — IMPORT
+// RENDER, IMPORT
 // ============================================================
 function renderImport() {
   let html = `
@@ -1140,7 +1140,7 @@ function selectAllContacts() {
 }
 
 // ============================================================
-// RENDER — ALL PROSPECTS
+// RENDER, ALL PROSPECTS
 // ============================================================
 
 function getActivityFeedUrl(linkedinUrl) {
@@ -1230,7 +1230,7 @@ function renderProspects() {
 }
 
 // ============================================================
-// RENDER — ACTIVITY LOG
+// RENDER, ACTIVITY LOG
 // ============================================================
 async function loadActivityLog() {
   try {

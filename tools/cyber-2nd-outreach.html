@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Prospecting Tool #4 — Cyber 2nd Connections DM Tracker</title>
+<title>Prospecting Tool #4, Cyber 2nd Connections DM Tracker</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
 <style>
@@ -235,7 +235,7 @@ body { font-family: 'Inter', sans-serif; background: #f5f5f5; color: #1a1a1a; }
 </head>
 <body>
 <div class="header">
-  <h1><span>DA</span> Prospecting Tool #4 — Cyber 2nd Connections</h1>
+  <h1><span>DA</span> Prospecting Tool #4, Cyber 2nd Connections</h1>
   <div class="header-right"><button class="btn-templates" onclick="openTemplateEditor()">Edit Templates</button> <span id="prospect-count" style="margin-left:8px;"></span></div>
 </div>
 <div class="tabs" id="tabs"></div>
@@ -410,14 +410,14 @@ const TOOL_KEY = 'da_templates_tool4';
 const AB_COUNTER_KEY = 'da_ab_counter_tool4';
 const TEMPLATE_STEPS = ['connection_note', 'dm', 'follow_up_1', 'follow_up_2'];
 const DEFAULT_TEMPLATES = {
-  'connection_note_a': `Hi {name} — I produce video content for cybersecurity companies like AWS and BreachRx. Connecting with security leaders in the space. — Dane`,
-  'connection_note_b': `{name} — I help cybersecurity companies turn thought leadership into video content that drives pipeline. Would love to connect. — Dane`,
-  'dm_a': `Hey {name}, thanks for connecting! I'm launching a video series on cybersecurity — how security leaders are navigating the threat landscape as AI changes the game.\n\nI've been producing video for AWS, BreachRx, and other cyber companies, and I want to bring those conversations to LinkedIn.\n\nTakes just 15 min, no prep and I'll post on LinkedIn same day and tag you.\n\nhttps://www.digitalaccomplice.com/video-series\n\nInterested?\n\nDane`,
-  'dm_b': `Hey {name}, appreciate the connection! I'm producing a cybersecurity video series — short interviews with security leaders on how they're tackling today's biggest threats.\n\nI've worked with companies like AWS and BreachRx, and I want to spotlight leaders like you.\n\n15 min, zero prep, posted same day on LinkedIn.\n\nhttps://www.digitalaccomplice.com/video-series\n\nWould you be up for it?\n\nDane`,
-  'follow_up_1_a': `Hey {name} — just floating this back up. Would love to feature you in the series. 15 min, zero prep. Worth a quick chat?`,
-  'follow_up_1_b': `{name} — circling back on the video series. Security leaders like you have great stories to tell. 15 min, we handle everything. Interested?`,
-  'follow_up_2_a': `{name} — last one from me on this. If the timing's off no worries at all. But if you're open to it, I'd love to make it happen. Either way, keep killing it.\n\nDane`,
-  'follow_up_2_b': `{name} — final nudge on the video series. I know security leaders are slammed, so no pressure. But if you want to get your perspective out there, the door's open.\n\nDane`
+  'connection_note_a': `Hi {name}, I produce video content for cybersecurity companies like AWS and BreachRx. Connecting with security leaders in the space. - Dane`,
+  'connection_note_b': `{name}, I help cybersecurity companies turn thought leadership into video content that drives pipeline. Would love to connect. - Dane`,
+  'dm_a': `Hey {name}, thanks for connecting! I'm launching a video series on cybersecurity, how security leaders are navigating the threat landscape as AI changes the game.\n\nI've been producing video for AWS, BreachRx, and other cyber companies, and I want to bring those conversations to LinkedIn.\n\nTakes just 15 min, no prep and I'll post on LinkedIn same day and tag you.\n\nhttps://www.digitalaccomplice.com/video-series\n\nInterested?\n\nDane`,
+  'dm_b': `Hey {name}, appreciate the connection! I'm producing a cybersecurity video series, short interviews with security leaders on how they're tackling today's biggest threats.\n\nI've worked with companies like AWS and BreachRx, and I want to spotlight leaders like you.\n\n15 min, zero prep, posted same day on LinkedIn.\n\nhttps://www.digitalaccomplice.com/video-series\n\nWould you be up for it?\n\nDane`,
+  'follow_up_1_a': `Hey {name}, just floating this back up. Would love to feature you in the series. 15 min, zero prep. Worth a quick chat?`,
+  'follow_up_1_b': `{name}, circling back on the video series. Security leaders like you have great stories to tell. 15 min, we handle everything. Interested?`,
+  'follow_up_2_a': `{name}, last one from me on this. If the timing's off no worries at all. But if you're open to it, I'd love to make it happen. Either way, keep killing it.\n\nDane`,
+  'follow_up_2_b': `{name}, final nudge on the video series. I know security leaders are slammed, so no pressure. But if you want to get your perspective out there, the door's open.\n\nDane`
 };
 
 const TEMPLATE_LABELS = {
@@ -580,7 +580,7 @@ async function copyMessage(prospectId, step) {
       btn.classList.add('copied');
       setTimeout(() => { btn.textContent = step === 'connection_note' ? 'Copy Connection Note' : 'Copy Message'; btn.classList.remove('copied'); }, 2000);
     }
-  } catch (err) { alert('Copy failed — check browser permissions'); }
+  } catch (err) { alert('Copy failed, check browser permissions'); }
 }
 
 function togglePreview(prospectId, step) {
@@ -633,7 +633,7 @@ function renderDashboardSearchResults() {
 }
 
 // ============================================================
-// PROSPECT ACTIONS (async — saved to server)
+// PROSPECT ACTIONS (async, saved to server)
 // ============================================================
 async function markConnectionSent(id) {
   const t = todayStr();
@@ -781,7 +781,7 @@ function getDraftReply(prospect) {
   if (prospect.draftReply) return prospect.draftReply;
   const name = firstName(prospect.name);
   const company = prospect.company ? ` at ${prospect.company}` : '';
-  return `Hey ${name} — thanks for getting back to me! Really glad this resonated.\n\nWould love to set up a quick call to talk through how video could work for${company ? company : ' your team'}. What does your calendar look like this week or next?\n\nDane`;
+  return `Hey ${name}, thanks for getting back to me! Really glad this resonated.\n\nWould love to set up a quick call to talk through how video could work for${company ? company : ' your team'}. What does your calendar look like this week or next?\n\nDane`;
 }
 
 async function copyDraftReply(prospectId) {
@@ -797,7 +797,7 @@ async function copyDraftReply(prospectId) {
       btn.classList.add('copied');
       setTimeout(() => { btn.textContent = 'Copy Draft'; btn.classList.remove('copied'); }, 2000);
     }
-  } catch (err) { alert('Copy failed — check browser permissions'); }
+  } catch (err) { alert('Copy failed, check browser permissions'); }
 }
 
 function updateDraftReply(id, text) {
@@ -866,7 +866,7 @@ function handleCSV(file) {
     skipEmptyLines: true,
     complete: function(results) {
       const raw = results.data;
-      if (!raw.length) { alert('CSV appears empty — no rows found.'); return; }
+      if (!raw.length) { alert('CSV appears empty, no rows found.'); return; }
 
       // Detect format: check if first row looks like LinkedIn headers
       const first = raw[0].map(c => (c || '').toLowerCase().trim());
@@ -874,7 +874,7 @@ function handleCSV(file) {
 
       let rows;
       if (isLinkedIn) {
-        // LinkedIn CSV with headers — use first row as keys, remaining rows as data
+        // LinkedIn CSV with headers, use first row as keys, remaining rows as data
         const headers = raw[0].map(c => (c || '').trim());
         const dataRows = raw.slice(1);
         rows = dataRows.map(cols => {
@@ -1008,7 +1008,7 @@ function getWaiting() {
 }
 
 // ============================================================
-// RENDER — TABS
+// RENDER, TABS
 // ============================================================
 function render() {
   // Prospect count
@@ -1079,7 +1079,7 @@ function renderDailyProgress() {
 }
 
 // ============================================================
-// RENDER — DASHBOARD
+// RENDER, DASHBOARD
 // ============================================================
 function renderDashboard() {
   let html = '';
@@ -1094,7 +1094,7 @@ function renderDashboard() {
 }
 
 function renderDashboardInner() {
-  // Search mode — show matching prospects with full action cards
+  // Search mode, show matching prospects with full action cards
   if (state.dashboardSearch.trim()) {
     return renderDashboardSearchResults();
   }
@@ -1175,7 +1175,7 @@ function renderDashboardInner() {
   html += `<div class="section">
     <div class="section-header">Replied <span class="count">${reList.length}</span></div>`;
   if (reList.length === 0) {
-    html += `<div class="empty"><div class="icon">&#x1F4AC;</div>No replies yet — keep going</div>`;
+    html += `<div class="empty"><div class="icon">&#x1F4AC;</div>No replies yet, keep going</div>`;
   } else {
     reList.forEach(p => {
       html += renderDashboardCard(p, 'replied');
@@ -1195,7 +1195,7 @@ function renderDashboardInner() {
       else if (p.status === 'follow_up_1') dueLabel = 'Final nudge due ' + formatDate(p.followUp2Due);
       else if (p.status === 'follow_up_2') {
         const daysLeft = 3 - daysBetween(p.lastActionDate, todayStr());
-        dueLabel = 'Final nudge sent — check back in ' + daysLeft + ' day' + (daysLeft !== 1 ? 's' : '');
+        dueLabel = 'Final nudge sent, check back in ' + daysLeft + ' day' + (daysLeft !== 1 ? 's' : '');
       }
       html += `<div class="card">
         <div class="card-top">
@@ -1231,7 +1231,7 @@ function renderDashboardCard(p, mode) {
     }
   } else if (mode === 'connection_check') {
     const daysSinceSent = p.connectionSentDate ? daysBetween(p.connectionSentDate, t) : 0;
-    const warningText = daysSinceSent >= 14 ? `<div class="connection-warning">Request sent ${daysSinceSent} days ago — consider giving up</div>` : '';
+    const warningText = daysSinceSent >= 14 ? `<div class="connection-warning">Request sent ${daysSinceSent} days ago, consider giving up</div>` : '';
     extra = `<div class="due-info">Connection request sent ${daysSinceSent} day${daysSinceSent !== 1 ? 's' : ''} ago</div>${warningText}`;
     buttons = `
       <button class="btn btn-success btn-sm" onclick="markConnectionAccepted('${p.id}')">Mark Accepted</button>
@@ -1267,7 +1267,7 @@ function renderDashboardCard(p, mode) {
         <button class="btn btn-success btn-sm" onclick="markReplied('${p.id}')">Got Reply</button>
         `;
     } else if (p.status === 'follow_up_2') {
-      extra = `<div class="due-info">No reply after final nudge — time to close?</div>`;
+      extra = `<div class="due-info">No reply after final nudge, time to close?</div>`;
       buttons = `
         <button class="btn btn-danger btn-sm" onclick="markCold('${p.id}')">Mark Cold</button>
         <button class="btn btn-success btn-sm" onclick="markReplied('${p.id}')">Got Reply</button>
@@ -1341,7 +1341,7 @@ function renderTimeline(p) {
 }
 
 // ============================================================
-// RENDER — IMPORT
+// RENDER, IMPORT
 // ============================================================
 function renderImport() {
   let html = `
@@ -1410,7 +1410,7 @@ function selectAllContacts() {
 }
 
 // ============================================================
-// RENDER — ALL PROSPECTS
+// RENDER, ALL PROSPECTS
 // ============================================================
 
 function getActivityFeedUrl(linkedinUrl) {
@@ -1509,7 +1509,7 @@ function renderProspects() {
 }
 
 // ============================================================
-// RENDER — ACTIVITY LOG
+// RENDER, ACTIVITY LOG
 // ============================================================
 async function loadActivityLog() {
   try {
@@ -1533,7 +1533,7 @@ async function loadActivityLog() {
       }
       html += `<div class="card" style="padding:10px 16px;">
         <span style="font-size:12px;color:#888;min-width:70px;display:inline-block;">${timeStr}</span>
-        <span style="font-size:13px;margin-left:8px;"><strong>${esc(a.action)}</strong>${a.prospectName ? ' — ' + esc(a.prospectName) : ''}</span>
+        <span style="font-size:13px;margin-left:8px;"><strong>${esc(a.action)}</strong>${a.prospectName ? ', ' + esc(a.prospectName) : ''}</span>
       </div>`;
     });
     html += '</div>';

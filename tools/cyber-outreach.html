@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Prospecting Tool #2 — Cyber 1st Connections DM Tracker</title>
+<title>Prospecting Tool #2, Cyber 1st Connections DM Tracker</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
 <style>
@@ -220,7 +220,7 @@ body { font-family: 'Inter', sans-serif; background: #f5f5f5; color: #1a1a1a; }
 </head>
 <body>
 <div class="header">
-  <h1><span>DA</span> Prospecting Tool #2 — Cyber 1st Connections</h1>
+  <h1><span>DA</span> Prospecting Tool #2, Cyber 1st Connections</h1>
   <div class="header-right"><button class="btn-templates" onclick="openTemplateEditor()">Edit Templates</button> <span id="prospect-count" style="margin-left:8px;"></span></div>
 </div>
 <div class="tabs" id="tabs"></div>
@@ -337,7 +337,7 @@ function todayStr() {
 }
 
 // ============================================================
-// MESSAGE TEMPLATES — A/B VARIANTS (editable via localStorage)
+// MESSAGE TEMPLATES, A/B VARIANTS (editable via localStorage)
 // ============================================================
 const TOOL_KEY = 'da_templates_tool2';
 const AB_COUNTER_KEY = 'da_ab_counter_tool2';
@@ -357,18 +357,18 @@ const TEMPLATE_LABELS = {
 const DEFAULT_TEMPLATES = {
   // Video Interview templates
   video_dm_a: `Hello {name}, I'm producing a short video series on how cybersecurity marketing leaders are adapting to the challenges as AI changes the game.\n\nTakes just 15 min, no prep and I'll post on LinkedIn same day and tag you.\n\nhttps://www.digitalaccomplice.com/video-series\n\nInterested?\n\nDane`,
-  video_dm_b: `Hey {name} — I'm interviewing cybersecurity marketing leaders for a LinkedIn video series on AI's impact on marketing. 15 min, no prep, and you get a same-day post tagging you.\n\nhttps://www.digitalaccomplice.com/video-series\n\nWorth a shot?\n\nDane`,
-  video_follow_up_1_a: `Hey {name} — just floating this back up. Would love to feature you in the series. 15 min, zero prep. Worth a quick chat?`,
-  video_follow_up_1_b: `Hey {name} — bumping this one more time. The series is getting great traction and I think your perspective would be a standout. 15 min, zero prep.`,
-  video_follow_up_2_a: `{name} — last one from me on this. If the timing's off no worries at all. But if you're open to it, I'd love to make it happen. Either way, keep killing it.\n\nDane`,
-  video_follow_up_2_b: `{name} — final nudge on the video series. If now's not the right time, totally understand. But if you change your mind, the offer stands.\n\nDane`,
+  video_dm_b: `Hey {name}, I'm interviewing cybersecurity marketing leaders for a LinkedIn video series on AI's impact on marketing. 15 min, no prep, and you get a same-day post tagging you.\n\nhttps://www.digitalaccomplice.com/video-series\n\nWorth a shot?\n\nDane`,
+  video_follow_up_1_a: `Hey {name}, just floating this back up. Would love to feature you in the series. 15 min, zero prep. Worth a quick chat?`,
+  video_follow_up_1_b: `Hey {name}, bumping this one more time. The series is getting great traction and I think your perspective would be a standout. 15 min, zero prep.`,
+  video_follow_up_2_a: `{name}, last one from me on this. If the timing's off no worries at all. But if you're open to it, I'd love to make it happen. Either way, keep killing it.\n\nDane`,
+  video_follow_up_2_b: `{name}, final nudge on the video series. If now's not the right time, totally understand. But if you change your mind, the offer stands.\n\nDane`,
   // AI Snapshot templates
-  snapshot_dm_a: `Hey {name} — I pulled together a free AI visibility snapshot for {company}. It shows how you're showing up when buyers ask ChatGPT, Perplexity, and Gemini about your space — and who's appearing instead.\n\nOne thing that stood out: YouTube is now cited in 16% of all LLM-generated answers, and competitors are starting to build video content that feeds those citations. {company} doesn't appear to have a video presence yet — which is a gap.\n\nHappy to send it over if useful — no strings.\n\nDane`,
-  snapshot_dm_b: `Hey {name} — I ran an AI visibility check on {company}. Looked at how you show up when buyers ask ChatGPT, Perplexity, and Gemini about your category.\n\nShort version: there's a gap — especially on video. YouTube content is now cited in 16% of AI-generated answers, and some of your competitors are already building for that.\n\nI put it in a one-page snapshot. Want me to send it over?\n\nDane`,
-  snapshot_follow_up_1_a: `Hey {name} — circling back on the AI visibility snapshot I mentioned for {company}. Still happy to send it over — it's a one-pager showing where you rank vs. competitors in AI search results. No cost, no pitch.\n\nDane`,
-  snapshot_follow_up_1_b: `Hey {name} — just floating this back up. The AI visibility snapshot for {company} is ready to go. Shows exactly where you stand in ChatGPT, Perplexity, and Gemini results vs. competitors. Want me to send it?`,
-  snapshot_follow_up_2_a: `{name} — last nudge on the AI snapshot. If the timing's off, no worries. It'll be here if you ever want to see where {company} stands in AI search. Either way, keep crushing it.\n\nDane`,
-  snapshot_follow_up_2_b: `{name} — final follow-up on this. The snapshot for {company} is sitting here whenever you want it. No strings, no pitch — just data. Let me know.\n\nDane`
+  snapshot_dm_a: `Hey {name}, I pulled together a free AI visibility snapshot for {company}. It shows how you're showing up when buyers ask ChatGPT, Perplexity, and Gemini about your space, and who's appearing instead.\n\nOne thing that stood out: YouTube is now cited in 16% of all LLM-generated answers, and competitors are starting to build video content that feeds those citations. {company} doesn't appear to have a video presence yet, which is a gap.\n\nHappy to send it over if useful, no strings.\n\nDane`,
+  snapshot_dm_b: `Hey {name}, I ran an AI visibility check on {company}. Looked at how you show up when buyers ask ChatGPT, Perplexity, and Gemini about your category.\n\nShort version: there's a gap, especially on video. YouTube content is now cited in 16% of AI-generated answers, and some of your competitors are already building for that.\n\nI put it in a one-page snapshot. Want me to send it over?\n\nDane`,
+  snapshot_follow_up_1_a: `Hey {name}, circling back on the AI visibility snapshot I mentioned for {company}. Still happy to send it over, it's a one-pager showing where you rank vs. competitors in AI search results. No cost, no pitch.\n\nDane`,
+  snapshot_follow_up_1_b: `Hey {name}, just floating this back up. The AI visibility snapshot for {company} is ready to go. Shows exactly where you stand in ChatGPT, Perplexity, and Gemini results vs. competitors. Want me to send it?`,
+  snapshot_follow_up_2_a: `{name}, last nudge on the AI snapshot. If the timing's off, no worries. It'll be here if you ever want to see where {company} stands in AI search. Either way, keep crushing it.\n\nDane`,
+  snapshot_follow_up_2_b: `{name}, final follow-up on this. The snapshot for {company} is sitting here whenever you want it. No strings, no pitch, just data. Let me know.\n\nDane`
 };
 
 let _cachedTemplates = null;
@@ -396,13 +396,13 @@ async function loadTemplatesFromServer() {
         await apiPut('/api/templates', { templates: _cachedTemplates });
       }
     } else {
-      // Server has no templates yet — check localStorage for migration
+      // Server has no templates yet, check localStorage for migration
       let migrated = null;
       try {
         const local = localStorage.getItem(TOOL_KEY);
         if (local) {
           const parsed = JSON.parse(local);
-          // Handle old flat format — map to video_ prefix
+          // Handle old flat format, map to video_ prefix
           migrated = {};
           for (const step of TEMPLATE_STEPS) {
             for (const v of ['a', 'b']) {
@@ -578,7 +578,7 @@ async function copyMessage(prospectId, step, offerOverride) {
       badge.className = 'ab-badge ab-' + variant.toLowerCase();
       badge.style.display = '';
     }
-  } catch (err) { alert('Copy failed — check browser permissions'); }
+  } catch (err) { alert('Copy failed, check browser permissions'); }
 }
 
 function getDraftReply(prospect) {
@@ -589,9 +589,9 @@ function getDraftReply(prospect) {
   const name = firstName(prospect.name);
   const company = prospect.company ? ` at ${prospect.company}` : '';
 
-  return `Hey ${name} — appreciate the response! I think there's a real opportunity to position you${company} as a thought leader in the cybersecurity space.
+  return `Hey ${name}, appreciate the response! I think there's a real opportunity to position you${company} as a thought leader in the cybersecurity space.
 
-Here's my calendar — grab whatever time works: https://calendly.com/digitalaccomplice
+Here's my calendar, grab whatever time works: https://calendly.com/digitalaccomplice
 
 It's a quick 15-min call. I'll walk you through exactly what the series looks like and we can see if it's a fit.
 
@@ -613,7 +613,7 @@ async function copyDraftReply(prospectId) {
       btn.classList.add('copied');
       setTimeout(() => { btn.textContent = 'Copy Draft'; btn.classList.remove('copied'); }, 2000);
     }
-  } catch (err) { alert('Copy failed — check browser permissions'); }
+  } catch (err) { alert('Copy failed, check browser permissions'); }
 }
 
 function updateDraftReply(id, text) {
@@ -696,7 +696,7 @@ function renderDashboardSearchResults() {
 }
 
 // ============================================================
-// PROSPECT ACTIONS (async — saved to server)
+// PROSPECT ACTIONS (async, saved to server)
 // ============================================================
 async function markDmSent(id) {
   const t = todayStr();
@@ -849,7 +849,7 @@ function handleCSV(file) {
     skipEmptyLines: true,
     complete: function(results) {
       const raw = results.data;
-      if (!raw.length) { alert('CSV appears empty — no rows found.'); return; }
+      if (!raw.length) { alert('CSV appears empty, no rows found.'); return; }
 
       // Detect format: check if first row looks like LinkedIn headers
       const first = raw[0].map(c => (c || '').toLowerCase().trim());
@@ -857,7 +857,7 @@ function handleCSV(file) {
 
       let rows;
       if (isLinkedIn) {
-        // LinkedIn CSV with headers — use first row as keys, remaining rows as data
+        // LinkedIn CSV with headers, use first row as keys, remaining rows as data
         const headers = raw[0].map(c => (c || '').trim());
         const dataRows = raw.slice(1);
         rows = dataRows.map(cols => {
@@ -981,7 +981,7 @@ function getWaiting() {
 }
 
 // ============================================================
-// RENDER — TABS
+// RENDER, TABS
 // ============================================================
 function render() {
   // Prospect count
@@ -1050,7 +1050,7 @@ function renderDailyProgress() {
 }
 
 // ============================================================
-// RENDER — DASHBOARD
+// RENDER, DASHBOARD
 // ============================================================
 function renderDashboard() {
   let html = '';
@@ -1117,7 +1117,7 @@ function renderDashboardInner() {
   html += `<div class="section">
     <div class="section-header">Replied <span class="count">${reList.length}</span></div>`;
   if (reList.length === 0) {
-    html += `<div class="empty"><div class="icon">&#x1F4AC;</div>No replies yet — keep going</div>`;
+    html += `<div class="empty"><div class="icon">&#x1F4AC;</div>No replies yet, keep going</div>`;
   } else {
     reList.forEach(p => {
       html += renderDashboardCard(p, 'replied');
@@ -1136,7 +1136,7 @@ function renderDashboardInner() {
       else if (p.status === 'follow_up_1') dueLabel = 'Final nudge due ' + formatDate(p.followUp2Due);
       else if (p.status === 'follow_up_2') {
         const daysLeft = 3 - daysBetween(p.lastActionDate, todayStr());
-        dueLabel = 'Final nudge sent — check back in ' + daysLeft + ' day' + (daysLeft !== 1 ? 's' : '');
+        dueLabel = 'Final nudge sent, check back in ' + daysLeft + ' day' + (daysLeft !== 1 ? 's' : '');
       }
       html += `<div class="card">
         <div class="card-top">
@@ -1196,7 +1196,7 @@ function renderDashboardCard(p, mode) {
         <button class="btn btn-success btn-sm" onclick="markReplied('${p.id}')">Got Reply</button>
       `;
     } else if (p.status === 'follow_up_2') {
-      extra = `<div class="due-info">No reply after final nudge — time to close?</div>`;
+      extra = `<div class="due-info">No reply after final nudge, time to close?</div>`;
       buttons = `
         <button class="btn btn-danger btn-sm" onclick="markCold('${p.id}')">Mark Cold</button>
         <button class="btn btn-success btn-sm" onclick="markReplied('${p.id}')">Got Reply</button>
@@ -1268,7 +1268,7 @@ function renderTimeline(p) {
 }
 
 // ============================================================
-// RENDER — IMPORT
+// RENDER, IMPORT
 // ============================================================
 function renderImport() {
   let html = `
@@ -1337,7 +1337,7 @@ function selectAllContacts() {
 }
 
 // ============================================================
-// RENDER — ALL PROSPECTS
+// RENDER, ALL PROSPECTS
 // ============================================================
 
 function getActivityFeedUrl(linkedinUrl) {
@@ -1427,7 +1427,7 @@ function renderProspects() {
 }
 
 // ============================================================
-// RENDER — ACTIVITY LOG
+// RENDER, ACTIVITY LOG
 // ============================================================
 async function loadActivityLog() {
   try {
@@ -1451,7 +1451,7 @@ async function loadActivityLog() {
       }
       html += `<div class="card" style="padding:10px 16px;">
         <span style="font-size:12px;color:#888;min-width:70px;display:inline-block;">${timeStr}</span>
-        <span style="font-size:13px;margin-left:8px;"><strong>${esc(a.action)}</strong>${a.prospectName ? ' — ' + esc(a.prospectName) : ''}</span>
+        <span style="font-size:13px;margin-left:8px;"><strong>${esc(a.action)}</strong>${a.prospectName ? ', ' + esc(a.prospectName) : ''}</span>
       </div>`;
     });
     html += '</div>';

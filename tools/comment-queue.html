@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Prospecting Tool #11 — Comment Queue</title>
+  <title>Prospecting Tool #11, Comment Queue</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -506,7 +506,7 @@
               <input type="file" id="importFileInput" accept="image/png,image/jpeg,image/webp" style="display:none">
             </div>
             <div class="import-names-area">
-              <textarea id="importNames" placeholder="Drop a screenshot above — names are extracted automatically.&#10;&#10;Or paste names manually (one per line):&#10;Jason Fox&#10;Julien Sauvage&#10;Sibasish Misra"></textarea>
+              <textarea id="importNames" placeholder="Drop a screenshot above, names are extracted automatically.&#10;&#10;Or paste names manually (one per line):&#10;Jason Fox&#10;Julien Sauvage&#10;Sibasish Misra"></textarea>
               <div class="import-hint">Drop a screenshot and names are extracted automatically. Or paste manually and click Find Matches.</div>
               <div class="import-actions">
                 <button class="btn btn-primary" onclick="matchNames()">Find Matches</button>
@@ -620,7 +620,7 @@
       <div class="upload-zone" id="uploadZone">
         <div class="upload-icon">&#128247;</div>
         <div class="upload-text">Drop Sales Nav screenshot here</div>
-        <div class="upload-subtext">or click to browse — PNG, JPG, WebP (max 10MB)</div>
+        <div class="upload-subtext">or click to browse, PNG, JPG, WebP (max 10MB)</div>
         <input type="file" id="fileInput" accept="image/png,image/jpeg,image/webp" style="display:none">
       </div>
       <div class="section-header">Screenshots <span class="line"></span></div>
@@ -725,7 +725,7 @@ function renderWarmingProgress(commentCount, warmingStatus) {
   const isReplied = warmingStatus === 'replied';
 
   if (isReplied) return '<span class="replied-badge">Replied</span>';
-  if (isDmSent) return '<span class="dm-sent-badge">DM Sent — Waiting</span>';
+  if (isDmSent) return '<span class="dm-sent-badge">DM Sent, Waiting</span>';
   if (isReady) return '<span class="dm-ready-badge">Ready to DM!</span>';
 
   let dots = '';
@@ -823,7 +823,7 @@ function renderSearchCard(p) {
       </div>
       <div class="prospect-actions">
         ${getActivityUrl(p.linkedinUrl)
-          ? `<a href="${esc(getActivityUrl(p.linkedinUrl))}" target="_blank" class="btn btn-primary btn-sm" title="View recent posts — won't trigger profile view">Activity</a>`
+          ? `<a href="${esc(getActivityUrl(p.linkedinUrl))}" target="_blank" class="btn btn-primary btn-sm" title="View recent posts, won't trigger profile view">Activity</a>`
           : `<a href="${esc(getLinkedInSearchUrl(p.name))}" target="_blank" class="btn btn-secondary btn-sm" title="Search LinkedIn to find their activity">Activity</a>`}
         ${isDmReady ? `<button class="btn btn-success" onclick="switchTab('dmqueue')">Go to DM Queue</button>` : ''}
         ${canComment ? `<button class="btn btn-primary" onclick="showLogForm('${esc(p.id)}', '${esc(p.name)}', '${esc(p.company)}', '${esc(p.segment)}')">Log Comment</button>` : ''}
@@ -872,7 +872,7 @@ async function logComment(prospectId, name, company, segment) {
       const flash = document.createElement('div');
       flash.className = 'logged-flash';
       if (result.dmReady) {
-        flash.textContent = `${result.totalComments} comments — Ready to DM! Check the DM Queue tab.`;
+        flash.textContent = `${result.totalComments} comments, Ready to DM! Check the DM Queue tab.`;
         flash.style.background = '#D1FAE5';
       } else {
         flash.textContent = `Logged! (${result.totalComments}/${COMMENTS_TO_DM}) ${result.commentsNeeded} more to DM`;
@@ -975,7 +975,7 @@ function renderDailyTargets(data) {
   }
 
   if (dailyTargets.length === 0) {
-    grid.innerHTML = '<div class="no-match" style="grid-column: 1 / -1;">No targets available — all prospects commented recently</div>';
+    grid.innerHTML = '<div class="no-match" style="grid-column: 1 / -1;">No targets available, all prospects commented recently</div>';
     return;
   }
 
@@ -1021,7 +1021,7 @@ function renderDailyTargets(data) {
           ${isDone
             ? '<span class="tc-check">&#10003;</span>'
             : `${activityUrl
-                ? `<a href="${esc(activityUrl)}" target="_blank" class="btn btn-primary btn-sm" title="View recent posts — won't trigger profile view">Activity</a>`
+                ? `<a href="${esc(activityUrl)}" target="_blank" class="btn btn-primary btn-sm" title="View recent posts, won't trigger profile view">Activity</a>`
                 : `<a href="${esc(getLinkedInSearchUrl(p.name))}" target="_blank" class="btn btn-secondary btn-sm" title="Search LinkedIn to find their activity">Activity</a>`}
                <button class="btn btn-primary btn-sm" onclick="showTargetLogForm('${esc(p.id)}', '${esc(p.name).replace(/'/g, "\\'")}', '${esc(p.company || '').replace(/'/g, "\\'")}', '${esc(p.segment)}')">Log</button>`
           }
@@ -1065,7 +1065,7 @@ async function logTargetComment(prospectId, name, company, segment) {
       if (card) {
         const flash = document.createElement('div');
         flash.className = 'logged-flash';
-        flash.textContent = `${result.totalComments} comments — Ready to DM! Check DM Queue tab.`;
+        flash.textContent = `${result.totalComments} comments, Ready to DM! Check DM Queue tab.`;
         flash.style.background = '#D1FAE5';
         flash.style.marginTop = '6px';
         card.appendChild(flash);
@@ -1105,7 +1105,7 @@ function renderTodayComments() {
       <div class="comment-item">
         <div>
           <span class="name">${esc(c.prospectName)}</span>
-          <span style="color:#999;font-size:12px;"> — ${esc(c.company || '')}</span>
+          <span style="color:#999;font-size:12px;">, ${esc(c.company || '')}</span>
           <span class="segment-badge ${esc(segClass)}" style="margin-left:6px;font-size:10px;">${segLabel}</span>
         </div>
         <span class="time">${formatTime(c.date)}</span>
@@ -1159,7 +1159,7 @@ function renderHistory(comments) {
         <div class="comment-item">
           <div>
             <span class="name">${esc(c.prospectName)}</span>
-            <span style="color:#999;font-size:12px;"> — ${esc(c.company || '')}</span>
+            <span style="color:#999;font-size:12px;">, ${esc(c.company || '')}</span>
             <span class="segment-badge ${esc(c.segment)}" style="margin-left:6px;font-size:10px;">${segLabel}</span>
             ${c.postUrl ? `<a href="${esc(c.postUrl)}" target="_blank" class="btn-link" style="margin-left:6px;">View Post</a>` : ''}
           </div>
@@ -1258,7 +1258,7 @@ function renderProspectsTab() {
         </div>
         <div class="prospect-actions">
           ${getActivityUrl(p.linkedinUrl)
-            ? `<a href="${esc(getActivityUrl(p.linkedinUrl))}" target="_blank" class="btn btn-primary btn-sm" title="View recent posts — won't trigger profile view">Activity</a>`
+            ? `<a href="${esc(getActivityUrl(p.linkedinUrl))}" target="_blank" class="btn btn-primary btn-sm" title="View recent posts, won't trigger profile view">Activity</a>`
             : `<a href="${esc(getLinkedInSearchUrl(p.name))}" target="_blank" class="btn btn-secondary btn-sm" title="Search LinkedIn to find their activity">Activity</a>`}
         </div>
       </div>
@@ -1457,7 +1457,7 @@ async function runOcrAndMatch(screenshotId) {
     const ocrResult = await apiPost(`/api/screenshots/${screenshotId}/ocr`, {});
     if (ocrResult.ok && ocrResult.names && ocrResult.names.length > 0) {
       namesEl.value = ocrResult.names.join('\n');
-      statusEl.textContent = `Found ${ocrResult.names.length} names — matching...`;
+      statusEl.textContent = `Found ${ocrResult.names.length} names, matching...`;
       // Auto-trigger the match
       await matchNames();
     } else {
@@ -1465,7 +1465,7 @@ async function runOcrAndMatch(screenshotId) {
       namesEl.placeholder = 'Paste names from Sales Nav alerts (one per line)';
     }
   } catch (err) {
-    statusEl.textContent = 'OCR failed — paste names manually.';
+    statusEl.textContent = 'OCR failed, paste names manually.';
     namesEl.placeholder = 'Paste names from Sales Nav alerts (one per line)';
     console.error('OCR error:', err);
   }
@@ -1493,7 +1493,7 @@ async function matchNames() {
         <div class="match-item">
           <div>
             <span class="match-name">${esc(m.name)}</span>
-            <span class="match-meta"> — ${esc(m.company || '')} &middot; ${esc(m.segmentLabel)}</span>
+            <span class="match-meta">, ${esc(m.company || '')} &middot; ${esc(m.segmentLabel)}</span>
             ${m.commentedToday ? '<span style="color:#10B981;font-size:11px;font-weight:600;margin-left:6px;">Done today</span>' : ''}
           </div>
           <span class="match-badge found">Matched</span>
@@ -1585,7 +1585,7 @@ function renderDmQueue() {
     div.innerHTML = `
       <div class="no-match">
         <div class="big">No prospects ready to DM yet</div>
-        Keep commenting — prospects move here after ${COMMENTS_TO_DM} comments
+        Keep commenting, prospects move here after ${COMMENTS_TO_DM} comments
       </div>
     `;
     return;

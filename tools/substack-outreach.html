@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Prospecting Tool #9 — Substack Subscriber Emails</title>
+<title>Prospecting Tool #9, Substack Subscriber Emails</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
 <style>
@@ -181,7 +181,7 @@ body { font-family: 'Inter', sans-serif; background: #f5f5f5; color: #1a1a1a; }
 </head>
 <body>
 <div class="header">
-  <h1><span>DA</span> Prospecting Tool #9 — Substack Subscriber Emails</h1>
+  <h1><span>DA</span> Prospecting Tool #9, Substack Subscriber Emails</h1>
   <div class="header-right"><button class="btn-templates" onclick="openTemplateEditor()">Edit Templates</button> <span id="prospect-count" style="margin-left:8px;"></span></div>
 </div>
 <div class="tabs" id="tabs"></div>
@@ -299,14 +299,14 @@ function todayStr() {
 // ============================================================
 const TOOL_KEY = 'da_templates_tool9';
 const DEFAULT_SUBJECTS = {
-  'email': `Thanks for subscribing — quick question`,
-  'follow_up_1': `Re: Thanks for subscribing — quick question`,
-  'follow_up_2': `Re: Thanks for subscribing — quick question`
+  'email': `Thanks for subscribing, quick question`,
+  'follow_up_1': `Re: Thanks for subscribing, quick question`,
+  'follow_up_2': `Re: Thanks for subscribing, quick question`
 };
 const DEFAULT_BODIES = {
-  'email': `Hey {name},\n\nThanks for subscribing to my newsletter — I really appreciate it.\n\nI'm reaching out because I'm producing a video series featuring people in my network. It's a 15-minute conversation — no prep, no script. I handle the editing and post it on LinkedIn with a tag to your profile.\n\nIt's a simple way to get some free content and visibility. Here's what it looks like: https://www.digitalaccomplice.com/video-series\n\nWould you be up for it?\n\nDane`,
-  'follow_up_1': `Hey {name} — wanted to make sure you saw this. I'm putting together a video series and thought you'd be a great fit.\n\n15 min, no prep, free LinkedIn content featuring you. I do all the work.\n\nInterested?\n\nDane`,
-  'follow_up_2': `{name} — last bump on this. If the timing isn't right, totally get it. But if you're ever interested in being featured in a video, the door's always open.\n\nThanks again for reading.\n\nDane`
+  'email': `Hey {name},\n\nThanks for subscribing to my newsletter, I really appreciate it.\n\nI'm reaching out because I'm producing a video series featuring people in my network. It's a 15-minute conversation, no prep, no script. I handle the editing and post it on LinkedIn with a tag to your profile.\n\nIt's a simple way to get some free content and visibility. Here's what it looks like: https://www.digitalaccomplice.com/video-series\n\nWould you be up for it?\n\nDane`,
+  'follow_up_1': `Hey {name}, wanted to make sure you saw this. I'm putting together a video series and thought you'd be a great fit.\n\n15 min, no prep, free LinkedIn content featuring you. I do all the work.\n\nInterested?\n\nDane`,
+  'follow_up_2': `{name}, last bump on this. If the timing isn't right, totally get it. But if you're ever interested in being featured in a video, the door's always open.\n\nThanks again for reading.\n\nDane`
 };
 
 const TEMPLATE_LABELS = {
@@ -461,7 +461,7 @@ function renderDashboardSearchResults() {
 }
 
 // ============================================================
-// PROSPECT ACTIONS (async — saved to server)
+// PROSPECT ACTIONS (async, saved to server)
 // ============================================================
 async function markEmailSent(id) {
   const t = todayStr();
@@ -655,7 +655,7 @@ function handleCSV(file) {
 }
 
 function finishImport(rows) {
-  // No title filter for Substack subscribers — all are valid
+  // No title filter for Substack subscribers, all are valid
   state.importedContacts = rows;
   render();
 }
@@ -736,7 +736,7 @@ function getWaiting() {
 }
 
 // ============================================================
-// RENDER — TABS
+// RENDER, TABS
 // ============================================================
 function render() {
   // Prospect count
@@ -786,7 +786,7 @@ function renderDailyProgress() {
   const pct = Math.min(100, Math.round((newEmails / DAILY_TARGETS.newEmails) * 100));
   const emailDone = newEmails >= DAILY_TARGETS.newEmails;
   return `<div class="daily-progress">
-    <h3>Daily Target <span class="lbl">Email — warm subscribers</span></h3>
+    <h3>Daily Target <span class="lbl">Email, warm subscribers</span></h3>
     <div class="progress-row">
       <span class="progress-label">New emails</span>
       <div class="progress-track"><div class="progress-fill ${emailDone ? 'green' : 'orange'}" style="width:${pct}%"></div></div>
@@ -797,7 +797,7 @@ function renderDailyProgress() {
 }
 
 // ============================================================
-// RENDER — DASHBOARD
+// RENDER, DASHBOARD
 // ============================================================
 function renderDashboard() {
   let html = '';
@@ -1001,7 +1001,7 @@ function renderTimeline(p) {
 }
 
 // ============================================================
-// RENDER — IMPORT
+// RENDER, IMPORT
 // ============================================================
 function renderImport() {
   let html = `
@@ -1070,7 +1070,7 @@ function selectAllContacts() {
 }
 
 // ============================================================
-// RENDER — ALL SUBSCRIBERS
+// RENDER, ALL SUBSCRIBERS
 // ============================================================
 
 function getActivityFeedUrl(linkedinUrl) {
@@ -1158,7 +1158,7 @@ function renderProspects() {
 }
 
 // ============================================================
-// RENDER — ACTIVITY LOG
+// RENDER, ACTIVITY LOG
 // ============================================================
 async function loadActivityLog() {
   try {

@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Prospecting Tool #12 — Referral Partner Emails</title>
+<title>Prospecting Tool #12, Referral Partner Emails</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
 <style>
@@ -176,7 +176,7 @@ body { font-family: 'Inter', sans-serif; background: #f5f5f5; color: #1a1a1a; }
 </head>
 <body>
 <div class="header">
-  <h1><span>DA</span> Prospecting Tool #12 — Referral Partner Emails</h1>
+  <h1><span>DA</span> Prospecting Tool #12, Referral Partner Emails</h1>
   <div class="header-right"><button class="btn-templates" onclick="openTemplateEditor()">Edit Templates</button> <span id="prospect-count" style="margin-left:8px;"></span></div>
 </div>
 <div class="tabs" id="tabs"></div>
@@ -292,14 +292,14 @@ function todayStr() {
 // ============================================================
 const TOOL_KEY = 'da_templates_tool12';
 const DEFAULT_SUBJECTS = {
-  'email': `Referral partnership — {name}`,
-  'follow_up_1': `Re: Referral partnership — {name}`,
-  'follow_up_2': `Re: Referral partnership — {name}`
+  'email': `Referral partnership, {name}`,
+  'follow_up_1': `Re: Referral partnership, {name}`,
+  'follow_up_2': `Re: Referral partnership, {name}`
 };
 const DEFAULT_BODIES = {
-  'email': `Hi {name},\n\nI run Digital Accomplice — we produce video content for B2B and cybersecurity companies. I've been looking at what {company} does, and I think there's real overlap between our clients.\n\nA lot of the companies we work with need exactly what you offer, and vice versa. I'd love to explore whether a referral partnership makes sense.\n\nWould you be open to a 15-minute call to see if there's a fit?\n\nBest,\nDane Frederiksen\nDigital Accomplice`,
-  'follow_up_1': `Hey {name} — just bumping this. Think there's real overlap here. 15 min to see if it makes sense?`,
-  'follow_up_2': `Hey {name} — last one from me on this. If referrals aren't your thing right now, totally get it. But if you ever need a video partner for your clients, door's always open.\n\n— Dane`
+  'email': `Hi {name},\n\nI run Digital Accomplice, we produce video content for B2B and cybersecurity companies. I've been looking at what {company} does, and I think there's real overlap between our clients.\n\nA lot of the companies we work with need exactly what you offer, and vice versa. I'd love to explore whether a referral partnership makes sense.\n\nWould you be open to a 15-minute call to see if there's a fit?\n\nBest,\nDane Frederiksen\nDigital Accomplice`,
+  'follow_up_1': `Hey {name}, just bumping this. Think there's real overlap here. 15 min to see if it makes sense?`,
+  'follow_up_2': `Hey {name}, last one from me on this. If referrals aren't your thing right now, totally get it. But if you ever need a video partner for your clients, door's always open.\n\nDane`
 };
 
 const TEMPLATE_LABELS = {
@@ -391,7 +391,7 @@ async function copySubject(prospectId, step) {
       btn.classList.add('copied');
       setTimeout(() => { btn.textContent = 'Copy Subject'; btn.classList.remove('copied'); }, 2000);
     }
-  } catch (err) { alert('Copy failed — check browser permissions'); }
+  } catch (err) { alert('Copy failed, check browser permissions'); }
 }
 
 async function copyBody(prospectId, step) {
@@ -406,7 +406,7 @@ async function copyBody(prospectId, step) {
       btn.classList.add('copied');
       setTimeout(() => { btn.textContent = 'Copy Email'; btn.classList.remove('copied'); }, 2000);
     }
-  } catch (err) { alert('Copy failed — check browser permissions'); }
+  } catch (err) { alert('Copy failed, check browser permissions'); }
 }
 
 function togglePreview(prospectId, step) {
@@ -432,7 +432,7 @@ function getDraftReply(prospect) {
 
   const name = firstName(prospect.name);
   const company = prospect.company ? ` at ${prospect.company}` : '';
-  return `Hey ${name} — thanks for getting back to me! Really glad this resonated.\n\nWould love to set up a quick call to talk through how we might refer clients to each other. What does your calendar look like this week or next?\n\nDane`;
+  return `Hey ${name}, thanks for getting back to me! Really glad this resonated.\n\nWould love to set up a quick call to talk through how we might refer clients to each other. What does your calendar look like this week or next?\n\nDane`;
 }
 
 async function copyDraftReply(prospectId) {
@@ -448,7 +448,7 @@ async function copyDraftReply(prospectId) {
       btn.classList.add('copied');
       setTimeout(() => { btn.textContent = 'Copy Draft'; btn.classList.remove('copied'); }, 2000);
     }
-  } catch (err) { alert('Copy failed — check browser permissions'); }
+  } catch (err) { alert('Copy failed, check browser permissions'); }
 }
 
 function updateDraftReply(id, text) {
@@ -491,7 +491,7 @@ function renderDashboardSearchResults() {
 }
 
 // ============================================================
-// PROSPECT ACTIONS (async — saved to server)
+// PROSPECT ACTIONS (async, saved to server)
 // ============================================================
 async function markEmailSent(id) {
   const t = todayStr();
@@ -679,7 +679,7 @@ function handleCSV(file) {
 }
 
 function finishImport(rows) {
-  // For referral partners, skip title filtering — show all rows
+  // For referral partners, skip title filtering, show all rows
   state.importedContacts = rows;
   render();
 }
@@ -764,7 +764,7 @@ function getWaiting() {
 }
 
 // ============================================================
-// RENDER — TABS
+// RENDER, TABS
 // ============================================================
 function render() {
   // Prospect count
@@ -825,7 +825,7 @@ function renderDailyProgress() {
 }
 
 // ============================================================
-// RENDER — DASHBOARD
+// RENDER, DASHBOARD
 // ============================================================
 function renderDashboard() {
   let html = '';
@@ -892,7 +892,7 @@ function renderDashboardInner() {
   html += `<div class="section">
     <div class="section-header">Replied <span class="count">${reList.length}</span></div>`;
   if (reList.length === 0) {
-    html += `<div class="empty"><div class="icon">&#x1F4AC;</div>No replies yet — keep going</div>`;
+    html += `<div class="empty"><div class="icon">&#x1F4AC;</div>No replies yet, keep going</div>`;
   } else {
     reList.forEach(p => {
       html += renderDashboardCard(p, 'replied');
@@ -966,7 +966,7 @@ function renderDashboardCard(p, mode) {
         <button class="btn btn-success btn-sm" onclick="markReplied('${p.id}')">Got Reply</button>
       `;
     } else if (p.status === 'follow_up_2') {
-      extra = `<div class="due-info">No reply after final nudge — time to close?</div>`;
+      extra = `<div class="due-info">No reply after final nudge, time to close?</div>`;
       buttons = `
         <button class="btn btn-danger btn-sm" onclick="markCold('${p.id}')">Mark Cold</button>
         <button class="btn btn-success btn-sm" onclick="markReplied('${p.id}')">Got Reply</button>
@@ -1035,7 +1035,7 @@ function renderTimeline(p) {
 }
 
 // ============================================================
-// RENDER — IMPORT
+// RENDER, IMPORT
 // ============================================================
 function renderImport() {
   let html = `
@@ -1109,7 +1109,7 @@ function selectAllContacts() {
 }
 
 // ============================================================
-// RENDER — ALL PROSPECTS
+// RENDER, ALL PROSPECTS
 // ============================================================
 
 function getActivityFeedUrl(linkedinUrl) {
@@ -1196,7 +1196,7 @@ function renderProspects() {
 }
 
 // ============================================================
-// RENDER — ACTIVITY LOG
+// RENDER, ACTIVITY LOG
 // ============================================================
 async function loadActivityLog() {
   try {
@@ -1220,7 +1220,7 @@ async function loadActivityLog() {
       }
       html += `<div class="card" style="padding:10px 16px;">
         <span style="font-size:12px;color:#888;min-width:70px;display:inline-block;">${timeStr}</span>
-        <span style="font-size:13px;margin-left:8px;"><strong>${esc(a.action)}</strong>${a.prospectName ? ' — ' + esc(a.prospectName) : ''}</span>
+        <span style="font-size:13px;margin-left:8px;"><strong>${esc(a.action)}</strong>${a.prospectName ? ', ' + esc(a.prospectName) : ''}</span>
       </div>`;
     });
     html += '</div>';
