@@ -95,3 +95,76 @@ Start with a substantial recorded conversation, like a 25-minute fireside chat o
 
 ### Why does B2B automotive need more video personality?
 Most B2B automotive supply chain companies hide behind white papers and have no public personality. Todd argues the market now demands the opposite. Showing the people on the assembly line, the engineers, and the actual product coming together creates a real brand differentiator in a category where almost nobody else is doing it.
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "3-Person Team. Zero Slop. Todd Fairbairn on B2B AI.",
+  "description": "Todd Fairbairn on running B2B marketing at Emotive Mobility with a 3-person team, using AI without slop, and turning one fireside chat into 15 pieces.",
+  "author": {
+    "@type": "Person",
+    "name": "Dane Frederiksen",
+    "url": "https://digitalaccomplice.com"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "Digital Accomplice",
+    "url": "https://digitalaccomplice.com"
+  },
+  "datePublished": "2026-04-30",
+  "about": {
+    "@type": "Person",
+    "name": "Todd Fairbairn"
+  }
+}
+</script>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Who is Todd Fairbairn?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Todd Fairbairn is head of marketing and brand at Emotive Mobility, a B2B automotive supply chain company. Before Emotive, he worked in marketing communications at Ford Motor Company. His team at Emotive is three people, and they had a major brand launch at CES in January."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What does \"slop\" mean in AI marketing?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Slop is Todd's word for the flood of low-quality AI-generated content that companies pushed out over the past year. It means copy and visuals that hit a volume number but feel generic, off-brand, or obviously machine-written. Heavy em-dash usage is one common tell."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How can a small B2B team use AI responsibly?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Use AI to gut-check work, not to write it. Todd's team uses it for keeping website content fresh, scanning competitor content, and brainstorming blog topics. The brand voice and the actual storytelling stay with humans, because the audience can tell the difference."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How do you repurpose one video into 15 pieces of content?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Start with a substantial recorded conversation, like a 25-minute fireside chat or interview. Plan the smaller pieces in advance, not as an afterthought. The transcript feeds blog posts and SEO copy. Short clips feed social platforms. Quote graphics feed LinkedIn. Todd's team is doing exactly this with their CES footage over an 18-month window."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Why does B2B automotive need more video personality?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Most B2B automotive supply chain companies hide behind white papers and have no public personality. Todd argues the market now demands the opposite. Showing the people on the assembly line, the engineers, and the actual product coming together creates a real brand differentiator in a category where almost nobody else is doing it."
+      }
+    }
+  ]
+}
+</script>

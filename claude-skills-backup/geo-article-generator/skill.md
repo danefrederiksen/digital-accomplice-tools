@@ -5,7 +5,7 @@ description: Turns a long-form interview transcript into a GEO-optimized article
 
 # GEO Article Generator
 
-> **Status:** Step 1.3 complete (article logic). Schema markup lands in Step 1.4. Wix-paste verification in Step 1.5.
+> **Status:** Steps 1.3–1.4 complete (article logic + JSON-LD schema). Wix-paste verification in Step 1.5.
 
 ## Purpose
 
@@ -163,25 +163,89 @@ Below the H1, above Key Takeaways: 1–2 sentences setting up who the guest is a
 Before writing the file, re-read your draft against these checks:
 
 1. **No hallucination check.** Every name, number, and claim should trace to a specific transcript line. If a claim is your inference rather than the guest's words, either remove it or rewrite it as inference (`This suggests...` rather than `Todd said...`).
-2. **Em-dash check.** Search for `—` and replace with commas. (DA voice rule.)
+2. **Em-dash check.** Search for `—` in prose and replace with commas. (DA voice rule.) Quote attributions are the only exception — keep `> "..." — GuestName` lines as-is, since that's standard quote convention and reads cleanly in Wix.
 3. **Buzzword check.** Strip "leverage", "synergy", "unlock", "robust", "seamless", "best-in-class", "game-changer".
 4. **Reading level.** Sentences over 25 words: split them. Words a 13-year-old wouldn't use: replace.
 5. **Word count.** Run `wc -w` mentally. Target 1,100–1,300. If under, you skipped a section. If over, cut adjectives.
 
-### Step 11 — Write the file
+### Step 11 — Generate JSON-LD schema
+
+This is the GEO payload Wix will inline so AI engines and search crawlers can parse the article cleanly. Two schemas, both as separate `<script type="application/ld+json">` blocks at the bottom of the markdown file.
+
+**Schema A — `Article`:**
+
+```html
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "<H1 title verbatim>",
+  "description": "<one-sentence summary, ~150 chars, derived from the intro or first key takeaway>",
+  "author": {
+    "@type": "Person",
+    "name": "Dane Frederiksen",
+    "url": "https://digitalaccomplice.com"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "Digital Accomplice",
+    "url": "https://digitalaccomplice.com"
+  },
+  "datePublished": "<today's date in YYYY-MM-DD>",
+  "about": {
+    "@type": "Person",
+    "name": "<guest full name>"
+  }
+}
+</script>
+```
+
+**Schema B — `FAQPage`:**
+
+```html
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "<exact FAQ question text>",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "<exact FAQ answer text>"
+      }
+    }
+    // ... one object per FAQ Q&A pair
+  ]
+}
+</script>
+```
+
+Rules:
+- Both blocks go at the very bottom of the markdown file, after the FAQ section, separated by a blank line.
+- The `headline` field must match the H1 verbatim, characters and casing preserved.
+- The `description` field must be 1 sentence, under 160 chars, derived from the article (do not invent).
+- Each FAQ Question/Answer pair maps 1:1 to the `## Frequently Asked Questions` block. Question text and answer text must match the markdown verbatim, including punctuation.
+- Use today's date (UTC) in `YYYY-MM-DD` format for `datePublished`. The currentDate is in the system context.
+- No trailing commas. Validate the JSON mentally before writing — Wix will silently drop a block if JSON is malformed.
+- Do not add `image`, `url`, or `mainEntityOfPage` fields. Dane will fill those in Wix when he picks a hero image and slug.
+
+### Step 12 — Write the file
 
 Output path: `youtube-publish-system/output-samples/<guest-slug>-article.md`
 
 Where `<guest-slug>` is the guest's name lowercased and hyphenated (e.g., `todd-fairbairn`).
 
+The file contains, in order: H1, optional intro, Key Takeaways, H2 sections, FAQ block, then both JSON-LD `<script>` blocks at the bottom.
+
 If the file already exists, ask Dane before overwriting.
 
-### Step 12 — Report back
+### Step 13 — Report back
 
 After writing, tell Dane:
 - Output path
-- Final word count
+- Final word count (article body, schema not counted)
 - The angle you chose
-- One thing you want him to verify (e.g., "I quoted Todd as saying X — confirm that's what he said in the transcript around minute 12")
-
-Do NOT generate JSON-LD schema in this step — that's Step 1.4 of the build plan, added separately to keep this step's test isolated.
+- One thing you want him to verify (e.g., "I quoted Todd as saying X, confirm that's what he said in the transcript around minute 12")
+- Confirm both schema blocks were generated and the FAQ Q&A count in the schema matches the markdown
