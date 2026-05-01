@@ -1,14 +1,14 @@
 # Build Status
 
 **Started:** 2026-04-30
-**Current phase:** Phase 1, Step 1.3 logic drafted — **awaiting test in fresh session**
+**Current phase:** Phase 1, Step 1.3 verified. Next: Step 1.4 (JSON-LD schema block).
 
 ---
 
 ## Phase 1: GEO Article Generator
 - [x] 1.1 — Sample transcript in `tests/` (Todd Fairbairn, 2026-04-30)
 - [x] 1.2 — Skill scaffold created (2026-04-30)
-- [~] 1.3 — Prompt logic drafted (2026-04-30) — **test pending: run skill on Todd transcript in fresh session**
+- [x] 1.3 — Prompt logic drafted + tested on Todd transcript (2026-04-30). Output: `output-samples/todd-fairbairn-article.md` (1,380 words, voice + GEO checks passed, shipped by Dane).
 - [ ] 1.4 — JSON-LD schema block
 - [ ] 1.5 — Wix-paste formatting verified
 
@@ -42,12 +42,11 @@ _(Update as we go.)_
 - **2026-04-30 (Step 1.2)** — Skill scaffold written to `~/.claude/skills/geo-article-generator/skill.md`. Description, inputs, output format spec, constraints. No prompt logic yet (that's 1.3).
 - **2026-04-30 (Step 1.2 verified)** — Tested in fresh session: `/geo-article-generator` autocompletes and loads SKILL.md correctly. Scaffold registered, slash command works.
 - **2026-04-30 (Step 1.3 drafted)** — Logic section written into SKILL.md as 12 explicit substeps (load voice → read transcript → pick angle → H1 → takeaways → H2 outline → write sections → FAQ → optional intro → final pass → write file → report back). Schema generation explicitly excluded (that's 1.4). No-hallucination check baked into final pass. Ready for test in fresh session.
+- **2026-04-30 (Step 1.3 verified)** — Ran skill on Todd Fairbairn transcript. Angle picked: "3-Person Team. Zero Slop." Output landed at 1,380 words with 5 quote attributions, no em dashes in prose, no buzzwords, FAQ phrased as natural ChatGPT queries. Dane reviewed and shipped. Step 1.3 complete.
 
 ## Next Session Pickup
 
-1. Open a fresh Claude Code session (new terminal tab)
-2. Run: `/geo-article-generator` and ask it to build the article from `youtube-publish-system/tests/todd-fairbairn-transcript.txt` for guest "Todd Fairbairn"
-3. Expected output: `youtube-publish-system/output-samples/todd-fairbairn-article.md` at ~1,200 words, no JSON-LD yet
-4. Test passes if: every claim traces to transcript, voice sounds like Dane, FAQ questions read like real ChatGPT queries, no em dashes, no buzzwords
-5. If test passes → mark 1.3 complete, move to 1.4 (JSON-LD schema)
-6. If test fails → iterate on SKILL.md logic, re-test
+1. Step 1.4 — add JSON-LD schema block to the SKILL.md logic. Two schemas: `Article` (headline, author, datePublished, etc.) and `FAQPage` (mainEntity = the FAQ Q&A pairs).
+2. Schema goes at the bottom of the markdown file as a `<script type="application/ld+json">` block.
+3. Test: re-run skill on Todd transcript, confirm schema block appears at bottom and validates against schema.org.
+4. If valid → mark 1.4 done, move to 1.5 (Wix-paste verification).
