@@ -1,0 +1,187 @@
+---
+name: geo-article-generator
+description: Turns a long-form interview transcript into a GEO-optimized article ready to paste into Wix. Use this skill when Dane has a Riverside interview transcript and wants a 1,200-word article with H1/H2 structure, FAQ block, key takeaways, and JSON-LD schema markup. Trigger phrases include "make an article from this transcript", "GEO article", "turn this transcript into a Wix article", "build the article for [guest name]", or any variation of converting an interview transcript into website content. Part of the YouTube Publish System (see youtube-publish-system/ folder).
+---
+
+# GEO Article Generator
+
+> **Status:** Step 1.3 complete (article logic). Schema markup lands in Step 1.4. Wix-paste verification in Step 1.5.
+
+## Purpose
+
+Convert a long-form interview transcript (Riverside export, ~30–60 min) into a GEO-optimized markdown article that Dane can paste directly into Wix. Output is structured so AI search engines (ChatGPT, Perplexity, Gemini) can cite the article when answering questions about the guest or topic.
+
+## Inputs
+
+1. **Transcript** — plain-text file (`.txt`). Riverside-style timestamped or untimestamped. Path provided by Dane or pasted inline.
+2. **Guest name** — full name of the interviewee (e.g. "Todd Fairbairn").
+3. **Episode angle** *(optional)* — one-line framing if Dane has a specific hook. If omitted, the skill picks the strongest angle from the transcript.
+
+## Output Format
+
+A single markdown file. Target ~1,200 words. Structure:
+
+1. **H1** — article title (under 60 chars, includes guest name + hook)
+2. **Key Takeaways** — 3–5 bullet summary at the top, scannable
+3. **H2 sections** — 4–6 sections covering the substance of the interview
+4. **FAQ block** — 3–5 Q&A pairs (the questions should match what real people ask AI engines about this topic)
+5. **JSON-LD schema** — `Article` + `FAQPage` schema as a `<script type="application/ld+json">` block at the bottom
+
+Output path convention: `youtube-publish-system/output-samples/<guest-slug>-article.md`
+
+## Constraints
+
+- **No hallucination.** Every factual claim must trace back to the transcript. If something is unclear, omit it.
+- **5th–8th grade reading level.** Short sentences, plain words.
+- **Pasteable to Wix.** Markdown renders cleanly in Wix blog editor. FAQ may need HTML if Wix mangles markdown lists (verified in Step 1.5).
+- **DA voice.** Casual but credible. Match `da-content-agent` voice rules. No corporate filler, no em dashes (use commas).
+
+## Reference
+
+- Build plan: `youtube-publish-system/BUILD_PLAN.md` (Phase 1)
+- Status: `youtube-publish-system/STATUS.md`
+- Sample transcript for testing: `youtube-publish-system/tests/todd-fairbairn-transcript.txt`
+
+## Logic
+
+Follow these steps in order. Do NOT skip steps or batch them.
+
+### Step 1 — Load voice rules
+
+Before reading the transcript, load DA voice rules from the `da-content-agent` skill (or read `docs/DA_Brand_Standards_Skill_CORRECTED.md` if the skill is unavailable). Voice = casual but credible, short sentences, no corporate filler, no em dashes (use commas), no buzzwords ("synergy", "leverage", "unlock"). The article must sound like Dane wrote it after listening to the interview, not like a generic AI summary.
+
+### Step 2 — Read the full transcript
+
+Read the entire transcript file before writing anything. Do not skim. Note:
+- Guest's specific stories, numbers, names, dates
+- Direct quotes that capture their voice
+- Counterintuitive claims or contrarian takes (these are the GEO gold — AI engines cite surprising specifics, not platitudes)
+- The 1–2 ideas that would make a stranger stop scrolling
+
+If the transcript has timestamps, ignore them in the output but use them mentally to track sequence.
+
+### Step 3 — Pick the angle
+
+If Dane provided an episode angle, use it. Otherwise, pick the strongest hook yourself:
+- What's the ONE claim or insight a reader would screenshot?
+- What does this guest say that nobody else is saying?
+- What problem does the reader have that this guest solves?
+
+State the angle in one sentence before drafting. The whole article serves this angle.
+
+### Step 4 — Draft the H1 title
+
+Rules:
+- Under 60 characters (hard cap — count them)
+- Includes guest name OR a number/specific claim from the transcript
+- Reads like a real person typing it, not a SEO bot
+- No colons stacked with subtitles; one clean line
+- No clickbait, no "You Won't Believe..."
+
+Two formats that work:
+- `[Specific claim]. [Guest name] on [topic].` — e.g., `3-Person Team. Zero Slop. Todd Fairbairn on AI ops.`
+- `How [Guest] [did something specific]` — e.g., `How Todd Fairbairn Runs a Studio With 3 People`
+
+### Step 5 — Write Key Takeaways (3–5 bullets)
+
+Place this block immediately after the H1, before any H2.
+
+Format:
+```
+## Key Takeaways
+
+- [One specific, citation-worthy claim from the interview]
+- [Second claim — different angle]
+- [Third — actionable or counterintuitive]
+- [(Optional) Fourth]
+- [(Optional) Fifth]
+```
+
+Each bullet must:
+- Be under 20 words
+- Contain a specific noun (name, number, tool, place) — not just an idea
+- Stand alone (a reader who reads ONLY this list still gets value)
+- Be directly traceable to a sentence in the transcript
+
+### Step 6 — Outline 4–6 H2 sections
+
+Sections should follow the natural arc of the conversation, but rearranged so the strongest material is up top. Don't preserve transcript order if a later moment is the actual hook.
+
+Each H2 should answer ONE question. Phrase the H2 as a statement OR a real question someone might type into ChatGPT (the latter is better for GEO). Examples:
+
+- `Why a 3-person team beats a 30-person agency`
+- `What does Todd's daily AI workflow look like?`
+- `The biggest mistake most studios make`
+- `How to cut production time without cutting quality`
+
+Avoid generic H2s like "Background" or "About Todd" — they don't earn their place in an AI citation.
+
+### Step 7 — Write each H2 section (~150–250 words each)
+
+Per section:
+- Lead with the answer in the first sentence (GEO: front-load, don't bury)
+- Back it up with a specific from the transcript (number, name, story)
+- Include at least one direct quote in the article overall (you don't need a quote in every section, but at least 1–2 across all sections — formatted as `> "quote text" — Todd Fairbairn`)
+- Keep paragraphs to 2–3 sentences max
+- Use a sub-list (3–5 bullets) in 1–2 sections where it improves scannability — but don't list-ify everything; prose carries the voice
+
+Word count target across all sections: 700–900 words. Combined with takeaways + FAQ + intro snippet, the article lands at ~1,200.
+
+### Step 8 — Write the FAQ block (3–5 Q&A pairs)
+
+This is the highest-leverage GEO section. AI engines pull verbatim Q&A pairs into their answers. Write the questions the way a real person would type them into ChatGPT or Perplexity, not the way a marketer would write them.
+
+Format:
+```
+## Frequently Asked Questions
+
+### [Question as a real person would type it]
+[Answer — 2–4 sentences, direct, traceable to transcript]
+
+### [Next question]
+[Answer]
+```
+
+Question rules:
+- Phrase as a complete question with a question mark
+- 6–14 words
+- Use natural language ("How does Todd...", "What tools does...", "Why did Todd...")
+- Each Q must have a clear answer in the transcript — if you have to invent the answer, drop the question
+
+Answer rules:
+- First sentence answers the question directly (front-loading again)
+- 2–4 sentences total
+- Include at least one specific (name, tool, number) in 3 of the 5 answers
+- No "It depends" hedging unless the transcript explicitly hedges
+
+### Step 9 — Optional intro paragraph
+
+Below the H1, above Key Takeaways: 1–2 sentences setting up who the guest is and why this conversation matters. Skip if the H1 + Key Takeaways already do that work. When in doubt, skip — bloat hurts GEO more than it helps.
+
+### Step 10 — Final pass: voice + accuracy
+
+Before writing the file, re-read your draft against these checks:
+
+1. **No hallucination check.** Every name, number, and claim should trace to a specific transcript line. If a claim is your inference rather than the guest's words, either remove it or rewrite it as inference (`This suggests...` rather than `Todd said...`).
+2. **Em-dash check.** Search for `—` and replace with commas. (DA voice rule.)
+3. **Buzzword check.** Strip "leverage", "synergy", "unlock", "robust", "seamless", "best-in-class", "game-changer".
+4. **Reading level.** Sentences over 25 words: split them. Words a 13-year-old wouldn't use: replace.
+5. **Word count.** Run `wc -w` mentally. Target 1,100–1,300. If under, you skipped a section. If over, cut adjectives.
+
+### Step 11 — Write the file
+
+Output path: `youtube-publish-system/output-samples/<guest-slug>-article.md`
+
+Where `<guest-slug>` is the guest's name lowercased and hyphenated (e.g., `todd-fairbairn`).
+
+If the file already exists, ask Dane before overwriting.
+
+### Step 12 — Report back
+
+After writing, tell Dane:
+- Output path
+- Final word count
+- The angle you chose
+- One thing you want him to verify (e.g., "I quoted Todd as saying X — confirm that's what he said in the transcript around minute 12")
+
+Do NOT generate JSON-LD schema in this step — that's Step 1.4 of the build plan, added separately to keep this step's test isolated.
