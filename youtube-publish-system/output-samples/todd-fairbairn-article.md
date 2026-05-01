@@ -2,6 +2,8 @@
 
 Todd Fairbairn runs marketing and brand at Emotive Mobility, a B2B automotive supply chain company. He sat down to talk about how a tiny team uses AI without diluting the brand, what he learned at Ford, and why B2B needs more humanity, not more polish.
 
+<iframe width="560" height="315" src="https://www.youtube.com/embed/gb_zGCPPVvU" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+
 ## Key Takeaways
 
 - Todd runs marketing for Emotive Mobility with a 3-person team in a space that usually hides behind white papers.
@@ -166,5 +168,18 @@ Most B2B automotive supply chain companies hide behind white papers and have no 
       }
     }
   ]
+}
+</script>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "VideoObject",
+  "name": "3-Person Team. Zero Slop. Todd Fairbairn on B2B AI.",
+  "description": "Todd Fairbairn on running B2B marketing at Emotive Mobility with a 3-person team, using AI without slop, and turning one fireside chat into 15 pieces.",
+  "thumbnailUrl": "https://i.ytimg.com/vi/gb_zGCPPVvU/maxresdefault.jpg",
+  "uploadDate": "2026-04-30T00:00:00-07:00",
+  "contentUrl": "https://www.youtube.com/watch?v=gb_zGCPPVvU",
+  "embedUrl": "https://www.youtube.com/embed/gb_zGCPPVvU"
 }
 </script>

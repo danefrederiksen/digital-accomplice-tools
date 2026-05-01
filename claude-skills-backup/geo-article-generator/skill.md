@@ -15,17 +15,20 @@ Convert a long-form interview transcript (Riverside export, ~30–60 min) into a
 
 1. **Transcript** — plain-text file (`.txt`). Riverside-style timestamped or untimestamped. Path provided by Dane or pasted inline.
 2. **Guest name** — full name of the interviewee (e.g. "Todd Fairbairn").
-3. **Episode angle** *(optional)* — one-line framing if Dane has a specific hook. If omitted, the skill picks the strongest angle from the transcript.
+3. **YouTube video URL** — the published YouTube link for the interview (e.g. `https://www.youtube.com/watch?v=gb_zGCPPVvU`). Used for the on-page embed and the `VideoObject` schema. If Dane forgets to provide this, ASK before drafting — the article should not ship without the video.
+4. **Episode angle** *(optional)* — one-line framing if Dane has a specific hook. If omitted, the skill picks the strongest angle from the transcript.
 
 ## Output Format
 
 A single markdown file. Target ~1,200 words. Structure:
 
 1. **H1** — article title (under 60 chars, includes guest name + hook)
-2. **Key Takeaways** — 3–5 bullet summary at the top, scannable
-3. **H2 sections** — 4–6 sections covering the substance of the interview
-4. **FAQ block** — 3–5 Q&A pairs (the questions should match what real people ask AI engines about this topic)
-5. **JSON-LD schema** — `Article` + `FAQPage` schema as a `<script type="application/ld+json">` block at the bottom
+2. **Optional intro** — 1–2 sentences setting up the guest (skip if H1 + Takeaways already do that work)
+3. **YouTube video embed** — `<iframe>` block linking to the published video (right below intro, above Key Takeaways)
+4. **Key Takeaways** — 3–5 bullet summary, scannable
+5. **H2 sections** — 4–6 sections covering the substance of the interview
+6. **FAQ block** — 3–5 Q&A pairs (the questions should match what real people ask AI engines about this topic)
+7. **JSON-LD schema** — `Article` + `FAQPage` + `VideoObject` schemas, each as a separate `<script type="application/ld+json">` block at the bottom
 
 Output path convention: `youtube-publish-system/output-samples/<guest-slug>-article.md`
 
@@ -156,9 +159,25 @@ Answer rules:
 
 ### Step 9 — Optional intro paragraph
 
-Below the H1, above Key Takeaways: 1–2 sentences setting up who the guest is and why this conversation matters. Skip if the H1 + Key Takeaways already do that work. When in doubt, skip — bloat hurts GEO more than it helps.
+Below the H1, above the video embed: 1–2 sentences setting up who the guest is and why this conversation matters. Skip if the H1 + Key Takeaways already do that work. When in doubt, skip — bloat hurts GEO more than it helps.
 
-### Step 10 — Final pass: voice + accuracy
+### Step 10 — Generate YouTube embed snippet
+
+Place this block immediately after the optional intro and BEFORE Key Takeaways. The embed is a `<iframe>` pointing at the video's `embed` URL, NOT the watch URL. Strip any `&list=...`, `&t=...`, or other query params from Dane's input — only the bare 11-character video ID belongs in the embed URL.
+
+To get the video ID:
+- From `https://www.youtube.com/watch?v=gb_zGCPPVvU&list=PLLG2L3M2Y916...` → `gb_zGCPPVvU`
+- From `https://youtu.be/gb_zGCPPVvU` → `gb_zGCPPVvU`
+
+Embed format (paste verbatim, swap in the video ID):
+
+```html
+<iframe width="560" height="315" src="https://www.youtube.com/embed/<VIDEO_ID>" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+```
+
+Wix-paste note (for Step 13 reporting, not for the file): Wix's blog editor may strip raw `<iframe>` HTML for security. If it does, Dane's fallback is to delete the iframe block and use a Wix native Video element with the same YouTube URL — the page renders the same and the schema still tells AI engines it's the canonical video.
+
+### Step 11 — Final pass: voice + accuracy
 
 Before writing the file, re-read your draft against these checks:
 
@@ -168,9 +187,9 @@ Before writing the file, re-read your draft against these checks:
 4. **Reading level.** Sentences over 25 words: split them. Words a 13-year-old wouldn't use: replace.
 5. **Word count.** Run `wc -w` mentally. Target 1,100–1,300. If under, you skipped a section. If over, cut adjectives.
 
-### Step 11 — Generate JSON-LD schema
+### Step 12 — Generate JSON-LD schema
 
-This is the GEO payload Wix will inline so AI engines and search crawlers can parse the article cleanly. Two schemas, both as separate `<script type="application/ld+json">` blocks at the bottom of the markdown file.
+This is the GEO payload Wix will inline so AI engines and search crawlers can parse the article cleanly. THREE schemas, each as a separate `<script type="application/ld+json">` block at the bottom of the markdown file.
 
 **Schema A — `Article`:**
 
@@ -222,30 +241,49 @@ This is the GEO payload Wix will inline so AI engines and search crawlers can pa
 </script>
 ```
 
+**Schema C — `VideoObject`:**
+
+```html
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "VideoObject",
+  "name": "<H1 title verbatim>",
+  "description": "<same description as Article schema>",
+  "thumbnailUrl": "https://i.ytimg.com/vi/<VIDEO_ID>/maxresdefault.jpg",
+  "uploadDate": "<YYYY-MM-DDTHH:MM:SS-07:00 — full ISO 8601 with Pacific timezone offset. Use the YouTube upload date if known, otherwise use the article publish date with 00:00:00-07:00. Bare date strings without time/timezone trigger Google warnings.>",
+  "contentUrl": "https://www.youtube.com/watch?v=<VIDEO_ID>",
+  "embedUrl": "https://www.youtube.com/embed/<VIDEO_ID>"
+}
+</script>
+```
+
 Rules:
-- Both blocks go at the very bottom of the markdown file, after the FAQ section, separated by a blank line.
-- The `headline` field must match the H1 verbatim, characters and casing preserved.
-- The `description` field must be 1 sentence, under 160 chars, derived from the article (do not invent).
+- All three blocks go at the very bottom of the markdown file, after the FAQ section, separated by blank lines, in this order: `Article` → `FAQPage` → `VideoObject`.
+- The `headline` (Article) and `name` (VideoObject) fields must match the H1 verbatim, characters and casing preserved.
+- The `description` field must be 1 sentence, under 160 chars, derived from the article (do not invent). Reuse the same description across `Article` and `VideoObject`.
 - Each FAQ Question/Answer pair maps 1:1 to the `## Frequently Asked Questions` block. Question text and answer text must match the markdown verbatim, including punctuation.
 - Use today's date (UTC) in `YYYY-MM-DD` format for `datePublished`. The currentDate is in the system context.
+- For `VideoObject`: `<VIDEO_ID>` is the same 11-character ID used in the iframe. Same value goes in `thumbnailUrl`, `contentUrl`, and `embedUrl` slots.
 - No trailing commas. Validate the JSON mentally before writing — Wix will silently drop a block if JSON is malformed.
-- Do not add `image`, `url`, or `mainEntityOfPage` fields. Dane will fill those in Wix when he picks a hero image and slug.
+- Do not add `image`, `url`, or `mainEntityOfPage` fields to the Article schema. Dane will fill those in Wix when he picks a hero image and slug. Do not add `duration` to VideoObject unless Dane provides it.
 
-### Step 12 — Write the file
+### Step 13 — Write the file
 
 Output path: `youtube-publish-system/output-samples/<guest-slug>-article.md`
 
 Where `<guest-slug>` is the guest's name lowercased and hyphenated (e.g., `todd-fairbairn`).
 
-The file contains, in order: H1, optional intro, Key Takeaways, H2 sections, FAQ block, then both JSON-LD `<script>` blocks at the bottom.
+The file contains, in order: H1, optional intro, YouTube embed iframe, Key Takeaways, H2 sections, FAQ block, then all three JSON-LD `<script>` blocks at the bottom (`Article` → `FAQPage` → `VideoObject`).
 
 If the file already exists, ask Dane before overwriting.
 
-### Step 13 — Report back
+### Step 14 — Report back
 
 After writing, tell Dane:
 - Output path
 - Final word count (article body, schema not counted)
 - The angle you chose
 - One thing you want him to verify (e.g., "I quoted Todd as saying X, confirm that's what he said in the transcript around minute 12")
-- Confirm both schema blocks were generated and the FAQ Q&A count in the schema matches the markdown
+- Confirm all three schema blocks were generated, the FAQ Q&A count in the schema matches the markdown, and the video ID in both the iframe and `VideoObject` matches Dane's YouTube link
+- Wix-paste note: if Wix's blog editor strips the raw `<iframe>`, fallback is to delete the iframe block and use a Wix native Video element with the same YouTube URL — the page renders the same and the schema still works.
