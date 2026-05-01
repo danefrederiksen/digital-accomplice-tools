@@ -1,13 +1,13 @@
 # Build Status
 
 **Started:** 2026-04-30
-**Current phase:** Not started — planning complete
+**Current phase:** Phase 1, Step 1.2 next (skill scaffold)
 
 ---
 
 ## Phase 1: GEO Article Generator
-- [ ] 1.1 — Sample transcript in `tests/`
-- [ ] 1.2 — Skill scaffold created
+- [x] 1.1 — Sample transcript in `tests/` (Todd Fairbairn, 2026-04-30)
+- [ ] 1.2 — Skill scaffold created  ← **NEXT**
 - [ ] 1.3 — Prompt logic for article generation
 - [ ] 1.4 — JSON-LD schema block
 - [ ] 1.5 — Wix-paste formatting verified
@@ -37,4 +37,5 @@ _(Update as we go.)_
 
 ## Session Log
 
-_(One line per session: date, phase worked on, what got done.)_
+- **2026-04-30** — Planning complete. Folder + BUILD_PLAN + STATUS + README scaffolded. Todd transcript dropped into `tests/`. Phase 1 Step 1.1 done.
+- **2026-04-30 (later)** — Reorganized 13 tools into `tools/<name>/` self-contained folders. Committed as `f1d4aa0` and pushed. No work on Phase 1 Step 1.2 yet.
