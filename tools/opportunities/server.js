@@ -5,10 +5,10 @@ const { v4: uuidv4 } = require('uuid');
 
 const app = express();
 const PORT = 3863;
-const HTML_FILE = path.join(__dirname, 'opportunities.html');
-const DATA_DIR = path.join(__dirname, '..', 'data');
+const HTML_FILE = path.join(__dirname, 'index.html');
+const DATA_DIR = path.join(__dirname, 'data');
 const DATA_FILE = path.join(DATA_DIR, 'opportunities.json');
-const BACKUP_DIR = path.join(DATA_DIR, 'backups');
+const BACKUP_DIR = path.join(__dirname, 'backups');
 const MAX_BACKUPS = 5;
 
 // ============================================================

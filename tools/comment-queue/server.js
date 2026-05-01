@@ -6,10 +6,11 @@ const Tesseract = require('tesseract.js');
 
 const app = express();
 const PORT = 3861;
-const HTML_FILE = path.join(__dirname, 'comment-queue.html');
-const DATA_DIR = path.join(__dirname, '..', 'data');
+const HTML_FILE = path.join(__dirname, 'index.html');
+const DATA_DIR = path.join(__dirname, 'data');
+const TOOLS_ROOT = path.join(__dirname, '..');
 const COMMENT_LOG_FILE = path.join(DATA_DIR, 'comment-log.json');
-const BACKUP_DIR = path.join(DATA_DIR, 'backups');
+const BACKUP_DIR = path.join(__dirname, 'backups');
 const SCREENSHOTS_DIR = path.join(DATA_DIR, 'screenshots');
 const SCREENSHOTS_META_FILE = path.join(DATA_DIR, 'screenshots.json');
 const DAILY_OVERRIDES_FILE = path.join(DATA_DIR, 'daily-overrides.json');
@@ -38,28 +39,28 @@ const DM_TEMPLATES = {
   }
 };
 
-// Source tool data files — Tool #11 reads directly from these
+// Source tool data files — Tool #11 reads directly from peer tool folders
 const SOURCE_FILES = {
   'b2b_2nd': {
-    file: path.join(DATA_DIR, 'b2b-2nd-prospects.json'),
+    file: path.join(TOOLS_ROOT, 'b2b-2nd', 'data', 'prospects.json'),
     label: 'B2B 2nd Connection',
     tool: '#3',
     port: 3853
   },
   'cyber_2nd': {
-    file: path.join(DATA_DIR, 'cyber-2nd-prospects.json'),
+    file: path.join(TOOLS_ROOT, 'cyber-2nd', 'data', 'prospects.json'),
     label: 'Cyber 2nd Connection',
     tool: '#4',
     port: 3854
   },
   'referral_1st': {
-    file: path.join(DATA_DIR, 'referral-1st-prospects.json'),
+    file: path.join(TOOLS_ROOT, 'referral-1st', 'data', 'prospects.json'),
     label: 'Referral 1st Connection',
     tool: '#5',
     port: 3855
   },
   'referral_2nd': {
-    file: path.join(DATA_DIR, 'referral-2nd-prospects.json'),
+    file: path.join(TOOLS_ROOT, 'referral-2nd', 'data', 'prospects.json'),
     label: 'Referral 2nd Connection',
     tool: '#6',
     port: 3856

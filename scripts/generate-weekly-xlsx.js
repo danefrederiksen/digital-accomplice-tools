@@ -2,13 +2,30 @@ const XLSX = require('xlsx');
 const fs = require('fs');
 const path = require('path');
 
-const DATA_DIR = path.join(__dirname, '..', 'data');
+const TOOLS_ROOT = path.join(__dirname, '..', 'tools');
 const WARMING_DATA = path.join(__dirname, '..', 'warming-app copy', 'data', 'prospects.json');
 const OUTPUT = path.join(__dirname, '..', 'reports', 'DA_Ops_Processes_WeeklyReport_2026-03-08_ProspectingData.xlsx');
 
+// Legacy filename → new per-tool-folder path. Keeps callers unchanged.
+const FILE_MAP = {
+  'b2b-prospects.json':            path.join(TOOLS_ROOT, 'b2b',            'data', 'prospects.json'),
+  'cyber-prospects.json':          path.join(TOOLS_ROOT, 'cyber',          'data', 'prospects.json'),
+  'b2b-2nd-prospects.json':        path.join(TOOLS_ROOT, 'b2b-2nd',        'data', 'prospects.json'),
+  'cyber-2nd-prospects.json':      path.join(TOOLS_ROOT, 'cyber-2nd',      'data', 'prospects.json'),
+  'referral-1st-prospects.json':   path.join(TOOLS_ROOT, 'referral-1st',   'data', 'prospects.json'),
+  'referral-2nd-prospects.json':   path.join(TOOLS_ROOT, 'referral-2nd',   'data', 'prospects.json'),
+  'substack-prospects.json':       path.join(TOOLS_ROOT, 'substack',       'data', 'prospects.json'),
+  'referral-email-prospects.json': path.join(TOOLS_ROOT, 'referral-email', 'data', 'prospects.json'),
+  'b2b-2nd-activity.json':         path.join(TOOLS_ROOT, 'b2b-2nd',        'data', 'activity.json'),
+  'cyber-2nd-activity.json':       path.join(TOOLS_ROOT, 'cyber-2nd',      'data', 'activity.json'),
+  'referral-1st-activity.json':    path.join(TOOLS_ROOT, 'referral-1st',   'data', 'activity.json'),
+  'referral-2nd-activity.json':    path.join(TOOLS_ROOT, 'referral-2nd',   'data', 'activity.json'),
+  'comment-log.json':              path.join(TOOLS_ROOT, 'comment-queue',  'data', 'comment-log.json')
+};
+
 // Helper: read JSON safely — unwraps {prospects: [...]} if needed
 function readJSON(file) {
-  const p = path.join(DATA_DIR, file);
+  const p = FILE_MAP[file] || path.join(TOOLS_ROOT, file);
   if (!fs.existsSync(p)) return [];
   try {
     const raw = JSON.parse(fs.readFileSync(p, 'utf8'));

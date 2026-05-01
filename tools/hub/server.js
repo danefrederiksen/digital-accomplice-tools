@@ -4,27 +4,32 @@ const path = require('path');
 
 const app = express();
 const PORT = 3849;
-const HTML_FILE = path.join(__dirname, 'hub-dashboard.html');
-const DATA_DIR = path.join(__dirname, '..', 'data');
+const HTML_FILE = path.join(__dirname, 'index.html');
+const TOOLS_ROOT = path.join(__dirname, '..');
 
 // ============================================================
 // TOOL DEFINITIONS — all 10 prospect tools + comment queue
+// Each tool is now self-contained under tools/<folder>/data/{prospects,activity}.json
 // ============================================================
 const TOOLS = [
-  { id: 1, key: 'b2b',          label: 'B2B 1st DM',        type: 'dm',    port: 3851, prospectFile: 'b2b-prospects.json',          activityFile: 'b2b-activity.json',          target: 4 },
-  { id: 2, key: 'cyber',        label: 'Cyber 1st DM',      type: 'dm',    port: 3852, prospectFile: 'cyber-prospects.json',        activityFile: 'cyber-activity.json',        target: 4 },
-  { id: 3, key: 'b2b_2nd',      label: 'B2B 2nd DM',        type: 'dm',    port: 3853, prospectFile: 'b2b-2nd-prospects.json',      activityFile: 'b2b-2nd-activity.json',      target: 3 },
-  { id: 4, key: 'cyber_2nd',    label: 'Cyber 2nd DM',      type: 'dm',    port: 3854, prospectFile: 'cyber-2nd-prospects.json',    activityFile: 'cyber-2nd-activity.json',    target: 3 },
-  { id: 5, key: 'referral_1st', label: 'Referral 1st',      type: 'dm',    port: 3855, prospectFile: 'referral-1st-prospects.json', activityFile: 'referral-1st-activity.json', target: 2 },
-  { id: 6, key: 'referral_2nd', label: 'Referral 2nd',      type: 'dm',    port: 3856, prospectFile: 'referral-2nd-prospects.json', activityFile: 'referral-2nd-activity.json', target: 2 },
-  { id: 7, key: 'b2b_email',    label: 'B2B Email',         type: 'email', port: 3857, prospectFile: 'b2b-email-prospects.json',    activityFile: 'b2b-email-activity.json',    target: 5 },
-  { id: 8, key: 'cyber_email',  label: 'Cyber Email',       type: 'email', port: 3858, prospectFile: 'cyber-email-prospects.json',  activityFile: 'cyber-email-activity.json',  target: 5 },
-  { id: 9, key: 'substack',     label: 'Substack',          type: 'email', port: 3859, prospectFile: 'substack-prospects.json',     activityFile: 'substack-activity.json',     target: 4 },
-  { id: 10, key: 'customer',    label: 'Customers',         type: 'email', port: 3860, prospectFile: 'customer-prospects.json',     activityFile: 'customer-activity.json',     target: 3 },
-  { id: 12, key: 'referral_email', label: 'Referral Email', type: 'email', port: 3862, prospectFile: 'referral-email-prospects.json', activityFile: 'referral-email-activity.json', target: 3 }
+  { id: 1,  key: 'b2b',           folder: 'b2b',           label: 'B2B 1st DM',     type: 'dm',    port: 3851, target: 4 },
+  { id: 2,  key: 'cyber',         folder: 'cyber',         label: 'Cyber 1st DM',   type: 'dm',    port: 3852, target: 4 },
+  { id: 3,  key: 'b2b_2nd',       folder: 'b2b-2nd',       label: 'B2B 2nd DM',     type: 'dm',    port: 3853, target: 3 },
+  { id: 4,  key: 'cyber_2nd',     folder: 'cyber-2nd',     label: 'Cyber 2nd DM',   type: 'dm',    port: 3854, target: 3 },
+  { id: 5,  key: 'referral_1st',  folder: 'referral-1st',  label: 'Referral 1st',   type: 'dm',    port: 3855, target: 2 },
+  { id: 6,  key: 'referral_2nd',  folder: 'referral-2nd',  label: 'Referral 2nd',   type: 'dm',    port: 3856, target: 2 },
+  { id: 7,  key: 'b2b_email',     folder: 'b2b-email',     label: 'B2B Email',      type: 'email', port: 3857, target: 5 },
+  { id: 8,  key: 'cyber_email',   folder: 'cyber-email',   label: 'Cyber Email',    type: 'email', port: 3858, target: 5 },
+  { id: 9,  key: 'substack',      folder: 'substack',      label: 'Substack',       type: 'email', port: 3859, target: 4 },
+  { id: 10, key: 'customer',      folder: 'customer',      label: 'Customers',      type: 'email', port: 3860, target: 3 },
+  { id: 12, key: 'referral_email',folder: 'referral-email',label: 'Referral Email', type: 'email', port: 3862, target: 3 }
 ];
 
-const COMMENT_LOG_FILE = path.join(DATA_DIR, 'comment-log.json');
+function toolDataPath(folder, filename) {
+  return path.join(TOOLS_ROOT, folder, 'data', filename);
+}
+
+const COMMENT_LOG_FILE = path.join(TOOLS_ROOT, 'comment-queue', 'data', 'comment-log.json');
 const DAILY_COMMENT_TARGET = 8;
 const WEEKLY_COMMENT_TARGET = 40;
 
@@ -92,8 +97,8 @@ app.get('/api/hub-data', (req, res) => {
 
   // --- Per-tool stats ---
   const toolStats = TOOLS.map(tool => {
-    const prospectPath = path.join(DATA_DIR, tool.prospectFile);
-    const activityPath = path.join(DATA_DIR, tool.activityFile);
+    const prospectPath = toolDataPath(tool.folder, 'prospects.json');
+    const activityPath = toolDataPath(tool.folder, 'activity.json');
 
     // Load prospects
     const prospectData = loadJSON(prospectPath);
@@ -339,7 +344,7 @@ app.get('/api/all-prospects', (req, res) => {
   const allProspects = [];
 
   TOOLS.forEach(tool => {
-    const filepath = path.join(DATA_DIR, tool.prospectFile);
+    const filepath = toolDataPath(tool.folder, 'prospects.json');
     const raw = loadJSON(filepath);
     if (!raw) return;
 
@@ -504,5 +509,5 @@ app.post('/api/quick-log', async (req, res) => {
 app.listen(PORT, '127.0.0.1', () => {
   console.log(`\n  DA Hub Dashboard running at http://localhost:${PORT}`);
   console.log(`  Reading from ${TOOLS.length} tools + comment queue`);
-  console.log(`  Data: ${DATA_DIR}\n`);
+  console.log(`  Tools root: ${TOOLS_ROOT}\n`);
 });

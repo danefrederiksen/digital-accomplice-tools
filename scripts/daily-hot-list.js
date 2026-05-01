@@ -19,7 +19,8 @@ const path = require('path');
 
 // ── Config ──────────────────────────────────────────────────────────────────
 const DRY_RUN = process.argv.includes('--dry-run');
-const DATA_DIR = path.join(__dirname, '..', 'data');
+const TOOLS_ROOT = path.join(__dirname, '..', 'tools');
+const DATA_DIR = TOOLS_ROOT; // retained var name; resolution changed to per-tool folders
 const DASHBOARD_DATA = path.join(__dirname, '..', 'warming-app copy', 'data', 'prospects.json');
 
 const EMAIL_FROM = 'dane@digitalaccomplice.com';
@@ -38,14 +39,14 @@ const CARD_BG = '#f9f9f9';
 
 // ── Tool file → display name mapping ────────────────────────────────────────
 const TOOL_MAP = [
-  { file: 'b2b-prospects.json',           name: 'Tool #1: B2B 1st Conn' },
-  { file: 'cyber-prospects.json',         name: 'Tool #2: Cyber 1st Conn' },
-  { file: 'b2b-2nd-prospects.json',       name: 'Tool #3: B2B 2nd Conn' },
-  { file: 'cyber-2nd-prospects.json',     name: 'Tool #4: Cyber 2nd Conn' },
-  { file: 'referral-1st-prospects.json',  name: 'Tool #5: Referral 1st Conn' },
-  { file: 'referral-2nd-prospects.json',  name: 'Tool #6: Referral 2nd Conn' },
-  { file: 'substack-prospects.json',      name: 'Tool #9: Substack' },
-  { file: 'referral-email-prospects.json', name: 'Tool #12: Referral Emails' },
+  { file: path.join('b2b',           'data', 'prospects.json'), name: 'Tool #1: B2B 1st Conn' },
+  { file: path.join('cyber',         'data', 'prospects.json'), name: 'Tool #2: Cyber 1st Conn' },
+  { file: path.join('b2b-2nd',       'data', 'prospects.json'), name: 'Tool #3: B2B 2nd Conn' },
+  { file: path.join('cyber-2nd',     'data', 'prospects.json'), name: 'Tool #4: Cyber 2nd Conn' },
+  { file: path.join('referral-1st',  'data', 'prospects.json'), name: 'Tool #5: Referral 1st Conn' },
+  { file: path.join('referral-2nd',  'data', 'prospects.json'), name: 'Tool #6: Referral 2nd Conn' },
+  { file: path.join('substack',      'data', 'prospects.json'), name: 'Tool #9: Substack' },
+  { file: path.join('referral-email','data', 'prospects.json'), name: 'Tool #12: Referral Emails' },
 ];
 
 // ── Helpers ─────────────────────────────────────────────────────────────────

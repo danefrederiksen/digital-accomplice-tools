@@ -4,15 +4,18 @@ const path = require('path');
 const { v4: uuidv4 } = require('uuid');
 
 const app = express();
-const PORT = 3855;
-const HTML_FILE = path.join(__dirname, 'referral-1st-outreach.html');
-const DATA_DIR = path.join(__dirname, '..', 'data');
-const DATA_FILE = path.join(DATA_DIR, 'referral-1st-prospects.json');
-const ACTIVITY_FILE = path.join(DATA_DIR, 'referral-1st-activity.json');
-const TEMPLATES_FILE = path.join(DATA_DIR, 'referral-1st-templates.json');
-const BACKUP_DIR = path.join(DATA_DIR, 'backups');
+const PORT = 3853;
+const HTML_FILE = path.join(__dirname, 'index.html');
+const DATA_DIR = path.join(__dirname, 'data');
+const DATA_FILE = path.join(DATA_DIR, 'prospects.json');
+const ACTIVITY_FILE = path.join(DATA_DIR, 'activity.json');
+const TEMPLATES_FILE = path.join(DATA_DIR, 'templates.json');
+const BACKUP_DIR = path.join(__dirname, 'backups');
+const COMMENT_LOG_FILE = path.join(__dirname, '..', 'comment-queue', 'data', 'comment-log.json');
 const MAX_BACKUPS = 5;
 const MAX_ACTIVITY = 500;
+const COMMENTS_TO_DM = 4;
+const SEGMENT = 'b2b_2nd';
 
 // ============================================================
 // MIDDLEWARE
@@ -59,11 +62,11 @@ function backupData() {
   if (!fs.existsSync(DATA_FILE)) return;
   try {
     const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
-    const backupFile = path.join(BACKUP_DIR, `referral-1st-prospects_${timestamp}.json`);
+    const backupFile = path.join(BACKUP_DIR, `prospects_${timestamp}.json`);
     fs.copyFileSync(DATA_FILE, backupFile);
     // Prune old backups — keep last MAX_BACKUPS
     const backups = fs.readdirSync(BACKUP_DIR)
-      .filter(f => f.startsWith('referral-1st-prospects_'))
+      .filter(f => f.startsWith('prospects_'))
       .sort()
       .reverse();
     backups.slice(MAX_BACKUPS).forEach(f => {
@@ -83,6 +86,17 @@ function loadActivity() {
 
 function saveActivity(entries) {
   fs.writeFileSync(ACTIVITY_FILE, JSON.stringify(entries, null, 2), 'utf8');
+}
+
+function loadCommentLog() {
+  try {
+    if (!fs.existsSync(COMMENT_LOG_FILE)) return [];
+    return JSON.parse(fs.readFileSync(COMMENT_LOG_FILE, 'utf8')) || [];
+  } catch { return []; }
+}
+
+function saveCommentLog(entries) {
+  fs.writeFileSync(COMMENT_LOG_FILE, JSON.stringify(entries, null, 2), 'utf8');
 }
 
 function loadTemplates() {
@@ -130,15 +144,19 @@ function sanitizeObj(obj) {
   return clean;
 }
 
-const VALID_STATUSES = ['not_started', 'dm_sent', 'follow_up_1', 'follow_up_2', 'replied', 'cold'];
+const VALID_STATUSES = ['not_started', 'connection_sent', 'connection_accepted', 'dm_sent', 'follow_up_1', 'follow_up_2', 'replied', 'cold'];
 const ALLOWED_FIELDS = [
   'name', 'company', 'title', 'linkedinUrl', 'status',
+  'connectionSentDate', 'connectionCheckDate', 'connectionAcceptedDate',
   'dmSentDate', 'followUp1Due', 'followUp2Due', 'lastActionDate',
-  'reply', 'nextStep', 'draftReply', 'abVariants', 'offerType'
+  'reply', 'nextStep', 'draftReply', 'abVariants',
+  'comment_count', 'last_commented', 'warming_dm_sent', 'warming_reply_date'
 ];
 
 // Map status changes to activity labels
 const STATUS_ACTIONS = {
+  connection_sent: 'Sent Connection Request',
+  connection_accepted: 'Connection Accepted',
   dm_sent: 'Marked DM Sent',
   follow_up_1: 'Marked Follow-Up Sent',
   follow_up_2: 'Marked Final Nudge Sent',
@@ -185,6 +203,9 @@ app.post('/api/prospects', (req, res) => {
       title: (raw.title || '').trim(),
       linkedinUrl: (raw.linkedinUrl || '').trim(),
       status: 'not_started',
+      connectionSentDate: null,
+      connectionCheckDate: null,
+      connectionAcceptedDate: null,
       dmSentDate: null,
       followUp1Due: null,
       followUp2Due: null,
@@ -222,6 +243,9 @@ app.post('/api/prospects/migrate', (req, res) => {
     title: (raw.title || '').trim(),
     linkedinUrl: (raw.linkedinUrl || '').trim(),
     status: VALID_STATUSES.includes(raw.status) ? raw.status : 'not_started',
+    connectionSentDate: raw.connectionSentDate || null,
+    connectionCheckDate: raw.connectionCheckDate || null,
+    connectionAcceptedDate: raw.connectionAcceptedDate || null,
     dmSentDate: raw.dmSentDate || null,
     followUp1Due: raw.followUp1Due || null,
     followUp2Due: raw.followUp2Due || null,
@@ -249,15 +273,6 @@ app.put('/api/prospects/:id', (req, res) => {
     if (!ALLOWED_FIELDS.includes(key)) continue;
     if (key === 'status' && !VALID_STATUSES.includes(val)) continue;
     prospect[key] = typeof val === 'string' ? sanitize(val) : val;
-  }
-
-  // Sanitize abVariants object values
-  if (prospect.abVariants && typeof prospect.abVariants === 'object') {
-    const clean = {};
-    for (const [k, v] of Object.entries(prospect.abVariants)) {
-      clean[k] = typeof v === 'string' ? sanitize(v) : v;
-    }
-    prospect.abVariants = clean;
   }
 
   prospects[idx] = prospect;
@@ -296,6 +311,78 @@ app.get('/api/activity', (req, res) => {
   res.json({ activity: all.slice(0, limit), total: all.length });
 });
 
+// ============================================================
+// COMMENT TRACKING — shared comment-log.json with Tool #11
+// ============================================================
+
+// GET comment stats for all prospects in this tool
+app.get('/api/comment-stats', (req, res) => {
+  const commentLog = loadCommentLog();
+  const prospects = loadProspects();
+
+  const stats = {};
+  commentLog.forEach(entry => {
+    if (!stats[entry.prospectId]) {
+      stats[entry.prospectId] = { count: 0, lastDate: null };
+    }
+    stats[entry.prospectId].count++;
+    if (!stats[entry.prospectId].lastDate || entry.date > stats[entry.prospectId].lastDate) {
+      stats[entry.prospectId].lastDate = entry.date;
+    }
+  });
+
+  // Only return stats for prospects in this tool
+  const ourStats = {};
+  prospects.forEach(p => {
+    const s = stats[p.id] || { count: 0, lastDate: null };
+    ourStats[p.id] = { count: p.comment_count || s.count, lastDate: s.lastDate };
+  });
+
+  res.json({ stats: ourStats, commentsRequired: COMMENTS_TO_DM });
+});
+
+// POST log a comment — writes to shared comment-log.json AND updates prospect
+app.post('/api/comment', (req, res) => {
+  const { prospectId, postUrl } = req.body;
+  if (!prospectId) return res.status(400).json({ error: 'prospectId required' });
+
+  const prospects = loadProspects();
+  const prospect = prospects.find(p => p.id === prospectId);
+  if (!prospect) return res.status(404).json({ error: 'Prospect not found' });
+
+  const entry = {
+    id: uuidv4(),
+    prospectId: sanitize(prospectId),
+    prospectName: prospect.name,
+    company: prospect.company,
+    segment: SEGMENT,
+    postUrl: sanitize(postUrl || ''),
+    date: new Date().toISOString()
+  };
+
+  // Save to shared comment log
+  const log = loadCommentLog();
+  log.unshift(entry);
+  if (log.length > 2000) log.length = 2000;
+  saveCommentLog(log);
+
+  // Count total comments for this prospect
+  const totalComments = log.filter(e => e.prospectId === prospectId).length;
+
+  // Update prospect record (direct write to avoid backup on every comment)
+  const idx = prospects.findIndex(p => p.id === prospectId);
+  if (idx !== -1) {
+    prospects[idx].comment_count = totalComments;
+    prospects[idx].last_commented = entry.date;
+    fs.writeFileSync(DATA_FILE, JSON.stringify({ prospects }, null, 2), 'utf8');
+  }
+
+  logActivity('Logged comment', prospect.name, prospectId);
+
+  const dmReady = totalComments >= COMMENTS_TO_DM;
+  res.json({ ok: true, entry, totalComments, dmReady, commentsNeeded: Math.max(0, COMMENTS_TO_DM - totalComments) });
+});
+
 // GET — templates
 app.get('/api/templates', (req, res) => {
   const templates = loadTemplates();
@@ -325,7 +412,7 @@ app.put('/api/templates', (req, res) => {
 // ============================================================
 ensureDirs();
 app.listen(PORT, '127.0.0.1', () => {
-  console.log(`\n  DA Prospecting Tool #5 — Referral Partner 1st Connections running at http://localhost:${PORT}`);
+  console.log(`\n  DA Prospecting Tool #3 — B2B 2nd Connections running at http://localhost:${PORT}`);
   console.log(`  Data: ${DATA_FILE}`);
   console.log(`  Templates: ${TEMPLATES_FILE}`);
   console.log(`  Backups: ${BACKUP_DIR} (last ${MAX_BACKUPS} kept)\n`);

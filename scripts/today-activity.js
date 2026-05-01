@@ -12,22 +12,29 @@ const fs = require('fs');
 const path = require('path');
 
 const EXPLICIT_DATE = process.argv[2]; // user-provided date, if any
-const DATA = path.join(__dirname, '..', 'data');
+const TOOLS_ROOT = path.join(__dirname, '..', 'tools');
+const DATA = TOOLS_ROOT; // legacy name kept for lowest-diff; see toolFile() below
+const COMMENT_LOG_FILE = path.join(TOOLS_ROOT, 'comment-queue', 'data', 'comment-log.json');
 
-// ── Tool definitions: prospect file + activity log file ──
+// Each tool is self-contained at tools/<folder>/data/{prospects,activity}.json
 const tools = [
-  { name: 'Tool #1: B2B 1st Conn DMs',    prospects: 'b2b-prospects.json',          activity: 'b2b-activity.json' },
-  { name: 'Tool #2: Cyber 1st Conn DMs',   prospects: 'cyber-prospects.json',        activity: 'cyber-activity.json' },
-  { name: 'Tool #3: B2B 2nd Conn DMs',     prospects: 'b2b-2nd-prospects.json',      activity: 'b2b-2nd-activity.json' },
-  { name: 'Tool #4: Cyber 2nd Conn DMs',   prospects: 'cyber-2nd-prospects.json',    activity: 'cyber-2nd-activity.json' },
-  { name: 'Tool #5: Referral 1st Conn',    prospects: 'referral-1st-prospects.json',  activity: 'referral-1st-activity.json' },
-  { name: 'Tool #6: Referral 2nd Conn',    prospects: 'referral-2nd-prospects.json',  activity: 'referral-2nd-activity.json' },
-  { name: 'Tool #7: B2B Emails',           prospects: 'b2b-email-prospects.json',     activity: 'b2b-email-activity.json' },
-  { name: 'Tool #8: Cyber Emails',         prospects: 'cyber-email-prospects.json',   activity: 'cyber-email-activity.json' },
-  { name: 'Tool #9: Substack Emails',      prospects: 'substack-prospects.json',      activity: 'substack-activity.json' },
-  { name: 'Tool #10: Customer Emails',     prospects: 'customer-prospects.json',      activity: 'customer-activity.json' },
-  { name: 'Tool #12: Referral Emails',     prospects: 'referral-email-prospects.json', activity: 'referral-email-activity.json' },
+  { name: 'Tool #1: B2B 1st Conn DMs',     folder: 'b2b' },
+  { name: 'Tool #2: Cyber 1st Conn DMs',   folder: 'cyber' },
+  { name: 'Tool #3: B2B 2nd Conn DMs',     folder: 'b2b-2nd' },
+  { name: 'Tool #4: Cyber 2nd Conn DMs',   folder: 'cyber-2nd' },
+  { name: 'Tool #5: Referral 1st Conn',    folder: 'referral-1st' },
+  { name: 'Tool #6: Referral 2nd Conn',    folder: 'referral-2nd' },
+  { name: 'Tool #7: B2B Emails',           folder: 'b2b-email' },
+  { name: 'Tool #8: Cyber Emails',         folder: 'cyber-email' },
+  { name: 'Tool #9: Substack Emails',      folder: 'substack' },
+  { name: 'Tool #10: Customer Emails',     folder: 'customer' },
+  { name: 'Tool #12: Referral Emails',     folder: 'referral-email' },
 ];
+// Give each tool `prospects` and `activity` absolute paths
+tools.forEach(t => {
+  t.prospects = path.join(TOOLS_ROOT, t.folder, 'data', 'prospects.json');
+  t.activity  = path.join(TOOLS_ROOT, t.folder, 'data', 'activity.json');
+});
 
 // All date fields found in prospect objects
 const dateFields = [
@@ -69,20 +76,20 @@ function countActivityForDate(targetDate) {
 
   // Check activity logs
   for (const tool of tools) {
-    const actData = loadJSON(path.join(DATA, tool.activity));
+    const actData = loadJSON(tool.activity);
     if (!actData || !Array.isArray(actData)) continue;
     count += actData.filter(e => e.date && e.date.startsWith(targetDate)).length;
   }
 
   // Check comment log
-  const commentLog = loadJSON(path.join(DATA, 'comment-log.json'));
+  const commentLog = loadJSON(COMMENT_LOG_FILE);
   if (commentLog && Array.isArray(commentLog)) {
     count += commentLog.filter(c => c.date && c.date.startsWith(targetDate)).length;
   }
 
   // Check prospect date fields
   for (const tool of tools) {
-    const prospects = getProspects(loadJSON(path.join(DATA, tool.prospects)));
+    const prospects = getProspects(loadJSON(tool.prospects));
     for (const p of prospects) {
       for (const field of dateFields) {
         if (p[field] && String(p[field]).startsWith(targetDate)) { count++; break; } // one match per prospect is enough
@@ -134,7 +141,7 @@ let summary = {};
 let totalActions = 0;
 
 for (const tool of tools) {
-  const actFile = path.join(DATA, tool.activity);
+  const actFile = tool.activity;
   const actData = loadJSON(actFile);
   if (!actData || !Array.isArray(actData)) continue;
 
@@ -150,7 +157,7 @@ for (const tool of tools) {
 }
 
 // ── 2. Collect from COMMENT LOG ──
-const commentLog = loadJSON(path.join(DATA, 'comment-log.json'));
+const commentLog = loadJSON(COMMENT_LOG_FILE);
 if (commentLog && Array.isArray(commentLog)) {
   const todayComments = commentLog.filter(c => c.date && c.date.startsWith(TODAY));
   if (todayComments.length > 0) {
@@ -166,7 +173,7 @@ if (commentLog && Array.isArray(commentLog)) {
 
 // ── 3. Collect from PROSPECT DATE FIELDS (catches anything activity logs missed) ──
 for (const tool of tools) {
-  const pFile = path.join(DATA, tool.prospects);
+  const pFile = tool.prospects;
   const prospects = getProspects(loadJSON(pFile));
 
   let extra = [];
@@ -273,7 +280,7 @@ let dueFollowUps = [];
 let pendingConnections = [];
 
 for (const tool of tools) {
-  const pFile = path.join(DATA, tool.prospects);
+  const pFile = tool.prospects;
   const prospects = getProspects(loadJSON(pFile));
 
   for (const p of prospects) {

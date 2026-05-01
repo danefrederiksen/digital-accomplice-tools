@@ -4,18 +4,14 @@ const path = require('path');
 const { v4: uuidv4 } = require('uuid');
 
 const app = express();
-const PORT = 3856;
-const HTML_FILE = path.join(__dirname, 'referral-2nd-outreach.html');
-const DATA_DIR = path.join(__dirname, '..', 'data');
-const DATA_FILE = path.join(DATA_DIR, 'referral-2nd-prospects.json');
-const ACTIVITY_FILE = path.join(DATA_DIR, 'referral-2nd-activity.json');
-const TEMPLATES_FILE = path.join(DATA_DIR, 'referral-2nd-templates.json');
-const BACKUP_DIR = path.join(DATA_DIR, 'backups');
-const COMMENT_LOG_FILE = path.join(DATA_DIR, 'comment-log.json');
+const PORT = 3862;
+const HTML_FILE = path.join(__dirname, 'index.html');
+const DATA_DIR = path.join(__dirname, 'data');
+const DATA_FILE = path.join(DATA_DIR, 'prospects.json');
+const ACTIVITY_FILE = path.join(DATA_DIR, 'activity.json');
+const BACKUP_DIR = path.join(__dirname, 'backups');
 const MAX_BACKUPS = 5;
 const MAX_ACTIVITY = 500;
-const COMMENTS_TO_DM = 4;
-const SEGMENT = 'referral_2nd';
 
 // ============================================================
 // MIDDLEWARE
@@ -62,11 +58,11 @@ function backupData() {
   if (!fs.existsSync(DATA_FILE)) return;
   try {
     const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
-    const backupFile = path.join(BACKUP_DIR, `referral-2nd-prospects_${timestamp}.json`);
+    const backupFile = path.join(BACKUP_DIR, `prospects_${timestamp}.json`);
     fs.copyFileSync(DATA_FILE, backupFile);
     // Prune old backups — keep last MAX_BACKUPS
     const backups = fs.readdirSync(BACKUP_DIR)
-      .filter(f => f.startsWith('referral-2nd-prospects_'))
+      .filter(f => f.startsWith('prospects_'))
       .sort()
       .reverse();
     backups.slice(MAX_BACKUPS).forEach(f => {
@@ -88,20 +84,6 @@ function saveActivity(entries) {
   fs.writeFileSync(ACTIVITY_FILE, JSON.stringify(entries, null, 2), 'utf8');
 }
 
-function loadTemplates() {
-  try {
-    if (!fs.existsSync(TEMPLATES_FILE)) return null;
-    return JSON.parse(fs.readFileSync(TEMPLATES_FILE, 'utf8'));
-  } catch (err) {
-    console.error('Failed to load templates:', err.message);
-    return null;
-  }
-}
-
-function saveTemplates(templates) {
-  fs.writeFileSync(TEMPLATES_FILE, JSON.stringify(templates, null, 2), 'utf8');
-}
-
 function logActivity(action, prospectName, prospectId) {
   const entries = loadActivity();
   entries.unshift({
@@ -120,8 +102,6 @@ function logActivity(action, prospectName, prospectId) {
 // ============================================================
 function sanitize(str) {
   if (typeof str !== 'string') return str;
-  // Strip control characters and null bytes only.
-  // HTML encoding happens client-side via esc() at render time.
   return str.replace(/[\x00-\x08\x0B\x0C\x0E-\x1F]/g, '');
 }
 
@@ -133,20 +113,16 @@ function sanitizeObj(obj) {
   return clean;
 }
 
-const VALID_STATUSES = ['not_started', 'connection_sent', 'connection_accepted', 'dm_sent', 'follow_up_1', 'follow_up_2', 'replied', 'cold'];
+const VALID_STATUSES = ['not_started', 'email_sent', 'follow_up_1', 'follow_up_2', 'replied', 'cold'];
 const ALLOWED_FIELDS = [
-  'name', 'company', 'title', 'linkedinUrl', 'status',
-  'connectionSentDate', 'connectionCheckDate', 'connectionAcceptedDate',
-  'dmSentDate', 'followUp1Due', 'followUp2Due', 'lastActionDate',
-  'reply', 'nextStep', 'draftReply', 'abVariants',
-  'comment_count', 'last_commented', 'warming_dm_sent', 'warming_reply_date'
+  'name', 'company', 'title', 'email', 'linkedinUrl', 'source', 'status',
+  'emailSentDate', 'followUp1Due', 'followUp2Due', 'lastActionDate',
+  'reply', 'nextStep', 'draftReply'
 ];
 
 // Map status changes to activity labels
 const STATUS_ACTIONS = {
-  connection_sent: 'Sent Connection Request',
-  connection_accepted: 'Connection Accepted',
-  dm_sent: 'Marked DM Sent',
+  email_sent: 'Marked Email Sent',
   follow_up_1: 'Marked Follow-Up Sent',
   follow_up_2: 'Marked Final Nudge Sent',
   replied: 'Got Reply',
@@ -174,33 +150,33 @@ app.post('/api/prospects', (req, res) => {
   }
 
   const prospects = loadProspects();
-  const existingKeys = prospects.map(p => (p.name + p.company).toLowerCase());
+  const existingKeys = prospects.map(p => (p.email || '').toLowerCase());
   let added = 0;
   let skipped = 0;
 
   incoming.forEach(raw => {
     const name = (raw.name || '').trim();
     if (!name) { skipped++; return; }
-    const company = (raw.company || '').trim();
-    const key = (name + company).toLowerCase();
-    if (existingKeys.includes(key)) { skipped++; return; }
+    const email = (raw.email || '').trim();
+    const key = email.toLowerCase();
+    if (!email || existingKeys.includes(key)) { skipped++; return; }
 
     const prospect = sanitizeObj({
       id: uuidv4(),
       name,
-      company,
+      company: (raw.company || '').trim(),
       title: (raw.title || '').trim(),
+      email,
       linkedinUrl: (raw.linkedinUrl || '').trim(),
+      source: (raw.source || '').trim(),
       status: 'not_started',
-      connectionSentDate: null,
-      connectionCheckDate: null,
-      connectionAcceptedDate: null,
-      dmSentDate: null,
+      emailSentDate: null,
       followUp1Due: null,
       followUp2Due: null,
       lastActionDate: null,
       reply: '',
-      nextStep: ''
+      nextStep: '',
+      draftReply: ''
     });
 
     prospects.push(prospect);
@@ -230,17 +206,17 @@ app.post('/api/prospects/migrate', (req, res) => {
     name: (raw.name || '').trim(),
     company: (raw.company || '').trim(),
     title: (raw.title || '').trim(),
+    email: (raw.email || '').trim(),
     linkedinUrl: (raw.linkedinUrl || '').trim(),
+    source: (raw.source || '').trim(),
     status: VALID_STATUSES.includes(raw.status) ? raw.status : 'not_started',
-    connectionSentDate: raw.connectionSentDate || null,
-    connectionCheckDate: raw.connectionCheckDate || null,
-    connectionAcceptedDate: raw.connectionAcceptedDate || null,
-    dmSentDate: raw.dmSentDate || null,
+    emailSentDate: raw.emailSentDate || null,
     followUp1Due: raw.followUp1Due || null,
     followUp2Due: raw.followUp2Due || null,
     lastActionDate: raw.lastActionDate || null,
     reply: (raw.reply || ''),
-    nextStep: (raw.nextStep || '')
+    nextStep: (raw.nextStep || ''),
+    draftReply: (raw.draftReply || '')
   }));
 
   saveProspects(prospects);
@@ -262,15 +238,6 @@ app.put('/api/prospects/:id', (req, res) => {
     if (!ALLOWED_FIELDS.includes(key)) continue;
     if (key === 'status' && !VALID_STATUSES.includes(val)) continue;
     prospect[key] = typeof val === 'string' ? sanitize(val) : val;
-  }
-
-  // Sanitize abVariants object values
-  if (prospect.abVariants && typeof prospect.abVariants === 'object') {
-    const clean = {};
-    for (const [k, v] of Object.entries(prospect.abVariants)) {
-      clean[k] = typeof v === 'string' ? sanitize(v) : v;
-    }
-    prospect.abVariants = clean;
   }
 
   prospects[idx] = prospect;
@@ -309,120 +276,12 @@ app.get('/api/activity', (req, res) => {
   res.json({ activity: all.slice(0, limit), total: all.length });
 });
 
-// GET — templates
-app.get('/api/templates', (req, res) => {
-  const templates = loadTemplates();
-  if (templates) {
-    res.json({ templates, source: 'server' });
-  } else {
-    res.json({ templates: null, source: 'none' });
-  }
-});
-
-// PUT — save templates
-app.put('/api/templates', (req, res) => {
-  const templates = req.body.templates;
-  if (!templates || typeof templates !== 'object') {
-    return res.status(400).json({ error: 'templates object required' });
-  }
-  const clean = {};
-  for (const [key, val] of Object.entries(templates)) {
-    clean[key] = typeof val === 'string' ? sanitize(val) : val;
-  }
-  saveTemplates(clean);
-  res.json({ ok: true });
-});
-
-// ============================================================
-// COMMENT TRACKING — shared comment-log.json with Tool #11
-// ============================================================
-
-function loadCommentLog() {
-  try {
-    if (!fs.existsSync(COMMENT_LOG_FILE)) return [];
-    return JSON.parse(fs.readFileSync(COMMENT_LOG_FILE, 'utf8')) || [];
-  } catch { return []; }
-}
-
-function saveCommentLog(entries) {
-  fs.writeFileSync(COMMENT_LOG_FILE, JSON.stringify(entries, null, 2), 'utf8');
-}
-
-// GET comment stats for all prospects in this tool
-app.get('/api/comment-stats', (req, res) => {
-  const commentLog = loadCommentLog();
-  const prospects = loadProspects();
-
-  const stats = {};
-  commentLog.forEach(entry => {
-    if (!stats[entry.prospectId]) {
-      stats[entry.prospectId] = { count: 0, lastDate: null };
-    }
-    stats[entry.prospectId].count++;
-    if (!stats[entry.prospectId].lastDate || entry.date > stats[entry.prospectId].lastDate) {
-      stats[entry.prospectId].lastDate = entry.date;
-    }
-  });
-
-  // Only return stats for prospects in this tool
-  const ourStats = {};
-  prospects.forEach(p => {
-    const s = stats[p.id] || { count: 0, lastDate: null };
-    ourStats[p.id] = { count: p.comment_count || s.count, lastDate: s.lastDate };
-  });
-
-  res.json({ stats: ourStats, commentsRequired: COMMENTS_TO_DM });
-});
-
-// POST log a comment — writes to shared comment-log.json AND updates prospect
-app.post('/api/comment', (req, res) => {
-  const { prospectId, postUrl } = req.body;
-  if (!prospectId) return res.status(400).json({ error: 'prospectId required' });
-
-  const prospects = loadProspects();
-  const prospect = prospects.find(p => p.id === prospectId);
-  if (!prospect) return res.status(404).json({ error: 'Prospect not found' });
-
-  const entry = {
-    id: uuidv4(),
-    prospectId: sanitize(prospectId),
-    prospectName: prospect.name,
-    company: prospect.company,
-    segment: SEGMENT,
-    postUrl: sanitize(postUrl || ''),
-    date: new Date().toISOString()
-  };
-
-  // Save to shared comment log
-  const log = loadCommentLog();
-  log.unshift(entry);
-  if (log.length > 2000) log.length = 2000;
-  saveCommentLog(log);
-
-  // Count total comments for this prospect
-  const totalComments = log.filter(e => e.prospectId === prospectId).length;
-
-  // Update prospect record (direct write to avoid backup on every comment)
-  const idx = prospects.findIndex(p => p.id === prospectId);
-  if (idx !== -1) {
-    prospects[idx].comment_count = totalComments;
-    prospects[idx].last_commented = entry.date;
-    fs.writeFileSync(DATA_FILE, JSON.stringify({ prospects }, null, 2), 'utf8');
-  }
-
-  logActivity('Logged comment', prospect.name, prospectId);
-
-  const dmReady = totalComments >= COMMENTS_TO_DM;
-  res.json({ ok: true, entry, totalComments, dmReady, commentsNeeded: Math.max(0, COMMENTS_TO_DM - totalComments) });
-});
-
 // ============================================================
 // START
 // ============================================================
 ensureDirs();
 app.listen(PORT, '127.0.0.1', () => {
-  console.log(`\n  DA Prospecting Tool #6 — Referral Partner 2nd Connections running at http://localhost:${PORT}`);
+  console.log(`\n  DA Prospecting Tool #12 — Referral Partner Emails running at http://localhost:${PORT}`);
   console.log(`  Data: ${DATA_FILE}`);
-  console.log(`  Templates: ${TEMPLATES_FILE}`);
   console.log(`  Backups: ${BACKUP_DIR} (last ${MAX_BACKUPS} kept)\n`);
 });

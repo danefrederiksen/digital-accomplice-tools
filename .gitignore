@@ -54,3 +54,13 @@ warming-app copy/
 # Claude internal
 .claude/
 data/youtube-credentials/
+
+# Logs (noisy, can be huge)
+logs/
+
+# Real interview transcripts (kept local only)
+youtube-publish-system/tests/
+
+# Self-contained tool folders — runtime data, never commit
+tools/*/data/
+tools/*/backups/

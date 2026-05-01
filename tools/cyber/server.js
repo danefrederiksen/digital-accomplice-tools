@@ -4,12 +4,13 @@ const path = require('path');
 const { v4: uuidv4 } = require('uuid');
 
 const app = express();
-const PORT = 3858;
-const HTML_FILE = path.join(__dirname, 'cyber-email-outreach.html');
-const DATA_DIR = path.join(__dirname, '..', 'data');
-const DATA_FILE = path.join(DATA_DIR, 'cyber-email-prospects.json');
-const ACTIVITY_FILE = path.join(DATA_DIR, 'cyber-email-activity.json');
-const BACKUP_DIR = path.join(DATA_DIR, 'backups');
+const PORT = 3852;
+const HTML_FILE = path.join(__dirname, 'index.html');
+const DATA_DIR = path.join(__dirname, 'data');
+const DATA_FILE = path.join(DATA_DIR, 'prospects.json');
+const ACTIVITY_FILE = path.join(DATA_DIR, 'activity.json');
+const TEMPLATES_FILE = path.join(DATA_DIR, 'templates.json');
+const BACKUP_DIR = path.join(__dirname, 'backups');
 const MAX_BACKUPS = 5;
 const MAX_ACTIVITY = 500;
 
@@ -58,11 +59,11 @@ function backupData() {
   if (!fs.existsSync(DATA_FILE)) return;
   try {
     const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
-    const backupFile = path.join(BACKUP_DIR, `cyber-email-prospects_${timestamp}.json`);
+    const backupFile = path.join(BACKUP_DIR, `prospects_${timestamp}.json`);
     fs.copyFileSync(DATA_FILE, backupFile);
     // Prune old backups — keep last MAX_BACKUPS
     const backups = fs.readdirSync(BACKUP_DIR)
-      .filter(f => f.startsWith('cyber-email-prospects_'))
+      .filter(f => f.startsWith('prospects_'))
       .sort()
       .reverse();
     backups.slice(MAX_BACKUPS).forEach(f => {
@@ -82,6 +83,20 @@ function loadActivity() {
 
 function saveActivity(entries) {
   fs.writeFileSync(ACTIVITY_FILE, JSON.stringify(entries, null, 2), 'utf8');
+}
+
+function loadTemplates() {
+  try {
+    if (!fs.existsSync(TEMPLATES_FILE)) return null;
+    return JSON.parse(fs.readFileSync(TEMPLATES_FILE, 'utf8'));
+  } catch (err) {
+    console.error('Failed to load templates:', err.message);
+    return null;
+  }
+}
+
+function saveTemplates(templates) {
+  fs.writeFileSync(TEMPLATES_FILE, JSON.stringify(templates, null, 2), 'utf8');
 }
 
 function logActivity(action, prospectName, prospectId) {
@@ -115,16 +130,16 @@ function sanitizeObj(obj) {
   return clean;
 }
 
-const VALID_STATUSES = ['not_started', 'email_sent', 'follow_up_1', 'follow_up_2', 'replied', 'cold'];
+const VALID_STATUSES = ['not_started', 'dm_sent', 'follow_up_1', 'follow_up_2', 'replied', 'cold'];
 const ALLOWED_FIELDS = [
-  'name', 'company', 'title', 'email', 'linkedinUrl', 'source', 'status',
-  'emailSentDate', 'followUp1Due', 'followUp2Due', 'lastActionDate',
-  'reply', 'nextStep'
+  'name', 'company', 'title', 'linkedinUrl', 'status',
+  'dmSentDate', 'followUp1Due', 'followUp2Due', 'lastActionDate',
+  'reply', 'nextStep', 'draftReply', 'abVariants', 'offerType'
 ];
 
 // Map status changes to activity labels
 const STATUS_ACTIONS = {
-  email_sent: 'Marked Email Sent',
+  dm_sent: 'Marked DM Sent',
   follow_up_1: 'Marked Follow-Up Sent',
   follow_up_2: 'Marked Final Nudge Sent',
   replied: 'Got Reply',
@@ -152,27 +167,25 @@ app.post('/api/prospects', (req, res) => {
   }
 
   const prospects = loadProspects();
-  const existingKeys = prospects.map(p => (p.email || '').toLowerCase());
+  const existingKeys = prospects.map(p => (p.name + p.company).toLowerCase());
   let added = 0;
   let skipped = 0;
 
   incoming.forEach(raw => {
     const name = (raw.name || '').trim();
     if (!name) { skipped++; return; }
-    const email = (raw.email || '').trim();
-    const key = email.toLowerCase();
-    if (!email || existingKeys.includes(key)) { skipped++; return; }
+    const company = (raw.company || '').trim();
+    const key = (name + company).toLowerCase();
+    if (existingKeys.includes(key)) { skipped++; return; }
 
     const prospect = sanitizeObj({
       id: uuidv4(),
       name,
-      company: (raw.company || '').trim(),
+      company,
       title: (raw.title || '').trim(),
-      email,
       linkedinUrl: (raw.linkedinUrl || '').trim(),
-      source: (raw.source || '').trim(),
       status: 'not_started',
-      emailSentDate: null,
+      dmSentDate: null,
       followUp1Due: null,
       followUp2Due: null,
       lastActionDate: null,
@@ -207,11 +220,9 @@ app.post('/api/prospects/migrate', (req, res) => {
     name: (raw.name || '').trim(),
     company: (raw.company || '').trim(),
     title: (raw.title || '').trim(),
-    email: (raw.email || '').trim(),
     linkedinUrl: (raw.linkedinUrl || '').trim(),
-    source: (raw.source || '').trim(),
     status: VALID_STATUSES.includes(raw.status) ? raw.status : 'not_started',
-    emailSentDate: raw.emailSentDate || null,
+    dmSentDate: raw.dmSentDate || null,
     followUp1Due: raw.followUp1Due || null,
     followUp2Due: raw.followUp2Due || null,
     lastActionDate: raw.lastActionDate || null,
@@ -240,6 +251,15 @@ app.put('/api/prospects/:id', (req, res) => {
     prospect[key] = typeof val === 'string' ? sanitize(val) : val;
   }
 
+  // Sanitize abVariants object values
+  if (prospect.abVariants && typeof prospect.abVariants === 'object') {
+    const clean = {};
+    for (const [k, v] of Object.entries(prospect.abVariants)) {
+      clean[k] = typeof v === 'string' ? sanitize(v) : v;
+    }
+    prospect.abVariants = clean;
+  }
+
   prospects[idx] = prospect;
   saveProspects(prospects);
 
@@ -248,6 +268,8 @@ app.put('/api/prospects/:id', (req, res) => {
     logActivity(STATUS_ACTIONS[updates.status], prospect.name, prospect.id);
   } else if ('reply' in updates) {
     logActivity('Updated reply', prospect.name, prospect.id);
+  } else if ('draftReply' in updates) {
+    logActivity('Updated draft reply', prospect.name, prospect.id);
   } else if ('nextStep' in updates) {
     logActivity('Updated next step', prospect.name, prospect.id);
   }
@@ -274,12 +296,37 @@ app.get('/api/activity', (req, res) => {
   res.json({ activity: all.slice(0, limit), total: all.length });
 });
 
+// GET — templates
+app.get('/api/templates', (req, res) => {
+  const templates = loadTemplates();
+  if (templates) {
+    res.json({ templates, source: 'server' });
+  } else {
+    res.json({ templates: null, source: 'none' });
+  }
+});
+
+// PUT — save templates
+app.put('/api/templates', (req, res) => {
+  const templates = req.body.templates;
+  if (!templates || typeof templates !== 'object') {
+    return res.status(400).json({ error: 'templates object required' });
+  }
+  const clean = {};
+  for (const [key, val] of Object.entries(templates)) {
+    clean[key] = typeof val === 'string' ? sanitize(val) : val;
+  }
+  saveTemplates(clean);
+  res.json({ ok: true });
+});
+
 // ============================================================
 // START
 // ============================================================
 ensureDirs();
 app.listen(PORT, '127.0.0.1', () => {
-  console.log(`\n  DA Prospecting Tool #8 — Cyber Leads w/ Emails running at http://localhost:${PORT}`);
+  console.log(`\n  DA Prospecting Tool #2 — Cyber 1st Connections running at http://localhost:${PORT}`);
   console.log(`  Data: ${DATA_FILE}`);
+  console.log(`  Templates: ${TEMPLATES_FILE}`);
   console.log(`  Backups: ${BACKUP_DIR} (last ${MAX_BACKUPS} kept)\n`);
 });
