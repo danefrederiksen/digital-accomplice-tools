@@ -1,0 +1,25 @@
+═══════════════════════════════════════════
+ GEO Schema Audit
+═══════════════════════════════════════════
+URL:     https://www.digitalaccomplice.com/post/3-person-team-zero-slop-todd-fairbairn-on-b2b-ai
+Audited: 2026-05-02T17:35:47.991Z
+Schemas: 5 found
+
+── Schema 1: BlogPosting [PASS] ──
+  All required fields present.
+
+── Schema 2: FAQPage [PASS] ──
+  All required fields present.
+
+── Schema 3: VideoObject [PASS] ──
+  All required fields present.
+
+── Schema 4: Person [PASS] ──
+  All required fields present.
+
+── Schema 5: HowTo [PASS] ──
+  All required fields present.
+
+═══════════════════════════════════════════
+RESULT: PASS — all schemas valid
+═══════════════════════════════════════════

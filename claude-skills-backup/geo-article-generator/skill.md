@@ -187,6 +187,32 @@ Before writing the file, re-read your draft against these checks:
 4. **Reading level.** Sentences over 25 words: split them. Words a 13-year-old wouldn't use: replace.
 5. **Word count.** Run `wc -w` mentally. Target 1,100–1,300. If under, you skipped a section. If over, cut adjectives.
 
+### Step 11.5 — Append full transcript
+
+Add a `## Full Interview Transcript` H2 section to the article. Placement: AFTER the FAQ block, BEFORE the JSON-LD `<script>` blocks. Visible, not collapsed — AI engines cite text they can see, and the extra crawlable surface is the whole point of including it.
+
+Cleanup rules:
+- **Strip timestamps.** Remove `[00:12:34]`, `(12:34)`, `12:34 — `, or any timestamp pattern. Riverside/Otter exports have these and they read like noise.
+- **Keep speaker labels.** Preserve `Dane:` / `<Guest first name>:` (or however the export labels them) so the back-and-forth reads clearly. Normalize the labels to `Dane:` and `<Guest first name>:` if the export uses inconsistent variants (`DF:`, `Dane Frederiksen:`, etc.).
+- **Preserve the words.** Do NOT paraphrase, summarize, or "clean up" the transcript. Fix obvious export typos only (e.g., `youknow` → `you know`).
+- **One blank line between speakers.** Helps Wix render it readable.
+
+Format:
+
+```markdown
+## Full Interview Transcript
+
+Dane: [first thing Dane says]
+
+Christopher: [first thing the guest says]
+
+Dane: [next exchange]
+
+[... continue for the entire transcript]
+```
+
+Word count note: the transcript adds significant length to the article (often 3,000–8,000 words for a 30–60 min interview). That's expected and good for GEO. Word count targets in Step 11 (~1,200 words) refer to the article BODY only, not including the transcript.
+
 ### Step 12 — Generate JSON-LD schema
 
 This is the GEO payload Wix will inline so AI engines and search crawlers can parse the article cleanly. THREE schemas, each as a separate `<script type="application/ld+json">` block at the bottom of the markdown file.
@@ -274,7 +300,7 @@ Output path: `youtube-publish-system/output-samples/<guest-slug>-article.md`
 
 Where `<guest-slug>` is the guest's name lowercased and hyphenated (e.g., `todd-fairbairn`).
 
-The file contains, in order: H1, optional intro, YouTube embed iframe, Key Takeaways, H2 sections, FAQ block, then all three JSON-LD `<script>` blocks at the bottom (`Article` → `FAQPage` → `VideoObject`).
+The file contains, in order: H1, optional intro, YouTube embed iframe, Key Takeaways, H2 sections, FAQ block, **Full Interview Transcript section** (per Step 11.5), then all three JSON-LD `<script>` blocks at the bottom (`Article` → `FAQPage` → `VideoObject`).
 
 If the file already exists, ask Dane before overwriting.
 
