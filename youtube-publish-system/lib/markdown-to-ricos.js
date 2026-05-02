@@ -88,7 +88,7 @@ function inlineToTextNodes(tokens, decorationStack, idGen) {
         idGen,
       ));
     } else if (t.type === 'codespan') {
-      out.push(textNode(t.text, [...decorationStack, { type: 'CODE' }], idGen));
+      out.push(textNode(t.text, decorationStack, idGen));
     } else if (t.type === 'link') {
       const linkDeco = { type: 'LINK', linkData: { link: { url: t.href } } };
       out.push(...inlineToTextNodes(t.tokens, [...decorationStack, linkDeco], idGen));

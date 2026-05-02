@@ -1,13 +1,12 @@
-// Take an article markdown file, create a Wix Blog draft post, and (by default) publish it live.
+// Update an existing Wix Blog draft post with new content from a markdown file, then publish it.
+// Use this when a draft is already published but the source markdown has changed.
 //
-// Run: node --env-file=.env scripts/publish-to-wix.js path/to/article.md           # creates + publishes
-//      node --env-file=.env scripts/publish-to-wix.js path/to/article.md --draft   # creates draft only
+// Run: node --env-file=.env scripts/update-and-publish.js <draftPostId> path/to/article.md
 
 import { readFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
 import {
   extractTitle,
-  extractYouTubeUrl,
   extractJsonLdScripts,
   buildSeoData,
   markdownToRicosWithVideo,
@@ -15,43 +14,31 @@ import {
 
 const API_KEY = process.env.WIX_API_KEY;
 const SITE_ID = process.env.WIX_SITE_ID;
-const MEMBER_ID = process.env.WIX_MEMBER_ID || 'b45d7151-61b1-41c1-88a7-570ee03bcc1e';
 
 if (!API_KEY || !SITE_ID) {
   console.error('Missing WIX_API_KEY or WIX_SITE_ID in .env');
   process.exit(1);
 }
 
-const args = process.argv.slice(2);
-const draftOnly = args.includes('--draft');
-const inputPath = args.find(a => !a.startsWith('--'));
-if (!inputPath) {
-  console.error('Usage: node scripts/publish-to-wix.js path/to/article.md [--draft]');
+const [draftId, inputPath] = process.argv.slice(2);
+if (!draftId || !inputPath) {
+  console.error('Usage: node scripts/update-and-publish.js <draftPostId> path/to/article.md');
   process.exit(1);
 }
 
-const absPath = resolve(inputPath);
-const md = await readFile(absPath, 'utf8');
-
+const md = await readFile(resolve(inputPath), 'utf8');
 const title = extractTitle(md);
-if (!title) {
-  console.error(`No H1 found in ${absPath} — skill output should start with "# Title".`);
-  process.exit(1);
-}
-
 const richContent = markdownToRicosWithVideo(md);
-const youtubeUrl = extractYouTubeUrl(md);
 const jsonLdScripts = extractJsonLdScripts(md);
 const seoData = jsonLdScripts.length ? buildSeoData(jsonLdScripts) : undefined;
 
-console.log(`Source: ${absPath}`);
+console.log(`Draft:  ${draftId}`);
 console.log(`Title:  ${title}`);
-console.log(`Video:  ${youtubeUrl || '(none found)'}`);
 console.log(`Body:   ${richContent.nodes.length} top-level nodes`);
 console.log(`SEO:    ${jsonLdScripts.length} JSON-LD script(s)`);
 
-const res = await fetch('https://www.wixapis.com/blog/v3/draft-posts', {
-  method: 'POST',
+const patchRes = await fetch(`https://www.wixapis.com/blog/v3/draft-posts/${draftId}`, {
+  method: 'PATCH',
   headers: {
     'Authorization': API_KEY,
     'wix-site-id': SITE_ID,
@@ -60,33 +47,21 @@ const res = await fetch('https://www.wixapis.com/blog/v3/draft-posts', {
   body: JSON.stringify({
     draftPost: {
       title,
-      memberId: MEMBER_ID,
       richContent,
       ...(seoData ? { seoData } : {}),
     },
   }),
 });
 
-const body = await res.text();
-
-if (!res.ok) {
-  console.error(`\nHTTP ${res.status}`);
-  console.error(body.slice(0, 1500));
+if (!patchRes.ok) {
+  console.error(`\nPATCH failed: HTTP ${patchRes.status}`);
+  console.error((await patchRes.text()).slice(0, 1500));
   process.exit(1);
 }
 
-const parsed = JSON.parse(body);
-const post = parsed.draftPost;
-console.log(`\nHTTP ${res.status} — draft created`);
-console.log(`Draft ID: ${post.id}`);
-console.log(`Status:   ${post.status}`);
+console.log(`HTTP ${patchRes.status} — draft updated`);
 
-if (draftOnly) {
-  console.log(`\nReview at: https://manage.wix.com/dashboard/${SITE_ID}/blog/posts/drafts`);
-  process.exit(0);
-}
-
-const pubRes = await fetch(`https://www.wixapis.com/blog/v3/draft-posts/${post.id}/publish`, {
+const pubRes = await fetch(`https://www.wixapis.com/blog/v3/draft-posts/${draftId}/publish`, {
   method: 'POST',
   headers: {
     'Authorization': API_KEY,
@@ -103,13 +78,12 @@ if (!pubRes.ok) {
 }
 
 const { postId } = await pubRes.json();
-
 const getRes = await fetch(`https://www.wixapis.com/blog/v3/posts/${postId}`, {
   headers: { 'Authorization': API_KEY, 'wix-site-id': SITE_ID },
 });
 const livePost = (await getRes.json()).post;
 
-console.log(`\nHTTP ${pubRes.status} — published`);
+console.log(`\nHTTP ${pubRes.status} — re-published`);
 console.log(`Post ID:  ${livePost.id}`);
 console.log(`Slug:     ${livePost.slug}`);
 console.log(`Live URL: https://www.digitalaccomplice.com/post/${livePost.slug}`);

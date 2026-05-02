@@ -1,8 +1,6 @@
 # 11% AI Referrals. Christopher Penn on GEO and video.
 
-<iframe width="560" height="315" src="https://www.youtube.com/embed/TBD_LONGFORM_VIDEO_ID" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
-
-> **DANE — REPLACE `TBD_LONGFORM_VIDEO_ID`** with the 11-character YouTube video ID once the long-form is uploaded. Same swap needed in the JSON-LD VideoObject schema at the bottom.
+<iframe width="560" height="315" src="https://www.youtube.com/embed/5uRIjfTCovs" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
 
 ## Key Takeaways
 
@@ -85,9 +83,9 @@ Yes, for most B2B brands. The exception is if your brand is built on production 
 
 Each short answers one specific question from the interview:
 
-- **How do you measure AI visibility for your business?** — https://youtube.com/shorts/Q4TBpdvcsCY (Wix URL: TBD)
-- **Can you predict what AI search will recommend?** — https://youtube.com/shorts/YSzUb_FfaGQ (Wix URL: TBD)
-- **Why does YouTube matter for AI visibility?** — https://youtube.com/shorts/PNYb2RY8BO4 (Wix URL: TBD)
+- [How do you measure AI visibility for your business?](https://www.digitalaccomplice.com/post/how-do-you-measure-ai-visibility-for-your-business)
+- [Can you predict what AI search will recommend?](https://www.digitalaccomplice.com/post/can-you-predict-what-ai-search-will-recommend)
+- [Why does YouTube matter for AI visibility?](https://www.digitalaccomplice.com/post/why-does-youtube-matter-for-ai-visibility)
 
 ## Full Interview Transcript
 
@@ -210,9 +208,9 @@ Christopher: Thank you for having me.
   "@type": "VideoObject",
   "name": "11% AI Referrals. Christopher Penn on GEO and video.",
   "description": "Christopher Penn explains why AI visibility tracking is broken, how to actually measure GEO, and why daily YouTube video is the only strategy that works.",
-  "thumbnailUrl": "https://i.ytimg.com/vi/TBD_LONGFORM_VIDEO_ID/maxresdefault.jpg",
+  "thumbnailUrl": "https://i.ytimg.com/vi/5uRIjfTCovs/maxresdefault.jpg",
   "uploadDate": "2026-05-02T00:00:00-07:00",
-  "contentUrl": "https://www.youtube.com/watch?v=TBD_LONGFORM_VIDEO_ID",
-  "embedUrl": "https://www.youtube.com/embed/TBD_LONGFORM_VIDEO_ID"
+  "contentUrl": "https://www.youtube.com/watch?v=5uRIjfTCovs",
+  "embedUrl": "https://www.youtube.com/embed/5uRIjfTCovs"
 }
 </script>

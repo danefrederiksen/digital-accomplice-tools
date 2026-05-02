@@ -35,7 +35,7 @@ If you are paying for software that claims to predict your AI visibility, yes. C
 
 ---
 
-**Want the full conversation?** Watch [the full interview with Christopher Penn](https://www.youtube.com/watch?v=TBD_LONGFORM_VIDEO_ID) — or read [the full article](TBD_LONGFORM_WIX_URL).
+**Want the full conversation?** Watch [the full interview with Christopher Penn](https://www.youtube.com/watch?v=5uRIjfTCovs) — or read [the full article](https://www.digitalaccomplice.com/post/11-ai-referrals-christopher-penn-on-geo-and-video).
 
 ## Full Clip Transcript
 

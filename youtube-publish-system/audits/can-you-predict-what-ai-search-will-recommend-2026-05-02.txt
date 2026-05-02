@@ -1,0 +1,22 @@
+═══════════════════════════════════════════
+ GEO Schema Audit
+═══════════════════════════════════════════
+URL:     https://www.digitalaccomplice.com/post/can-you-predict-what-ai-search-will-recommend
+Audited: 2026-05-02T23:03:15.390Z
+Schemas: 4 found
+
+── Schema 1: Article [PASS] ──
+  All required fields present.
+
+── Schema 2: FAQPage [PASS] ──
+  All required fields present.
+
+── Schema 3: VideoObject [PASS] ──
+  All required fields present.
+
+── Schema 4: BlogPosting [PASS] ──
+  All required fields present.
+
+═══════════════════════════════════════════
+RESULT: PASS — all schemas valid
+═══════════════════════════════════════════

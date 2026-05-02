@@ -9,7 +9,7 @@
 
 ## VIDEO 1 — Long-Form Interview
 
-**Status:** Not yet uploaded. Use this metadata when you upload to YouTube Studio. Once uploaded, replace `TBD_LONGFORM_VIDEO_ID` in the 4 blog post markdown files with the real video ID.
+**Status:** Not yet uploaded. Use this metadata when you upload to YouTube Studio. Once uploaded, replace `5uRIjfTCovs` in the 4 blog post markdown files with the real video ID.
 
 ### Title (60 chars)
 ```
@@ -38,7 +38,7 @@ Chapters:
 10:54 How much budget to put toward video
 13:51 Is iPhone footage good enough?
 
-Read the full article and transcript: TBD_LONGFORM_WIX_URL
+Read the full article and transcript: https://www.digitalaccomplice.com/post/11-ai-referrals-christopher-penn-on-geo-and-video
 
 Watch the shorts:
 - How do you measure AI visibility? https://youtube.com/shorts/Q4TBpdvcsCY
@@ -89,7 +89,7 @@ GEO, AI visibility, Christopher Penn, Trust Insights, Dane Frederiksen, Digital 
 ```
 Christopher's "How did you hear about us?" trick at 7:16 is the most actionable measurement framework we've seen for GEO. We're rolling it out across our own intake forms — recommend you do the same.
 
-Full transcript + article: TBD_LONGFORM_WIX_URL
+Full transcript + article: https://www.digitalaccomplice.com/post/11-ai-referrals-christopher-penn-on-geo-and-video
 
 Connect with Christopher: https://www.trustinsights.ai
 ```
@@ -111,8 +111,8 @@ The gold standard for measuring AI visibility, per Christopher Penn (Trust Insig
 
 11% of Trust Insights' new business now comes from AI referrals — measured this exact way.
 
-Full interview: TBD_LONGFORM_VIDEO_URL
-Article + transcript: TBD_SHORT1_WIX_URL
+Full interview: https://www.youtube.com/watch?v=5uRIjfTCovs
+Article + transcript: https://www.digitalaccomplice.com/post/how-do-you-measure-ai-visibility-for-your-business
 
 #GEO #AIVisibility #B2BMarketing #ChristopherPenn #Shorts
 ```
@@ -150,8 +150,8 @@ Christopher Penn (Trust Insights) explains why AI visibility tracking software c
 
 If you're paying $5K–$10K/month for AI visibility tracking, cancel it.
 
-Full interview: TBD_LONGFORM_VIDEO_URL
-Article + transcript: TBD_SHORT2_WIX_URL
+Full interview: https://www.youtube.com/watch?v=5uRIjfTCovs
+Article + transcript: https://www.digitalaccomplice.com/post/can-you-predict-what-ai-search-will-recommend
 
 #GEO #AIVisibility #AISearch #ChristopherPenn #Shorts
 ```
@@ -189,8 +189,8 @@ Christopher Penn (Trust Insights) breaks down why YouTube is the data source beh
 
 If you're not publishing on YouTube, your competitors are training the AI that recommends them.
 
-Full interview: TBD_LONGFORM_VIDEO_URL
-Article + transcript: TBD_SHORT3_WIX_URL
+Full interview: https://www.youtube.com/watch?v=5uRIjfTCovs
+Article + transcript: https://www.digitalaccomplice.com/post/why-does-youtube-matter-for-ai-visibility
 
 #GEO #YouTube #AISearch #ChristopherPenn #B2BVideo
 ```
@@ -221,14 +221,14 @@ YouTube, GEO, AI training, Gemini, Vertex API, Christopher Penn, B2B video, AI v
 - Set thumbnail per brief (or use the upcoming auto-thumbnail generator from Phase 2 of the YouTube Publish System)
 - Configure end screens, cards, pinned comment
 - Once uploaded, copy the 11-character video ID
-- Replace `TBD_LONGFORM_VIDEO_ID` in all 4 blog post .md files in `output-samples/`
+- Replace `5uRIjfTCovs` in all 4 blog post .md files in `output-samples/`
 
 **2. Shorts (Videos 2–4):**
 - Already uploaded. Update Title and Description per above to match the GEO blog posts
 - Set custom thumbnails if you want (Shorts default to the first frame, which often works fine)
 
 **3. Blog posts:**
-- Once long-form Wix URL exists, search-and-replace `TBD_LONGFORM_WIX_URL` and `TBD_SHORT[N]_WIX_URL` in all 4 .md files
+- Once long-form Wix URL exists, search-and-replace `https://www.digitalaccomplice.com/post/11-ai-referrals-christopher-penn-on-geo-and-video` and `TBD_SHORT[N]_WIX_URL` in all 4 .md files
 - Paste each .md into Wix Blog and publish
 - Run the schema audit on each live URL: `node youtube-publish-system/scripts/audit-schema.js <url>`
 
