@@ -17,9 +17,10 @@ Each YouTube Short answers ONE question. This skill turns each short into its ow
 2. **The ONE question this short answers** — e.g. "What's the biggest mistake studios make with AI?" If Dane doesn't provide it, ASK before drafting. The whole page serves this question.
 3. **YouTube Short URL** — full URL of the published short (e.g. `https://youtube.com/shorts/Abc123Xyz45`). If Dane forgets to provide this, ASK before drafting — the page should not ship without the embedded short.
 4. **Parent long-form video URL** — the full long-form interview YouTube URL. Used for the "Watch the full interview" backlink.
-5. **Parent article URL** *(optional)* — the live Wix URL of the long-form GEO article. If provided, the short page links back to it (best practice for GEO cross-linking).
-6. **Guest name** — full name of the interviewee.
-7. **Short number** — which of the 3 shorts this is (1, 2, or 3). Used for the output filename.
+5. **Guest name** — full name of the interviewee.
+6. **Short number** — which of the 3 shorts this is (1, 2, or 3). Used for the output filename.
+
+The parent long-form Wix URL is NOT an input — the skill always emits the literal placeholder `__LONGFORM_WIX_URL__` in its place. The `publish-interview.js` orchestrator substitutes the real URL after the long-form is published.
 
 ## Output Format
 
@@ -173,19 +174,16 @@ Answer rules:
 
 ### Step 10 — Write the "Watch the full interview" pointer
 
-Place after FAQ, before schema blocks. ONE sentence + a link.
+Place after FAQ, before schema blocks. ONE sentence + two links. The Wix URL uses a literal placeholder that the `publish-interview.js` orchestrator substitutes at publish time.
 
-Format:
+Format (exact — do NOT replace the placeholder):
 ```
 ---
 
-**Want the full conversation?** Watch [the full interview with <Guest Name>](<parent long-form YouTube URL>) — or read [the full article](<parent article URL>).
+**Want the full conversation?** Watch [the full interview with <Guest Name>](<parent long-form YouTube URL>) — or read [the full article](__LONGFORM_WIX_URL__).
 ```
 
-If Dane didn't provide a parent article URL, drop that half of the sentence:
-```
-**Want the full conversation?** Watch [the full interview with <Guest Name>](<parent long-form YouTube URL>).
-```
+The `__LONGFORM_WIX_URL__` token must appear verbatim. If Dane plans to publish manually (without the orchestrator), he replaces it by hand before publishing — but the skill always emits the placeholder.
 
 ### Step 11 — Final pass: voice + accuracy
 

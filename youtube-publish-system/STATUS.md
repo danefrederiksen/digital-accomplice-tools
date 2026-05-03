@@ -1,7 +1,7 @@
 # Build Status
 
 **Started:** 2026-04-30
-**Current phase:** Phase 1 COMPLETE (2026-05-01). Phase 1.6 COMPLETE (2026-05-02 — schema audit + shorts skill). Next: Phase 2 (Long-Form Thumbnail Generator).
+**Current phase:** Phase 1 + 1.5 + 1.6 + full automation + orchestrator COMPLETE (through 2026-05-03). Phase 2 (Thumbnails) explored and paused. Phase 3 (Shorts pipeline) folded into the new `publish-interview.js` orchestrator + Phase 1.6 shorts skill.
 
 ---
 
@@ -18,11 +18,20 @@
 - [ ] 1.6c — Test the shorts skill end-to-end on a real Todd Fairbairn short (NEXT).
 - [ ] 1.6d — Optional: auto-patch the long-form Wix post with the cross-link footer via Phase 1.5 API (not built — Dane pastes manually for now).
 
-## Phase 2: Long-Form Thumbnail Generator
-- [ ] 2.1 — Static HTML template (hardcoded data)
-- [ ] 2.2 — Chrome headless render to JPG
-- [ ] 2.3 — Dynamic CLI args
-- [ ] 2.4 — Tested with second guest data
+## Phase 2: Long-Form Thumbnail Generator (PAUSED 2026-05-03)
+- [x] 2.1 — Static HTML template (`scripts/thumbnail-template.html`, two-person split layout)
+- [x] 2.2 — Chrome headless render to PNG (`scripts/generate-thumbnail.js`, 2x render → sips downsample to 1280×720)
+- [x] BG removal pipeline — `scripts/remove-bg.py` using local rembg (free, offline). Self-contained `scripts/thumbnail-assets/`.
+- [ ] 2.3 — Dynamic CLI args (NOT BUILT — phase paused)
+- [ ] 2.4 — Multi-guest test (NOT BUILT — phase paused)
+- **Note:** Iterated on Todd Fairbairn thumbnail through several layout passes (single-portrait dark canvas → split with cream speech-bubble card). Final pass didn't meet Dane's bar — he wants reference-quality designs (heavy condensed type, dramatic accent words) that current automation can't produce without more design taste. Pipeline pieces (HTML render, BG removal) work and can be reused for any future thumbnail effort.
+
+## Phase 2.5: Pipeline Orchestrator (NEW, 2026-05-03)
+- [x] `scripts/publish-interview.js` — single command publishes 3 shorts → substitutes URLs → publishes long-form → re-publishes shorts → audits all 4 → patches YouTube metadata.
+- [x] Both skills updated to emit placeholders (`__SHORT_*_WIX_URL__` in long-form, `__LONGFORM_WIX_URL__` in each short).
+- [x] YouTube metadata patching: `--youtube-longform-id`, `--youtube-short-1-id`, `--youtube-short-2-id`, `--youtube-short-3-id` flags. Each independent — pass any subset. Fails loudly if `<guest>-youtube-metadata.md` is missing when YouTube IDs are passed; continues past individual patch failures.
+- [x] Dry-run validation tested against Christopher Penn files.
+- [ ] End-to-end test on next real interview (TODO).
 
 ## Phase 3: Shorts Pipeline
 - [ ] 3.1 — Shorts metadata format defined

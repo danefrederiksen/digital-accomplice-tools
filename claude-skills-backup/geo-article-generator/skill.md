@@ -17,6 +17,7 @@ Convert a long-form interview transcript (Riverside export, ~30–60 min) into a
 2. **Guest name** — full name of the interviewee (e.g. "Todd Fairbairn").
 3. **YouTube video URL** — the published YouTube link for the interview (e.g. `https://www.youtube.com/watch?v=gb_zGCPPVvU`). Used for the on-page embed and the `VideoObject` schema. If Dane forgets to provide this, ASK before drafting — the article should not ship without the video.
 4. **Episode angle** *(optional)* — one-line framing if Dane has a specific hook. If omitted, the skill picks the strongest angle from the transcript.
+5. **The 3 short titles** *(optional)* — the H1 questions of the 3 sibling short articles, in order. If Dane provides them, the article gets a "Watch the shorts" cross-link section before the transcript (Step 12.5). The Wix URLs use placeholders that the `publish-interview.js` orchestrator substitutes at publish time. If Dane skips this input, no cross-link section is emitted.
 
 ## Output Format
 
@@ -294,13 +295,30 @@ Rules:
 - No trailing commas. Validate the JSON mentally before writing — Wix will silently drop a block if JSON is malformed.
 - Do not add `image`, `url`, or `mainEntityOfPage` fields to the Article schema. Dane will fill those in Wix when he picks a hero image and slug. Do not add `duration` to VideoObject unless Dane provides it.
 
+### Step 12.5 — "Watch the shorts" cross-link section *(skip if Input #5 not provided)*
+
+Place between FAQ and Full Interview Transcript. Three bullet links to the sibling shorts. Wix URLs use literal placeholders that the `publish-interview.js` orchestrator substitutes at publish time.
+
+Format (exact — do NOT replace the placeholders):
+```
+## Watch the shorts
+
+Each short answers one specific question from the interview:
+
+- [<Short 1 title verbatim>](__SHORT_1_WIX_URL__)
+- [<Short 2 title verbatim>](__SHORT_2_WIX_URL__)
+- [<Short 3 title verbatim>](__SHORT_3_WIX_URL__)
+```
+
+The placeholder tokens (`__SHORT_1_WIX_URL__` etc.) must appear verbatim. The orchestrator does dumb string replace on each one. If Dane plans to publish manually (without the orchestrator), he replaces them by hand before publishing.
+
 ### Step 13 — Write the file
 
 Output path: `youtube-publish-system/output-samples/<guest-slug>-article.md`
 
 Where `<guest-slug>` is the guest's name lowercased and hyphenated (e.g., `todd-fairbairn`).
 
-The file contains, in order: H1, optional intro, YouTube embed iframe, Key Takeaways, H2 sections, FAQ block, **Full Interview Transcript section** (per Step 11.5), then all three JSON-LD `<script>` blocks at the bottom (`Article` → `FAQPage` → `VideoObject`).
+The file contains, in order: H1, optional intro, YouTube embed iframe, Key Takeaways, H2 sections, FAQ block, **"Watch the shorts" cross-link section** (per Step 12.5, only if shorts exist), **Full Interview Transcript section** (per Step 11.5), then all three JSON-LD `<script>` blocks at the bottom (`Article` → `FAQPage` → `VideoObject`).
 
 If the file already exists, ask Dane before overwriting.
 
