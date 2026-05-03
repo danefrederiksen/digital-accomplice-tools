@@ -5,18 +5,21 @@
 <title>DA Long-Form Thumbnail — Template</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@800;900&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;700;800;900&display=swap" rel="stylesheet" />
 <style>
   :root {
     --da-orange: #F8901E;
     --da-black: #000000;
+    --da-dark: #1A1A1A;
     --da-white: #FFFFFF;
+    --da-bluegray: #5A6B7A;
+    --card-bg: #F5F1E8;
   }
 
   * { margin: 0; padding: 0; box-sizing: border-box; }
 
   html, body {
-    background: #1a1a1a;
+    background: #2c2c2c;
     font-family: 'Inter', system-ui, sans-serif;
     -webkit-font-smoothing: antialiased;
     text-rendering: geometricPrecision;
@@ -32,53 +35,100 @@
   .thumbnail {
     width: 1280px;
     height: 720px;
-    background: var(--da-black);
-    display: grid;
-    grid-template-columns: 1fr 1fr;
+    background: var(--da-dark);
     position: relative;
     overflow: hidden;
   }
 
-  .left {
-    background: var(--da-black);
+  /* Two portraits — anchored to bottom corners, faces toward center */
+  .portrait {
+    position: absolute;
+    bottom: 0;
+    height: 720px;
+    width: auto;
+    z-index: 2;
+  }
+
+  .portrait.left {
+    left: -80px;
+    transform: scaleX(-1); /* mirror so face turns toward center */
+  }
+
+  .portrait.right {
+    right: -60px;
+  }
+
+  /* Center speech-bubble card — the headline anchor */
+  .card {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 660px;
+    background: var(--card-bg);
+    border-radius: 28px;
+    padding: 28px 36px 32px 36px;
+    z-index: 3;
+    box-shadow: 0 0 0 4px var(--da-black);
+  }
+
+  /* Tag at top of card with dividing rule */
+  .card-tag {
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 60px 50px 100px 50px;
+    gap: 14px;
+    margin-bottom: 14px;
   }
 
-  .headline {
-    color: var(--da-orange);
-    font-weight: 900;
-    font-size: 110px;
-    line-height: 0.95;
-    letter-spacing: -0.02em;
+  .card-tag-rule {
+    flex: 1;
+    height: 2px;
+    background: var(--da-black);
+  }
+
+  .card-tag-text {
+    color: var(--da-black);
+    font-weight: 800;
+    font-size: 18px;
+    letter-spacing: 0.18em;
     text-transform: uppercase;
-    text-align: left;
-    word-break: break-word;
+    white-space: nowrap;
   }
 
-  .right {
-    background: #222;
-    background-image: var(--photo-url);
-    background-size: cover;
-    background-position: center top;
-    background-repeat: no-repeat;
+  /* The big headline */
+  .card-headline {
+    color: var(--da-black);
+    font-weight: 900;
+    font-size: 76px;
+    line-height: 0.94;
+    letter-spacing: -0.02em;
+    text-align: center;
+    text-transform: none;
   }
 
+  .card-headline .accent {
+    color: var(--da-orange);
+  }
+
+  /* Wordmark fixed bottom-center */
   .wordmark {
     position: absolute;
-    bottom: 28px;
-    left: 50px;
+    bottom: 22px;
+    left: 50%;
+    transform: translateX(-50%);
     display: flex;
     align-items: center;
     gap: 10px;
-    z-index: 5;
+    z-index: 4;
+    background: rgba(0, 0, 0, 0.55);
+    padding: 8px 18px;
+    border-radius: 999px;
   }
 
   .wordmark-dot {
-    width: 14px;
-    height: 14px;
+    width: 12px;
+    height: 12px;
     border-radius: 50%;
     background: var(--da-orange);
   }
@@ -87,21 +137,38 @@
     color: var(--da-white);
     font-weight: 800;
     font-size: 14px;
-    letter-spacing: 0.18em;
+    letter-spacing: 0.22em;
     text-transform: uppercase;
   }
 </style>
 </head>
 <body>
-  <div class="thumbnail" style="--photo-url: url('../../reports/todd-headshot-final.png');">
-    <div class="left">
-      <div class="headline">3-Person Team.<br />Zero Slop.</div>
+  <div class="thumbnail">
+
+    <!-- Dane on the left (mirrored so he faces center) -->
+    <img src="thumbnail-assets/dane-headshot-nobg.png" alt="Dane Frederiksen" class="portrait left" />
+
+    <!-- Guest on the right -->
+    <img src="thumbnail-assets/todd-headshot-nobg.png" alt="Todd Fairbairn" class="portrait right" />
+
+    <!-- Center card -->
+    <div class="card">
+      <div class="card-tag">
+        <div class="card-tag-rule"></div>
+        <div class="card-tag-text">AI Referrals</div>
+        <div class="card-tag-rule"></div>
+      </div>
+      <div class="card-headline">
+        3-Person Team.<br />
+        Zero <span class="accent">Slop.</span>
+      </div>
     </div>
-    <div class="right"></div>
+
     <div class="wordmark">
       <div class="wordmark-dot"></div>
       <div class="wordmark-text">Digital Accomplice</div>
     </div>
+
   </div>
 </body>
 </html>
