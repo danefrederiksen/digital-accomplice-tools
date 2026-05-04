@@ -64,3 +64,7 @@ youtube-publish-system/tests/
 # Self-contained tool folders — runtime data, never commit
 tools/*/data/
 tools/*/backups/
+
+# MasterBlaster source material (raw MP4s + transcripts) — too large for git
+MasterBlaster tool/
+MasterBlaster archive/

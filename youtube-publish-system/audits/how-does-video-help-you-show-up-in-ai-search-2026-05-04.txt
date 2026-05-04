@@ -1,0 +1,22 @@
+═══════════════════════════════════════════
+ GEO Schema Audit
+═══════════════════════════════════════════
+URL:     https://www.digitalaccomplice.com/post/how-does-video-help-you-show-up-in-ai-search
+Audited: 2026-05-04T18:40:07.302Z
+Schemas: 4 found
+
+── Schema 1: Article [PASS] ──
+  All required fields present.
+
+── Schema 2: FAQPage [PASS] ──
+  All required fields present.
+
+── Schema 3: VideoObject [PASS] ──
+  All required fields present.
+
+── Schema 4: BlogPosting [PASS] ──
+  All required fields present.
+
+═══════════════════════════════════════════
+RESULT: PASS — all schemas valid
+═══════════════════════════════════════════

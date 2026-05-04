@@ -1,23 +1,25 @@
-// One-command interview publisher. Chains: 3 shorts → long-form → re-publish shorts → audit → YouTube metadata.
+// One-command interview publisher. Chains: N shorts → long-form → re-publish shorts → audit → YouTube metadata.
 // Solves the order-of-operations gotcha: shorts need the long-form Wix URL in their body, but
 // the long-form URL doesn't exist until publish. So we publish shorts first with a placeholder,
 // publish the long-form, then re-publish the shorts with the real URL substituted in.
 //
 // Markdown files MUST contain these literal placeholders:
-//   In <guest>-article.md:        __SHORT_1_WIX_URL__, __SHORT_2_WIX_URL__, __SHORT_3_WIX_URL__
+//   In <guest>-article.md:        __SHORT_1_WIX_URL__, __SHORT_2_WIX_URL__, ... __SHORT_N_WIX_URL__
 //   In each <guest>-short-*.md:   __LONGFORM_WIX_URL__
 //
-// Files are discovered by guest-slug from output-samples/.
+// Files are discovered by guest-slug from output-samples/. The number of shorts is detected
+// dynamically — drop in 2, 3, 4, 5+ short markdown files and the orchestrator handles it.
 //
 // Run: node --env-file=.env scripts/publish-interview.js --guest <slug> [flags]
 //
 // Flags:
 //   --dry-run                          Print the plan without making API calls
 //   --skip-audit                       Skip the post-publish schema audit
+//   --youtube-only                     Skip Wix entirely; only patch YouTube metadata.
+//                                      Use this to re-patch YouTube without re-publishing
+//                                      (and re-duplicating) Wix posts.
 //   --youtube-longform-id <videoId>    Patch this YouTube video with long-form metadata
-//   --youtube-short-1-id <videoId>     Patch this YouTube video with short 1 metadata
-//   --youtube-short-2-id <videoId>     ...
-//   --youtube-short-3-id <videoId>     ...
+//   --youtube-short-N-id <videoId>     Patch short N (where N is 1, 2, 3, 4, ...) with metadata
 //
 // YouTube patches require <guest>-youtube-metadata.md in output-samples/ AND .env credentials
 // (YOUTUBE_CLIENT_ID, YOUTUBE_CLIENT_SECRET, YOUTUBE_REFRESH_TOKEN). Each ID is independent —
@@ -26,11 +28,11 @@
 // Example (Wix only):
 //   node --env-file=.env scripts/publish-interview.js --guest christopher-penn
 //
-// Example (Wix + all 4 YouTube videos):
-//   node --env-file=.env scripts/publish-interview.js --guest christopher-penn \
-//     --youtube-longform-id 5uRIjfTCovs \
-//     --youtube-short-1-id Q4TBpdvcsCY \
-//     --youtube-short-2-id <id> --youtube-short-3-id <id>
+// Example (Wix + all 5 YouTube videos for a 4-short guest):
+//   node --env-file=.env scripts/publish-interview.js --guest kaleigh-moore \
+//     --youtube-longform-id <id> \
+//     --youtube-short-1-id <id> --youtube-short-2-id <id> \
+//     --youtube-short-3-id <id> --youtube-short-4-id <id>
 
 import { readFile, readdir } from 'node:fs/promises';
 import { resolve, join, dirname } from 'node:path';
@@ -62,28 +64,25 @@ function value(name) {
 const guest = value('guest');
 const dryRun = flag('dry-run');
 const skipAudit = flag('skip-audit');
+const youtubeOnly = flag('youtube-only');
 
 // YouTube video IDs — all optional. Each enables one PUT to the YouTube Data API after Wix publish.
+// Long-form is fixed; short IDs are parsed dynamically (--youtube-short-N-id for any N).
 const youtubeIds = {
   longform: value('youtube-longform-id'),
-  short1: value('youtube-short-1-id'),
-  short2: value('youtube-short-2-id'),
-  short3: value('youtube-short-3-id'),
+  shorts: {}, // populated after we know how many shorts there are
 };
-const anyYoutube = Object.values(youtubeIds).some(Boolean);
 
 if (!guest) {
   console.error('Usage: node scripts/publish-interview.js --guest <slug> [flags]');
   console.error('');
   console.error('Looks in output-samples/ for these files:');
   console.error('  <guest>-article.md');
-  console.error('  <guest>-short-1-*.md');
-  console.error('  <guest>-short-2-*.md');
-  console.error('  <guest>-short-3-*.md');
+  console.error('  <guest>-short-N-*.md   (any number of shorts; N starts at 1)');
   console.error('  <guest>-youtube-metadata.md  (only if any --youtube-*-id is passed)');
   console.error('');
   console.error('Optional flags: --dry-run --skip-audit');
-  console.error('YouTube flags:  --youtube-longform-id --youtube-short-1-id --youtube-short-2-id --youtube-short-3-id');
+  console.error('YouTube flags:  --youtube-longform-id  --youtube-short-N-id (for each short N)');
   process.exit(1);
 }
 
@@ -96,20 +95,43 @@ if (!dryRun && (!API_KEY || !SITE_ID)) {
 
 const files = await readdir(OUTPUT_DIR);
 const longformPath = files.find(f => f === `${guest}-article.md`);
-const shortPaths = [1, 2, 3].map(n => files.find(f => f.startsWith(`${guest}-short-${n}-`) && f.endsWith('.md')));
+
+// Discover all shorts dynamically: <guest>-short-N-*.md for any positive integer N.
+const shortFileRegex = new RegExp(`^${guest.replace(/[.*+?^${}()|[\\]\\\\]/g, '\\$&')}-short-(\\d+)-.+\\.md$`);
+const discoveredShorts = files
+  .map(f => {
+    const m = f.match(shortFileRegex);
+    return m ? { name: f, index: parseInt(m[1], 10) } : null;
+  })
+  .filter(Boolean)
+  .sort((a, b) => a.index - b.index);
 
 if (!longformPath) bail(`Long-form not found: expected ${guest}-article.md in output-samples/`);
-shortPaths.forEach((p, i) => {
-  if (!p) bail(`Short ${i + 1} not found: expected ${guest}-short-${i + 1}-*.md in output-samples/`);
-});
+if (discoveredShorts.length === 0) bail(`No shorts found: expected ${guest}-short-1-*.md (and optionally short-2, short-3, ...) in output-samples/`);
+
+// Sanity-check: short indexes should be contiguous starting at 1 (1, 2, 3, ... no gaps).
+for (let i = 0; i < discoveredShorts.length; i++) {
+  if (discoveredShorts[i].index !== i + 1) {
+    bail(`Short numbering is not contiguous: found ${discoveredShorts.map(s => s.index).join(', ')}. Shorts must be numbered 1..N with no gaps.`);
+  }
+}
+
+const SHORT_COUNT = discoveredShorts.length;
 
 const longform = { name: longformPath, path: join(OUTPUT_DIR, longformPath), md: await readFile(join(OUTPUT_DIR, longformPath), 'utf8') };
-const shorts = await Promise.all(shortPaths.map(async (p, i) => ({
-  index: i + 1,
-  name: p,
-  path: join(OUTPUT_DIR, p),
-  md: await readFile(join(OUTPUT_DIR, p), 'utf8'),
+const shorts = await Promise.all(discoveredShorts.map(async (s) => ({
+  index: s.index,
+  name: s.name,
+  path: join(OUTPUT_DIR, s.name),
+  md: await readFile(join(OUTPUT_DIR, s.name), 'utf8'),
 })));
+
+// Now that we know how many shorts there are, parse all --youtube-short-N-id flags.
+for (let n = 1; n <= SHORT_COUNT; n++) {
+  const id = value(`youtube-short-${n}-id`);
+  if (id) youtubeIds.shorts[n] = id;
+}
+const anyYoutube = Boolean(youtubeIds.longform) || Object.keys(youtubeIds.shorts).length > 0;
 
 const youtubeMetadataPath = files.find(f => f === `${guest}-youtube-metadata.md`);
 if (anyYoutube && !youtubeMetadataPath) {
@@ -118,7 +140,7 @@ if (anyYoutube && !youtubeMetadataPath) {
 
 // ───────────────────────── placeholder validation ─────────────────────────
 
-const SHORT_PLACEHOLDERS = ['__SHORT_1_WIX_URL__', '__SHORT_2_WIX_URL__', '__SHORT_3_WIX_URL__'];
+const SHORT_PLACEHOLDERS = Array.from({ length: SHORT_COUNT }, (_, i) => `__SHORT_${i + 1}_WIX_URL__`);
 const LONGFORM_PLACEHOLDER = '__LONGFORM_WIX_URL__';
 
 const longformPlaceholderHits = SHORT_PLACEHOLDERS.filter(p => longform.md.includes(p));
@@ -132,27 +154,28 @@ console.log('══════════════════════�
 console.log(`Long-form:  ${longform.name}`);
 shorts.forEach(s => console.log(`Short ${s.index}:    ${s.name}`));
 console.log('');
-console.log(`Long-form placeholders found: ${longformPlaceholderHits.length}/3${longformMissing.length ? ' (missing: ' + longformMissing.join(', ') + ')' : ''}`);
+console.log(`Detected ${SHORT_COUNT} short${SHORT_COUNT === 1 ? '' : 's'}.`);
+console.log(`Long-form placeholders found: ${longformPlaceholderHits.length}/${SHORT_COUNT}${longformMissing.length ? ' (missing: ' + longformMissing.join(', ') + ')' : ''}`);
 shorts.forEach((s, i) => console.log(`Short ${s.index} placeholder found:        ${shortsPlaceholderHits[i] ? 'yes' : 'NO — short will publish without long-form backlink substitution'}`));
 console.log('');
 
 if (anyYoutube) {
   console.log('YouTube IDs to patch:');
   if (youtubeIds.longform) console.log(`  Long-form: ${youtubeIds.longform}`);
-  if (youtubeIds.short1) console.log(`  Short 1:   ${youtubeIds.short1}`);
-  if (youtubeIds.short2) console.log(`  Short 2:   ${youtubeIds.short2}`);
-  if (youtubeIds.short3) console.log(`  Short 3:   ${youtubeIds.short3}`);
+  for (const [n, id] of Object.entries(youtubeIds.shorts)) {
+    console.log(`  Short ${n}:   ${id}`);
+  }
   console.log(`Metadata file: ${youtubeMetadataPath}`);
   console.log('');
 }
 
 if (dryRun) {
   console.log('Dry run — no API calls. Plan:');
-  console.log('  1. Publish 3 shorts (with __LONGFORM_WIX_URL__ still in body)');
-  console.log('  2. Substitute the 3 short URLs into long-form body');
+  console.log(`  1. Publish ${SHORT_COUNT} short${SHORT_COUNT === 1 ? '' : 's'} (with __LONGFORM_WIX_URL__ still in body)`);
+  console.log(`  2. Substitute the ${SHORT_COUNT} short URL${SHORT_COUNT === 1 ? '' : 's'} into long-form body`);
   console.log('  3. Publish long-form');
   console.log('  4. Substitute long-form URL into each short, update-and-republish');
-  console.log(skipAudit ? '  5. (audit skipped via --skip-audit)' : '  5. Audit all 4 published URLs');
+  console.log(skipAudit ? '  5. (audit skipped via --skip-audit)' : `  5. Audit all ${SHORT_COUNT + 1} published URLs`);
   if (anyYoutube) console.log('  6. Patch YouTube metadata for each provided video ID');
   process.exit(0);
 }
@@ -211,7 +234,17 @@ async function updateDraft(draftId, md) {
 
 const results = { shorts: [], longform: null };
 
-console.log('── Step 1: publish 3 shorts ──');
+if (youtubeOnly) {
+  if (!anyYoutube) {
+    bail('--youtube-only requires at least one --youtube-*-id flag.');
+  }
+  console.log('── --youtube-only mode: skipping Wix publish + substitution + audit ──');
+  console.log('');
+}
+
+if (!youtubeOnly) {
+
+console.log(`── Step 1: publish ${SHORT_COUNT} short${SHORT_COUNT === 1 ? '' : 's'} ──`);
 for (const s of shorts) {
   process.stdout.write(`  Short ${s.index}: creating draft... `);
   const { draftId } = await createDraft(s.md);
@@ -272,6 +305,8 @@ if (!skipAudit) {
   console.log('── Step 5: audit skipped (--skip-audit) ──\n');
 }
 
+} // end if (!youtubeOnly)
+
 const youtubeResults = [];
 if (anyYoutube) {
   console.log('── Step 6: patch YouTube metadata ──');
@@ -279,9 +314,11 @@ if (anyYoutube) {
   const metadataPath = join(OUTPUT_DIR, youtubeMetadataPath);
   const patches = [
     { id: youtubeIds.longform, label: 'Long-form', section: 'Long-Form Interview' },
-    { id: youtubeIds.short1,   label: 'Short 1',   section: 'Short #1' },
-    { id: youtubeIds.short2,   label: 'Short 2',   section: 'Short #2' },
-    { id: youtubeIds.short3,   label: 'Short 3',   section: 'Short #3' },
+    ...Array.from({ length: SHORT_COUNT }, (_, i) => ({
+      id: youtubeIds.shorts[i + 1],
+      label: `Short ${i + 1}`,
+      section: `Short #${i + 1}`,
+    })),
   ].filter(p => p.id);
 
   for (const p of patches) {
@@ -299,16 +336,18 @@ if (anyYoutube) {
 }
 
 console.log('═══════════════════════════════════════════');
-console.log(' Publish complete');
+console.log(youtubeOnly ? ' YouTube-only patch complete' : ' Publish complete');
 console.log('═══════════════════════════════════════════');
-console.log(`Long-form: ${results.longform.url}`);
-results.shorts.forEach(s => console.log(`Short ${s.index}:   ${s.url}`));
+if (!youtubeOnly) {
+  console.log(`Long-form: ${results.longform.url}`);
+  results.shorts.forEach(s => console.log(`Short ${s.index}:   ${s.url}`));
+}
 if (youtubeResults.length) {
-  console.log('');
+  if (!youtubeOnly) console.log('');
   console.log('YouTube metadata patches:');
   youtubeResults.forEach(r => console.log(`  ${r.label} (${r.id}): ${r.ok ? 'OK' : 'FAILED'}`));
 }
-if (!anyYoutube) {
+if (!anyYoutube && !youtubeOnly) {
   console.log('');
   console.log('Next: upload videos to YouTube, then re-run with --youtube-*-id flags to patch metadata.');
 }

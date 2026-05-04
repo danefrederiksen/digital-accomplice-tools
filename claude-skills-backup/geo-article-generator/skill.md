@@ -17,7 +17,7 @@ Convert a long-form interview transcript (Riverside export, ~30–60 min) into a
 2. **Guest name** — full name of the interviewee (e.g. "Todd Fairbairn").
 3. **YouTube video URL** — the published YouTube link for the interview (e.g. `https://www.youtube.com/watch?v=gb_zGCPPVvU`). Used for the on-page embed and the `VideoObject` schema. If Dane forgets to provide this, ASK before drafting — the article should not ship without the video.
 4. **Episode angle** *(optional)* — one-line framing if Dane has a specific hook. If omitted, the skill picks the strongest angle from the transcript.
-5. **The 3 short titles** *(optional)* — the H1 questions of the 3 sibling short articles, in order. If Dane provides them, the article gets a "Watch the shorts" cross-link section before the transcript (Step 12.5). The Wix URLs use placeholders that the `publish-interview.js` orchestrator substitutes at publish time. If Dane skips this input, no cross-link section is emitted.
+5. **The short titles** *(optional)* — the H1 questions of the sibling short articles, in order. **Any number of shorts is supported** (typically 2–5). If Dane provides them, the article gets a "Watch the shorts" cross-link section before the transcript (Step 12.5). The Wix URLs use placeholders (`__SHORT_1_WIX_URL__`, `__SHORT_2_WIX_URL__`, ... `__SHORT_N_WIX_URL__`) that the `publish-interview.js` orchestrator substitutes at publish time. If Dane skips this input, no cross-link section is emitted.
 
 ## Output Format
 
@@ -297,9 +297,9 @@ Rules:
 
 ### Step 12.5 — "Watch the shorts" cross-link section *(skip if Input #5 not provided)*
 
-Place between FAQ and Full Interview Transcript. Three bullet links to the sibling shorts. Wix URLs use literal placeholders that the `publish-interview.js` orchestrator substitutes at publish time.
+Place between FAQ and Full Interview Transcript. One bullet link per sibling short. Number of bullets matches the number of shorts Dane provided in Input #5 (typically 2–5; could be more). Wix URLs use literal placeholders that the `publish-interview.js` orchestrator substitutes at publish time.
 
-Format (exact — do NOT replace the placeholders):
+Format (exact — do NOT replace the placeholders, and emit exactly N bullets where N = number of shorts):
 ```
 ## Watch the shorts
 
@@ -308,9 +308,10 @@ Each short answers one specific question from the interview:
 - [<Short 1 title verbatim>](__SHORT_1_WIX_URL__)
 - [<Short 2 title verbatim>](__SHORT_2_WIX_URL__)
 - [<Short 3 title verbatim>](__SHORT_3_WIX_URL__)
+... (continue for short 4, 5, ... if Dane provided more)
 ```
 
-The placeholder tokens (`__SHORT_1_WIX_URL__` etc.) must appear verbatim. The orchestrator does dumb string replace on each one. If Dane plans to publish manually (without the orchestrator), he replaces them by hand before publishing.
+The placeholder tokens (`__SHORT_1_WIX_URL__`, `__SHORT_2_WIX_URL__`, etc.) must appear verbatim and must match the count of shorts. The orchestrator does dumb string replace on each one. If Dane plans to publish manually (without the orchestrator), he replaces them by hand before publishing.
 
 ### Step 13 — Write the file
 

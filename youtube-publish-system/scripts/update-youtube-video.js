@@ -30,10 +30,14 @@ if (!videoId || !mdPath || !sectionMatch) {
   process.exit(1);
 }
 
-const md = await readFile(resolve(mdPath), 'utf8');
+// Append a sentinel H2 so the lookahead always finds a section terminator,
+// even for the last section. The original used `\Z` which JS doesn't support
+// (got interpreted as literal "Z" — silently truncated sections containing a
+// capital Z, like a YouTube video ID).
+const md = (await readFile(resolve(mdPath), 'utf8')) + '\n## __END__\n';
 
 function extractSection(md, sectionMatch) {
-  const sectionRe = new RegExp(`^##\\s+[^\\n]*${sectionMatch.replace(/[.*+?^${}()|[\\]\\\\]/g, '\\$&')}[^\\n]*\\n([\\s\\S]*?)(?=^##\\s|\\Z)`, 'm');
+  const sectionRe = new RegExp(`^##\\s+[^\\n]*${sectionMatch.replace(/[.*+?^${}()|[\\]\\\\]/g, '\\$&')}[^\\n]*\\n([\\s\\S]*?)(?=^##\\s)`, 'm');
   const m = md.match(sectionRe);
   if (!m) throw new Error(`Section not found: ${sectionMatch}`);
   return m[1];
