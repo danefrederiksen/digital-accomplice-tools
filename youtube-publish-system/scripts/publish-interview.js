@@ -15,6 +15,10 @@
 // Flags:
 //   --dry-run                          Print the plan without making API calls
 //   --skip-audit                       Skip the post-publish schema audit
+//   --no-shorts                        Long-form only — skip all short-related steps.
+//                                      Used for Video Done Right teardowns and other
+//                                      single-video formats. The article markdown must NOT
+//                                      contain __SHORT_N_WIX_URL__ placeholders.
 //   --youtube-only                     Skip Wix entirely; only patch YouTube metadata.
 //                                      Use this to re-patch YouTube without re-publishing
 //                                      (and re-duplicating) Wix posts.
@@ -65,6 +69,7 @@ const guest = value('guest');
 const dryRun = flag('dry-run');
 const skipAudit = flag('skip-audit');
 const youtubeOnly = flag('youtube-only');
+const noShorts = flag('no-shorts');
 
 // YouTube video IDs — all optional. Each enables one PUT to the YouTube Data API after Wix publish.
 // Long-form is fixed; short IDs are parsed dynamically (--youtube-short-N-id for any N).
@@ -107,7 +112,8 @@ const discoveredShorts = files
   .sort((a, b) => a.index - b.index);
 
 if (!longformPath) bail(`Long-form not found: expected ${guest}-article.md in output-samples/`);
-if (discoveredShorts.length === 0) bail(`No shorts found: expected ${guest}-short-1-*.md (and optionally short-2, short-3, ...) in output-samples/`);
+if (!noShorts && discoveredShorts.length === 0) bail(`No shorts found: expected ${guest}-short-1-*.md (and optionally short-2, short-3, ...) in output-samples/. Pass --no-shorts for single-long-form runs.`);
+if (noShorts && discoveredShorts.length > 0) bail(`--no-shorts passed but found ${discoveredShorts.length} short file(s) for guest "${guest}". Either remove the shorts or drop the --no-shorts flag.`);
 
 // Sanity-check: short indexes should be contiguous starting at 1 (1, 2, 3, ... no gaps).
 for (let i = 0; i < discoveredShorts.length; i++) {
@@ -130,6 +136,11 @@ const shorts = await Promise.all(discoveredShorts.map(async (s) => ({
 for (let n = 1; n <= SHORT_COUNT; n++) {
   const id = value(`youtube-short-${n}-id`);
   if (id) youtubeIds.shorts[n] = id;
+}
+if (noShorts) {
+  for (const arg of args) {
+    if (arg.startsWith('--youtube-short-')) bail(`--no-shorts is incompatible with ${arg}. Drop the short YouTube ID flags.`);
+  }
 }
 const anyYoutube = Boolean(youtubeIds.longform) || Object.keys(youtubeIds.shorts).length > 0;
 
@@ -171,12 +182,18 @@ if (anyYoutube) {
 
 if (dryRun) {
   console.log('Dry run — no API calls. Plan:');
-  console.log(`  1. Publish ${SHORT_COUNT} short${SHORT_COUNT === 1 ? '' : 's'} (with __LONGFORM_WIX_URL__ still in body)`);
-  console.log(`  2. Substitute the ${SHORT_COUNT} short URL${SHORT_COUNT === 1 ? '' : 's'} into long-form body`);
-  console.log('  3. Publish long-form');
-  console.log('  4. Substitute long-form URL into each short, update-and-republish');
-  console.log(skipAudit ? '  5. (audit skipped via --skip-audit)' : `  5. Audit all ${SHORT_COUNT + 1} published URLs`);
-  if (anyYoutube) console.log('  6. Patch YouTube metadata for each provided video ID');
+  if (noShorts) {
+    console.log('  1. Publish long-form only (--no-shorts)');
+    console.log(skipAudit ? '  2. (audit skipped via --skip-audit)' : '  2. Audit long-form URL');
+    if (anyYoutube) console.log('  3. Patch YouTube metadata for the long-form video');
+  } else {
+    console.log(`  1. Publish ${SHORT_COUNT} short${SHORT_COUNT === 1 ? '' : 's'} (with __LONGFORM_WIX_URL__ still in body)`);
+    console.log(`  2. Substitute the ${SHORT_COUNT} short URL${SHORT_COUNT === 1 ? '' : 's'} into long-form body`);
+    console.log('  3. Publish long-form');
+    console.log('  4. Substitute long-form URL into each short, update-and-republish');
+    console.log(skipAudit ? '  5. (audit skipped via --skip-audit)' : `  5. Audit all ${SHORT_COUNT + 1} published URLs`);
+    if (anyYoutube) console.log('  6. Patch YouTube metadata for each provided video ID');
+  }
   process.exit(0);
 }
 
@@ -244,27 +261,30 @@ if (youtubeOnly) {
 
 if (!youtubeOnly) {
 
-console.log(`── Step 1: publish ${SHORT_COUNT} short${SHORT_COUNT === 1 ? '' : 's'} ──`);
-for (const s of shorts) {
-  process.stdout.write(`  Short ${s.index}: creating draft... `);
-  const { draftId } = await createDraft(s.md);
-  process.stdout.write(`draft ${draftId.slice(0, 8)}... publishing... `);
-  const published = await publishDraft(draftId);
-  console.log(`live`);
-  console.log(`           ${published.url}`);
-  results.shorts.push({ ...s, draftId, ...published });
-}
-console.log('');
-
-console.log('── Step 2: substitute short URLs into long-form ──');
 let longformMd = longform.md;
-results.shorts.forEach((s, i) => {
-  const placeholder = SHORT_PLACEHOLDERS[i];
-  const hits = longformMd.split(placeholder).length - 1;
-  longformMd = longformMd.split(placeholder).join(s.url);
-  console.log(`  ${placeholder} → ${s.url}  (${hits} replacement${hits === 1 ? '' : 's'})`);
-});
-console.log('');
+
+if (!noShorts) {
+  console.log(`── Step 1: publish ${SHORT_COUNT} short${SHORT_COUNT === 1 ? '' : 's'} ──`);
+  for (const s of shorts) {
+    process.stdout.write(`  Short ${s.index}: creating draft... `);
+    const { draftId } = await createDraft(s.md);
+    process.stdout.write(`draft ${draftId.slice(0, 8)}... publishing... `);
+    const published = await publishDraft(draftId);
+    console.log(`live`);
+    console.log(`           ${published.url}`);
+    results.shorts.push({ ...s, draftId, ...published });
+  }
+  console.log('');
+
+  console.log('── Step 2: substitute short URLs into long-form ──');
+  results.shorts.forEach((s, i) => {
+    const placeholder = SHORT_PLACEHOLDERS[i];
+    const hits = longformMd.split(placeholder).length - 1;
+    longformMd = longformMd.split(placeholder).join(s.url);
+    console.log(`  ${placeholder} → ${s.url}  (${hits} replacement${hits === 1 ? '' : 's'})`);
+  });
+  console.log('');
+}
 
 console.log('── Step 3: publish long-form ──');
 process.stdout.write(`  creating draft... `);
@@ -276,17 +296,19 @@ console.log(`  ${longformPublished.url}`);
 results.longform = { ...longform, draftId: longformDraft.draftId, ...longformPublished };
 console.log('');
 
-console.log('── Step 4: substitute long-form URL into shorts and re-publish ──');
-for (const s of results.shorts) {
-  const newMd = s.md.split(LONGFORM_PLACEHOLDER).join(longformPublished.url);
-  const replacements = s.md.split(LONGFORM_PLACEHOLDER).length - 1;
-  process.stdout.write(`  Short ${s.index}: ${replacements} replacement${replacements === 1 ? '' : 's'}, updating draft... `);
-  await updateDraft(s.draftId, newMd);
-  process.stdout.write(`re-publishing... `);
-  await publishDraft(s.draftId);
-  console.log(`done`);
+if (!noShorts) {
+  console.log('── Step 4: substitute long-form URL into shorts and re-publish ──');
+  for (const s of results.shorts) {
+    const newMd = s.md.split(LONGFORM_PLACEHOLDER).join(longformPublished.url);
+    const replacements = s.md.split(LONGFORM_PLACEHOLDER).length - 1;
+    process.stdout.write(`  Short ${s.index}: ${replacements} replacement${replacements === 1 ? '' : 's'}, updating draft... `);
+    await updateDraft(s.draftId, newMd);
+    process.stdout.write(`re-publishing... `);
+    await publishDraft(s.draftId);
+    console.log(`done`);
+  }
+  console.log('');
 }
-console.log('');
 
 if (!skipAudit) {
   console.log('── Step 5: audit schemas ──');

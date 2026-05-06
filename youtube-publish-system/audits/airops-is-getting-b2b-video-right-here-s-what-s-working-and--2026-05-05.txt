@@ -1,0 +1,22 @@
+═══════════════════════════════════════════
+ GEO Schema Audit
+═══════════════════════════════════════════
+URL:     https://www.digitalaccomplice.com/post/airops-is-getting-b2b-video-right-here-s-what-s-working-and-what-could-go-further
+Audited: 2026-05-05T22:23:05.796Z
+Schemas: 4 found
+
+── Schema 1: Article [PASS] ──
+  All required fields present.
+
+── Schema 2: FAQPage [PASS] ──
+  All required fields present.
+
+── Schema 3: VideoObject [PASS] ──
+  All required fields present.
+
+── Schema 4: BlogPosting [PASS] ──
+  All required fields present.
+
+═══════════════════════════════════════════
+RESULT: PASS — all schemas valid
+═══════════════════════════════════════════
